@@ -38,7 +38,6 @@ def view_assignment(id):
 	member_data = {
 		"id": session['member_id']
 	}
-	# member = member.Member.get_member_by_id(member_data)
 	
 	this_assignment = {
 		'id': id
