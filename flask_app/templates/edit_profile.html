@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+			
+			<div class="row">
+			<img src="{{avatar}}" class="" style="object-fit:none;object-position:center;width:100%;padding-bottom:30px;">
+			</div>
+			<div class="row">
+				<h3 class="text-danger">{{ member.first_name }} {{ member.last_name }}</h3>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">Role</h5>
+				<h4>{{ member.job_title }}</h4>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">National Society</h5>
+				<h4>{{ member.national_society.ns_name }}</h4>
+			</div>
+				<div class="list-group mt-5">
+  				<a href="/edit/profile/{{member.id}}" class="list-group-item list-group-item-secondary">Update Profile</a>
+  				<a href="/edit/avatar/{{member.id}}" class="list-group-item list-group-item-action text-secondary">Upload Avatar</a>
+  				<a href="#" class="list-group-item list-group-item-action text-secondary">Assign to Disaster</a>
+			  	<a href="#" class="list-group-item list-group-item-action text-secondary">Add to Portfolio</a>
+  				<a href="#" class="list-group-item list-group-item-action text-danger">Delete Member</a>
+				</div>
+			</div>
+		</div>
+		<div class="col mx-4">
+			<form action="/update/profile" method="POST" class="mx-auto p-4 bg-light text-light rounded-3">
+				{% with messages = get_flashed_messages(category_filter=['update_profile']) %}
+					{% if messages %}
+					<div class="alert alert-danger" role="alert">
+						<strong>You have errors in your profile page update:</strong>
+							<br><br>
+							<ul>
+							{% for message in messages %}
+								<li>{{message}}</li>
+							{% endfor %}
+							</ul>
+							<span>If you're still having trouble registering after correcting these issues, please contact a <a href="mailto:jonathan.garro@redcross.org">site administrator</a>.</span>
+					</div>
+					{% endif %}
+				{% endwith %}
+				<div class="row">
+					<h4 class="text-danger pb-3">Required Fields</h4>
+				  	<div class="col-md-6">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="first_name">First Name</label>
+							<input type="text" name="first_name" class="form-control" value="{{ member.first_name }}">
+						</div>
+				  	</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="last_name">Last Name</label>
+							<input type="text" name="last_name" class="form-control" value="{{ member.last_name }}">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="gender">Gender</label>
+								<select class="form-select" id="gender" name="gender" required>
+									<option value="" selected disabled hidden>Select One</option>
+									<option value="male">Male</option>
+									<option value="female">Female</option>
+									<option value="other">Other/Prefer Not to Answer</option>
+								</select>
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="national_society_id">National Society Country</label>
+								<select class="form-select" id="" name="national_society_id">
+									{% for country in countries %}
+										<option value="{{country.ns_go_id}}">{{country.country}}</option>
+									{% endfor %}
+								</select>
+						</div>
+				</div>
+				<div class="form-group pb-4">
+					<label class="pb-2 text-danger" for="email">Email</label>
+					<input type="text" name="email" class="form-control" value="{{member.email}}">
+				</div>
+				<div class="row">
+					<h4 class="text-secondary py-3">Optional Fields</h4>
+					  <div class="col-md-6">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-secondary" for="job_title">Job Title / Role</label>
+							<input type="text" name="job_title" class="form-control">
+						</div>
+					  </div>
+					<div class="col">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-secondary" for="birthday">Birthday</label>
+							<input type="date" style="height:38px" name="birthday" class="form-control" value="1900-01-01">
+						</div>
+					</div>
+				</div>
+
+				<input type="hidden" id="submitterID" name="mem_id" value="{{member.id}}">
+				<input type="submit" value="Update" class="btn btn-danger">
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

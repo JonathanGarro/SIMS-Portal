@@ -1,0 +1,1407 @@
+[
+ {
+   "id": 14,
+   "country": "Afghanistan",
+   "ns_name": "Afghan Red Crescent Society"
+ },
+ {
+   "id": 285,
+   "country": "Africa Region",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 343,
+   "country": "Aksai Chin",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 15,
+   "country": "Albania",
+   "ns_name": "Albanian Red Cross"
+ },
+ {
+   "id": 16,
+   "country": "Algeria",
+   "ns_name": "Algerian Red Crescent"
+ },
+ {
+   "id": 320,
+   "country": "American Samoa",
+   "ns_name": "American Red Cross"
+ },
+ {
+   "id": 282,
+   "country": "Americas Region",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 17,
+   "country": "Andorra",
+   "ns_name": "Andorran Red Cross"
+ },
+ {
+   "id": 18,
+   "country": "Angola",
+   "ns_name": "Angola Red Cross"
+ },
+ {
+   "id": 217,
+   "country": "Anguilla",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 230,
+   "country": "Antarctica",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 19,
+   "country": "Antigua and Barbuda",
+   "ns_name": "Antigua and Barbuda Red Cross"
+ },
+ {
+   "id": 20,
+   "country": "Argentina",
+   "ns_name": "Argentine Red Cross"
+ },
+ {
+   "id": 21,
+   "country": "Armenia",
+   "ns_name": "Armenian Red Cross Society"
+ },
+ {
+   "id": 231,
+   "country": "Aruba",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 344,
+   "country": "Ashmore and Cartier Islands",
+   "ns_name": "Australian Red Cross"
+ },
+ {
+   "id": 283,
+   "country": "Asia-Pacific Region",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 22,
+   "country": "Australia",
+   "ns_name": "Australian Red Cross"
+ },
+ {
+   "id": 23,
+   "country": "Austria",
+   "ns_name": "Austrian Red Cross"
+ },
+ {
+   "id": 200,
+   "country": "Azerbaijan",
+   "ns_name": "Red Crescent Society of Azerbaijan"
+ },
+ {
+   "id": 25,
+   "country": "Bahamas",
+   "ns_name": "The Bahamas Red Cross Society"
+ },
+ {
+   "id": 26,
+   "country": "Bahrain",
+   "ns_name": "Bahrain Red Crescent Society"
+ },
+ {
+   "id": 300,
+   "country": "Bangkok Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 27,
+   "country": "Bangladesh",
+   "ns_name": "Bangladesh Red Crescent Society"
+ },
+ {
+   "id": 28,
+   "country": "Barbados",
+   "ns_name": "The Barbados Red Cross Society"
+ },
+ {
+   "id": 345,
+   "country": "Bassas da India",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 298,
+   "country": "Beijing Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 29,
+   "country": "Belarus",
+   "ns_name": "Belarus Red Cross"
+ },
+ {
+   "id": 30,
+   "country": "Belgium",
+   "ns_name": "Belgian Red Cross"
+ },
+ {
+   "id": 31,
+   "country": "Belize",
+   "ns_name": "Belize Red Cross Society"
+ },
+ {
+   "id": 313,
+   "country": "Benelux",
+   "ns_name": "Benelux ERU"
+ },
+ {
+   "id": 209,
+   "country": "Benin",
+   "ns_name": "Red Cross of Benin"
+ },
+ {
+   "id": 233,
+   "country": "Bermuda",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 234,
+   "country": "Bhutan",
+   "ns_name": "Bhutan Red Cross Society"
+ },
+ {
+   "id": 346,
+   "country": "Bir Tawil",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 347,
+   "country": "Bird Island",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 33,
+   "country": "Bolivia",
+   "ns_name": "Bolivian Red Cross"
+ },
+ {
+   "id": 197,
+   "country": "Bosnia and Herzegovina",
+   "ns_name": "The Red Cross Society of Bosnia and Herzegovina"
+ },
+ {
+   "id": 34,
+   "country": "Botswana",
+   "ns_name": "Botswana Red Cross Society"
+ },
+ {
+   "id": 321,
+   "country": "Bouvet Island",
+   "ns_name": "Norwegian Red Cross"
+ },
+ {
+   "id": 35,
+   "country": "Brazil",
+   "ns_name": "Brazilian Red Cross"
+ },
+ {
+   "id": 322,
+   "country": "British Indian Ocean Territory",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 323,
+   "country": "British Virgin Islands",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 36,
+   "country": "Brunei Darussalam",
+   "ns_name": "Brunei Darussalam Red Crescent Society"
+ },
+ {
+   "id": 37,
+   "country": "Bulgaria",
+   "ns_name": "Bulgarian Red Cross"
+ },
+ {
+   "id": 181,
+   "country": "Burkina Faso",
+   "ns_name": "Burkinabe Red Cross Society"
+ },
+ {
+   "id": 39,
+   "country": "Burundi",
+   "ns_name": "Burundi Red Cross"
+ },
+ {
+   "id": 43,
+   "country": "Cabo Verde",
+   "ns_name": "Red Cross of Cape Verde"
+ },
+ {
+   "id": 40,
+   "country": "Cambodia",
+   "ns_name": "Cambodian Red Cross"
+ },
+ {
+   "id": 41,
+   "country": "Cameroon",
+   "ns_name": "Cameroon Red Cross Society"
+ },
+ {
+   "id": 42,
+   "country": "Canada",
+   "ns_name": "The Canadian Red Cross Society"
+ },
+ {
+   "id": 305,
+   "country": "Caribbean Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 324,
+   "country": "Cayman Islands",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 292,
+   "country": "Central Africa Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 44,
+   "country": "Central African Republic",
+   "ns_name": "Central African Red Cross Society"
+ },
+ {
+   "id": 318,
+   "country": "Central America Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 309,
+   "country": "Central and South-Eastern Europe Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 310,
+   "country": "Central Asia Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 45,
+   "country": "Chad",
+   "ns_name": "Red Cross of Chad"
+ },
+ {
+   "id": 46,
+   "country": "Chile",
+   "ns_name": "Chilean Red Cross"
+ },
+ {
+   "id": 47,
+   "country": "China",
+   "ns_name": "Red Cross Society of China"
+ },
+ {
+   "id": 325,
+   "country": "Christmas Island",
+   "ns_name": "Australian Red Cross"
+ },
+ {
+   "id": 348,
+   "country": "Clipperton Island",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 326,
+   "country": "Cocos (Keeling) Islands",
+   "ns_name": "Australian Red Cross"
+ },
+ {
+   "id": 48,
+   "country": "Colombia",
+   "ns_name": "Colombian Red Cross Society"
+ },
+ {
+   "id": 186,
+   "country": "Comoros",
+   "ns_name": "The Comoros Red Crescent"
+ },
+ {
+   "id": 184,
+   "country": "Congo",
+   "ns_name": "Congolese Red Cross"
+ },
+ {
+   "id": 211,
+   "country": "Cook Islands",
+   "ns_name": "Cook Islands Red Cross Society"
+ },
+ {
+   "id": 51,
+   "country": "Costa Rica",
+   "ns_name": "Costa Rican Red Cross"
+ },
+ {
+   "id": 182,
+   "country": "Côte d'Ivoire",
+   "ns_name": "Red Cross Society of Côte d'Ivoire"
+ },
+ {
+   "id": 53,
+   "country": "Croatia",
+   "ns_name": "Croatian Red Cross"
+ },
+ {
+   "id": 54,
+   "country": "Cuba",
+   "ns_name": "Cuban Red Cross"
+ },
+ {
+   "id": 306,
+   "country": "Cuba, Haiti and Dominican Republic Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 228,
+   "country": "Cyprus",
+   "ns_name": "Cyprus Red Cross Society"
+ },
+ {
+   "id": 55,
+   "country": "Czech Republic",
+   "ns_name": "Czech Red Cross"
+ },
+ {
+   "id": 193,
+   "country": "Democratic People's Republic of Korea",
+   "ns_name": "Red Cross Society of the Democratic People's Republic of Korea"
+ },
+ {
+   "id": 187,
+   "country": "Democratic Republic of Congo",
+   "ns_name": "Red Cross of the Democratic Republic of the Congo"
+ },
+ {
+   "id": 56,
+   "country": "Denmark",
+   "ns_name": "Danish Red Cross"
+ },
+ {
+   "id": 57,
+   "country": "Djibouti",
+   "ns_name": "Djibouti Red Crescent Society"
+ },
+ {
+   "id": 58,
+   "country": "Dominica",
+   "ns_name": "Dominica Red Cross Society"
+ },
+ {
+   "id": 59,
+   "country": "Dominican Republic",
+   "ns_name": "Dominican Red Cross"
+ },
+ {
+   "id": 297,
+   "country": "Dubai Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 316,
+   "country": "East Africa Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 60,
+   "country": "Ecuador",
+   "ns_name": "Ecuadorian Red Cross"
+ },
+ {
+   "id": 61,
+   "country": "Egypt",
+   "ns_name": "Egyptian Red Crescent Society"
+ },
+ {
+   "id": 62,
+   "country": "El Salvador",
+   "ns_name": "Salvadorean Red Cross Society"
+ },
+ {
+   "id": 63,
+   "country": "Equatorial Guinea",
+   "ns_name": "Red Cross of Equatorial Guinea"
+ },
+ {
+   "id": 188,
+   "country": "Eritrea",
+   "ns_name": "Red Cross Society of Eritrea"
+ },
+ {
+   "id": 64,
+   "country": "Estonia",
+   "ns_name": "Estonian Red Cross"
+ },
+ {
+   "id": 163,
+   "country": "Eswatini, Kingdom of",
+   "ns_name": "Baphalali Eswatini Red Cross Society"
+ },
+ {
+   "id": 65,
+   "country": "Ethiopia",
+   "ns_name": "Ethiopia Red Cross"
+ },
+ {
+   "id": 349,
+   "country": "Europa Island",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 286,
+   "country": "Europe Region",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 327,
+   "country": "Falkland Islands (Malvinas)",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 328,
+   "country": "Faroe Islands",
+   "ns_name": "Danish Red Cross"
+ },
+ {
+   "id": 66,
+   "country": "Fiji",
+   "ns_name": "The Fiji Red Cross Society"
+ },
+ {
+   "id": 67,
+   "country": "Finland",
+   "ns_name": "Finnish Red Cross"
+ },
+ {
+   "id": 68,
+   "country": "France",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 69,
+   "country": "Gabon",
+   "ns_name": "Gabonese Red Cross Society"
+ },
+ {
+   "id": 70,
+   "country": "Gambia, Republic of The",
+   "ns_name": "The Gambia Red Cross Society"
+ },
+ {
+   "id": 71,
+   "country": "Georgia",
+   "ns_name": "Georgia Red Cross Society"
+ },
+ {
+   "id": 72,
+   "country": "Germany",
+   "ns_name": "German Red Cross"
+ },
+ {
+   "id": 73,
+   "country": "Ghana",
+   "ns_name": "Ghana Red Cross Society"
+ },
+ {
+   "id": 241,
+   "country": "Gibraltar",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 350,
+   "country": "Glorioso Island",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 74,
+   "country": "Greece",
+   "ns_name": "Hellenic Red Cross"
+ },
+ {
+   "id": 329,
+   "country": "Greenland",
+   "ns_name": "Danish Red Cross"
+ },
+ {
+   "id": 75,
+   "country": "Grenada",
+   "ns_name": "Grenada Red Cross Society"
+ },
+ {
+   "id": 330,
+   "country": "Guam",
+   "ns_name": "American Red Cross"
+ },
+ {
+   "id": 76,
+   "country": "Guatemala",
+   "ns_name": "Guatemalan Red Cross"
+ },
+ {
+   "id": 331,
+   "country": "Guernsey",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 77,
+   "country": "Guinea",
+   "ns_name": "Red Cross Society of Guinea"
+ },
+ {
+   "id": 183,
+   "country": "Guinea-Bissau",
+   "ns_name": "Red Cross Society of Guinea-Bissau"
+ },
+ {
+   "id": 79,
+   "country": "Guyana",
+   "ns_name": "The Guyana Red Cross Society"
+ },
+ {
+   "id": 80,
+   "country": "Haiti",
+   "ns_name": "Haitian Red Cross"
+ },
+ {
+   "id": 351,
+   "country": "Hala'ib triangle",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 332,
+   "country": "Heard Island and McDonald Islands",
+   "ns_name": "Australian Red Cross"
+ },
+ {
+   "id": 274,
+   "country": "Holy See (Vatican City State)",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 81,
+   "country": "Honduras",
+   "ns_name": "Honduran Red Cross"
+ },
+ {
+   "id": 82,
+   "country": "Hungary",
+   "ns_name": "Hungarian Red Cross"
+ },
+ {
+   "id": 83,
+   "country": "Iceland",
+   "ns_name": "Icelandic Red Cross"
+ },
+ {
+   "id": 315,
+   "country": "ICRC",
+   "ns_name": "ICRC"
+ },
+ {
+   "id": 289,
+   "country": "IFRC",
+   "ns_name": "IFRC"
+ },
+ {
+   "id": 352,
+   "country": "Ilemi triangle",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 84,
+   "country": "India",
+   "ns_name": "Indian Red Cross Society"
+ },
+ {
+   "id": 317,
+   "country": "Indian Ocean Islands Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 85,
+   "country": "Indonesia",
+   "ns_name": "Indonesian Red Cross Society"
+ },
+ {
+   "id": 203,
+   "country": "Iran, Islamic Republic of",
+   "ns_name": "Red Crescent Society of the Islamic Republic of Iran"
+ },
+ {
+   "id": 87,
+   "country": "Iraq",
+   "ns_name": "Iraqi Red Crescent Society"
+ },
+ {
+   "id": 88,
+   "country": "Ireland",
+   "ns_name": "Irish Red Cross Society"
+ },
+ {
+   "id": 333,
+   "country": "Isle of Man",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 222,
+   "country": "Israel",
+   "ns_name": "Magen David Adom in Israel"
+ },
+ {
+   "id": 89,
+   "country": "Italy",
+   "ns_name": "Italian Red Cross"
+ },
+ {
+   "id": 301,
+   "country": "Jakarta Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 90,
+   "country": "Jamaica",
+   "ns_name": "Jamaican Red Cross"
+ },
+ {
+   "id": 91,
+   "country": "Japan",
+   "ns_name": "Japanese Red Cross Society"
+ },
+ {
+   "id": 334,
+   "country": "Jersey",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 92,
+   "country": "Jordan",
+   "ns_name": "Jordan National Red Crescent Society"
+ },
+ {
+   "id": 353,
+   "country": "Juan de Nova Island",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 201,
+   "country": "Kazakhstan",
+   "ns_name": "Kazakh Red Crescent"
+ },
+ {
+   "id": 93,
+   "country": "Kenya",
+   "ns_name": "Kenya Red Cross Society"
+ },
+ {
+   "id": 94,
+   "country": "Kiribati",
+   "ns_name": "Kiribati Red Cross Society"
+ },
+ {
+   "id": 335,
+   "country": "Kosovo",
+   "ns_name": "The Red Cross of Serbia"
+ },
+ {
+   "id": 354,
+   "country": "Kuril islands",
+   "ns_name": "The Russian Red Cross Society"
+ },
+ {
+   "id": 97,
+   "country": "Kuwait",
+   "ns_name": "Kuwait Red Crescent Society"
+ },
+ {
+   "id": 98,
+   "country": "Kyrgyzstan",
+   "ns_name": "Red Crescent Society of Kyrgyzstan"
+ },
+ {
+   "id": 99,
+   "country": "Lao People's Democratic Republic",
+   "ns_name": "Lao Red Cross"
+ },
+ {
+   "id": 100,
+   "country": "Latvia",
+   "ns_name": "Latvian Red Cross"
+ },
+ {
+   "id": 101,
+   "country": "Lebanon",
+   "ns_name": "Lebanese Red Cross"
+ },
+ {
+   "id": 102,
+   "country": "Lesotho",
+   "ns_name": "Lesotho Red Cross Society"
+ },
+ {
+   "id": 355,
+   "country": "Liancourt Rocks",
+   "ns_name": "The Republic of Korea National Red Cross"
+ },
+ {
+   "id": 103,
+   "country": "Liberia",
+   "ns_name": "Liberian Red Cross Society"
+ },
+ {
+   "id": 204,
+   "country": "Libya",
+   "ns_name": "Libyan Red Crescent"
+ },
+ {
+   "id": 105,
+   "country": "Liechtenstein",
+   "ns_name": "Liechtenstein Red Cross"
+ },
+ {
+   "id": 106,
+   "country": "Lithuania",
+   "ns_name": "Lithuanian Red Cross Society"
+ },
+ {
+   "id": 107,
+   "country": "Luxembourg",
+   "ns_name": "Luxembourg Red Cross"
+ },
+ {
+   "id": 279,
+   "country": "Macao",
+   "ns_name": "Macau Red Cross"
+ },
+ {
+   "id": 109,
+   "country": "Madagascar",
+   "ns_name": "Malagasy Red Cross Society"
+ },
+ {
+   "id": 110,
+   "country": "Malawi",
+   "ns_name": "Malawi Red Cross Society"
+ },
+ {
+   "id": 111,
+   "country": "Malaysia",
+   "ns_name": "Malaysian Red Crescent Society"
+ },
+ {
+   "id": 227,
+   "country": "Maldives",
+   "ns_name": "Maldivian Red Crescent"
+ },
+ {
+   "id": 112,
+   "country": "Mali",
+   "ns_name": "Mali Red Cross"
+ },
+ {
+   "id": 113,
+   "country": "Malta",
+   "ns_name": "Malta Red Cross Society"
+ },
+ {
+   "id": 212,
+   "country": "Marshall Islands",
+   "ns_name": "Marshall Islands Red Cross Society"
+ },
+ {
+   "id": 114,
+   "country": "Mauritania",
+   "ns_name": "Mauritanian Red Crescent"
+ },
+ {
+   "id": 115,
+   "country": "Mauritius",
+   "ns_name": "Mauritius Red Cross Society"
+ },
+ {
+   "id": 287,
+   "country": "MENA Region",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 116,
+   "country": "Mexico",
+   "ns_name": "Mexican Red Cross"
+ },
+ {
+   "id": 195,
+   "country": "Micronesia, Federated States of",
+   "ns_name": "Micronesia Red Cross"
+ },
+ {
+   "id": 202,
+   "country": "Moldova, Republic of",
+   "ns_name": "Red Cross Society of the Republic of Moldova"
+ },
+ {
+   "id": 117,
+   "country": "Monaco",
+   "ns_name": "Red Cross of Monaco"
+ },
+ {
+   "id": 194,
+   "country": "Mongolia",
+   "ns_name": "Mongolian Red Cross Society"
+ },
+ {
+   "id": 270,
+   "country": "Montenegro",
+   "ns_name": "Red Cross of Montenegro"
+ },
+ {
+   "id": 336,
+   "country": "Montserrat",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 119,
+   "country": "Morocco",
+   "ns_name": "Moroccan Red Crescent"
+ },
+ {
+   "id": 311,
+   "country": "Moscow Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 120,
+   "country": "Mozambique",
+   "ns_name": "Mozambique Red Cross Society"
+ },
+ {
+   "id": 121,
+   "country": "Myanmar",
+   "ns_name": "Myanmar Red Cross Society"
+ },
+ {
+   "id": 122,
+   "country": "Namibia",
+   "ns_name": "Namibia Red Cross"
+ },
+ {
+   "id": 251,
+   "country": "Nauru",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 356,
+   "country": "Navassa Island",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 123,
+   "country": "Nepal",
+   "ns_name": "Nepal Red Cross Society"
+ },
+ {
+   "id": 124,
+   "country": "Netherlands",
+   "ns_name": "The Netherlands Red Cross"
+ },
+ {
+   "id": 299,
+   "country": "New Delhi Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 125,
+   "country": "New Zealand",
+   "ns_name": "New Zealand Red Cross"
+ },
+ {
+   "id": 126,
+   "country": "Nicaragua",
+   "ns_name": "Nicaraguan Red Cross"
+ },
+ {
+   "id": 127,
+   "country": "Niger",
+   "ns_name": "Red Cross Society of Niger"
+ },
+ {
+   "id": 128,
+   "country": "Nigeria",
+   "ns_name": "Nigerian Red Cross Society"
+ },
+ {
+   "id": 253,
+   "country": "Niue",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 337,
+   "country": "Norfolk Island",
+   "ns_name": "Australian Red Cross"
+ },
+ {
+   "id": 319,
+   "country": "North America and Mexico Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 108,
+   "country": "North Macedonia",
+   "ns_name": "Red Cross of The Republic of North Macedonia"
+ },
+ {
+   "id": 338,
+   "country": "Northern Mariana Islands",
+   "ns_name": "American Red Cross"
+ },
+ {
+   "id": 129,
+   "country": "Norway",
+   "ns_name": "Norwegian Red Cross"
+ },
+ {
+   "id": 258,
+   "country": "Oman",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 131,
+   "country": "Pakistan",
+   "ns_name": "Pakistan Red Crescent"
+ },
+ {
+   "id": 130,
+   "country": "Palau",
+   "ns_name": "Palau Red Cross Society"
+ },
+ {
+   "id": 205,
+   "country": "Palestine",
+   "ns_name": "The Palestine Red Crescent Society"
+ },
+ {
+   "id": 132,
+   "country": "Panama",
+   "ns_name": "Red Cross Society of Panama"
+ },
+ {
+   "id": 133,
+   "country": "Papua New Guinea",
+   "ns_name": "Papua New Guinea Red Cross Society"
+ },
+ {
+   "id": 357,
+   "country": "Paracel Islands",
+   "ns_name": "Red Cross Society of China"
+ },
+ {
+   "id": 134,
+   "country": "Paraguay",
+   "ns_name": "Paraguayan Red Cross"
+ },
+ {
+   "id": 135,
+   "country": "Peru",
+   "ns_name": "Peruvian Red Cross"
+ },
+ {
+   "id": 136,
+   "country": "Philippines",
+   "ns_name": "Philippine Red Cross"
+ },
+ {
+   "id": 256,
+   "country": "Pitcairn",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 199,
+   "country": "Poland",
+   "ns_name": "Polish Red Cross"
+ },
+ {
+   "id": 138,
+   "country": "Portugal",
+   "ns_name": "Portuguese Red Cross"
+ },
+ {
+   "id": 257,
+   "country": "Puerto Rico",
+   "ns_name": "American Red Cross"
+ },
+ {
+   "id": 139,
+   "country": "Qatar",
+   "ns_name": "Qatar Red Crescent Society"
+ },
+ {
+   "id": 192,
+   "country": "Republic of Korea",
+   "ns_name": "The Republic of Korea National Red Cross"
+ },
+ {
+   "id": 141,
+   "country": "Romania",
+   "ns_name": "Romanian Red Cross"
+ },
+ {
+   "id": 142,
+   "country": "Russian Federation",
+   "ns_name": "The Russian Red Cross Society"
+ },
+ {
+   "id": 143,
+   "country": "Rwanda",
+   "ns_name": "Rwandan Red Cross"
+ },
+ {
+   "id": 295,
+   "country": "Sahel Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 262,
+   "country": "Saint Helena",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 177,
+   "country": "Saint Kitts and Nevis",
+   "ns_name": "Saint Kitts and Nevis Red Cross Society"
+ },
+ {
+   "id": 178,
+   "country": "Saint Lucia",
+   "ns_name": "Saint Lucia Red Cross"
+ },
+ {
+   "id": 179,
+   "country": "Saint Vincent and the Grenadines",
+   "ns_name": "Saint Vincent and the Grenadines Red Cross"
+ },
+ {
+   "id": 147,
+   "country": "Samoa",
+   "ns_name": "Samoa Red Cross Society"
+ },
+ {
+   "id": 260,
+   "country": "San Marino",
+   "ns_name": "Red Cross of the Republic of San Marino"
+ },
+ {
+   "id": 185,
+   "country": "Sao Tome and Principe",
+   "ns_name": "Sao Tome and Principe Red Cross"
+ },
+ {
+   "id": 149,
+   "country": "Saudi Arabia",
+   "ns_name": "Saudi Red Crescent Authority"
+ },
+ {
+   "id": 358,
+   "country": "Scarborough Reef",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 150,
+   "country": "Senegal",
+   "ns_name": "Senegalese Red Cross Society"
+ },
+ {
+   "id": 359,
+   "country": "Senkaku Islands",
+   "ns_name": "Japanese Red Cross Society"
+ },
+ {
+   "id": 271,
+   "country": "Serbia",
+   "ns_name": "The Red Cross of Serbia"
+ },
+ {
+   "id": 151,
+   "country": "Seychelles",
+   "ns_name": "Seychelles Red Cross Society"
+ },
+ {
+   "id": 152,
+   "country": "Sierra Leone",
+   "ns_name": "Sierra Leone Red Cross Society"
+ },
+ {
+   "id": 153,
+   "country": "Singapore",
+   "ns_name": "Singapore Red Cross Society"
+ },
+ {
+   "id": 154,
+   "country": "Slovakia",
+   "ns_name": "Slovak Red Cross"
+ },
+ {
+   "id": 155,
+   "country": "Slovenia",
+   "ns_name": "Slovenian Red Cross"
+ },
+ {
+   "id": 156,
+   "country": "Solomon Islands",
+   "ns_name": "The Solomon Islands Red Cross"
+ },
+ {
+   "id": 157,
+   "country": "Somalia",
+   "ns_name": "Somali Red Crescent Society"
+ },
+ {
+   "id": 158,
+   "country": "South Africa",
+   "ns_name": "The South African Red Cross Society"
+ },
+ {
+   "id": 304,
+   "country": "South America Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 312,
+   "country": "South Caucasus Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 339,
+   "country": "South Georgia and the South Sandwich Island",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 290,
+   "country": "South Sudan",
+   "ns_name": "South Sudan Red Cross"
+ },
+ {
+   "id": 291,
+   "country": "Southern Africa Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 303,
+   "country": "Southern Cone Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 159,
+   "country": "Spain",
+   "ns_name": "Spanish Red Cross"
+ },
+ {
+   "id": 360,
+   "country": "Spratly Islands",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 160,
+   "country": "Sri Lanka",
+   "ns_name": "The Sri Lanka Red Cross Society"
+ },
+ {
+   "id": 161,
+   "country": "Sudan",
+   "ns_name": "The Sudanese Red Crescent"
+ },
+ {
+   "id": 180,
+   "country": "Suriname",
+   "ns_name": "Suriname Red Cross"
+ },
+ {
+   "id": 302,
+   "country": "Suva Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 164,
+   "country": "Sweden",
+   "ns_name": "Swedish Red Cross"
+ },
+ {
+   "id": 165,
+   "country": "Switzerland",
+   "ns_name": "Swiss Red Cross"
+ },
+ {
+   "id": 206,
+   "country": "Syrian Arab Republic",
+   "ns_name": "Syrian Arab Red Crescent"
+ },
+ {
+   "id": 167,
+   "country": "Tajikistan",
+   "ns_name": "Red Crescent Society of Tajikistan"
+ },
+ {
+   "id": 189,
+   "country": "Tanzania, United Republic of",
+   "ns_name": "Tanzania Red Cross National Society"
+ },
+ {
+   "id": 169,
+   "country": "Thailand",
+   "ns_name": "The Thai Red Cross Society"
+ },
+ {
+   "id": 210,
+   "country": "Timor-Leste",
+   "ns_name": "Timor-Leste Red Cross Society"
+ },
+ {
+   "id": 170,
+   "country": "Togo",
+   "ns_name": "Togolese Red Cross"
+ },
+ {
+   "id": 340,
+   "country": "Tokelau",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 171,
+   "country": "Tonga",
+   "ns_name": "Tonga Red Cross Society"
+ },
+ {
+   "id": 172,
+   "country": "Trinidad and Tobago",
+   "ns_name": "The Trinidad and Tobago Red Cross Society"
+ },
+ {
+   "id": 361,
+   "country": "Tromelin Island",
+   "ns_name": "French Red Cross"
+ },
+ {
+   "id": 296,
+   "country": "Tunis Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 173,
+   "country": "Tunisia",
+   "ns_name": "Tunisian Red Crescent"
+ },
+ {
+   "id": 174,
+   "country": "Turkey",
+   "ns_name": "Turkish Red Crescent Society"
+ },
+ {
+   "id": 175,
+   "country": "Turkmenistan",
+   "ns_name": "Red Crescent Society of Turkmenistan"
+ },
+ {
+   "id": 341,
+   "country": "Turks and Caicos islands",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 213,
+   "country": "Tuvalu",
+   "ns_name": "Tuvalu Red Cross Society"
+ },
+ {
+   "id": 176,
+   "country": "Uganda",
+   "ns_name": "The Uganda Red Cross Society"
+ },
+ {
+   "id": 1,
+   "country": "Ukraine",
+   "ns_name": "Ukrainian Red Cross Society"
+ },
+ {
+   "id": 2,
+   "country": "United Arab Emirates",
+   "ns_name": "Red Crescent Society of the United Arab Emirates"
+ },
+ {
+   "id": 3,
+   "country": "United Kingdom",
+   "ns_name": "British Red Cross"
+ },
+ {
+   "id": 4,
+   "country": "United States",
+   "ns_name": "American Red Cross"
+ },
+ {
+   "id": 250,
+   "country": "United States Minor Outlying Islands",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 342,
+   "country": "United States Virgin Islands",
+   "ns_name": "American Red Cross"
+ },
+ {
+   "id": 5,
+   "country": "Uruguay",
+   "ns_name": "Uruguayan Red Cross"
+ },
+ {
+   "id": 6,
+   "country": "Uzbekistan",
+   "ns_name": "Red Crescent Society of Uzbekistan"
+ },
+ {
+   "id": 7,
+   "country": "Vanuatu",
+   "ns_name": "Vanuatu Red Cross Society"
+ },
+ {
+   "id": 8,
+   "country": "Venezuela",
+   "ns_name": "Venezuelan Red Cross"
+ },
+ {
+   "id": 191,
+   "country": "Viet Nam",
+   "ns_name": "Vietnam Red Cross Society"
+ },
+ {
+   "id": 294,
+   "country": "West Coast Country Cluster",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 269,
+   "country": "Western Sahara",
+   "ns_name": "not_applicable"
+ },
+ {
+   "id": 10,
+   "country": "Yemen",
+   "ns_name": "Yemen Red Crescent Society"
+ },
+ {
+   "id": 12,
+   "country": "Zambia",
+   "ns_name": "Zambia Red Cross Society"
+ },
+ {
+   "id": 13,
+   "country": "Zimbabwe",
+   "ns_name": "Zimbabwe Red Cross Society"
+ }
+]

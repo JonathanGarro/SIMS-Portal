@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		{# Left Column #}
+		<div class="col-md-8">
+		  		<h3 class="mb-3 text-danger">Log New Emergency Response Record</h3>
+				  <form action="/create/emergency" method="POST" class="mx-auto p-4 bg-light text-light rounded-3">
+					  		{% with messages = get_flashed_messages(category_filter=['emergency']) %}
+						  		{% if messages %}
+						  		<div class="alert alert-danger" role="alert">
+							  		<strong>You have errors in your registration:</strong>
+								  		<br><br>
+								  		<ul>
+								  		{% for message in messages %}
+									  		<li>{{message}}</li>
+									  	{% endfor %}
+								  		</ul>
+								  		<span>If you're still having trouble registering after correcting these issues, please contact a <a href="mailto:jonathan.garro@redcross.org">site administrator</a>.</span>
+						  		</div>
+						  		{% endif %}
+					  		{% endwith %}
+					  		<div class="row">
+						  		<div class="col-md-6">
+									<div class="form-group pb-4">
+						  				<span class="text-danger"><label class="pb-2" for="emergency_name">Name of Emergency </label>  <span tabindex="0" data-toggle="tooltip" title="The emergency name here should match the name used in GO">ⓘ</span></span>
+						  				<input type="text" name="emergency_name" class="form-control">
+									</div>
+						  		</div>
+						  		<div class="col">
+					  				<div class="form-group pb-4">
+						  				<label class="pb-2 text-danger" for="emergency_type_id">Emergency Type</label>
+							  				<select class="form-select" id="emergency_type_id" name="emergency_type_id">
+												<option value="" selected disabled hidden>Select One</option>
+												<option value="66">Biological</option>
+												<option value="57">Chemical</option>
+												<option value="7">Civil Unrest</option>
+												<option value="14">Cold Wave</option>
+												<option value="6">Complex Emergency</option>
+												<option value="4">Cyclone</option>
+												<option value="20">Drought</option>
+												<option value="2">Earthquake</option>
+												<option value="1">Epidemic</option>
+												<option value="15">Fire</option>
+												<option value="12">Flood</option>
+												<option value="21">Food Insecurity</option>
+												<option value="19">Heat Wave</option>
+												<option value="62">Insect Infestation</option>
+												<option value="24">Landslide</option>
+												<option value="13">Other</option>
+												<option value="27">Pluvial/Flash Flood</option>
+												<option value="5">Population Movement</option>
+												<option value="67">Radiological Emergency</option>
+												<option value="23">Storm Surge</option>
+												<option value="54">Transport Accident</option>
+												<option value="68">Transport Emergency</option>
+												<option value="11">Tsunami</option>
+												<option value="8">Volcanic Eruption</option>
+							  				</select>
+					  				</div>
+					  		</div>
+							</div>
+					  			<div>
+						  		<div class="row">
+							  		<div class="col-md-6">
+						  				<div class="form-group pb-4">
+						  				<span class="text-danger"><label class="pb-2" for="emergency_go_id">Emergency GO ID</label>  <span tabindex="0" data-toggle="tooltip" title="Input the unique identifier associated with the emergency in the GO Platform.">ⓘ</span></span>
+						  				<input type="number" name="emergency_go_id" class="form-control">
+							  		</div>
+						  		</div>
+							  		<div class="col">
+							  			<span class="text-danger"><label class="pb-2" for="emergency_glide">GLIDE Number</label>  <span tabindex="0" data-toggle="tooltip" title="Input the GLIDE number, if available.">ⓘ</span></span>
+							  		<input type="text" name="emergency_glide" class="form-control">
+							  		</div>
+									</div>
+								</div>
+					  		<div class="form-group pb-4">
+						  		<label class="pb-2 text-danger" for="emergency_location_id">Emergency Location (Primary)</label>
+							  		<select class="form-select" id="" name="emergency_location_id">
+								  		{% for country in countries %}
+									  		<option value="{{country.ns_go_id}}">{{country.country}}</option>
+								  		{% endfor %}
+							  		</select>
+					  		</div>
+						  	<div class="form-group pb-4">
+								<span class="text-danger"><label class="pb-2" for="activation_details">Activation Details</label>  <span tabindex="0" data-toggle="tooltip" title="Provide information about the inital activation - who made the decision, when, etc.">ⓘ</span></span>
+								<textarea class="form-control" id="" name="activation_details" rows="3"></textarea>
+						  	</div>
+							 
+					  		<input type="submit" value="Save Emergency" class="btn btn-danger my-4">
+				  		</form>
+		</div>
+		{# Left Column #}
+		<div class="col">
+		<h4> Latest GO Events</h4>
+		  <table class="table table-striped">
+			<thead>
+			  <tr>
+				<th scope="col">ID</th>
+				<th scope="col">Name</th>
+			  </tr>
+			</thead>
+			<tbody>
+			  <tr>
+				<th scope="row">1324</th>
+				<th>Mozambique Floods</th>
+			  </tr>
+			  <tr>
+				<th scope="row">1238</th>
+				<th>Myanmar Population Movement</th>
+			  </tr>
+			  <tr>
+				<th scope="row">1389</th>
+				<th>Paraguay Drought</th>
+			  </tr>
+			</tbody>
+		  </table>
+		  <a href="#" class="btn btn-secondary btn-sm mt-3">Get Python Snippet for this API Call</a>
+		</div>
+	  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<h2 class="mt-5">Active Members</h2>
+	<p class="text-secondary"><a href="/register" class="text-danger">Learn more</a> about SIMS membership</p>
+	<div class="row row-cols-5 row-cols-md-5 g-4 mt-4">
+		{% for member in active_members %}
+			  <div class="col d-flex align-items-stretch">
+				<div class="card">
+				  <img src="/static/uploaded_files/headshots/{{member.avatar}}" class="card-img-top" alt="...">
+				  <div class="card-body d-flex flex-column">
+					<h5 class="card-title mt-auto">{{member.first_name}} {{member.last_name}}</h5>
+					<h6 class="text-danger">{{member.ns_name}}</h6>
+					{#
+					{% if member.job_title==None %}
+					<h6> </h6>
+					{% else %}
+					<h6>{{member.job_title}}</h6>
+					{% endif %}
+					#}
+					<p class="card-text"></p>
+				  </div>
+				</div>
+			  </div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock content %}

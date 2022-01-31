@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row mb-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+
+			<div class="row">
+			<img src="{{avatar}}" class="" style="object-fit:none;object-position:center;width:100%;padding-bottom:30px;">
+			</div>
+			<div class="row">
+				<h3 class="text-danger">{{ member.first_name }} {{ member.last_name }}</h3>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">Role</h5>
+				<h4>{{ member.job_title }}</h4>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">National Society</h5>
+				<h4>{{ member.national_society.ns_name }}</h4>
+			</div>
+			<div class="list-group mt-5">
+			  <a href="/edit/profile/{{member.id}}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
+			  <a href="/edit/avatar/{{member.id}}" class="list-group-item list-group-item-action text-secondary">Upload Avatar</a>
+			  <a href="#" class="list-group-item list-group-item-action text-secondary">Assign to Disaster</a>
+			  <a href="#" class="list-group-item list-group-item-action text-secondary">Add to Portfolio</a>
+			  <a href="#" class="list-group-item list-group-item-action text-danger">Delete Member</a>
+			</div>
+		</div>
+		</div>
+		<div class="col mx-4">
+			<h4 class="mb-3">Operations Supported</h4>
+			<table class="table">
+			  <thead class="">
+				<tr>
+				  <th>Event</th>
+				  <th>Role</th>
+				  <th>Start Date</th>
+			
+				</tr>
+			  </thead>
+			  <tbody>
+				  {% for assignment in assignments %}
+				  <tr>
+					<td class="fw-bold"><a href="/view/emergency/{{assignment.emergency_id}}" class="link-danger">{{assignment.emergency_name}}</a></td>
+					<td>{{assignment.role}}</td>
+					<td>{{assignment.start_date}}</td>  
+				  </tr>
+				  {% endfor %}
+			  </tbody>
+			</table>
+			<h4 class="mt-5 mb-3">Portfolio Highlights</h4>
+			PLACEHOLDER
+			<h4 class="mt-5 mb-3">Achievements</h4>
+			<img src="/static/assets/img/achievements/achievement-newbie-2022.png" height="150px">
+		</div>
+		
+	</div>
+</div>
+{% endblock content %}

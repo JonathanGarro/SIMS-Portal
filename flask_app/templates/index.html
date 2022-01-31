@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+	<div class="row my-5">
+		<div class="col jumbotron">
+		<h3 class="text-secondary">The Red Cross Red Crescent</h3>
+		  <h1 class="display-6 pb-4">Surge Information Management System</h1>
+		  <p class="lead">SIMS is a global network made up of <span class="text-danger">{{active_member_count.DistinctActiveUsers}} active members</span> from <span class="text-danger">{{distinct_ns_count.DistinctNS}} national societies</span>. (This is live data from the DB). Members support global disaster response operations by providing information management services and products. We maintain a roster of specialists across several key areas of focus, including GIS, data collection and management, data visualization, and more.</p> 
+		  <a href="/about" class="btn btn-danger mt-3">Learn More</a>
+		</div>
+		<div class="col-md-4 mr-4">
+		<img src="/static/assets/img/example-header.png" class="img-fluid mb-4 rounded-3" alt="Responsive image">
+		</div>
+	</div>
+	
+	<div class="container py-4" id="">
+		<h3 class="pb-3 border-bottom text-secondary">SIMS Functions</h3>
+		<div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+		  <div class="feature col">
+			<img src="/static/assets/img/deploy.png" width="75" height="75" class="img-fluid mb-4" alt="Responsive image">
+			<h4>Field-Based Deployments</h4>
+			<p>SIMS members support disaster response operations through in-person deployments. We frequently respond to surge requests to provide information management through a variety of roles.</p>
+		  </div>
+		  <div class="feature col">
+			<img src="/static/assets/img/remote.png" width="75" height="75" class="img-fluid mb-4" alt="Responsive image">
+			<h4>Remote Support</h4>
+			<p>Our global network of information management specialists are ready to support tasks that can be done remotely. </p>
+		  </div>
+		  <div class="feature col">
+			<img src="/static/assets/img/sme.png" width="75" height="75" class="img-fluid mb-4" alt="Responsive image">
+			<h4>Subject Matter Experts</h4>
+			<p>We maintain a roster of experts in a number of technical areas, including geographic information systems, mobile data collection, data management, and more. These experts can serve as technical advisors on blue-sky projects.</p>
+		  </div>
+		</div>
+	  </div>
+	
+	<h3 class="text-secondary">Latest Responses</h3>
+	<div id="carouselExampleIndicators" class="carousel slide mt-4 mb-5" data-ride="carousel">
+  	<ol class="carousel-indicators">
+		<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+  	</ol>
+  	<div class="carousel-inner">
+		<div class="carousel-item active">
+	  	<img class="d-block w-100 rounded rounded-5" src="/static/assets/img/carousel/p-PAK1591_JPG.jpg" alt="First slide">
+		</div>
+		<div class="carousel-item">
+	  	<img class="d-block w-100 rounded rounded-5" src="/static/assets/img/carousel/p-PAK1600_JPG.jpg" alt="Second slide">
+		</div>
+		<div class="carousel-item">
+	  	<img class="d-block w-100 rounded rounded-5" src="/static/assets/img/carousel/p-PAK1604_JPG.jpg" alt="Third slide">
+		</div>
+  	</div>
+  	<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+  	</a>
+  	<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+  	</a>
+	</div>
+
+</div>
+{% endblock content %}

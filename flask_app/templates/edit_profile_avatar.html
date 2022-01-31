@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row pb-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+			
+			<div class="row">
+			<img src="{{avatar}}" class="" style="object-fit:none;object-position:center;width:100%;padding-bottom:30px;">
+			</div>
+			<div class="row">
+				<h3 class="text-danger">{{ member.first_name }} {{ member.last_name }}</h3>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">Role</h5>
+				<h4>{{ member.job_title }}</h4>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">National Society</h5>
+				<h4>{{ member.national_society.ns_name }}</h4>
+			</div>
+				<div class="list-group mt-5">
+  				<a href="/edit/profile/{{member.id}}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
+  				<a href="/edit/avatar/{{member.id}}" class="list-group-item list-group-item-secondary">Upload Avatar</a>
+  				<a href="#" class="list-group-item list-group-item-action text-secondary">Assign to Disaster</a>
+				<a href="#" class="list-group-item list-group-item-action text-secondary">Add to Portfolio</a>
+  				<a href="#" class="list-group-item list-group-item-action text-danger">Delete Member</a>
+				</div>
+			</div>
+		</div>
+		<div class="col mx-4">
+			<h3 class="text-danger py-3">Upload an Avatar</h3>
+			<p>The profile photo you submit is linked to your account, and will be visible to the public. Select an image where you are in the middle of the frame, without anyone else visible. For best performance, use an image that is about a 2:1 ratio of total image to your face, and keep the total image under about 400px.</p>
+			
+			<p class="text-danger font-italic">Please include your name in the image's filename.</p>
+			
+			
+			<div class="py-4">
+			<form method="POST" action="/edit/profile/upload_avatar" enctype="multipart/form-data">
+				<div class="mb-3">
+  					<input class="form-control mb-4" type="file" id="formFile" name="avatar" accept=".png,.jpg,.jpeg,.gif">
+  					<input type="submit" class="btn btn-danger" value="Upload">
+				</div>
+			</form>
+
+			<h5 class="text-secondary py-4">Recommended Avatar Format</h5>
+			<img src="/static/assets/img/avatar_guide.png">
+
+
+			</div>
+		</div>
+		
+	</div>
+</div>
+{% endblock content %}

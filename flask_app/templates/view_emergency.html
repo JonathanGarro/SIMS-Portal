@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col col-md-4">
+			<div class="card border-0 p-4 bg-light">
+				<h2 class="text-danger mb-1">{{ emergency.emergency_name }}</h2>
+				<h4 class="text-secondary mb-4">{{ emergency.emergency_type.emergency_type_name }}</h4>
+				<div class="list-group">
+					<a href="#" class="list-group-item list-group-item-action text-secondary">Log New Assignment</a>
+  					<a href="#" class="list-group-item list-group-item-action text-secondary">Create Learning Review</a>
+  					<a href="https://go.ifrc.org/emergencies/{{ emergency.emergency_go_id }}" class="list-group-item list-group-item-action text-secondary">View Emergency on GO</a>
+  					<a href="{{ url_for('edit_emergency', id=emergency.id) }}" class="list-group-item list-group-item-action text-secondary">Edit Emergency</a>
+  					<a href="#" class="list-group-item list-group-item-action text-danger">Delete Emergency</a>
+				</div>
+			</div>
+			<div class="card border-0 p-4 bg-light">
+				<h5 class="text-secondary py-3">Response Tools</h5>
+				<div class="row justify-content-center">
+					<div class="col" align="center"><img src="/static/assets/img/slack.png" height="50px"></div>
+					<div class="col" align="center"><img src="/static/assets/img/dropbox.png" height="50px"></div>
+					<div class="col" align="center"><img src="/static/assets/img/trello.png" height="50px"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col mx-4">
+			<h3 class="text-danger py-4">Response Overview</h3>
+			<h5>Activation Details</h5>
+			<p class="pb-3">{{emergency.activation_details}}</p>
+			{% if assignments %}
+			<h5>SIMS Support</h5>
+			<table class="table table-striped">
+			  <thead class="text-danger">
+				<tr>
+					  <th scope="col">Member</th>
+					  <th scope="col">Society</th>
+					  <th scope="col">Role</th>
+					  <th scope="col">Start</th>
+					  <th scope="col">End</th>
+				</tr>
+			  </thead>
+			  <tbody>
+			{% for assignment in assignments %}
+				<tr>
+					<td class="fw-bold">{{assignment.first_name}} {{assignment.last_name}}</td>
+					<td>{{assignment.ns_name}}</td>
+					<td>{{assignment.role}}</td>
+					<td>{{assignment.start_date}}</td>
+					<td>{{assignment.end_date}}</td>
+				</tr>
+			{% endfor %}
+			  </tbody>
+			</table>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

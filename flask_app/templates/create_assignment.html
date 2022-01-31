@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+	a {
+		color: #CE454A
+	}
+	ul.timeline {
+		list-style-type: none;
+		position: relative;
+	}
+	ul.timeline:before {
+		content: ' ';
+		background: #d4d9df;
+		display: inline-block;
+		position: absolute;
+		left: 29px;
+		width: 2px;
+		height: 0%;
+		z-index: 400;
+	}
+	ul.timeline > li {
+		margin: 40px 0;
+		padding-left: 20px;
+	}
+	ul.timeline > li:before {
+		content: ' ';
+		background: white;
+		display: inline-block;
+		position: absolute;
+		border-radius: 50%;
+		border: 3px solid #CE454A;
+		left: 20px;
+		width: 20px;
+		height: 20px;
+		z-index: 400;
+	}
+</style>
+<div class="container">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="card border-0 p-4 ">
+				<h3 class="text-danger pb-4">Assignment Process</h3>
+				<ul class="timeline">
+					<li>
+						<h5 class="text-danger">Assign Member</h5>
+						<p>Use this page to connect the active SIMS member (they need an account on this site) to the disaster they're supporting.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Member Provides Time-Bound Support</h5>
+						<p>Set the estimated assignment end date while they are deployed or remotely supporting.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Closeout Assignment</h5>
+						<p>As members rotate through their assignments, return to the portal to mark them as complete.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Contribute to Learning</h5>
+						<p>Members that provide support to an emergency will be asked to provide some feedback about how the experience went and what could be improved for next time.</a></p>
+					</li>
+				</ul>
+			</div>
+</div>
+		<div class="col">
+			<form action="/create/assignment" method="POST" class="mx-auto p-4 bg-light text-light rounded-3">
+				{% with messages = get_flashed_messages(category_filter=['create_assignment']) %}
+					{% if messages %}
+					<div class="alert alert-danger" role="alert">
+						<strong>You have errors in your assignment:</strong>
+							<br><br>
+							<ul>
+							{% for message in messages %}
+								<li>{{message}}</li>
+							{% endfor %}
+							</ul>
+							<span>If you're still having trouble creating an assignment after correcting these issues, please contact a <a href="mailto:jonathan.garro@redcross.org">site administrator</a>.</span>
+					</div>
+					{% endif %}
+				{% endwith %}
+				<div class="row">
+					<h4 class="text-danger pb-3">Assignment Information</h4>
+						<div class="col-md-6">
+							<div class="form-group pb-4">
+								<span class="text-danger"><label class="pb-2 text-danger" for="member_id">Member</label>  <span tabindex="0" data-toggle="tooltip" title="If you don't see the member's name, they either have not registered or not been marked as active. Reach out to a site administrator for help if you think he or she should be on the list.">ⓘ</span></span>
+									<select class="form-select" id="" name="member_id">
+										{% for member in active_members %}
+											<option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+										{% endfor %}
+									</select>
+							</div>
+					  </div>
+					<div class="col">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="emergency_id">Emergency</label>
+								<select class="form-select" id="" name="emergency_id">
+									{% for emergency in emergencies %}
+										<option value="{{emergency.id}}">{{emergency.emergency_name}}</option>
+									{% endfor %}
+								</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group pb-4">
+						<label class="pb-2 text-danger" for="role">Role</label>
+							<select class="form-select" id="role" name="role">
+								<option value="" selected disabled hidden>Select One</option>
+								<option value="SIMS Remote Coordinator">SIMS Remote Coordinator</option>
+								<option value="Information Management Coordinator">Information Management Coordinator</option>
+								<option value="Primary Data Collection Officer">Primary Data Collection Officer</option>
+								<option value="Mapping and Visualization Officer">Mapping and Visualization Officer</option>
+								<option value="General IM Services">General IM Support</option>
+							</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="start_date">Start Date</label>
+							<input type="date" style="height:38px" name="start_date" class="form-control" value="2022-01-01">
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							<label class="pb-2 text-danger" for="end_date">End Date</label>
+							<input type="date" style="height:38px" name="end_date" class="form-control" value="2022-01-01">
+						</div>
+					</div>
+					
+				</div>
+				<div class="form-group pb-4">
+					<span class="text-danger"><label class="pb-2" for="assignment_details">Assignment Details</label>  <span tabindex="0" data-toggle="tooltip" title="Provide information about what the member is doing, such as providing dedicated remote support full-time or part-time, makiing maps, creating mobile data collection processes, etc.">ⓘ</span></span>
+					<textarea class="form-control" id="" name="assignment_details" rows="3"></textarea>
+				  </div>
+				<input type="hidden" id="submitterID" name="mem_id" value="{{member.id}}">
+				<input type="submit" value="Create Assignment" class="btn btn-danger">
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

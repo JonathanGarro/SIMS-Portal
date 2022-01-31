@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-8">
+			<h5 class="text-secondary">SIMS Profile for</h5>
+			<h2>{{ ns_info.ns_name }}</h2>
+			<a href="https://go.ifrc.org/countries/{{ns_info.ns_go_id}}" class="btn btn-danger btn-sm mt-2">{{ns_info.country}} on GO</a>
+		</div>
+
+	<div class="col">
+		<h4>SIMS Members from {{ns_info.country}}</h4>
+		<table class="table table-striped">
+  		<thead>
+			<tr>
+	  		<th scope="col">Name</th>
+	  		<th scope="col">Role</th>
+			</tr>
+  		</thead>
+  		<tbody>
+			  {% for member in ns_info.members %}
+			<tr>
+				  <td>{{member.first_name}} {{member.last_name}}</td>
+				  <td>{{member.job_title}}</td>
+			</tr>
+			  {% endfor %}
+  		</tbody>
+		</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
