@@ -3,7 +3,7 @@ import math
 
 api_call = 'https://goadmin.ifrc.org/api/v2/country/'
 
-get_variable = 'name'
+get_variable = 'location'
 
 r = requests.get(api_call).json()
 
