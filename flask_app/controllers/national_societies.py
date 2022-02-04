@@ -11,7 +11,6 @@ def ns_profile(id):
 	member_data = {
 		'id': session['member_id']
 	}
-	
 	if 'member_id' not in session:
 		return redirect('/logout')
 		

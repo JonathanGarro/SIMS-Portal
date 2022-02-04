@@ -13,16 +13,10 @@ bcrypt = Bcrypt(app)
 
 app.config['HEADSHOT_FOLDER'] = "flask_app/static/uploaded_files/headshots/"
 
-@app.route('/layout')
-def layout_preview():
-	return render_template('layout.html')
-
-
 @app.route('/index')
 @app.route('/')
 def index():
-	# clear out the session cache to avoid member data issues on-load
-	session.clear()
+	session.clear() # clear out the session cache to avoid member data issues on-load
 
 	active_member_count = member.Member.get_all_active_member_count()
 	distinct_ns_count = national_society.National_Society.get_all_active_ns_count()
@@ -44,6 +38,67 @@ def portfolio_page():
 @app.route('/about')
 def about_page():
 	return render_template('about.html')
+
+@app.route('/register', methods=('GET','POST'))
+def register():
+	return render_template('register.html', countries = national_society.National_Society.get_all_national_societies())
+
+@app.route('/new/member', methods=['POST'])
+def create_new_member():
+	print("Running registration validation")
+	if not member.Member.validate_register(request.form):
+		print("Registration validation failed")
+		return redirect('/register')
+	
+	data = {
+		"first_name": request.form['first_name'],
+		"last_name": request.form['last_name'],
+		"gender": request.form['gender'],
+		"national_society_id": request.form['national_society_id'],
+		"email": request.form['email'],
+		"password": bcrypt.generate_password_hash(request.form['password'])
+	}
+	
+	id = member.Member.register_new_member(data)
+	session['member_id'] = id
+	return redirect('/dashboard')
+
+@app.route('/login')
+def login_page():
+	return render_template('login.html')
+
+@app.route('/login/member', methods=['POST'])
+def login():
+	user = member.Member.get_member_by_email(request.form)
+	
+	if not user:
+		flash("Invalid Email","login")
+		return redirect('/login')
+	
+	if not bcrypt.check_password_hash(user.password, request.form['password']):
+		flash("Invalid Password","login")
+		return redirect('/login')
+	
+	session['member_id'] = user.id
+	flash(f"Welcome, ", "logged_in")
+	return redirect('/dashboard')
+
+@app.route('/dashboard')
+def dashboard():
+	if 'member_id' not in session:
+		return redirect('/logout')
+	
+	member_data = {
+		'id': session['member_id']
+	}
+	active_assignments = assignment.Assignment.get_active_assignments_with_member()
+	countries = national_society.National_Society.get_all_national_societies()
+	latest_emergencies = emergency.Emergency.get_recent_emergencies()
+	count_active_assignments = assignment.Assignment.get_active_assignment_count()
+	current_member = member.Member.get_member_by_id(member_data)
+	surge_alerts = alert.Alert.get_all_alerts()
+	
+	return render_template('dashboard.html', member=current_member, countries=countries, latest_emergencies=latest_emergencies, active_assignments=active_assignments, count_active_assignments=count_active_assignments, surge_alerts=surge_alerts)
 
 @app.route('/profile')
 def profile_page():
@@ -122,67 +177,6 @@ def upload_avatar():
 		}
 		this_member = member.Member.get_member_by_id_with_ns(member_data)
 	return redirect(url_for('profile_page'))
-
-@app.route('/register', methods=('GET','POST'))
-def register():
-	return render_template('register.html', countries = national_society.National_Society.get_all_national_societies())
-
-@app.route('/new/member', methods=['POST'])
-def create_new_member():
-	print("Running registration validation")
-	if not member.Member.validate_register(request.form):
-		print("Registration validation failed")
-		return redirect('/register')
-	
-	data = {
-		"first_name": request.form['first_name'],
-		"last_name": request.form['last_name'],
-		"gender": request.form['gender'],
-		"national_society_id": request.form['national_society_id'],
-		"email": request.form['email'],
-		"password": bcrypt.generate_password_hash(request.form['password'])
-	}
-	
-	id = member.Member.register_new_member(data)
-	session['member_id'] = id
-	return redirect('/dashboard')
-	
-@app.route('/dashboard')
-def dashboard():
-	if 'member_id' not in session:
-		return redirect('/logout')
-	
-	member_data = {
-		'id': session['member_id']
-	}
-	active_assignments = assignment.Assignment.get_active_assignments_with_member()
-	countries = national_society.National_Society.get_all_national_societies()
-	latest_emergencies = emergency.Emergency.get_recent_emergencies()
-	count_active_assignments = assignment.Assignment.get_active_assignment_count()
-	current_member = member.Member.get_member_by_id(member_data)
-	surge_alerts = alert.Alert.get_all_alerts()
-	
-	return render_template('dashboard.html', member=current_member, countries=countries, latest_emergencies=latest_emergencies, active_assignments=active_assignments, count_active_assignments=count_active_assignments, surge_alerts=surge_alerts)
-
-@app.route('/login')
-def login_page():
-	return render_template('login.html')
-
-@app.route('/login/member', methods=['POST'])
-def login():
-	user = member.Member.get_member_by_email(request.form)
-	
-	if not user:
-		flash("Invalid Email","login")
-		return redirect('/login')
-	
-	if not bcrypt.check_password_hash(user.password, request.form['password']):
-		flash("Invalid Password","login")
-		return redirect('/login')
-	
-	session['member_id'] = user.id
-	flash(f"Welcome, ", "logged_in")
-	return redirect('/dashboard')
 
 @app.route('/logout')
 def logout():
