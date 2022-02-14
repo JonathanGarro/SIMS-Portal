@@ -75,6 +75,7 @@
 						<div class="form-group pb-4">
 							<label class="pb-2 text-danger" for="national_society_id">National Society Country</label>
 								<select class="form-select" id="" name="national_society_id">
+										<option value="" selected disabled hidden>Select One</option>
 									{% for country in countries %}
 										<option value="{{country.ns_go_id}}">{{country.country}}</option>
 									{% endfor %}

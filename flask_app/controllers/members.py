@@ -27,7 +27,7 @@ def member_page():
 	active_members = member.Member.get_all_active_members()
 	return render_template('members.html', active_members=active_members)
 	
-@app.route('/data')
+@app.route('/data') # placeholder for future d3.js visualizations
 def data_page():
 	return render_template('data_viz.html')
 
