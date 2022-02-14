@@ -4,6 +4,7 @@ from flask_app.models import alert
 import requests
 import math
 import os
+import time
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -18,6 +19,9 @@ get_go.start()
 def get_im_alerts():
 	print("RUNNING CRON JOB\n================\n")
 	alert.Alert.clear_alert_table_before_update() # clear out alerts table before API run
+	print("WAITING 10 SECONDS FOR DATABASE CLEANUP")
+	time.sleep(10)
+	print("DATABASE CLEANUP COMPLETE")
 	
 	api_call = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
 	r = requests.get(api_call).json()
