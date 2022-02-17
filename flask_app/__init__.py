@@ -20,7 +20,7 @@ def get_im_alerts():
 	print("RUNNING CRON JOB\n================\n")
 	alert.Alert.clear_alert_table_before_update() # clear out alerts table before API run
 	print("WAITING 10 SECONDS FOR DATABASE CLEANUP")
-	time.sleep(10)
+	time.sleep(10) # the server seems to hang sometimes and skip this step, adding delay to give it a chance to complete this step before moving forward
 	print("DATABASE CLEANUP COMPLETE")
 	
 	api_call = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
