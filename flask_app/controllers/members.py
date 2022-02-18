@@ -92,13 +92,14 @@ def dashboard():
 		'id': session['member_id']
 	}
 	active_assignments = assignment.Assignment.get_active_assignments_with_member()
+	count_active_assignments = assignment.Assignment.get_active_assignment_count()
 	countries = national_society.National_Society.get_all_national_societies()
 	latest_emergencies = emergency.Emergency.get_recent_emergencies()
-	count_active_assignments = assignment.Assignment.get_active_assignment_count()
 	current_member = member.Member.get_member_by_id(member_data)
 	surge_alerts = alert.Alert.get_all_alerts()
+	all_assignments = assignment.Assignment.get_all_assignments_with_member_and_ns()
 	
-	return render_template('dashboard.html', member=current_member, countries=countries, latest_emergencies=latest_emergencies, active_assignments=active_assignments, count_active_assignments=count_active_assignments, surge_alerts=surge_alerts)
+	return render_template('dashboard.html', member=current_member, countries=countries, latest_emergencies=latest_emergencies, active_assignments=active_assignments, count_active_assignments=count_active_assignments, surge_alerts=surge_alerts, all_assignments=all_assignments)
 
 @app.route('/profile')
 def profile_page():

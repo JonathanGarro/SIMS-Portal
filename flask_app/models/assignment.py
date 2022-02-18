@@ -32,6 +32,12 @@ class Assignment:
 		return results
 	
 	@classmethod
+	def get_all_assignments_with_member_and_ns(cls):
+		query = "SELECT * FROM assignments JOIN members ON member_id = members.id JOIN national_societies ON national_society_id = national_societies.id"
+		results = connectToMySQL(cls.db_name).query_db(query)
+		return results
+	
+	@classmethod
 	def get_active_assignments(cls):
 		query = "SELECT * FROM assignments WHERE end_date > CURDATE()"
 		results = connectToMySQL(cls.db_name).query_db(query)
