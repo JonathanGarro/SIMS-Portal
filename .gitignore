@@ -172,6 +172,7 @@ cython_debug/
 .DS_Store
 .AppleDouble
 .LSOverride
+.nova
 
 # Icon must end with two \r
 Icon
