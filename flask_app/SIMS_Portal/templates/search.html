@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class='col col-md-4'>
+			<div class="card border-0 p-4 bg-light">
+				<h4 class='text-danger mb-5'>Members</h4>
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light rounded-3" novalidate>
+				{{ product_form.hidden_tag() }}
+					<div class="form-group pb-4">
+						{{ member_form.name.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if member_form.name.errors %}
+							{{ member_form.name(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in member_form.name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ member_form.name(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class="form-group pb-4">
+						{{ member_form.skills.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if member_form.skills.errors %}
+							{{ member_form.skills(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in member_form.skills.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ member_form.skills(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class="form-group pb-4">
+						{{ member_form.languages.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if member_form.languages.errors %}
+							{{ member_form.languages(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in member_form.languages.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ member_form.languages(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+				{{ member_form.submit(class="btn btn-outline-danger w-100") }}
+			</div>
+		</div>
+
+		<div class='col col-md-4'>
+			<div class="card border-0 p-4 bg-light">
+				<h4 class='text-danger mb-5'>Emergencies</h4>
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light rounded-3" novalidate>
+				{{ emergency_form.hidden_tag() }}
+				<div class="row">
+					<div class="form-group pb-4">
+						{{ emergency_form.name.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if emergency_form.name.errors %}
+							{{ emergency_form.name(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in emergency_form.name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ emergency_form.name(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class="form-group pb-4">
+						{{ emergency_form.type.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if emergency_form.type.errors %}
+							{{ emergency_form.type(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in emergency_form.type.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ emergency_form.type(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class="form-group pb-4">
+						{{ emergency_form.location.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if emergency_form.location.errors %}
+							{{ emergency_form.location(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in emergency_form.location.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ emergency_form.location(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+				</div>
+				{{ emergency_form.submit(class="btn btn-outline-danger w-100") }}
+			</div>
+		</div>
+		
+		<div class='col col-md-4'>
+			<div class="card border-0 p-4 bg-light">
+				<h4 class='text-danger mb-5'>Products</h4>
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light rounded-3" novalidate>
+				{{ product_form.hidden_tag() }}
+				<div class="row">
+					<div class="form-group pb-4">
+						{{ product_form.name.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if product_form.name.errors %}
+							{{ product_form.name(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in product_form.name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ product_form.name(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class="form-group pb-4">
+						{{ product_form.type.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if product_form.type.errors %}
+							{{ product_form.type(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in product_form.type.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ product_form.type(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class="form-group pb-4">
+						{{ product_form.description.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if product_form.description.errors %}
+							{{ product_form.description(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in product_form.description.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ product_form.description(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+				</div>
+				{{ product_form.submit(class="btn btn-outline-danger w-100") }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

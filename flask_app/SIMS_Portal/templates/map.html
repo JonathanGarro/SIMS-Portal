@@ -1,0 +1,39 @@
+<html>  
+<head>
+<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+<script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"type="text/javascript" charset="utf-8"></script>
+<script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"type="text/javascript" charset="utf-8"></script>
+</head>
+  
+<body style='margin: 0'>
+<div style="width: 100%; height: 100%" id="mapContainer"></div>
+
+<script>	
+	  // Initialize the platform object:
+	  var platform = new H.service.Platform({
+		'apikey': 'r4iwZ9epdfqu8B0S5YOrP4cQM9lOb8FOd7WiJTycEC4'
+	  });
+	  
+	   const lat = 22.719568;
+	   const long = 75.857727;
+	
+	// Obtain the default map types from the platform object
+	  var maptypes = platform.createDefaultLayers();
+
+	  // Instantiate (and display) a map object:
+	  var map = new H.Map(
+		document.getElementById('mapContainer'),
+		maptypes.vector.normal.map,
+		{
+		  zoom: 10,
+		  center: { lat: lat, lng: long }  
+		});
+		
+	var marker = new H.map.Marker({ lat: lat, lng: long });
+		
+	// Add the marker to the map:
+	map.addObject(marker);
+		
+</script>
+</body>
+</html>

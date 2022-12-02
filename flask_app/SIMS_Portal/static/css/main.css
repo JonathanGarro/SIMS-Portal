@@ -1,0 +1,346 @@
+#hideMe {
+	-moz-animation: cssAnimation 0s ease-in 5s forwards;
+	/* Firefox */
+	-webkit-animation: cssAnimation 0s ease-in 5s forwards;
+	/* Safari and Chrome */
+	-o-animation: cssAnimation 0s ease-in 5s forwards;
+	/* Opera */
+	animation: cssAnimation 0s ease-in 5s forwards;
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+}
+@keyframes cssAnimation {
+	to {
+		width:0;
+		height:0;
+		overflow:hidden;
+	}
+}
+@-webkit-keyframes cssAnimation {
+	to {
+		width:0;
+		height:0;
+		visibility:hidden;
+	}
+}
+
+a {
+	text-decoration: none;
+	color: #df4759
+}
+
+a:link {
+	text-decoration: none;
+	color: #df4759
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #df4759
+}
+
+.dropdown-item:active {
+	background-color: #df4759;
+}
+
+#override-link-color {
+	color: white
+}
+
+.override-link-color {
+	color: white
+}
+
+body {
+  position: relative;
+}
+
+p {
+	font-size: 18px;
+}
+
+li {
+	font-size: 18px;
+}
+
+#box {
+  height: 100px;
+  width: 200px;
+  clear: both;
+}
+
+#date-label {
+	font-size:.8em;
+	font-weight: bold;
+	color: #df4759;
+}
+
+.list-group-item.active {
+	background-color: rgb(192, 192, 192);
+	border: none;
+}
+
+.portfolio-card:hover {
+  /* transform: scale(1.1); */
+  background: lightgray !important;
+  border-width: 1px;
+  border-color: red
+}
+
+.portfolio-title {
+	font-family: 'Montserrat';
+}
+
+#portfolio-title {
+	font-family: 'Montserrat';
+}
+
+#navbar_top_login {
+	background: #5c0000 !important;
+}
+
+#large_table {
+	font-size: 20px;
+}
+
+#grayscale-img {
+  filter: gray; /* IE6-9 */
+  -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
+  filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
+}
+
+.sidebar-guidance {
+	font-size: 1em;
+	color: grey
+}
+
+#sidebar-guidance {
+	font-size: 1em;
+	color: grey
+}
+
+#response-tools-explainer {
+	font-size: .9em;
+	color: grey
+}
+
+#sims-blue {
+	color: #011E41
+}
+
+.card {
+	width: 100%;
+}
+
+.card-img-top {
+	width: 100%;
+	height: 15vw;
+	min-height: 200px;
+	object-fit: cover;
+}
+
+.btn-sm {
+	font-size: 12px
+}
+
+#profile-button {
+	font-size: 12px
+}
+
+.wrapper {
+	display: inline-block;
+	margin-top: 25px;
+	position: relative;  
+}
+
+.wrapper img {
+   display: block;
+   max-width: 100%;
+}
+
+.wrapper .overlay {
+	position: absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-color: rgba(0,0,0,0.30);
+	font-weight: bold;
+	font-size: 1vw;
+	/* font-size: min(max(1.5vw), 1vw); */
+	color: #ffffff
+}
+
+h2 {
+	margin-bottom:0;
+}
+
+h2.header {
+	bottom: 0;
+	position: absolute;
+	/* background:rgba(67, 67, 67, 0.50); */
+	padding-left: 30px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: left;
+	font-size: 4em;
+	font-family: 'Montserrat';
+	width: 75%;
+}
+
+#active-disaster-dashboard {
+	margin-top:0;
+}
+
+#navbar_top {
+  border-bottom: 5px solid #890000;
+}
+
+#big-checkbox {
+	width: 20px; 
+	height: 20px;
+}
+
+.fc-event-title-container {
+	background-color: #890000;
+	border-color: #890000;
+}
+
+#small-trello {
+	font-size: 5px;
+}
+
+.emergency-title {
+	font-family: 'Montserrat';
+}
+
+.profile-section-header {
+	font-family: 'Montserrat';
+}
+
+#profile-title {
+	font-family: 'Montserrat';
+}
+
+.Montserrat {
+	font-family: 'Montserrat';
+}
+
+#emergency-story-link {
+	font-family: 'Montserrat';
+	color: #6D757D;
+}
+
+#fast-turnaround {
+	font-family: 'Montserrat';
+}
+
+.drk:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: black;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.carousel-caption {
+  z-index: 2;
+}
+
+.carousel-title > a {
+	font-family: 'Montserrat';
+	color: white;
+	font-size: 2em;
+}
+
+.dataTables_filter {
+	margin-bottom: 50px;
+}
+
+#datatable {
+	margin-bottom: 20px;
+}
+
+.badge-common {
+	color: white;
+	background-color: rgb(69, 146, 0)
+}
+
+.badge-unusual {
+	color: black;
+	background-color: rgb(200, 162, 0)
+}
+
+.badge-rare {
+	color: white;
+	background-color: rgb(211, 68, 2)
+}
+
+.badge-exrare {
+	color: white;
+	background-color: rgb(124, 0, 0)
+}
+
+.tweet {
+  color: #1DA1F2;
+  font-weight: bold;
+}
+
+.mt-6 {
+	margin-top: 4rem; // or the value you want
+}
+
+.mb-6 {
+	margin-bottom: 4rem; // or the value you want
+}
+
+.form-range::-webkit-slider-thumb {
+  background: gray;
+}
+
+.form-range::-moz-range-thumb {
+  background: gray;
+}
+
+.form-range::-ms-thumb {
+  background: gray;
+}
+
+.status-circle {
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+  background: rgb(45, 108, 23);
+}
+
+.parallax {
+  position: relative;
+}
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.parallax-layer:first-child {
+  position: relative;
+}
+.parallax-layer > img {
+  display: block;
+  width: 100%;
+}
+
+.absolute-image {
+	max-width: 100%;
+	height: auto;
+	position: absolute
+}

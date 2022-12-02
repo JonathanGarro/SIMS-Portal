@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+	<div class="row my-5">
+		<div class="col-lg-8">
+			<h2 class='mb-3 text-danger' style="font-family: 'Montserrat';">History</h2>
+			<p>The <span class='fw-bold'>Surge Information Management Support (SIMS)</span> network was founded in 2014 to provide support to Red Cross Red Crescent Movement emergency responses around the world. </p>
+			
+			<p></p>
+			
+			<img src='/static/assets/img/helicoptor-survey.jpg' class='img-fluid rounded pt-4 pb-5'>
+			
+			<p>orem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tristique posuere nibh et volutpat. Proin commodo ligula nisi, vitae scelerisque risus pulvinar ut. Aliquam odio felis, rhoncus sed lobortis pellentesque, ornare ac enim. Mauris elementum sit amet odio in imperdiet. Nam ultrices augue non ante placerat fermentum. Phasellus ut nibh non mi pretium viverra. Praesent nec quam ac mi dictum placerat vel pellentesque justo. Praesent commodo malesuada diam, vitae faucibus sem pretium in. Quisque vestibulum lobortis est vel luctus. Vivamus vitae nulla ac est consequat lacinia. Donec consectetur justo ut dolor dictum efficitur. Praesent volutpat ex vitae laoreet euismod. Nunc quis orci sit amet tellus fringilla bibendum ut at quam. Suspendisse nisl arcu, rhoncus a tempor et, hendrerit vel massa. In dapibus, elit id ullamcorper scelerisque, velit massa suscipit nunc, eget molestie ante nulla nec metus. Mauris consectetur ex non lectus commodo aliquam.</p>
+			
+			<h2 class='mb-3 text-danger' style="font-family: 'Montserrat';">The Network</h2>
+			
+			<p>orem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tristique posuere nibh et volutpat. Proin commodo ligula nisi, vitae scelerisque risus pulvinar ut. Aliquam odio felis, rhoncus sed lobortis pellentesque, ornare ac enim. Mauris elementum sit amet odio in imperdiet. Nam ultrices augue non ante placerat fermentum. Phasellus ut nibh non mi pretium viverra. Praesent nec quam ac mi dictum placerat vel pellentesque justo. Praesent commodo malesuada diam, vitae faucibus sem pretium in. Quisque vestibulum lobortis est vel luctus. Vivamus vitae nulla ac est consequat lacinia. Donec consectetur justo ut dolor dictum efficitur. Praesent volutpat ex vitae laoreet euismod. Nunc quis orci sit amet tellus fringilla bibendum ut at quam. Suspendisse nisl arcu, rhoncus a tempor et, hendrerit vel massa. In dapibus, elit id ullamcorper scelerisque, velit massa suscipit nunc, eget molestie ante nulla nec metus. Mauris consectetur ex non lectus commodo aliquam.</p>
+			
+			<div class="row g-5 row-cols-1 row-cols-lg-2 py-4">
+				  <div class="feature col">
+					<img src="/static/assets/img/activate.png" width="75" height="75" class="img-fluid mb-4" alt="Activations">
+					<h2 class='text-danger'>{{count_activations}} Activations</h2>
+					<p class='lead'>SIMS has been activated {{count_activations}} times since its inception in 2014, most recently in response to <span class='fw-bold'>{{latest_activation.emergency_name}}</span>.</p>
+				  </div>
+				  <div class="feature col">
+					<img src="/static/assets/img/members.png" width="75" height="75" class="img-fluid mb-4" alt="Responsive image">
+					<h2 class='text-danger'>{{count_members}} Members</h2>
+					<p class='lead'>There are {{count_members}} <a href='/members' >active members</a> of the SIMS network ready to provide support across a variety of technical areas.</p>
+				  </div>
+			</div>
+			
+			<p>orem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tristique posuere nibh et volutpat. Proin commodo ligula nisi, vitae scelerisque risus pulvinar ut. Aliquam odio felis, rhoncus sed lobortis pellentesque, ornare ac enim. Mauris elementum sit amet odio in imperdiet. Nam ultrices augue non ante placerat fermentum. Phasellus ut nibh non mi pretium viverra. Praesent nec quam ac mi dictum placerat vel pellentesque justo. Praesent commodo malesuada diam, vitae faucibus sem pretium in. Quisque vestibulum lobortis est vel luctus. Vivamus vitae nulla ac est consequat lacinia. Donec consectetur justo ut dolor dictum efficitur. Praesent volutpat ex vitae laoreet euismod. Nunc quis orci sit amet tellus fringilla bibendum ut at quam. Suspendisse nisl arcu, rhoncus a tempor et, hendrerit vel massa. In dapibus, elit id ullamcorper scelerisque, velit massa suscipit nunc, eget molestie ante nulla nec metus. Mauris consectetur ex non lectus commodo aliquam.</p>
+			
+	
+			
+			<p>orem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tristique posuere nibh et volutpat. Proin commodo ligula nisi, vitae scelerisque risus pulvinar ut. Aliquam odio felis, rhoncus sed lobortis pellentesque, ornare ac enim. Mauris elementum sit amet odio in imperdiet. Nam ultrices augue non ante placerat fermentum. Phasellus ut nibh non mi pretium viverra. Praesent nec quam ac mi dictum placerat vel pellentesque justo. Praesent commodo malesuada diam, vitae faucibus sem pretium in. Quisque vestibulum lobortis est vel luctus. Vivamus vitae nulla ac est consequat lacinia. Donec consectetur justo ut dolor dictum efficitur. Praesent volutpat ex vitae laoreet euismod. Nunc quis orci sit amet tellus fringilla bibendum ut at quam. Suspendisse nisl arcu, rhoncus a tempor et, hendrerit vel massa. In dapibus, elit id ullamcorper scelerisque, velit massa suscipit nunc, eget molestie ante nulla nec metus. Mauris consectetur ex non lectus commodo aliquam.</p>
+		</div>
+		<div class='col ps-5'>
+			<div class="card border-start-danger border-3 p-4 bg-light">
+				<h3 class='mb-5' style="font-family: 'Montserrat';" id='sims-blue'>Activation Process</h3>
+				<div class='row align-items-center pb-3'>
+					<div class='col-2'>
+					<img src='/static/assets/img/disaster-strikes.png' width="50" height="50" class="">
+					</div>
+					<div class='col'>
+					<h4>Disaster Strikes</h4>
+					</div>
+				</div>
+				<div class='row pb-5'>
+					<p class="lead">A sudden onset disaster occurs or a slow onset disaster reaches a certain threshold.</p>
+				</div>
+				
+				<div class='row align-items-center pb-3'>
+					<div class='col-2'>
+					<img src='/static/assets/img/alert-released.png' width="50" height="50" class="">
+					</div>
+					<div class='col'>
+					<h4>Request for SIMS</h4>
+					</div>
+				</div>
+				<div class='row pb-5'>
+					<p class="lead">Request for SIMS activation sent to IFRC Surge Desk.</p>
+				</div>
+				
+				<div class='row align-items-center pb-3'>
+					<div class='col-2'>
+					<img src='/static/assets/img/sims-activate.png' width="50" height="50" class="">
+					</div>
+					<div class='col'>
+					<h4>SIMS Activated</h4>
+					</div>
+				</div>
+				<div class='row pb-5'>
+					<p class="lead">The Surge Desk contacts the SIMS focal point and the network's members are alerted.</p>
+				</div>
+				
+				<div class='row align-items-center pb-3'>
+					<div class='col-2'>
+					<img src='/static/assets/img/remote-coordinator.png' width="50" height="50" class="">
+					</div>
+					<div class='col'>
+					<h4>Coordinator Assigned</h4>
+					</div>
+				</div>
+				<div class='row pb-5'>
+					<p class="lead">SIMS assigns a remote coordinator as the focal point that manages tasks and assigns to other remote members.</p>
+				</div>
+				
+				<div class='row align-items-center pb-3'>
+					<div class='col-2'>
+					<img src='/static/assets/img/produce.png' width="50" height="50" class="">
+					</div>
+					<div class='col'>
+					<h4>Services Delivered</h4>
+					</div>
+				</div>
+				<div class='row pb-5'>
+					<p class="lead">The operation is supported with the production of tools and products for up to three months.</p>
+				</div>
+				
+				<div class='row align-items-center pb-3'>
+					<div class='col-2'>
+					<img src='/static/assets/img/transition.png' width="50" height="50" class="">
+					</div>
+					<div class='col'>
+					<h4>Phase Out</h4>
+					</div>
+				</div>
+				<div class='row pb-2'>
+					<p class="lead">IM support transitions to medium- or long-term delegate roles, remote support continues through separate funding, or surge support phases out completely.</p>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

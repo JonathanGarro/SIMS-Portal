@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col-md-4">
+			<div class="card border-0 px-4 ">
+				<h3 class="text-danger mt-4 pb-3">Adding Products</h3>
+				<ul class="timeline">
+					<li>
+						<h5 class="text-secondary">Assign Member</h5>
+						<p>The site only allows one-to-one relationships on products, so if you worked on something with another member, you should both upload the same product to your respective profiles.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Apply to Emergency</h5>
+						<p>If this was created as part of a specific response operation, tag it here. Otherwise, leave that field blank.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Fill in Description</h5>
+						<p>Provide a brief (one or two sentence) explanation of the product's purpose, and how to created it, what software you used, etc.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Share Publicly</h5>
+						<p>By default, products are only accessible to logged-in members of the SIMS network. If you check the "Share Publicly" box, it will also appear to external audiences on the site.</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col">
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+					<h4 class="text-danger pb-3">Product Information</h4>
+						<div class="col-md-6">
+							<div class="form-group pb-4">
+								{{ form.title.label(class="form-control-label pb-2 text-danger") }}
+								{% if form.title.errors %}
+									{{ form.title(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.title.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.title(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.type.label(class="form-control-label pb-2 text-danger") }}
+							{% if form.type.errors %}
+								{{ form.type(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.type.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.type(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.creator_id.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.creator_id.errors %}
+								{{ form.creator_id(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.creator_id.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.creator_id(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+							{{ form.emergency_id.label(class="form-control-label pb-2 text-danger") }}
+						
+							{% if form.emergency_id.errors %}
+								{{ form.emergency_id(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.emergency_id.errors %}
+										<span>{{ error }}</span>
+										{% endfor %}
+										</div>
+							{% else %}
+								{{ form.emergency_id(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+					</div>
+					
+				</div>
+					<div class="row">
+
+							<div class="form-group pb-4">
+								{{ form.description.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if form.description.errors %}
+									{{ form.description(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.description.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.description(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+
+							<div class="form-group pb-4">
+								{{ form.external(class="form-check-input") }}
+								{{ form.external.label(class="form-check-label text-danger") }}
+							</div>
+
+							<div class="form-group pb-4">
+								{{ form.file.label(class="form-control-label pb-2 text-danger") }}<br>
+								{{ form.file(class="form-control-file") }}
+								{% if form.file.errors %}
+									{% for error in form.file.errors %}
+										<span class='text-danger'>{{error}}</span><br>
+									{% endfor %}
+								{% endif %}
+							</div>
+
+
+						</div>
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

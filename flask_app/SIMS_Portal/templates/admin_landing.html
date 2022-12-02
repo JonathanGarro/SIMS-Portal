@@ -1,0 +1,222 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="mt-4" id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
+		{% endwith %}
+	</div>
+	<div class='row my-5'>
+		<ul class="nav nav-tabs" id="adminNav" role="tablist">
+			<li class="nav-item" role="presentation">
+			<button class="nav-link active text-dark fw-bold" id="badge-assignment-tab" data-bs-toggle="tab" data-bs-target="#badge-assignment" type="button" role="tab" aria-controls="badge-assignment" aria-selected="true">Badge Assignment</button>
+			</li>
+			<li class="nav-item" role="presentation">
+			<button class="nav-link text-dark fw-bold" id="pending-members-tab" data-bs-toggle="tab" data-bs-target="#pending-members" type="button" role="tab" aria-controls="pending-members" aria-selected="false">Pending Members {% if pending_users|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{pending_users|length}}</span></button>
+			</li>
+			<li class="nav-item" role="presentation">
+			<button class="nav-link text-dark fw-bold" id="open-reviews-tab" data-bs-toggle="tab" data-bs-target="#open-reviews" type="button" role="tab" aria-controls="open-reviews" aria-selected="false">Open Op Reviews {% if open_reviews|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{open_reviews|length}}</span></button>
+			</li>
+			<li class="nav-item" role="presentation">
+			<button class="nav-link text-dark fw-bold" id="skill-list-tab" data-bs-toggle="tab" data-bs-target="#skill-list" type="button" role="tab" aria-controls="skill-list" aria-selected="false">Add to Skill List</button>
+			</li>
+			<li class="nav-item" role="presentation">
+			<button class="nav-link text-dark fw-bold" id="upload-badge-tab" data-bs-toggle="tab" data-bs-target="#upload-badge" type="button" role="tab" aria-controls="upload-badge" aria-selected="false">Upload New Badge</button>
+			</li>
+		</ul>
+		<div class="tab-content" id="adminContent">
+		  <div class="tab-pane fade show active" id="badge-assignment" role="tabpanel" aria-labelledby="badge-assignment-tab">
+			  <br>
+			  <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+					{{ badge_form.hidden_tag() }}
+					<div class='row'>
+					  <div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
+					  <div class='col'>{{ badge_form.badge_name.label(class="form-control-label pb-2 text-danger") }}</div>
+				  </div>
+				  <div class='row mb-3'>
+					  <div class='col'>{{ badge_form.user_name(class="form-control form-control-lg") }} </div>
+					  <div class='col'>{{ badge_form.badge_name(class="form-control form-control-lg") }}</div>
+				  </div>
+				  <div class='row'>
+					  <div class='col'>{{ badge_form.assigner_justify.label(class="form-control-label pb-2 text-secondary") }} </div>
+				  </div>
+				  <div class='row mb-3'>
+					  <div class='col'>{{ badge_form.assigner_justify(class="form-control form-control-lg") }} </div>
+				  </div>
+				  <div class='row'>
+					  <div class='col'>{{ badge_form.submit_badge(class="btn btn-lg btn-danger w-25") }}</div>
+				  </div>
+				</form>
+				<h3 class='text-danger mt-5 Montserrat'>Users with Badges</h3>
+				See the <a href='/badges'>badges index page</a> for a full listing and definition of available badges.
+				  <table class='table table-striped mt-4'>
+					  <thead>
+						  <tr>
+							  <th>Member</th>
+							  <th>Badges</th>
+						  </tr>
+					  </thead>
+					  <tbody>
+						  {% for user in assigned_badges %}
+							  <tr>
+								  <td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
+								  <td>{{user.badges}}</td>
+							  </tr>
+						  {% endfor %}
+					  </tbody>
+				  </table>
+				
+				
+		  	</div>
+			  
+			  <div class="tab-pane fade" id="pending-members" role="tabpanel" aria-labelledby="pending-members-tab">
+					<br>
+					{% if pending_users|length > 0 %}
+					<table class='table'>
+						<thead>
+							<tr>
+								<th>Member</th>
+								<th>Status</th>
+								<th>National Society</th>
+								<th>Email</th>
+					
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for user in pending_users %}
+								<tr>
+									<td><a href='/profile/view/{{user.User.id}}'>{{user.User.firstname}} {{user.User.lastname}}</a></td>
+									<td>{{user.User.status}}</td>
+									<td>{{user.NationalSociety.ns_name}}</td>
+									<td>{{user.User.email}}</td>
+									<td class='text-end'><a href='/user/approve/{{user.User.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/user/delete/{{user.User.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% else %}
+					<h3 class='text-secondary mt-4'>No pending members to review</h3>
+					{% endif %}
+					
+				</div>
+				
+				<div class="tab-pane fade" id="open-reviews" role="tabpanel" aria-labelledby="open-reviews-tab">
+					{% if open_reviews|length > 0 %}
+					<h3 class='text-danger Montserrat mt-5'>Open Operational Review Records</h3>
+					<table class='table mt-3'>
+						<thead>
+							<tr>
+								<th>Emergency</th>
+								<th>Title</th>
+								<th>Type</th>
+								<th>Category</th>
+								<th>Description</th>
+								<th>Record</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for review in open_reviews %}
+								<tr>
+									<td><a href='/emergency/{{review.Emergency.id}}'><span class='fw-bold'>{{review.Emergency.emergency_name}}</span></a></td>
+									<td>{{review.Review.title}}</td>
+									<td>{{review.Review.type}}</td>
+									<td>{{review.Review.category}}</td>
+									<td>{{review.Review.description|truncate(255, True)}}</td>
+									<td><a href='/operation_review/view/{{review.Review.id}}'><button class='btn btn-success'>View</button></a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% else %}
+					<h3 class='text-secondary mt-4'>No open operational review records to process.</h3>
+					{% endif %}
+				</div>
+				
+				<div class="tab-pane fade" id="skill-list" role="tabpanel" aria-labelledby="skill-list-tab">
+					<br>					
+					<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+						  {{ skill_form.hidden_tag() }}
+						  <div class='row'>
+							<div class='col-md-5'>{{ skill_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
+							<div class='col-md-5'>{{ skill_form.category.label(class="form-control-label pb-2 text-danger") }}</div>
+							<div class='col'></div>
+						</div>
+						<div class='row'>
+							<div class='col-md-5'>{{ skill_form.name(class="form-control form-control-lg") }} </div>
+							<div class='col-md-5'>{{ skill_form.category(class="form-control form-control-lg") }}</div>
+							<div class='col'>{{ skill_form.submit_skill(class="btn btn-lg btn-outline-danger w-100") }}</div>
+						</div>
+					  </form>
+					  <br>
+					  <table class='table'>
+						  <thead>
+							  <tr>
+								  <th style="width:35%">Category</th>
+								  <th>Skill</th>
+							  </tr>
+						  </thead>
+						  <tbody>
+							  {% for skill in all_skills %}
+								  <tr>
+									  <td>{{skill.category}}</td>
+									  <td>{{skill.name}}</td>
+								  </tr>
+							  {% endfor %}
+						  </tbody>
+					  </table>
+				</div>
+				
+				<div class="tab-pane fade" id="upload-badge" role="tabpanel" aria-labelledby="upload-badge-tab">
+					<br>
+					<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+					{{ badge_upload_form.hidden_tag() }}
+					<div class='row'>
+						<div class='col'>
+							<div>{{ badge_upload_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
+						</div>
+						<div class='col'>
+							<div>{{ badge_upload_form.file.label(class="form-control-label pb-2 text-danger") }}</div>
+						</div>
+					</div>
+					
+					<div class='row'>
+						<div class='col'>
+							<div>{{ badge_upload_form.name(class="form-control form-control-lg") }}</div>
+						</div>
+						<div class='col'>
+							<div><input class="form-control form-control-lg" id="{{ badge_upload_form.file }}" type="file"></div>
+						</div>
+					</div>
+					<div class='col'>{{ badge_upload_form.upload_badge(class="btn btn-lg btn-danger w-25") }}</div>
+				
+					</form>
+				<div class='row my-5'>
+					<div class='col'>
+						<h3 class='text-danger Montserrat'>New Badge Guidelines</h3>
+						<p>In order to keep a unified style across all of the badges that get posted to the portal, you must create new ones using <a href="/static/assets/img/badges/_Badge Template.ai" download="template">this Adobe Illustrator template</a>. Save the file using <span class='fw-bold'>File > Export > Save for Web (Legacy)</span>, making sure to export it as a transparent PNG at 500x500.</p>
+						<br>
+						<iframe width="560" height="315" src="https://www.youtube.com/embed/fw3BLKR8bPs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+					</div>
+					<div class='col'>
+						<img src='/static/assets/img/badges_preview.png'>
+					</div>
+				</div>
+				</div>
+				</div>
+				
+				
+			</div>
+			<div class='my-5'>
+				<a href='/admin'><button class='btn btn-lg btn-danger'>Admin Backend</button></a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

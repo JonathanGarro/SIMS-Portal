@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container'>
+	<div class='row my-5'>
+	<h3 class='text-danger Montserrat'>Active SIMS Slack Channels</h3>
+		<table class="table table-striped" id='datatable-extended'>
+			<thead class="">
+				<tr>
+				<th>Channel Name</th>
+				<th>Count of Members</th>
+				<th>Purpose</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for item in output %}
+				<tr>
+					<td class="fw-bold"><a href="https://sims-ifrc.slack.com/archives/{{item.id}}" class="link-danger">{{item.channel_name}}</a></td>
+					<td>{{item.count_members}}</td>
+					<td>{{item.purpose}}</td>  
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock content %}

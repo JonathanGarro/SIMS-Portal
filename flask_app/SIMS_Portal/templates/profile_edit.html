@@ -1,0 +1,329 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+			
+			<div class="row">
+				<img src="{{ profile_picture }}" class="img-fluid mb-4">
+			</div>
+			<div class="row">
+				<h3 class="text-danger">{{ current_user.firstname }} {{ current_user.lastname }}</h3>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">Role</h5>
+				<h4>{{ current_user.job_title }}</h4>
+			</div>
+			<div class="row">
+				<h5 class="text-secondary mt-4">National Society</h5>
+				<h4>{{ ns_association }}</h4>
+			</div>
+				<div class="list-group mt-5">
+				  <a href="#" class="list-group-item list-group-item-secondary">Update Profile</a>
+				  <a href="#" class="list-group-item list-group-item-action text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Member</a>	  
+				  <!-- Modal -->
+				  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+					  <div class="modal-content">
+						<div class="modal-header">
+						  <h5 class="modal-title" id="exampleModalLongTitle">Delete Your SIMS Account</h5>
+						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						<div class="modal-body">
+						  <span class='fw-bold'>Was it something we said?</span> <br><br> Are you sure you want to delete your account? You will lose all data associated with it.
+						</div>
+						<div class="modal-footer">
+						  <button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+						  <a href="/user/delete/{{current_user.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+		<div class="col mx-4">
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+					<h4 class="text-danger pb-3">Required Fields</h4>
+					  <div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.firstname.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.firstname.errors %}
+								{{ form.firstname(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.firstname.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.firstname(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					  </div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.lastname.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.lastname.errors %}
+								{{ form.lastname(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.lastname.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.lastname(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.email.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.email.errors %}
+								{{ form.email(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.email.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.email(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.ns_id.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.ns_id.errors %}
+								{{ form.ns_id(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.ns_id.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.ns_id(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<h4 class="text-secondary py-3">Optional Fields</h4>
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.job_title.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.job_title.errors %}
+								{{ form.job_title(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.job_title.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.job_title(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+						{{ form.unit.label(class="form-control-label pb-2 text-secondary") }} <span class='text-secondary' tabindex="0" data-toggle="tooltip" title="The team you belong to within your NS or organization.">ⓘ</span>
+						
+						{% if form.unit.errors %}
+							{{ form.unit(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.unit.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ form.unit(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.twitter.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.twitter.errors %}
+								{{ form.twitter(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.twitter.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.twitter(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.github.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.github.errors %}
+								{{ form.github(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.github.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.github(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.linked_in.label(class="form-control-label pb-2 text-secondary") }} <span class='text-secondary' tabindex="0" data-toggle="tooltip" title="Get your ID by going to your profile on LinkedIn and take everything after 'linkedin.com/in/'. For example, 'linkedin.com/in/YOUR-ID-HERE'">ⓘ</span>
+							
+							{% if form.linked_in.errors %}
+								{{ form.linked_in(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.linked_in.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.linked_in(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.slack_id.label(class="form-control-label pb-2 text-secondary") }} <span class='text-secondary' tabindex="0" data-toggle="tooltip" title="Get your Slack ID by going to your opening the desktop app, clicking on your avatar at the very top right of the window, then click 'Profile', then the three dots and click 'Copy Member ID'">ⓘ</span>
+							
+							{% if form.slack_id.errors %}
+								{{ form.slack_id(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.slack_id.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.slack_id(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group pb-4">
+							{{ form.messaging_number_country_code.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.messaging_number_country_code.errors %}
+								{{ form.messaging_number_country_code(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.messaging_number_country_code.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.messaging_number_country_code(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.messaging_number.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.messaging_number.errors %}
+								{{ form.messaging_number(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.messaging_number.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.messaging_number(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+
+						<div class="form-group pb-4">
+							{{ form.bio.label(class="form-control-label pb-2 text-secondary" ) }}
+							
+							{% if form.bio.errors %}
+								{{ form.bio(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.bio.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.bio(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+
+					
+				</div>
+
+				<div class="row mt-5">
+					<p class='text-danger'>Hold Command/Control Key to Select Multiple Skills or Languages</p>
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.skills.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.skills.errors %}
+								{{ form.skills(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.skills.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.skills(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.languages.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.languages.errors %}
+								{{ form.languages(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.languages.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.languages(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+
+					<div>
+					  {{ form.picture.label(class="form-control-label pb-2 text-secondary") }}
+					  <input class="form-control" id="{{ form.picture }}" type="file">
+					</div>
+				</div>
+
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

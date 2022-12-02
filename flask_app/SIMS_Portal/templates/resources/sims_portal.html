@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+	  <div class="col-md-3">
+		  <div class="card border-0 p-4 bg-light sticky-top">
+			  <h5 class="text-danger Montserrat mb-5">SIMS Portal</h5>
+				  <div class="list-group">
+					<a href="/resources" class="list-group-item list-group-item-action text-secondary">← Resources Home</a>
+				</div>
+				<div class="list-group mt-3">
+					<a href="#data-model" class="list-group-item list-group-item-action text-secondary">Data Model Overview</a>
+					<a href="#emergencies" class="list-group-item list-group-item-action text-secondary">Emergencies</a>
+					<a href="#assignments" class="list-group-item list-group-item-action text-secondary">Assignments</a>
+					<a href="#knowledge-management" class="list-group-item list-group-item-action text-secondary">Knowledge Management</a>
+					<a href="#members" class="list-group-item list-group-item-action text-secondary">Members</a>
+					<a href="#products" class="list-group-item list-group-item-action text-secondary">Products</a>
+					<a href="#badges" class="list-group-item list-group-item-action text-secondary">Badges</a>
+				</div>
+			</div>
+	  </div>
+	  <div class="col">
+			<h3 class='my-4 text-danger Montserrat' id='data-model'>Data Model Overview</h3>
+			<p>The SIMS Portal manages data at several interconnected levels. Each of the following have their own extensible tables within the database, so that we can continue to capture not only greater volumes of data (e.g. more emergency responses) but also greater scopes of it (e.g. tracking additional data points related to our work). </p>
+			<ol>
+				<li>Emergency</li>
+				<li>Assignment</li>
+				<li>Learning</li>
+				<li>Review</li>
+				<li>Members</li>
+				<li>Products</li>
+				<li>Badges</li>
+			</ol>
+			<p>In addition to these dynamic tables, there are also reference tables in the database that help serve as the glue for many of these data points. For example, the <span class='fw-bold'>National Society</span> table contains the iso3 code, GO country ID, and national society name, all of which help serve information on several views within the portal. As the site continues to grow and our data management needs evolve, the diagram below will change too. But the general structure outlined below captures the majority of the site's functionality at launch.</p>
+			
+			<img src='/static/assets/img/SIMS_Portal_Data_Model.jpg' class='img-fluid'>
+			
+			<h3 class='my-4 text-danger Montserrat' id='emergencies'>Emergencies</h3>
+			<p>The emergency page serves as the record to capture the work that SIMS is doing in response to a specific event. It is not meant to capture much additional information about the event itself, instead using the GLIDE number to allow future connections with other databases, should there be a desire for that. The data points stored within the portal on the emergency record are designed to help us query the database for insights. For instance, we might want to see other events that we've responded to in that same country, or review all of our responses to a specific type of event.</p>
+			
+			<p>The page allows us to link to the tools we commonly use: the Trello board that manages tasks, the Slack channel where communication occurs, and the Dropbox where files are shared. It also connects the assignments that are associated with this event via a <span class='fw-bold'>one-to-many</span> relationship (one emergency can have many assignments, but each assignment can only connect to a single emergency).</p>
+			<ul>
+				<li><span class='fw-bold'>Activation Details:</span> Capture a few sentences explaining the steps that led to SIMS being activated. Provide an overview of how SIMS responded and with what sort of support. Offer a look at the transition process and key learnings gleaned from the experience.</li>
+				<li><span class='fw-bold'>Member Support:</span> An automatically-updated table that shows which SIMS members provided support, either in the form of field-deployments or remote support. Clicking on the assignment in the table brings you to a dedicated page for that person's work. To add people to the emergency, the SIMS Coordinator can use the "Log New Assignment" button in the left pane. </li>
+				<li><span class='fw-bold'>Response Products: </span> As members that are assigned to this emergency complete items that they are proud of and want to share, they get posted to their assignment record and will appear here as an aggregated view of all assignments. Clicking on a product will bring you to a dedicated page for it, with the ability to download the final version or navigate to the Dropbox folder where the underlying assets are stored. If a member marks an uploaded product as "Share Publicly", it gets queued for review by a SIMS Remote Coordinator for that emergency. See the <a href="#products">products section</a> of this guide for more information.</li>
+				<li><span class='fw-bold'>Learning Overview: </span> As members rotate out of their assignments, they are given the opportunity to contribute to the learning process. The emergency page rolls up those insights to provide at-a-glance views of what worked well and what could be improved in the future.</li>
+			</ul>
+			<h4 class='my-4 text-dark Montserrat' id='emergency-statuses'>Emergency Statuses</h4>
+			<p>There are a number of ways to classify the status of an emergency response. An IFRC operation is typically time-bound by the emergency appeal that funds the activities, but SIMS is, by its very nature, not active throughout the full lifecycle of an operation. Therefore, we use special statuses that refer only to the SIMS network's involvement in the operation. </p>
+			
+			<p>Emergency records are set to "Active" when they are created. An Active response is one to which we either are currently providing support, or that we're triaging. The closeout process involves completing all remote and deployed support and finalizing all learning processes. Changing the status of a record from Active to Closed requires an Administrator to verify that all necessary steps have been completed. There is also a "Removed" status for deleting a record. This should only be used when a record was created in error or if we do not want to consider it as part of the SIMS operational historical data. The data is preserved on the record in case there are lookups like assignments or products, as broken linkages can cause database errors, but the records will not show up in searches or lists.</p>
+			
+			<h4 class='my-4 text-dark Montserrat' id='logging-emergencies'>Logging Emergencies</h4>
+			<div class="alert alert-warning d-flex align-items-center" role="alert">
+			  <div>
+				<h5>Creating New Emergencies - Admin Access Required</h5>
+					<p>Only users with admin status are able to create new emergency records. To create one, go to <span class='fw-bold'>Emergencies</span> in the top nav bar. If you are logged in as admin, you will see a red button to create a new emergency at the top right.</p>
+			  </div>
+			</div>
+			<p>Records require a <span class='fw-bold'>GO Platform identifier</span> for the equivalent emergency record stored there. This can be taken from the URL of that page in GO. These addresses look like this: <span class='fw-bold'>https://go.ifrc.org/emergencies/5854</span> - in this case, the ID is <span class='fw-bold'> 5854</span>.</p>
+			
+			<p>The <span class='fw-bold'>GLIDE number</span> is typically available in the GO Platform as well. If you don't see it on the emergency page in GO or on any of the accompanying documents like Emergency Appeals, try <a href='https://glidenumber.net'> the official GLIDE page</a>. GLIDE numbers help us connect the data in the SIMS Portal with other databases like ReliefWeb, HDX, and more.
+			
+			<p>To get the <span class='fw-bold'>Trello</span> link, go to the board and click on "Share", then use the link generator with the setting "Can join as member."</p>
+			
+			<p>To get the <span class='fw-bold'>Slack ID</span>, open the SIMS Slack account in your desktop app, navigate to the relevant channel, click on the channel name at the top of the window, then scroll all the way to the bottom of the window that pops up.</p>
+			
+			<img src='/static/assets/img/dropbox-share.png' class='img-fluid mt-3 mb-5'>
+			
+			<p>To get the <span class='fw-bold'>Slack ID</span>, open the SIMS Slack account in your desktop app, navigate to the relevant channel, click on the channel name at the top of the window, then scroll all the way to the bottom of the window that pops up.</p>
+			
+			<img src='/static/assets/img/get-slack-id.png' class='img-fluid mt-3 mb-5'>
+			
+			<div class="alert alert-warning d-flex align-items-center" role="alert">
+			  <div>
+				<h5 id='close-out'>Closing Out and Deleting Emergencies - Admin Access Required</h5>
+			<p>Administrators will see two additional buttons on emergency pages. When closing out an emergency, the status is set to "Closed" and additional assignments are no longer accepted. Closing an emergency helps organize our portfolio of operations and improves search speeds.</p>
+			
+			<p>Deleting emergency records toggles the status to "Removed", but maintains the row in the database. Because emergency records may have assignments associated with them, conflicts can occur with certain queries if the record is fully removed. Only use this feature when there is an emergency that was created that we did not end up responding to, is a duplicate, or was otherwise not supposed to be in the system. </p>
+			  </div>
+			</div>
+			
+			<h3 class='my-4 text-danger Montserrat' id='assignments'>Assignments</h3>
+			<p>The Assignment object has a <span class='fw-bold'>many-to-one</span> relationship with emergencies (each assignment can be tagged to a single emergency, but each emergency can have many assignments), and a <span class='fw-bold'>many-to-one</span> relationship with members, meaning that each assignment can have one member, but each member can have many assignments.</p>
+			
+			<p>Assignments are designed to provide some clarity to who is doing what within any given response. There has traditionally been more focus on the visible support provided in the form of IM field deployments and SIMS coordinators, but the strength of our network lies in the remote support from members who take on tasks and work in the background. By creating an assignment for anyone that is helping, we can better highlight their work and quantify the support being provided to the operation. </p>
+			
+			<ul>
+				<li><span class='fw-bold'>Assignment Details:</span> A sentence or two describing what the person's support looks like. If they are providing remote IM support, this might mean describing the types of products or analysis they are providing. If they have deployed, describe where they went and the role within the operation that they are filling. </li>
+				<li><span class='fw-bold'>Start and End Dates:</span> Rough estimates here to capture the time that people provided support. This can help quantify our work, and the end date is what automatically adds and removes assignments from various views within the portal.</li>
+				<li><span class='fw-bold'>Role: </span> The dropdown captures the most common roles that SIMS members have when they deploy to an operation. The "Remote Support" role is meant to capture anyone who has not deployed but is provided products or services from their home country.</li>
+				<li><span class='fw-bold'>Status: </span> The end date is what filters which assignments are currently active. This status field is only used to maintain a record of assignments that have been deleted. When deleted, the status is changed to "Removed". The row in the database is maintained to avoid conflicts, as there are other elements that link to the assignment record (including products produced). Only administrators can toggle this.</li>
+			</ul>
+			
+			<h3 class='my-4 text-danger Montserrat' id='knowledge-management'>Knowledge Management</h3>
+			<p>The portal is designed to help the SIMS network learn from our collective experience supporting responses. This happens at two levels: the operational and the individual.</p>
+			<h4 class='my-4 text-dark Montserrat' id='op-learning'>Operational Knowledge Management ("Reviews")</h4>
+			<p>Operational learning refers to the review of how the SIMS activation went. These are only conducted by SIMS Remote Coordinators, and typically only at the end of the operation (though reviews can be created at any point in the system). These review records are intended to capture observations made by the SIMS Remote Coordinator(s), broken down into specific and (ideally) actionable pieces.</p>
+			
+			<p>Each review record is meant to reflect something that the SIMS Remote Coordinator(s) either found to be a success that should be part of our collective strategy in future operations, an area for improvement, or just a general observation. If they have a recommendation for integrating the learning into our systems and processes, there is also the option to provide that. Once the record has been created, SIMS Governance members can access them and document follow-up actions to be taken, as well as update the status of the record:
+				<ul>
+					<li><span class='fw-bold'>Open</span>: The default status assigned to new records.</li>
+					<li><span class='fw-bold'>Processed</span>: The SIMS Governance team has reviewed the record and integrated the feedback into the broader knowledge management process.</li>
+					<li><span class='fw-bold'>Dropped</span>: The SIMS Governance team has reviewed the record and deemed the feedback to be either irrelevant or not within our abilities to address.</li>
+				</ul>
+			
+			<h4 class='my-4 text-dark Montserrat' id='individual-learning'>Individual Knowledge Management ("Learnings")</h4>
+			
+			<p>As members cycle out of their deployment or remote support assignment, they have the option to fill out a learning survey. These learning records are intended to be a general pulse-check for the SIMS Network to monitor the remote supporters' level of satisfaction with their involvement. These questions are mostly quantitative in order to reduce the burden of analysis. Specific pieces of feedback about the operation should be funneled into Operational Knowledge Management Reviews (see above) through coordination with the SIMS Remote Coordinator(s).</p>
+				
+			<p>In order to ensure anonymity, a minimum number of responses must be submitted before the aggregated data is shown. Once that threshold has been reached, the data will appear under "Learning" on the emergency's page. The graph compares the average scores for each question for that specific operation, compared against the average scores for that question across all SIMS responses in order to help viewers understand if this operation is over- or under-performing.</p>
+			
+			<img class='img-fluid' src='/static/assets/img/assignment-review-example.png'>
+			
+			<h3 class='my-4 text-danger Montserrat' id='members'>Members</h3>
+			<p>The portal is designed to help the SIMS network learn from our collective experience supporting responses. Learning records are connected to assignments with a <span class='fw-bold'>one-to-one</span> relationship, meaning that each assignment can have only one associated learning record.</p>
+			
+			<h3 class='my-4 text-danger Montserrat' id='products'>Products</h3>
+			<p>The SIMS Portal is not designed to be a comprehensive repository for all the products created during a response. Rather, members can pick their favorite products to share. Products have a <span class='fw-bold'>many-to-one</span> relationship with assignments, meaning many products can be associated with an assignment. To post a product that you're proud of, navigate to your assignment and click "Upload Product".</p>
+			
+			<ul>
+				<li><span class='fw-bold'>Product Title:</span> Give the product a simple but descriptive name. This will help other members find your product when using the search function.</li>
+				<li><span class='fw-bold'>File Type:</span> Select the type of product. If the dropdown doesn't have an option that suits your product, choose other.</li>
+				<li><span class='fw-bold'>Description:</span> Provide a brief (one or two sentence) explanation of the product's purpose, and how to created it, what software you used, etc.</li>
+				<li><span class='fw-bold'>File Assets URL:</span> If the product has associated files that would be useful for someone that is looking to recreate or remix it for another use, include a link to the hosted folder where those files are.</li>
+				<li><span class='fw-bold'>Share Publicly:</span> Check this box if you want to promote the product beyond your profile. See "Product Visibility" for more information.
+				</li>
+			</ul>
+			
+			<h4 class='my-4 text-dark Montserrat' id='product-visibility'>Product Visibility and Review</h4>
+			<p>Given the nature of the products that SIMS produces, some may not be appropriate for public viewing. Additionally, when we present our portfolio to public audiences, we need to ensure products meet a certain threshold for quality and adherence to style guides. Therefore, the SIMS Portal uses a product review process to curate what becomes visible.</p>
+			
+			<p>There are three statuses that a product can have:</p>
+			
+			<ul>
+				<li>Personal</li>
+				<li>Pending Approval</li>
+				<li>Approved</li>
+			</ul>
+			
+			<p>By default, uploaded products are tagged as "Personal". These will be seen on: </p>
+				<ul>
+					<li><span class="fw-bold">Assignment page</span> where it was uploaded</li>
+					<li><span class="fw-bold">Profile pages</span> when you're viewing them as a logged-in member</li>
+				</ul>
+			
+			<p>When you want to promote the product more widely than these two places, check the "Share Publicly" box when uploading. This will mark the status as "Pending Approval", meaning that it will still be visible in all of the places listed above under "Personal", but will also be added to a queue for approval. The SIMS Remote Coordinator (or Coordinators, if there have been multiple rounds) for the emergency to which the product was uploaded is the only profile that has access to that queue. If they mark it as "Approved", the product will also be visible on:</p> 
+				<ul>
+					<li><span class="fw-bold">Emergency page</span> under "Response Products"</li>
+					<li><span class="fw-bold">Profile pages</span> when you're viewing them as the general public</li>
+				</ul>
+			
+			<p>If the SIMS Remote Coordinator rejects the product, the status changes from "Pending Approval" back to "Personal", and will retain the same visibility as products originally tagged as such. Should a product need to be removed from the portal, an Administrator can log into the Admin Portal and delete them, or navigate directly to the product's page and use the delete button visible at the bottom of the left pane.</p>
+			
+			<div class="alert alert-warning d-flex align-items-center" role="alert">
+			  <div>
+				<h5>Deleting Products - Admin Access Required</h5>
+				<p>SIMS Remote Coordinators are the first (and typically last) line of review when products are posted and requested to be shared publicly. However, there may be situations when Administrators decide to override that decision, or to delete a product that was only marked as "Personal" but still is not appropriate even for internal audiences. There are two ways for Administrators to delete products. They can go directly to the product page and use the delete button that is visible only to them. Alternatively, they can go to the Admin Portal (link available in the top nav bar) and click Admin Backend, then select the Portfolio table, then click the trash can next to the relevant item.</p>
+			  </div>
+			</div>
+			
+			<h4 class='my-4 text-dark Montserrat' id='shared-products'>Sharing Product Ownership</h4>
+			<p>Each product requires an "owner" to be associated with it. This is due to database requirements based on how this portal was built. However, the reality of SIMS responses is that several people may support the same product's creation. In order to capture those members' work, the portal allows users to tag themselves as collaborators by navigating to the product's page and clicking on "Add to My Profile". Doing so will include the product in your own portfolio the same way as products you directly post.</p>
+			
+			<h3 class='my-4 text-danger Montserrat' id='badges'>Badges</h3>
+			<p>Badges are a simple way to recognize the achievements of members as they contribute to operations and to the SIMS network. These are stored in a table within the database, which allows for easy management of them as we continually add new ones. The <span class='fw-bold'>many-to-many</span> relationship of users to badges means that each user can have many badges, and those badges are not exclusive (except for a few rare ones which are meant to serve as awards). </p>
+			
+			<p>Badges assignment can be done by SIMS Remote Coordinators for anyone that has been listed as providing support to the SIMS operation to which they are managing. When viewing an emergency record for which they are listed as a Coordinator, an additional menu option appears called "Assign Badges". This will bring the user to a page that has two drop-downs: one for selecting the member (only members tagged to an assignment for this emergency and listed as filling role type "Remote IM Support" will appear here) and one for selecting the badge. Click assign to given them the badge. The database will log which user assigned the badge, and it will reject the badge assignment if the user already has it.</p>
+			
+			<p>To learn more about the badges that are available and how common they are, see <a href='/badges'>this dedicated page</a>. The badges on user profiles link directly to this index. </p>
+			
+			<div class="alert alert-warning d-flex align-items-center" role="alert">
+			  <div>
+				<h5>Assigning Badges Outside of Operations - Admin Access Required</h5>
+					<p>Badges are typically assigned by SIMS Remote Coordinators . Since SIMS Remote Coordinators will be in the best position to assign these given their perspective on the individual contributions being made during a response, they will temporarily receive admin status for the length of their assignment.</p>
+					
+					<p>To assign, go to the admin portal within this site and click on the "Badge Assignment" tab. First select the member, then the badge in the dropdown. Note that badges cannot be duplicated on a single user, and you will receive an error if you try to assign a badge to a user than already has it.</p>
+			  </div>
+			</div>
+			
+	  </div>
+	  </div>
+</div>
+{% endblock content %}

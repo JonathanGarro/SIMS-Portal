@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="mt-2" id="hideMe">
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		   {% if messages %}
+			   {% for category, message in messages %}
+				   <div class="alert alert-{{ category }}">
+					   {{ message }} 
+				   </div>
+			   {% endfor %}
+		   {% endif %}
+	{% endwith %}
+	</div>
+	<div class="row my-5">
+		<div class="col-md-4">
+			<h4 class="text-secondary mb-1">Upload</h4>
+			<h2 class="text-danger mb-4 Montserrat">New Product</h2>
+			<ul class="timeline">
+				<li>
+					<h5 class="text-secondary Montserrat">Fill in Description</h5>
+					<p id="sidebar-guidance">Provide a brief (one or two sentence) explanation of the product's purpose, and how to created it, what software you used, etc.</p>
+				</li>
+				<li>
+					<h5 class="text-secondary Montserrat">Share Publicly</h5>
+					<p id="sidebar-guidance">By default, products that are posted are saved to your assignment and visible on your profile page. If you want them to be visible on the emergency page's portfolio and to external visitors of the site, then they must be manually approved by the SIMS Remote Coordinator. Checking this box will place the product in a review queue for them.</p>
+				</li>
+				<li>
+					<h5 class="text-secondary Montserrat">File Assets</h5>
+					<p id="sidebar-guidance">If you'd like to share any related assets to this final product (QGIS files, InDesign assets, etc.), link to the relevant folder in Dropbox.</p>
+				</li>
+			</ul>
+		</div>
+		<div class="col">
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+					<h4 class="text-danger pb-3 Montserrat">Product Information</h4>
+						<div class="col-md-6">
+							<div class="form-group pb-4">
+								{{ form.title.label(class="form-control-label pb-2 text-danger") }}
+								{% if form.title.errors %}
+									{{ form.title(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.title.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.title(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.type.label(class="form-control-label pb-2 text-danger") }}
+							{% if form.type.errors %}
+								{{ form.type(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.type.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.type(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				
+					<div class="row">
+
+							<div class="form-group pb-4">
+								{{ form.description.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if form.description.errors %}
+									{{ form.description(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.description.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.description(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+					</div>
+					
+					<div class='row'>
+						<div class="form-group pb-4">
+							{{ form.asset_file_location.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.asset_file_location.errors %}
+								{{ form.asset_file_location(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.asset_file_location.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.asset_file_location(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+					
+					<div class='row'>
+						<div class="form-group pb-2">
+							{{ form.external(class="form-check-input") }}
+							{{ form.external.label(class="form-check-label text-danger") }}
+						</div>
+
+						<div>
+						  <label for="{{ form.file }}" class="form-label">{{ form.file.label }}</label>
+						  <input class="form-control" id="{{ form.file }}" type="file">
+						</div>
+					</div>
+					<br>
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class='col-md-4 me-3'>
+			<h4 class='text-danger mb-4'>Search Emergencies</h4>
+			<p class='lead mb-5'>The search function currently queries these fields with "OR" logic. That means using more than one field per search returns records that match at least one of your search criteria rather than returning records that match all of the parameters.</p>
+		</div>
+		<div class='col'>
+			<div class="card border-0 p-4 bg-light">
+
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light rounded-3" novalidate>
+				{{ emergency_form.hidden_tag() }}
+					<div class="form-group pb-4">
+						{{ emergency_form.name.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if emergency_form.name.errors %}
+							{{ emergency_form.name(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in emergency_form.name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ emergency_form.name(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class='row'>
+						<div class='col'>
+							<div class="form-group pb-4">
+								{{ emergency_form.status.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if emergency_form.status.errors %}
+									{{ emergency_form.status(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in emergency_form.status.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ emergency_form.status(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+						<div class='col'>
+							<div class="form-group pb-4">
+								{{ emergency_form.type.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if emergency_form.type.errors %}
+									{{ emergency_form.type(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in emergency_form.type.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ emergency_form.type(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class='row'>
+						<div class='col'>
+							<div class="form-group pb-4">
+								{{ emergency_form.location.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if emergency_form.location.errors %}
+									{{ emergency_form.location(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in emergency_form.location.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ emergency_form.location(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+						<div class='col'>
+							<div class="form-group pb-4">
+								{{ emergency_form.glide.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if emergency_form.glide.errors %}
+									{{ emergency_form.glide(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in emergency_form.glide.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ emergency_form.glide(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					
+				{{ emergency_form.submit(class="btn btn-outline-danger") }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

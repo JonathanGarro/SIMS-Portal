@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class='row my-5'>
+		<table class="table table-sm table-borderless">
+  		<tbody>
+			<tr>
+	  		<td scope="row">
+		  		<h3 class="" style="font-family: 'Montserrat'" id='sims-blue'>All SIMS Emergencies</h3>
+		  		<p class="lead">Looking for a specific emergency? <a href="/search/emergencies" class="text-danger">Try the search feature</a>.</p>
+	  		</td>
+	  		<td class="float-end">		
+		  		{% if current_user.is_admin == 1 %}
+		  		<a href='/emergency/new'><button class='btn btn-danger btn-lg float-right'>New Emergency</button></a>
+		  		{% endif %}
+	  		</td>
+			</tr>
+  		</tbody>
+		</table>
+		<table class="table table-striped mt-5" id='datatable'>
+  		<thead class="">
+			<tr>
+	  		<th><h4>Emergency</h4></th>
+	  		<th><h4>Status</h4></th>
+	  		<th><h4>Type</h4></th>
+	  		<th><h4>Location</h4></th>
+	  		<th><h4># of Assignments</h4></th>
+	  		<th><h4>GLIDE</h4></th>
+	  		<th><h4>Created</h4></th>
+	  		
+		
+			</tr>
+  		</thead>
+  		<tbody>
+	  		{% for emergency in emergencies %}
+	  		<tr>
+				<td class="fw-bold"><a href="/emergency/{{emergency.id}}" class="link-danger"><h5>{{emergency.emergency_name}}</h5></a></td>
+				<td class="align-middle"><h5>{{emergency.emergency_status}}</h5></td>
+				<td class="align-middle"><h5>{{emergency.emergency_type_name}}</h5></td>  
+				<td class="align-middle"><h5>{{emergency.country_name}}</h5></td> 
+				<td class="align-middle"><h5>{{emergency.count_assignments}}</h5></td>  
+				<td class="align-middle"><h5>{{emergency.emergency_glide}}</h5></td>
+				<td class="align-middle"><h5>{{emergency.created_at[:10]}}</h5></td> 
+	  		</tr>
+	  		{% endfor %}
+  		</tbody>
+		</table>
+	</div>
+</div>
+{% endblock content %}

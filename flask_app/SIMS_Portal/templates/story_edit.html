@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col-md-4">
+			<h4 class="text-secondary mb-1">Edit</h4>
+			<h2 class="text-danger mb-4">Response Story</h2>
+			<ul class="timeline">
+				<li>
+					<h5 class="text-danger Montserrat">Header Image</h5>
+					<p id="sidebar-guidance">The templating engine here expects an image that is <span class='fw-bold text-danger'>1300 x 650 pixels</span>. Images not matching those dimensions will be automatically resized, so please use an image editor (<a href='https://www.adobe.com/express/feature/image/resize'>Adobe offers a free online tool</a>) to manually adjust the size of the photo in order to avoid unexpected cropping.</p>
+				</li>
+				<li>
+					<h5 class="text-danger Montserrat">Header Caption</h5>
+					<p id="sidebar-guidance">If using a photo taken from the IFRC shaRED photo library, the image will have metadata connected to the file that you should paste here, including giving proper credit to the photographer.</p>
+				</li>
+				<li>
+					<h5 class="text-danger Montserrat">Entry</h5>
+					<p id="sidebar-guidance">The entry field accepts <a href='https://www.markdownguide.org/basic-syntax/'>markdown syntax</a>, so use that to stylize your text. Use it to create links, post hosted images, set section headers, and more.</p>
+					
+					<p id="sidebar-guidance">To create section headers, use <span class='fw-bold text-danger'> two hash symbols with a space, then your text.</span> For example, <span class='fw-bold text-danger'>"## Operation Overview"</span>.</p>
+				</li>
+			</ul>
+
+		</div>
+		<div class="col">
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+					<h4 class="text-danger pb-3">Edit Response Story for {{emergency_name[0]}}</h4>
+						<img src='/static/assets/img/stories/{{story.header_image}}' class='img-fluid mb-4'>
+							<div class="form-group pb-4">
+								{{ form.header_image.label(class="form-control-label pb-2 text-danger") }}
+								{% if form.header_image.errors %}
+									{{ form.header_image(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.header_image.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.header_image(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+
+
+						<div class="form-group pb-4">
+							{{ form.header_caption.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.header_caption.errors %}
+								{{ form.header_caption(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.header_caption.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.header_caption(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+
+				</div>
+				<div class="row">
+
+						<div class="form-group pb-4">
+							{{ form.entry.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.entry.errors %}
+								{{ form.entry(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.entry.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.entry(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+						</div>
+
+					
+					
+				</div>
+
+				{{ form.submit(class="btn btn-outline-danger") }} <a href='#' data-toggle="modal" data-target="#confirm-delete"><div class='btn btn-danger btn-outline ms-3'>Delete Story</div></a>
+			</form>
+			<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="deleteStory" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header">
+					<h5 class="modal-title" id="deleteStory">Delete this Story</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					  <span aria-hidden="true">&times;</span>
+					</button>
+				  </div>
+				  <div class="modal-body">
+					<span class=''>Deleted stories cannot be recovered.</span>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+					<a href="/story/delete/{{story.emergency_id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

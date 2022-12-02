@@ -1,0 +1,25 @@
+id,emergency_type_go_id,emergency_type_name,created_at,updated_at
+1,66,Biological,2022-06-29 14:40:16,NULL
+2,57,Chemical,2022-06-29 14:40:16,NULL
+3,7,Civil Unrest,2022-06-29 14:40:16,NULL
+4,14,Cold Wave,2022-06-29 14:40:16,NULL
+5,6,Complex Emergency,2022-06-29 14:40:16,NULL
+6,4,Cyclone,2022-06-29 14:40:16,NULL
+7,20,Drought,2022-06-29 14:40:16,NULL
+8,2,Earthquake,2022-06-29 14:40:16,NULL
+9,1,Epidemic,2022-06-29 14:40:16,NULL
+10,15,Fire,2022-06-29 14:40:16,NULL
+11,12,Flood,2022-06-29 14:40:16,NULL
+12,21,Food Insecurity,2022-06-29 14:40:16,NULL
+13,19,Heat Wave,2022-06-29 14:40:16,NULL
+14,62,Insect Infestation,2022-06-29 14:40:16,NULL
+15,24,Landslide,2022-06-29 14:40:16,NULL
+16,13,Other,2022-06-29 14:40:16,NULL
+17,27,Pluvial/Flash Flood,2022-06-29 14:40:16,NULL
+18,5,Population Movement,2022-06-29 14:40:16,NULL
+19,67,Radiological,2022-06-29 14:40:16,NULL
+20,23,Storm Surge,2022-06-29 14:40:16,NULL
+21,54,Transport Accident,2022-06-29 14:40:16,NULL
+22,68,Transport Emergency,2022-06-29 14:40:16,NULL
+23,11,Tsunami,2022-06-29 14:40:16,NULL
+24,8,Volcanic Eruption,2022-06-29 14:40:16,NULL

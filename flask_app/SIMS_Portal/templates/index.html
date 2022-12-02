@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="position-relative overflow-hidden mb-3">
+	<div class="container pt-lg-2">
+		<div class="row flex-lg-nowrap">
+			<div class="col-lg-6 col-xl-5 text-center text-lg-start pt-5 mt-xl-4">
+				<div class="col jumbotron">
+					<h3 class='pb-3' style="font-family: 'Montserrat';" id='sims-blue'>We support operations with<br><span class="text-danger typed"> </span></h3>
+					<p class="lead mt-5">SIMS is a global network of Information Management experts who support IFRC emergency response operations by providing a variety of services and products. We maintain a roster of specialists from around the world across several key areas of technical support, including geospatial analysis, web-based and static data visualization, mobile data collection, scenario planning, and much more.</p>
+					<p class="lead mt-5">Remote coordinators work directly with teams in the field to translate operational needs into discrete tasks, which are then assigned to specialists with the skills and experience to complete them, all with lightning fast turnaround. </p>
+					<br>
+					<a href="/about" class="btn btn-danger btn-lg my-4" id="override-link-color">Learn More</a>
+					
+				</div>
+			</div>
+			<!-- Layer parallax -->
+			<div class="parallax mt-1 ms-4 me-lg-0 ms-lg-n5 ms-xl-n3 mt-lg-n4">
+				<div class="parallax-layer" data-depth="0.1">
+					<img src="/static/assets/img/top-banner.jpg" width="1416" alt="Layer">
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<div class="container">
+	<h3 class="text-dark mt-5 Montserrat">Latest Response Stories</h3>
+	<div id="carouselStories" class="carousel slide mt-4 mb-5" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<li data-target="#carouselStories" data-slide-to="0" class="active"></li>
+			<li data-target="#carouselStories" data-slide-to="1"></li>
+			<li data-target="#carouselStories" data-slide-to="2"></li>
+		</ol>
+		<div class="carousel-inner">
+			{% for story in latest_stories %}
+			<div class="carousel-item drk {% if loop.index == 1 %} active{% endif %}">
+				<img class="d-block w-100 rounded rounded-5" src="/static/assets/img/stories/{{story.Story.header_image}}" alt="{{story.Emergency.emergency_name}}">
+				<div class="carousel-caption d-none d-md-block">
+					<h1 class='carousel-title'><a href='/story/{{story.Story.emergency_id}}'>{{story.Emergency.emergency_name}}</a></h1>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<a class="carousel-control-prev" href="#carouselStories" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		</a>
+		<a class="carousel-control-next" href="#carouselStories" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		</a>
+	</div>
+	<h3 class="text-dark Montserrat">Latest Tweets</h3>
+	<h5 class="text-secondary mb-4" id='portfolio-title'><a href='https://twitter.com/IFRC_SIMS'>@IFRC_SIMS</a></h5>
+	<div class="row row-cols-3 g-5">
+		{% for tweet in tweets %}
+		<div class="col d-flex align-items-stretch">
+			<div class="card bg-light">
+				<div class="card-body d-flex flex-column">
+					<h5 class=" mb-2">{{tweet.tweet}}</h5>
+					<small>{{tweet.created_at_year}}-{{tweet.created_at_month}}-{{tweet.created_at_day}}</small>
+					<br><br>
+					<div class='mt-auto'>
+						<a href='https://twitter.com/i/web/status/{{tweet.id}}'><button class='btn btn-sm btn-danger'>View</button></a> 
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	<div class='row mb-6'>
+	</div>
+</div>
+{% endblock content %}

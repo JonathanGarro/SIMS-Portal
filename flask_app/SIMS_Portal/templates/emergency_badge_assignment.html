@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="mt-2" id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
+		{% endwith %}
+	</div>
+	<div class="row my-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4">
+				<div class="row">
+					<h4 class="text-secondary">Badge Assignment</h4>
+					<h2 class="text-danger Montserrat mb-5">{{event_name.emergency_name}}</h2>
+				</div>
+				<div class="row">
+					<h4 class="text-secondary mt-4">Guidance</h4>
+					<p class="text-dark">As a SIMS Remote Coordinator, you have the ability to assign achievement badges to the <span class='fw-bold'>people that provided remote support</span> for this operation. Select a member from the dropdown list, then select the badge. You can only assign a badge to someone if they do not already have it.</p>
+				</div>
+				
+			</div>
+		</div>
+		<div class="col mx-4">
+			<div class='mb-5'>
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+					  {{ badge_form.hidden_tag() }}
+					  <div class='row'>
+						<div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
+						<div class='col'>{{ badge_form.badge_name.label(class="form-control-label pb-2 text-danger") }}</div>
+					</div>
+					<div class='row mb-3'>
+						<div class='col'>{{ badge_form.user_name(class="form-control form-control-lg") }} </div>
+						<div class='col'>{{ badge_form.badge_name(class="form-control form-control-lg") }}</div>
+					</div>
+					<div class='row'>
+						<div class='col'>{{ badge_form.assigner_justify.label(class="form-control-label pb-2 text-danger") }} </div>
+					</div>
+					<div class='row mb-3'>
+						<div class='col'>{{ badge_form.assigner_justify(class="form-control form-control-lg") }} </div>
+					</div>
+					<div class='row'>
+						<div class='col'>{{ badge_form.submit_badge(class="btn btn-lg btn-danger w-100") }}</div>
+					</div>
+				  </form>
+			</div>
+			<div class='px-4'>
+			<h3 class='text-danger my-3 Montserrat'>Supporting Members</h3>
+			The following people assigned to this emergency already have these badges. See the <a href='/badges'>badges index page</a> for a full listing and definition of available badges.
+			  <table class='table table-striped mt-4'>
+				  <thead>
+					  <tr>
+						  <th>Member</th>
+						  <th>Badges</th>
+					  </tr>
+				  </thead>
+				  <tbody>
+					  {% for user in assigned_badges %}
+						  <tr>
+							  <td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
+							  <td>{{user.badges}}</td>
+						  </tr>
+					  {% endfor %}
+				  </tbody>
+			  </table>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

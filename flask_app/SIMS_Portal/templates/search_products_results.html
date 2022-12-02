@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<h3 class='text-danger mb-5'>Search Results</h3>
+		{% if master_search|length > 0 %}
+		<table class="table">
+			  <thead class="">
+				<tr>
+				  <th>Product</th>
+				  <th>Type</th>
+				  <th>Description</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				  {% for result in master_search %}
+				  <tr>
+					<td class="fw-bold"><a href="/portfolio/view/{{result.id}}" class="link-danger">{{result.title}}</a></td>
+					<td>{{result.type}}</td>
+					<td>{{result.description}}</td>
+				  </tr>
+				  {% endfor %}
+			  </tbody>
+		</table>
+		{% else %}
+		<h4 class='text-danger'>No Results</h4>
+		{% endif %}
+	
+	</div>
+</div>
+{% endblock content %}

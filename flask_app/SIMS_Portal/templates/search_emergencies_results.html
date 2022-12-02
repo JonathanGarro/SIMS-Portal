@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<h3 class='text-danger mb-5 Montserrat'>Search Results</h3>
+		{% if master_search|length > 0 %}
+		<table class="table">
+			  <thead class="">
+				<tr>
+				  <th>Emergency</th>
+				  <th>Status</th>
+				  <th>Type</th>
+				  <th>Location</th>
+				  <th>GLIDE</th>
+
+				</tr>
+			  </thead>
+			  <tbody>
+				  {% for result in master_search %}
+				  <tr>
+					<td class="fw-bold"><a href="/emergency/{{result.id}}" class="link-danger">{{result.emergency_name}}</a></td>
+					<td>{{result.emergency_status}}</td>
+					<td>{{result.emergency_type_name}}</td>
+					<td>{{result.country_name}}</td>
+					<td>{{result.emergency_glide}}</td>
+				  </tr>
+				  {% endfor %}
+			  </tbody>
+		</table>
+		{% else %}
+		<h4 class='text-secondary'>No Results</h4>
+		{% endif %}
+	
+	</div>
+</div>
+{% endblock content %}

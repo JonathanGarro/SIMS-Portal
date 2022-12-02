@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+				<h4 class="text-danger mb-4">Password Reset</h4>
+				<ul class="timeline">
+					<li>
+						<h5 class="text-secondary">Reset Your Password</h5>
+						<p>Choose a long and unique password. Don't recycle passwords between sites!</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Humble Suggestion</h5>
+						<p>May we take this opportunity to recommend a password manager if you aren't already using one?</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col mx-4">
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+						<div class="form-group pb-4">
+							{{ form.password.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.password.errors %}
+								{{ form.password(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.password.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.password(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+						<div class="form-group pb-4">
+							{{ form.confirm_password.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.confirm_password.errors %}
+								{{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.confirm_password.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.confirm_password(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					  </div>
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

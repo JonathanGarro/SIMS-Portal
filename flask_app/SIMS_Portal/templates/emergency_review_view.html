@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="py-3" id="hideMe">
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		   {% if messages %}
+			   {% for category, message in messages %}
+				   <div class="alert alert-{{ category }}">
+					   {{ message }} 
+				   </div>
+			   {% endfor %}
+		   {% endif %}
+	   {% endwith %}
+	</div>
+	<div class="row my-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">Operation Review Record For</h5>
+					<h3 class="text-danger Montserrat mb-5"><a href='/emergency/{{emergency_info.Emergency.id}}'>{{emergency_info.Emergency.emergency_name}}</a></h3>
+				</div>
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">Type</h5>
+					<h4 class="text-dark Montserrat mb-5">{{record.type}}</h4>
+				</div>
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">Category</h5>
+					<h4 class="text-dark Montserrat mb-5">{{record.category}}</h4>
+				</div>
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">Learning Status</h5>
+					<h4 class="text-dark Montserrat">{{record.status}}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="col mx-4">
+			<div class='mb-5'>
+				<div class="row mt-4">
+
+					<h4 class="text-danger Montserrat mb-5">{{record.title}}</h4>
+				</div>
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">Description</h5>
+					<p class="text-dark mb-5">{{record.description}}</p>
+				</div>
+				{% if record.recommended_action %}
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">Recommendation</h5>
+					<p class="text-dark mb-5">{{record.recommended_action}}</p>
+				</div>
+				{% endif %}
+				{% if record.follow_up %}
+				<div class="row">
+					<h5 class="text-secondary portfolio-title mb-1">SIMS Governance Follow-Up</h5>
+					<p class="text-dark mb-5">{{record.follow_up}}</p>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

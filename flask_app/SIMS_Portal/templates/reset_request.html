@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+
+				<h4 class="text-danger mb-4">Password Reset</h4>
+				<ul class="timeline">
+					<li>
+						<h5 class="text-secondary">Reset Process</h5>
+						<p>Enter the email address that you originally registered with.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Click the Link</h5>
+						<p>Click the link in the email you receive. It expires after 30 minutes. You will be redirected to the site and be able to choose a new password.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Check Your Spam Folder</h5>
+						<p>If you don't see an email, check your spam folder. If you still don't find the email, contact a site administrator and they can manually trigger a new email reset for you.</p>
+					</li>
+				</ul>
+
+			</div>
+		</div>
+		<div class="col mx-4">
+			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+						<div class="form-group pb-4">
+							{{ form.email.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.email.errors %}
+								{{ form.email(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.email.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.email(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					  </div>
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

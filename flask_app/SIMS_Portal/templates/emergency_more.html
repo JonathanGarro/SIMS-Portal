@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mb-5">
+	<div class=" row mt-5">
+		<p><a href='/emergency/{{emergency_info.id}}'>← Back to Emergency Page</a></p>
+		<h3 class="" style="font-family: 'Montserrat';" id='sims-blue'>All Posted Products for {{emergency_info.emergency_name}}</h3>
+		<p class='text-secondary'>These are the products associated with this emergency response that have been approved by a SIMS Remote Coordinator. </p>
+		<div class="row row-cols-xxl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2 g-4 mt-4">
+			{% for product in emergency_portfolio %}
+			  	<div class="col d-flex align-items-stretch">
+					<a href="/portfolio/view/{{product.Portfolio.id}}">
+					<div class="card" id='portfolio-card'>
+						{% if '.pdf' in product.Portfolio.final_file_location %}
+						<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+						{% else %}
+						<img src="/static/assets/portfolio/{{product.Portfolio.final_file_location}}" class="card-img-top" alt="...">
+						{% endif %}
+						<div class="card-body d-flex flex-column">
+							<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
+							<h5 class="card-title mt-auto text-danger">{{product.Portfolio.title}}</h5>
+				    	</div>
+						</a>
+					</div>
+			  	</div>
+			{% endfor %}
+	</div>
+</div>
+</div>
+{% endblock content %}

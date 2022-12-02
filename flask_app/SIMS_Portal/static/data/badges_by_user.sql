@@ -1,0 +1,1 @@
+SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id GROUP BY u.id ORDER BY u.firstname

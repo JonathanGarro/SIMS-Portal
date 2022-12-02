@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mb-5">
+	<div class=" row mt-5">
+		<h3 class="" style="font-family: 'Montserrat';" id='sims-blue'>{{user_info.firstname}} {{user_info.lastname}}'s Products</h3>
+		<p class='text-secondary'>These are all of the products that {{user_info.firstname}} has posted to the SIMS Portal.</p>
+		<div class="row row-cols-xxl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2 g-4 mt-4">
+			{% for product in user_portfolio %}
+				  <div class="col d-flex align-items-stretch">
+					<a href="/portfolio/view/{{product.id}}">
+					<div class="card" id='portfolio-card'>
+						{% if '.pdf' in product.final_file_location %}
+						<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+						{% else %}
+						<img src="/static/assets/portfolio/{{product.final_file_location}}" class="card-img-top" alt="...">
+						{% endif %}
+						<div class="card-body d-flex flex-column">
+							<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
+							<h5 class="card-title mt-auto text-danger">{{product.title}}</h5>
+						</div>
+						</a>
+					</div>
+				  </div>
+			{% endfor %}
+	</div>
+</div>
+</div>
+{% endblock content %}

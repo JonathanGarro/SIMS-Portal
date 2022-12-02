@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container'>
+	<div class="mt-2" id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
+		{% endwith %}
+	</div>
+	<div class="wrapper">
+		{% if story_data.header_image %}
+			<img src="/static/assets/img/stories/{{story_data.header_image}}" class='img-fluid'/>
+			{% else %}
+			<img src="/static/assets/img/stories/default-banner.jpg" class='img-fluid'/>
+		{% endif %}
+		<div class="overlay">
+			<h2 class="header">{{emergency_name.Emergency.emergency_name}}</h2>
+		</div>
+	</div>
+	<figcaption class="figure-caption">{{story_data.header_caption}}</figcaption>
+	<div class='row my-5'>
+		<div class='col-md-3'>
+		{% if current_user.is_admin == 1 %}
+		<a href="/story/edit/{{story_data.emergency_id}}" class="list-group-item list-group-item-secondary mb-2">Edit Story</a>
+		{% endif %}
+			<div class='card px-5 py-4 bg-light border-0 rounded'>
+	  		<div class="row mb-4">
+				<img class='w-50' src="/static/assets/img/members.png"  class="mb-5" alt="">
+				<h3 class='text-danger'>{{members_supporting}} Members</h3>
+				<p class='lead'>provided support to the response</p>
+	  		</div>
+	  		<div class="row mb-4">
+				<img class='w-50' src="/static/assets/img/calendar.png" class="" alt="Activations">
+				<h3 class='text-danger'>{{sum_days}} Days</h3>
+				<p class='lead'>of remote and deployed support time</p>
+	  		</div>
+	  		<div class="row mb-4">
+		  		<img class='w-50' src="/static/assets/img/products.png" class="mb-5" alt="Activations">
+		  		<h3 class='text-danger'>{{products_created}} Products</h3>
+		  		<p class='lead'>created and publicly available</p>
+				</div>
+			</div>
+		</div>
+	<div class='col ps-4'>
+		{{story_data.entry|markdown}}
+	</div>
+	</div>
+</div>
+{% endblock content %}

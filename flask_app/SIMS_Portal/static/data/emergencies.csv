@@ -1,0 +1,56 @@
+id,emergency_name,emergency_status,emergency_glide,emergency_go_id,emergency_location_id,emergency_review_id,activation_details,slack_channel,dropbox_url,trello_url,emergency_type_id,created_at,updated_at
+4,Ukraine and Impacted Countries Crisis,Active,OT-2022-000157-UKR,5854,1,NULL,"After Russian forces invaded in late February, SIMS was activated to provide remote and deployed support. ",C0353KEK13L,https://www.dropbox.com/sh/4x1i0e6zbxx36ej/AAC56JtnSkeT878jbucWBvcka?dl=0,https://trello.com/invite/b/XNU5ZFKI/1feb44d1c647393ad4673a9a011003e8/simsukraine2022,6,2022-10-12 15:03:21,2022-11-30 21:04:21
+7,Iraq Cholera Outbreak,Closed,EP-2022-000245-IRQ,6037,87,NULL,"Iraq RC requested some support, and IFRC Geneva approved activation of SIMS.",C0353KEK13L,,,1,2022-07-01 17:47:51,2022-07-01 17:49:08
+8,Democratic Republic of Congo Hunger Crisis,Closed,12341234,6068,187,NULL,We were requested to provide support remotely for the preparation for the lean season in 2022.,,,,21,2022-07-12 16:17:47,2022-12-01 19:53:46
+9,Tunisia Population Movement,Closed,,792,173,NULL,,,,,5,2022-10-03 13:26:27,2022-10-03 15:30:46
+10,Democratic Republic of Congo Population Movement,Closed,,0,187,NULL,Testing remote support for information management.,,,,5,2022-10-03 15:25:34,NULL
+11,Sierra Leone Cholera Outbreak,Closed,,550,152,NULL,One FACT IM deployment to support the operation.,,,,1,2022-10-03 15:28:42,2022-10-03 15:31:03
+12,Philippines Typhoon Haiyan,Closed,TC-2013-000139-PHL,178,136,NULL,"Typhoon Haiyan represented the largest SIMS activation to date. The team produced more than 500 maps, templates for factsheets, and summarized all ERU data via new reporting processes. ",,,,4,2022-10-03 15:54:36,2022-10-03 16:14:57
+13,Nigeria Floods,Closed,FL-2012-000138-NGA,483,128,NULL,SIMS provided satellite imagery. ,NULL,NULL,NULL,12,2022-10-03 16:11:50,2022-11-30 22:08:29
+14,Cameroon Cholera Outbreak,Closed,EP-2014-000121-CMR,386,41,NULL,Supported the operation with malnutrition maps.,,,,1,2022-10-05 20:44:11,2022-10-07 18:44:42
+15,Iraq Population Movement,Closed,OT-2014-000074-IRQ,389,87,NULL,Deployed two rounds of support. Supported with graphics for logistics team and satellite imagery analysis.,,,,5,2022-10-05 20:46:04,NULL
+16,Bosnia and Herzegovina Floods,Closed,FF-2014-000059-BIH,289,197,NULL,"Supported the cash program with maps for one month, provided imagery analysis and displacement mapping.",,,,12,2022-10-05 20:47:53,2022-10-07 18:44:33
+17,Solomon Islands Floods,Closed,FL-2014-000045-SLB,383,156,NULL,Provided mapping and data management support.,,,,12,2022-10-05 20:49:09,NULL
+18,West Africa Ebola Outbreak,Closed,EP-2014-000039-LBR,201,103,NULL,SIMS provided over six months of support and produced hundreds of maps.,,,,12,2022-10-05 20:57:17,NULL
+19,Ethiopia Drought,Closed,DR-2015-000109-ETH,40,65,NULL,Provided remote support with mapping and infographics.,,,,20,2022-10-05 20:59:43,NULL
+20,Europe Population Movement,Closed,,0,82,NULL,SIMS provided both field-based and remote support. Note that this emergency record captures several distinct emergency appeals released by the IFRC. Deployments were to the regional office in Budapest. ,,,,5,2022-10-05 21:06:25,NULL
+21,Tanzania Cholera Outbreak,Closed,EP-2015-000058-TZA,0,189,NULL,Provided remote support with mapping of affected areas.,,,,1,2022-10-05 21:08:05,NULL
+22,Burundi Population Movement,Closed,OT-2012-000193-TZA,425,39,NULL,Provided remote support with the production of maps for the operation.,,,,5,2022-10-05 21:09:56,2022-10-07 18:26:43
+23,Nepal Earthquake,Closed,EQ-2015-000048-NPL,19,123,NULL,"SIMS provided both remote and deployed support to the earthquake response. Dozens of products, including maps, infographics, mobile data support, and more were provided.",,,,2,2022-10-05 21:11:39,NULL
+24,Vanuatu Cyclone Pam,Closed,TC-2015-000020-VUT,121,7,NULL,SIMS provided remote and deployed support to the cyclone response.,,,,4,2022-10-05 21:12:51,NULL
+25,Micronesia Typhoon Maysak,Closed,TC-2015-000028-FSM,293,195,NULL,SIMS provided remote support to the operation.,,,,4,2022-10-05 21:13:48,NULL
+26,Malawi Floods,Closed,FL-2015-000006-MWI,282,110,NULL,SIMS provided support through the shelter cluster.,,,,12,2022-10-05 21:14:47,NULL
+27,Philippines Typhoon Haima,Closed,TC-2016-000110-PHL,139,136,NULL,SIMS provided both remote and deployed support to the Philippines Red Cross.,,,,4,2022-10-05 21:15:55,NULL
+28,Iraq Population Movement,Closed,OT-2016-000069-IRQ,148,87,NULL,SIMS provided remote support.,,,,5,2022-10-06 12:04:41,NULL
+29,Ukraine Complex Emergency,Closed,,0,1,NULL,"Note that this record refers to the emergency in 2016, not the 2022 conflict. Remote support to the FACT team deployed in response to the ongoing complex emergency.",,,,6,2022-10-06 12:14:12,2022-10-07 18:51:53
+30,Angola Yellow Fever Outbreak,Closed,EP-2016-000013-AGO,150,18,NULL,Provided remote support.,,,,1,2022-10-06 12:14:53,2022-10-07 18:44:13
+31,Ecuador Earthquake,Closed,EQ-2016-000035-ECU,33,60,NULL,"Two rounds of field-based deployments with remote supporters provided data management, data visualization, and mapping support.",,,,2,2022-10-06 12:16:48,NULL
+32,Zika Virus Outbreak,Closed,,0,132,NULL,One regional deployment to support the Latin America and Caribbean team.,,,,1,2022-10-06 12:18:06,NULL
+33,Madagascar Plague Outbreak,Closed,EP-2017-000144- MDG,21,109,NULL,Deployed Health IM specialist.,,,,1,2022-10-06 12:20:03,NULL
+34,Dominica Hurricane Maria,Closed,TC-2017-000136-DMA,11,58,NULL,"Deployed IM specialists for mobile data collection and imagery of affected area, with remote support provided.",,,,4,2022-10-06 12:24:37,NULL
+35,Bangladesh Population Movement,Closed,OT-2017-000003-BGD,2,27,NULL,Provided operation with both deployed and remote support.,,,,5,2022-10-06 12:30:22,2022-10-07 18:44:28
+36,Hurricane Irma,Closed,TC-2017-000125-DOM,0,19,NULL,SIMS provided remote support for IM products.,,,,4,2022-10-06 12:32:35,NULL
+37,Sierra Leone Floods and Mudslides,Closed,MS-2017-000109-SLE,3,152,NULL,SIMS provided remote support for IM products.,,,,12,2022-10-06 12:33:46,NULL
+38,Bangladesh Floods,Closed,FL-2017-000108-BGD,14,27,NULL,Remote support provided via a deployment to the Asia Pacific regional office.,,,,12,2022-10-06 12:35:47,2022-10-07 18:44:22
+39,Nigeria Complex Emergency,Closed,,9,128,NULL,Provided remote support to the FACT team on the ground.,,,,6,2022-10-06 13:06:38,NULL
+40,Somalia Cholera Outbreak,Closed,EP-2017-000036-SOM,145,157,NULL,SIMS provided remote and deployed support to the DREF operation.,,,,1,2022-10-06 13:08:04,NULL
+41,Madagascar Cyclone Enawo,Closed,TC-2017-00023-MDG,22,109,NULL,"SIMS deployed IM specialist from Geneva, and backfilled their position with another SIMS member.",,,,4,2022-10-06 13:10:08,NULL
+42,Uganda Population Movement,Closed,OT-2018-000021-UGA,36,176,NULL,Provided support to MSM40 and MSM20.,,,,5,2022-10-06 13:12:37,NULL
+43,Nigeria Floods,Closed,FL-2018-000120- NGA,3136,128,NULL,SIMS provided remote and deployed support to the operation.,,,,12,2022-10-06 13:13:51,NULL
+44,Indonesia Earthquakes and Tsunamis,Closed,EQ-2018-000122-IDN,3288,85,NULL,"Multiple emergencies, including the Sulawesi, Lombok, and Sunda Straits earthquakes, were merged into a single response. SIMS provided remote and deployed support across several parts of the operation.",,,,2,2022-10-06 13:18:12,NULL
+45,Democratic Republic of Congo Ebola Outbreak,Closed,EP-2018-000049-COD,3067,187,NULL,SIMS responded to the 9th and 10th EVD outbreak in the Democratic Republic of Congo with both remote and deployed support.,,,,1,2022-10-06 13:42:22,NULL
+46,Philippines Typhoon Phanfone,Closed,TC-2019-000176-PHL,3936,136,NULL,SIMS deployed IM specialists to support this response as well as several other concurrent operations going on at the same time in the country.,,,,4,2022-10-06 13:48:38,NULL
+47,Albania Earthquake,Closed,EQ-2019-000157-ALB,3887,15,NULL,SIMS provided remote and deployed support to the operation.,,,,2,2022-10-06 13:49:46,2022-10-07 18:44:04
+48,Bahamas Hurricane Dorian,Closed,TC-2019-000099-BHS,3751,25,NULL,SIMS provided a massive level of support through multiple rounds of both deployed and remote support. ,,,,4,2022-10-06 13:51:07,2022-10-07 18:44:17
+49,Mozambique Tropical Cyclone Idai,Closed,TC-2019-000021-MOZ,3469,120,NULL,SIMS provided a massive level of support through both remote and deployed IM specialists across multiple rounds and profiles.,,,,4,2022-10-06 13:59:15,NULL
+50,Venezuela Health Emergency,Closed,,3495,8,NULL,"SIMS provided a regional FACT IM coordinator, based in Panama, to support the emergency response.",,,,6,2022-10-06 19:09:22,NULL
+51,Americas Population Movement,Closed,,3122,8,NULL,"SIMS provided remote and deployed support to the operation, based in Panama but roving throughout the Americas region.",,,,5,2022-10-06 19:18:56,2022-10-07 18:43:57
+52,Global COVID-19 Pandemic,Closed,EP-2020-000012-CHN,3972,165,NULL,"SIMS provided formal, dedicated support to the response at both the global and regional levels with a variety of products and services.",,,,1,2022-10-06 19:20:59,NULL
+53,Sudan Floods,Closed,FL-2020-000176-SDN,4651,161,NULL,SIMS provided dedicated remote support.,,,,12,2022-10-06 19:23:32,NULL
+54,Central America Hurricanes Eta and Iota,Closed,TC-2020-000222-GTM,4889,76,NULL,SIMS provided remote support to multiple countries covered by the emergency appeal. ,,,,4,2022-10-06 19:26:05,2022-10-07 18:44:48
+55,West Africa Ebola Outbreak,Closed,EP-2021-000016-GIN,5123,77,NULL,,,,,1,2022-10-06 19:27:24,NULL
+56,Democratic Republic of Congo and Rwanda Volcanic Eruption,Closed,VO-2021-000059-COD,5308,187,NULL,SIMS provided remote support for the assessment cell.,,,,8,2022-10-06 19:36:29,2022-10-07 18:44:55
+57,Haiti Earthquake (2021),Closed,EQ-2021-000116-HTI,5499,80,NULL,,,,,2,2022-10-06 19:37:56,NULL
+58,Philippines Typhoon Rai,Closed,TC-2021-000202-PHL,5744,136,NULL,,,,,4,2022-10-06 19:39:13,NULL
+59,Madagascar Tropical Cyclone Batsirai,Closed,ST-2022-000138-MDG,5807,109,NULL,,,,,4,2022-10-06 19:48:56,NULL
+60,Pakistan Monsoon Floods,Active,FL-2022-000270-PAK,6061,131,NULL,SIMS was activated in September 2022 to support the response.,C040S62DHUP,,https://trello.com/b/9AtNx8uj/sims-pakistan-monsoon-floods-2022,12,2022-11-17 15:56:41,2022-12-01 15:06:05

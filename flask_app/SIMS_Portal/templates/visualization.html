@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container'>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for emergency in active_emergencies %}  
+        <div class="col d-flex align-items-stretch">  
+            <div class='card portfolio-card'>
+                <div class='row'>
+                  <div class='col-3 p-3 me-3'>
+                      <img class="img-fluid" src="/static/assets/img/emergency_types/{{emergency.EmergencyType.emergency_type_name}}.png" />
+                  </div>
+                  <div class='col px-3 py-4'>
+                      <h1 class="Montserrat text-danger">{{emergency.Emergency.emergency_name}}</h1>
+                  </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    </div>
+</div>
+{% endblock content %}

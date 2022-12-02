@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+	<div class="container">
+		<h3 class="mt-5" style="font-family: 'Montserrat';" id='sims-blue'>SIMS Full Portfolio</h3>
+		<p class='lead'>This page shows all products that have been uploaded, regardless of whether they have been marked as "External". Filter by product type, and click on a card to see more information about the product.</p>
+		<div class="col mt-3">
+			{% for type in type_list %}
+				{% if type == type_search %}
+					<a href='/portfolio_private/filter/{{type}}'><button class='btn btn-danger btn-sm m-1'>{{type}}</button></a>
+				{% else %}
+					<a href='/portfolio_private/filter/{{type}}'><button class='btn btn-secondary btn-sm m-1'>{{type}}</button></a>
+				{% endif %}
+			{% endfor %}
+			
+			{% if type_search %}
+				<a href='/all_products'><button class='btn btn-dark btn-sm m-1'>&otimes; Clear Filter</button></a>
+			{% endif %}
+		<div class='row mb-5'>
+			<div class='col-md-12'>
+				<div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
+					{% for product in full_portfolio %}
+						  <div class="col d-flex align-items-stretch">
+							<a href='/portfolio/view/{{product.id}}' class='text-danger'>
+							<div class="card" id="portfolio-card">
+								{% if '.pdf' in product.final_file_location %}
+								<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+								{% else %}
+									<img src="/static/assets/portfolio/{{product.final_file_location}}" class="card-img-top" alt="{{product.description}}">
+								  {% endif %}
+							  <div class="card-body d-flex flex-column">
+								<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
+								<h5 class="card-title mt-auto mb-2" id='invert-card-text'>{{product.title}}</h5>
+							  </a>
+							  </div>
+							</div>
+						  </div>
+					{% endfor %}
+				</div>
+			</div>
+
+				
+			</div>
+		</div>
+	</div>
+{% endblock content %}

@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+	a {
+		color: #CE454A
+	}
+	ul.timeline {
+		list-style-type: none;
+		position: relative;
+	}
+	ul.timeline:before {
+		content: ' ';
+		background: #d4d9df;
+		display: inline-block;
+		position: absolute;
+		left: 29px;
+		width: 2px;
+		height: 0%;
+		z-index: 400;
+	}
+	ul.timeline > li {
+		margin: 40px 0;
+		padding-left: 20px;
+	}
+	ul.timeline > li:before {
+		content: ' ';
+		background: white;
+		display: inline-block;
+		position: absolute;
+		border-radius: 50%;
+		border: 3px solid #CE454A;
+		left: 20px;
+		width: 20px;
+		height: 20px;
+		z-index: 400;
+	}
+</style>
+<div class="container">
+	<div class="row mb-5">
+		<div class="col-md-4">
+			<div class="card border-0 p-4 ">
+				<h3 class="text-danger pb-2">Assignment Process</h3>
+				<ul class="timeline">
+					<li>
+						<h5 class="text-danger">Assign Member</h5>
+						<p>Use this page to connect the active SIMS member (they need an account on this site) to the disaster they're supporting.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Member Provides Time-Bound Support</h5>
+						<p>Set the estimated assignment end date while they are deployed or remotely supporting.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Closeout Assignment</h5>
+						<p>As members rotate through their assignments, return to the portal to mark them as complete.</p>
+					</li>
+					<li>
+						<h5 class="text-secondary">Contribute to Learning</h5>
+						<p>Members that provide support to an emergency will be asked to provide some feedback about how the experience went and what could be improved for next time.</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col">
+			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+					<h4 class="text-danger pb-3">Assignment Information</h4>
+						<div class="col-md-6">
+							<div class="form-group pb-4">
+								{{ form.user_id.label(class="form-control-label pb-2 text-danger") }}
+								{% if form.user_id.errors %}
+									{{ form.user_id(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.user_id.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.user_id(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+					    </div>
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.emergency_id.label(class="form-control-label pb-2 text-danger") }}
+							{% if form.emergency_id.errors %}
+								{{ form.emergency_id(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.emergency_id.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.emergency_id(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.start_date.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.start_date.errors %}
+								{{ form.start_date(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.start_date.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.start_date(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+							{{ form.end_date.label(class="form-control-label pb-2 text-danger") }}
+						
+							{% if form.end_date.errors %}
+								{{ form.end_date(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.end_date.errors %}
+										<span>{{ error }}</span>
+										{% endfor %}
+										</div>
+							{% else %}
+								{{ form.end_date(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+					</div>
+					
+				</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group pb-4">
+								{{ form.role.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if form.role.errors %}
+									{{ form.role(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.role.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.role(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group pb-4">
+								{{ form.assignment_details.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if form.assignment_details.errors %}
+									{{ form.assignment_details(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.assignment_details.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.assignment_details(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6 mb-4">
+								{{ form.remote(class="form-check-input") }}
+								{{ form.remote.label(class="form-check-label text-danger") }}
+							</div>
+						</div>
+						</div>
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

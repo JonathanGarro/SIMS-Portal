@@ -1,0 +1,27 @@
+id,name,category
+1,QGIS,Geospatial
+2,HTML/CSS,Web Development
+3,PowerBI,Data Visualization
+4,Tableau,Data Visualization
+5,Illustrator,Graphic Design
+6,Photoshop,Graphic Design
+7,InDesign,Graphic Design
+8,Data Modeling,Data Management
+9,API Interaction,Coding
+10,DEEP,Information Analysis
+11,D3.js,Data Visualization
+12,Python,Coding
+13,R,Coding
+14,SQL,Coding
+15,ODK Server,Mobile Data Collection
+16,XLS Forms,Mobile Data Collection
+17,Excel,Data Management
+18,ArcGIS,Geospatial
+19,Kobo,Mobile Data Collection
+20,JavaScript,Coding
+21,Scenario Planning,Information Analysis
+22,Carto,Geospatial
+23,Cloud Server Setup,Data Management
+24,Data Cleaning,Data Management
+25,Assessment Planning,Mobile Data Collection
+26,Web App Hosting and Deployment,Web Development

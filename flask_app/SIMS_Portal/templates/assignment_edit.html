@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col-md-4">
+			<h4 class="text-secondary mb-1">Edit Existing</h4>
+			<h2 class="text-danger mb-4">Assignment</h2>
+			<ul class="timeline">
+				<li>
+					<h5 class="text-secondary">Role Type</h5>
+					<p id="sidebar-guidance">Use "Remote IM Support" for any non-deployed volunteer support being provided (except for SIMS Coordinators, which have their own option).</p>
+				</li>
+				<li>
+					<h5 class="text-secondary">Start and End Date</h5>
+					<p id="sidebar-guidance">For deployments, use arrival and departure dates. For remote IM support, use general estimates. You can always come back and update the end date later.</p>
+				</li>
+				<li>
+					<h5 class="text-secondary">Assignment Description</h5>
+					<p id="sidebar-guidance">Provide general overview of assignment. Mention if this is a second/third round, what this person is doing, where they deployed (if applicable), etc.</p>
+				</li>
+			</ul>
+
+		</div>
+		<div class="col">
+			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+				{{ form.hidden_tag() }}
+				<div class="row">
+					<h4 class="text-danger pb-3">{{assignment_info.User.firstname}}'s Assignment</h4>
+
+
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.role.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.role.errors %}
+								{{ form.role(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.role.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.role(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group pb-4">
+							{{ form.start_date.label(class="form-control-label pb-2 text-danger") }}
+							
+							{% if form.start_date.errors %}
+								{{ form.start_date(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.start_date.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.start_date(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col">
+							{{ form.end_date.label(class="form-control-label pb-2 text-danger") }}
+						
+							{% if form.end_date.errors %}
+								{{ form.end_date(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.end_date.errors %}
+										<span>{{ error }}</span>
+										{% endfor %}
+										</div>
+							{% else %}
+								{{ form.end_date(class="form-control form-control-lg datepicker", type="date") }}
+							{% endif %}
+					</div>
+					
+				</div>
+					<div class="row">
+
+						<div class="col">
+							<div class="form-group pb-4">
+								{{ form.assignment_details.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if form.assignment_details.errors %}
+									{{ form.assignment_details(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.assignment_details.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.assignment_details(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6 mb-4">
+								{{ form.remote(class="form-check-input") }}
+								{{ form.remote.label(class="form-check-label text-danger") }}
+							</div>
+						</div>
+						</div>
+				{{ form.submit(class="btn btn-outline-danger") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

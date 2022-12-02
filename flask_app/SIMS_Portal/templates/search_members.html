@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class='col-md-4 me-3'>
+			<h4 class='text-danger mb-4'>Search Members</h4>
+			<p class='lead mb-5'>The search function currently queries these fields with "OR" logic. That means using more than one field per search returns records that match at least one of your search criteria rather than returning records that match all of the parameters.</p>
+		</div>
+		<div class='col'>
+			<div class="card border-0 p-4 bg-light">
+
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light rounded-3" novalidate>
+				{{ member_form.hidden_tag() }}
+					<div class="form-group pb-4">
+						{{ member_form.name.label(class="form-control-label pb-2 text-danger") }}
+						
+						{% if member_form.name.errors %}
+							{{ member_form.name(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in member_form.name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ member_form.name(class="form-control form-control-lg") }}
+						{% endif %}
+					</div>
+					<div class='row'>
+						<div class='col'>
+							<div class="form-group pb-4">
+								{{ member_form.skills.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if member_form.skills.errors %}
+									{{ member_form.skills(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in member_form.skills.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ member_form.skills(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+						<div class='col'>
+							<div class="form-group pb-4">
+								{{ member_form.languages.label(class="form-control-label pb-2 text-danger") }}
+								
+								{% if member_form.languages.errors %}
+									{{ member_form.languages(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in member_form.languages.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ member_form.languages(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				{{ member_form.submit(class="btn btn-outline-danger") }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

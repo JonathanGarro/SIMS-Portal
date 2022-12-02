@@ -1,0 +1,323 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<div class="col col-md-4">
+
+			<h5 class="text-secondary">SIMS Member</h5>
+			<h3 class="mb-3 text-danger mb-4 Montserrat">{{user_info.fullname}}</h3>
+			<h5 class="text-secondary">Emergency Operation</h5>
+			<h3 class="mb-3 text-danger mb-4 Montserrat">{{emergency_info.Emergency.emergency_name}}</h3>
+			<h5 class="text-secondary">Assignment Role</h5>
+			<h3 class="mb-3 text-danger mb-4 Montserrat">{{emergency_info.Assignment.role}}</h3>
+
+			<p id="sidebar-guidance"><span class='fw-bold'>Thank you {{user_info.firstname}}</span> for taking the time to provide a review of your assignment for the {{emergency_info.emergency_name}} response. Your answers help the network learn from our experience and improve our future work. Your written answers will not be attributable to you, and questions with numerical values will only be aggregated once a certain threshold for the number of responses is reached.</p>
+			<p id="sidebar-guidance">The current SIMS Learning Lead will have access to your responses and may follow up with clarifying questions or to request your participation in a focus-group discussion.</p>
+			
+		</div>
+	<div class="col ps-5">
+		<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+			{{ form.hidden_tag() }}
+			
+			<h3 class='text-danger mb-4 Montserrat'>Overall</h3>
+				<p class='text-dark mb-4'>This form will dig into specifics, but take a moment to consider the assignment as a whole. Did you find it personally and professionally fulfilling? Did you appreciate the experience or was it frustrating? Did you learn new skills or did you feel like this assignment failed to offer a chance to grow? <span class='text-danger fw-bold'>(1 = Very Negative, 5 = Very Positive)</span></p>
+			<div class="bg-secondary p-3 rounded mb-5">
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>Rank your overall experience.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+				  			<input class="form-check-input" type="radio" name="overall_score" id="overall_score" value="1">
+				  			<label class="form-check-label text-light fw-bold" for="overall_score">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+						  	<input class="form-check-input" type="radio" name="overall_score" id="overall_score" value="2">
+						  	<label class="form-check-label text-light fw-bold" for="overall_score">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+						  	<input class="form-check-input" type="radio" name="overall_score" id="overall_score" value="3">
+						  	<label class="form-check-label text-light fw-bold" for="overall_score">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+						  	<input class="form-check-input" type="radio" name="overall_score" id="overall_score" value="4">
+						  	<label class="form-check-label text-light fw-bold" for="overall_score">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+						  	<input class="form-check-input" type="radio" name="overall_score" id="overall_score" value="5">
+						  	<label class="form-check-label text-light fw-bold" for="overall_score">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group pb-2">
+					<h5 class='text-light mb-3'>Explain why you chose that score.</h5>
+					{% if form.overall_exp.errors %}
+						{{ form.overall_exp(class="form-control form-control-lg is-invalid big_text_box") }}
+							<div class="invalid-feedback">
+								{% for error in form.overall_exp.errors %}
+									<span>{{ error }}</span>
+								{% endfor %}
+							</div>
+					{% else %}
+						{{ form.overall_exp(class="form-control form-control-lg") }}
+					{% endif %}
+				</div>
+			</div>
+			
+			
+			
+			<h3 class='text-danger mb-4 Montserrat'>Support and Resources</h3>
+				<p class='text-dark mb-4'>Rank your experience with the following areas <span class='text-danger fw-bold'>(1 = Strongly Disagree, 5 = Strongly Agree)</span></p>
+			<div class="bg-secondary p-3 rounded mb-5">
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>I got the support I needed from the network when I had an issue or question.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="got_support" id="got_support" value="1">
+							  <label class="form-check-label text-light fw-bold" for="got_support">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="got_support" id="got_support" value="2">
+							  <label class="form-check-label text-light fw-bold" for="got_support">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="got_support" id="got_support" value="3">
+							  <label class="form-check-label text-light fw-bold" for="got_support">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="got_support" id="got_support" value="4">
+							  <label class="form-check-label text-light fw-bold" for="got_support">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="got_support" id="got_support" value="5">
+							  <label class="form-check-label text-light fw-bold" for="got_support">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>I found the necessary internal support documentation, templates, and other resources from the SIMS Portal.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="internal_resource" id="internal_resource" value="1">
+							  <label class="form-check-label text-light fw-bold" for="internal_resource">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="internal_resource" id="internal_resource" value="2">
+							  <label class="form-check-label text-light fw-bold" for="internal_resource">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="internal_resource" id="internal_resource" value="3">
+							  <label class="form-check-label text-light fw-bold" for="internal_resource">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="internal_resource" id="internal_resource" value="4">
+							  <label class="form-check-label text-light fw-bold" for="internal_resource">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="internal_resource" id="internal_resource" value="5">
+							  <label class="form-check-label text-light fw-bold" for="internal_resource">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>When I encountered a technical challenge, I was able to find external documentation or other resources (i.e. Google found relevant stuff to help me complete my tasks).</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="external_resource" id="external_resource" value="1">
+							  <label class="form-check-label text-light fw-bold" for="external_resource">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="external_resource" id="external_resource" value="2">
+							  <label class="form-check-label text-light fw-bold" for="external_resource">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="external_resource" id="external_resource" value="3">
+							  <label class="form-check-label text-light fw-bold" for="external_resource">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="external_resource" id="external_resource" value="4">
+							  <label class="form-check-label text-light fw-bold" for="external_resource">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="external_resource" id="external_resource" value="5">
+							  <label class="form-check-label text-light fw-bold" for="external_resource">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>The tasks I took on were clearly articulated.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_tasks" id="clear_tasks" value="1">
+							  <label class="form-check-label text-light fw-bold" for="clear_tasks">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_tasks" id="clear_tasks" value="2">
+							  <label class="form-check-label text-light fw-bold" for="clear_tasks">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_tasks" id="clear_tasks" value="3">
+							  <label class="form-check-label text-light fw-bold" for="clear_tasks">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_tasks" id="clear_tasks" value="4">
+							  <label class="form-check-label text-light fw-bold" for="clear_tasks">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_tasks" id="clear_tasks" value="5">
+							  <label class="form-check-label text-light fw-bold" for="clear_tasks">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>There was good communication with operational stakeholders in the field when I had a question about a requested product.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="field_communication" id="field_communication" value="1">
+							  <label class="form-check-label text-light fw-bold" for="field_communication">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="field_communication" id="field_communication" value="2">
+							  <label class="form-check-label text-light fw-bold" for="field_communication">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="field_communication" id="field_communication" value="3">
+							  <label class="form-check-label text-light fw-bold" for="field_communication">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="field_communication" id="field_communication" value="4">
+							  <label class="form-check-label text-light fw-bold" for="field_communication">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="field_communication" id="field_communication" value="5">
+							  <label class="form-check-label text-light fw-bold" for="field_communication">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-5">
+					<h5 class='text-light mb-3'>Deadlines were realistic and clearly communicated.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_deadlines" id="clear_deadlines" value="1">
+							  <label class="form-check-label text-light fw-bold" for="clear_deadlines">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_deadlines" id="clear_deadlines" value="2">
+							  <label class="form-check-label text-light fw-bold" for="clear_deadlines">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_deadlines" id="clear_deadlines" value="3">
+							  <label class="form-check-label text-light fw-bold" for="clear_deadlines">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_deadlines" id="clear_deadlines" value="4">
+							  <label class="form-check-label text-light fw-bold" for="clear_deadlines">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="clear_deadlines" id="clear_deadlines" value="5">
+							  <label class="form-check-label text-light fw-bold" for="clear_deadlines">5</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<h5 class='text-light mb-3'>The coordination tools (Dropbox, Trello, Slack) were easy to access and use.</h5>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="coordination_tools" id="coordination_tools" value="1">
+							  <label class="form-check-label text-light fw-bold" for="coordination_tools">1</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="coordination_tools" id="coordination_tools" value="2">
+							  <label class="form-check-label text-light fw-bold" for="coordination_tools">2</label>
+						</div>
+					</div>	
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="coordination_tools" id="coordination_tools" value="3">
+							  <label class="form-check-label text-light fw-bold" for="coordination_tools">3</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="coordination_tools" id="coordination_tools" value="4">
+							  <label class="form-check-label text-light fw-bold" for="coordination_tools">4</label>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" name="coordination_tools" id="coordination_tools" value="5">
+							  <label class="form-check-label text-light fw-bold" for="coordination_tools">5</label>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+
+			
+			
+		{{ form.submit(class="btn btn-outline-danger mt-3") }}
+		
+		</form>
+	</div>
+	</div>
+	
+	
+	
+</div>
+{% endblock content %}

@@ -1,0 +1,57 @@
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+{% extends "layout.html" %}
+{% block content %}
+<div class='container'>
+	<h2 class='mt-5 Montserrat'>{{emergency_info.emergency_name}} Assignments</h2>
+	<p><a href='/emergency/{{emergency_info.id}}'>← Back to Emergency Page</a></p>
+	<div class="chartCard">
+  		<div class="chartBox">
+			<canvas id="emergencyGanttChart"></canvas>
+  		</div>
+	</div>
+
+	<script>
+	// setup 
+	const data = {
+  	labels: {{member_labels | tojson}},
+  	datasets: [{
+		label: 'Assignments Over Time',
+		data: {{start_end_dates | tojson}},
+		backgroundColor: [
+	  	'rgba(220, 53, 69, 1.00)',
+		],
+		barPercentage: .9
+  	}]
+	};
+	
+	// config 
+	const config = {
+  	type: 'bar',
+  	data,
+  	options: {
+	  	indexAxis: 'y',
+		scales: {
+			x: {
+				min: {{min_date | tojson}},
+				type: 'time',
+				time: {
+					unit: 'day'
+				}
+			},
+	  	y: {
+			beginAtZero: true
+	  	}
+		}
+  	}
+	};
+	
+	// render init block
+	const myChart = new Chart(
+  	document.getElementById('emergencyGanttChart'),
+  	config
+	);
+	</script>
+</div>
+{% endblock content %}

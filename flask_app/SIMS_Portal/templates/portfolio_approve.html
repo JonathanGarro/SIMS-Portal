@@ -1,0 +1,66 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="mt-2" id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
+		{% endwith %}
+	</div>
+	<div class="row my-5">
+		<div class="col col-md-4">
+			<div class="card border-0 p-4 bg-light">
+				<h4 class='text-secondary'>Review Products for</h4>
+				<h1 class="text-danger mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
+				<p class='text-secondary'>The following products have been uploaded by members supporting this emergency. As a SIMS Remote Coordinator for this response, it is your responsibility to approve or reject the posting of these products to the portal for public viewing.</p>
+				<p class='text-secondary'><a href='#'>Learn more about this process</a> and what you should consider before approving.</p>
+			</div>
+		</div>
+	
+		<div class="col mx-4">
+			<div class='mb-5'>
+			{% if pending_list|length == 0 %}
+			<h3 class="mb-3 text-danger profile-section-header">No Products to Review!</h3>
+			<p class='text-secondary'>This emergency does not have any products awaiting approval.</p>
+			{% else %}
+			<h3 class="mb-3 text-danger profile-section-header">Products for Review</h3>
+			<div class="row row-cols-3 row-cols-md-3 g-4 mt-4">
+			{% for product in pending_list %}
+				<div class="col d-flex align-items-stretch">
+					<a href="/portfolio/view/{{product.Portfolio.id}}">
+					<div class="card" id="portfolio-card" style="width: 18rem;">
+					{% if '.pdf' in product.Portfolio.final_file_location %}
+					<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+					{% else %}
+					<img src="/static/assets/portfolio/{{product.Portfolio.final_file_location}}" class="card-img-top" alt="...">
+					{% endif %}
+					
+					  <div class="card-body d-flex flex-column">
+						<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
+						<h5 class="card-title mt-auto">{{product.Portfolio.title}}</h5>
+						</a>
+					  </div>
+					  <div class="card-footer py-3 bg-transparent border-0">
+						  <div class="d-flex justify-content-between align-items-center">
+						  
+						  <a href='/portfolio/approve/{{product.Portfolio.id}}/{{product.Emergency.id}}'><button class='btn btn-sm btn-success'>Approve</button></a>
+						  <a href='/portfolio/reject/{{product.Portfolio.id}}/{{product.Emergency.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a>
+						  </div>
+					  </div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		{% endif %}
+	</div>
+	</div>
+	</div>
+</div>
+{% endblock content %}

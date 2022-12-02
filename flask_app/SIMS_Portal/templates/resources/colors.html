@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+	  <div class="col-md-3">
+		  <div class="card border-0 p-4 bg-light sticky-top">
+			  <h5 class="text-danger mb-5 Montserrat">Doctrine & Resources</h5>
+				  <div class="list-group">
+					<a href="/resources" class="list-group-item list-group-item-action text-secondary">← Resources Home</a>
+				</div>
+				<div class="list-group mt-3">
+					<a href="#colors" class="list-group-item list-group-item-action text-secondary">Colors</a>
+					<a href="#fonts" class="list-group-item list-group-item-action text-secondary">Fonts</a>
+				</div>
+			</div>
+	  </div>
+	  <div class="col">
+		  <h3 class='my-4 text-danger Montserrat' id='colors'>Colors</h3>
+		  <p>Whenever appropriate, SIMS should align our products' colors with the official IFRC color palette. How you use these colors depends on the element within the product. Below are broad rules of thumb for how best to choose the right colors. The button below will download an Adobe file which can be imported into Illustrator (and any other Creative Suite app) for quick access to the swatches referenced in this guide.</p>
+			<a href="/static/assets/img/swatches/SIMS Colors.ai" download rel='noopener noreferrer' target= "_blank"><button type="button" class="btn btn-danger btn-sm mt-2 mb-4">Download the SIMS Adobe Swatch Group</button></a>
+			<h4 class='mb-4 text-dark Montserrat'>Primary</h4>
+			<p>These should be used for infographic and map titles, icons, and any other elements that are designed to draw the viewers eye. Note that these should not be used for basemaps or large areas of infographics.</p>
+			<div class="row row-cols-3 row-cols-md-3 g-4 mt-4">
+				<div class="col d-flex align-items-stretch">
+					<div class="card"">
+					  <img class="card-img-top img-fluid" src="/static/assets/img/swatches/swatch-dk-grey.png" alt="">
+					  <div class="card-body">
+						  <h5>Hex</h5>
+							  <p>323232</p>
+						  <h5>CMYK</h5>
+						  <p>0 0 0 95</p>
+						  <h5>RGB</h5>
+							  <p>50 50 50</p>
+					  </div>
+					</div>
+				</div>
+				<div class="col d-flex align-items-stretch">
+					  <div class="card"">
+						<img class="card-img-top img-fluid" src="/static/assets/img/swatches/swatch-dk-red.png" alt="">
+						<div class="card-body">
+							<h5>Hex</h5>
+								<p>F5333F</p>
+							<h5>CMYK</h5>
+							<p>C0 M86 Y63 K0</p>
+							<h5>RGB</h5>
+								<p>239 51 64</p>
+						</div>
+					  </div>
+				  </div>
+				  <div class="col d-flex align-items-stretch">
+						<div class="card"">
+						  <img class="card-img-top img-fluid" src="/static/assets/img/swatches/swatch-dk-blue.png" alt="">
+						  <div class="card-body">
+							  <h5>Hex</h5>
+								  <p>011E41</p>
+							  <h5>CMYK</h5>
+							  <p>100 87 42 52</p>
+							  <h5>RGB</h5>
+								  <p>1 30 65</p>
+						  </div>
+						</div>
+					</div>
+			</div>
+		   <p class='mt-5'>The infographic seen below is an example of using these primary colors for the title and subtitle of the document in order to draw the eyes. The text in the main table, however, uses more muted grays.</p>
+		   <img src='/static/assets/img/colors-example-infographic.png' class='mb-3' width='100%'>
+		   <figcaption class="figure-caption">The primary colors are used for the title and match the IFRC icons.</figcaption> 
+		   
+			<h4 class='mt-5 mb-4 text-dark Montserrat'>Secondary</h4>
+			Secondary colors here
+			
+			<h3 class='my-4 text-danger Montserrat' id='fonts'>Fonts</h3>
+			<p>Whenever possible, SIMS products should use official IFRC brand-compliant fonts. The two primary fonts are Montserrat and Open Sans, though each has a specific intended usage. Below are the general rules for choosing between the two, example sentences to preview the font, and a link to Google Fonts to download them directly to your computer. If you are creating a site or dashboard, you can link directly to Google Fonts' API, as is done here on this page.</p>
+			
+			<div class='mt-5 Montserrat'><h4>Montserrat</h4></div>
+			<div class='mb-4' style="font-family: 'Montserrat';"><h5>The quick brown fox jumped over the lazy dog.</h5></div>
+
+			<button type="button" class="btn btn-danger btn-sm mb-4"><a href='https://fonts.google.com/specimen/Montserrat' class='text-light'>Download Montserrat</a></button> 
+			<p class='fw-bold'>Use Montserrat for titles and headlines, and sparingly in your products (i.e. not long blocks of text).</p>
+			<p>Montserrat is a geometric sans-serif typeface designed by Julieta Ulanovsky, inspired by posters and signage from her historical Buenos Aires neighborhood of the same name. It is rather close in spirit to Gotham and Proxima Nova, but has its own individual appearance — more informal, less extended, and more idiosyncratic. It is provided in a total of nine different weights, each having eight figure styles and small caps in both upright and italic shapes. </p>
+			
+
+			<div class='mt-5'style="font-family: 'Open Sans';"><h4>Open Sans</h4></div>
+			<div class='mb-4' style="font-family: 'Open Sans';"><h5>The quick brown fox jumped over the lazy dog.</h5></div>
+			
+			<button type="button" class="btn btn-danger btn-sm mb-4"><a href='https://fonts.google.com/specimen/Open+Sans' class='text-light'>Download Open Sans</a></button> 
+			<p class='fw-bold'>Use Open Sans for longer sections of text, with the bold version reserved for map labels.</p>
+			
+			<p>Open Sans is a humanist sans serif typeface designed by Steve Matteson, Type Director of Ascender Corp. This version contains the complete 897 character set, which includes the standard ISO Latin 1, Latin CE, Greek and Cyrillic character sets. Open Sans was designed with an upright stress, open forms and a neutral, yet friendly appearance. It was optimized for print, web, and mobile interfaces, and has excellent legibility characteristics in its letterforms.</p>
+			
+			
+	  </div>
+	  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="mt-2" id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+   			{% if messages %}
+	   			{% for category, message in messages %}
+		   			<div class="alert alert-{{ category }}">
+			   			{{ message }} 
+		   			</div>
+	   			{% endfor %}
+   			{% endif %}
+		{% endwith %}
+	</div>
+	<div class="row my-5">
+		<div class="col col-md-4 rounded rounded-3">
+			<div class="card border-0 p-4 bg-light">
+				<div class="row">
+					<img src="{{ profile_picture }}" class="img-fluid mb-4" >
+				</div>
+				<div class="row">
+					<h2 class="text-danger profile-section-header">{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+				</div>
+				<div class="row">
+					<h5 class="text-secondary mt-4 ">Role</h5>
+					<h4 class='profile-section-header'>{{ current_user.job_title }}</h4>
+				</div>
+				<div class="row">
+					<h5 class="text-secondary mt-4">National Society</h5>
+					<h4 class='profile-section-header'>{{ ns_association }}</h4>
+				</div>
+				<div class="row">
+					<div>
+					<h5 class="text-secondary mt-4">Skills</h5>
+					{% for skill in skills_list %}
+						<button type="button" class="btn btn-danger btn-sm mb-2">{{skill.name}}</button>
+					{% endfor %}
+					</div>
+				</div>
+				
+				<div class="row">
+					<div>
+					<h5 class="text-secondary mt-4">Languages</h5>
+					{% for language in languages_list %}
+						<button type="button" class="btn btn-danger btn-sm mb-2">{{language.name}}</button>
+					{% endfor %}
+					</div>
+				</div>
+				
+				<div class="row">
+					<div>
+					<h5 class="text-secondary mt-4">Contact</h5>
+					<a href="mailto: {{user_info.email}}"'><img src='/static/assets/img/profile-email.png' height='50px'></a>
+					{% if user_info.twitter %}
+						<a href='https://twitter.com/{{user_info.twitter}}'><img src='/static/assets/img/profile-twitter.png' height='50px'></a>
+					{% endif %}
+					{% if user_info.github %}
+						<a href='https://github.com/{{user_info.github}}'><img src='/static/assets/img/profile-github.png' height='50px'></a>
+					{% endif %}
+					{% if user_info.slack_id %}
+						<a href='https://sims-ifrc.slack.com/team/{{user_info.slack_id}}'><img src='/static/assets/img/profile-slack.png' height='50px'></a>
+					{% endif %}
+					</div>
+				</div>
+			
+				<div class="list-group mt-5">
+			  		<a href="{{ url_for('users.update_profile') }}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
+			  		<a href="#" class="list-group-item list-group-item-action text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Member</a>
+					  <!-- Modal -->
+					  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						  <div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+							  <div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLongTitle">Delete Your SIMS Account</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </div>
+							  <div class="modal-body">
+								<span class='fw-bold'>Was it something we said?</span> <br><br> Are you sure you want to delete your account? You will lose all data associated with it.
+							  </div>
+							  <div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+								<a href="/user/delete/{{current_user.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+							  </div>
+							</div>
+						  </div>
+						</div>
+
+					  
+				</div>
+			</div>
+		</div>
+		<div class="col mx-4">
+			<div class='mb-5'>
+				{% if current_user.status == 'Pending' %}
+				<div class="alert alert-warning mb-4" role="">
+					Hi {{ current_user.firstname }}, your account is still pending approval by a SIMS administrator. 
+				</div>
+				{% endif %}
+
+				<h3 class="mb-3 text-danger profile-section-header">About {{ user_info.firstname }}</h3>
+				{% if user_info.bio %}
+					<p style="white-space: pre-line">{{ user_info.bio|markdown}}</p>
+				{% else %}
+					No information shared yet.
+				{% endif %}
+			</div>
+			<div class='mb-5'>
+				<h3 class="mb-3 text-danger profile-section-header">Operations Supported: <span class='text-dark'>{{ deployment_history_count }}</span></h3>
+				{% if deployment_history_count == 0 %}
+					No deployments or remote support provided yet.
+				{% else %}
+				<table class="table">
+			  	<thead class="">
+					<tr>
+				  	<th>Event</th>
+				  	<th>Assignment</th>
+				  	<th>Start Date</th>
+				
+					</tr>
+			  	</thead>
+			  	<tbody>
+				  	{% for assignment in assignment_history %}
+				  	<tr>
+						<td class="fw-bold"><a href="/emergency/{{assignment.Emergency.id}}" class="link-danger">{{assignment.Emergency.emergency_name}}</a></td>
+						<td><a href='/assignment/{{assignment.Assignment.id}}'>{{assignment.Assignment.role}}</a></td>
+						<td>{{assignment.Assignment.start_date}}</td>  
+				  	{% endfor %}
+			  	</tbody>
+				</table>
+				{% endif %}
+			</div>
+			<div class='mb-5'>
+				<h3 class="mb-3 text-danger profile-section-header">Portfolio Highlights: <span class='text-dark'>{{user_portfolio_size}}</h3>
+				<div class="row row-cols-3 row-cols-md-3 g-4 my-4">
+				{% for product in user_portfolio %}
+					<div class="col d-flex align-items-stretch">
+						<a href="/portfolio/view/{{product.id}}">
+						<div class="card" id="portfolio-card" style="width: 18rem;">
+						{% if '.pdf' in product.final_file_location %}
+						<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+						{% else %}
+						<img src="/static/assets/portfolio/{{product.final_file_location}}" class="card-img-top" alt="...">
+						{% endif %}
+						
+					  	<div class="card-body d-flex flex-column">
+							<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
+							<h5 class="card-title mt-auto">{{product.title}}</h5>
+							</a>
+					  	</div>
+						</div>
+					</div>
+				{% endfor %}
+				</div>
+				{% if user_portfolio_size > 3 %}
+				<div class='mb-5'>
+					<a href='/portfolio/profile_more/{{current_user.id}}'><button type="button" class="btn btn-danger">View All of {{current_user.firstname}}'s' Products</button></a>
+				</div>
+				{% endif %}
+			</div>
+			<div class='mb-3'>
+			<h3 class="mb-2 text-danger profile-section-header">Badges: <span class='text-dark'>{{ count_badges }}</span></h3>
+				<div class="row row-cols-4 row-cols-md-4 g-4 mt-2">
+				{% for badge in badges %}
+					<div class="col d-flex align-items-stretch">
+					  	<a href='/badges#{{badge.id}}'><img src="{{badge.badge_url}}" class="img-fluid"></a>
+				  	</div>
+				{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

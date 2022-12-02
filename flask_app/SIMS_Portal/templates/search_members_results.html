@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class="row my-5">
+		<h3 class='text-danger mb-5 Montserrat'>Search Results</h3>
+		{% if master_search|length > 0 %}
+		<table class="table">
+			  <thead class="">
+				<tr>
+				  <th>Member</th>
+				  <th>Title</th>
+				  <th>Email</th>
+				  <th>Slack</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				  {% for result in master_search %}
+				  <tr>
+					<td class="fw-bold"><a href="/profile/view/{{result.id}}" class="link-danger">{{result.firstname}} {{result.lastname}}</a></td>
+					<td>{{result.job_title}}</td>
+					<td>{{result.email}}</td>
+					{% if result.slack_id %}
+						<td><a href='https://sims-ifrc.slack.com/team/{{result.slack_id}}'>Message</td> 
+						{% else %}
+						<td> </td> 
+					{% endif %}
+				  </tr>
+				  {% endfor %}
+			  </tbody>
+		</table>
+		{% else %}
+		<h4 class='text-secondary'>No Results</h4>
+		{% endif %}
+	
+	</div>
+</div>
+{% endblock content %}

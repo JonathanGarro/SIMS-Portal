@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class='row my-5'>
+		<div class='col col-md-3'>
+			<a href='https://www.youtube.com/watch?v=RfiQYRn7fBg'><img src='/static/assets/img/magic-word.gif' class='img-fluid'></a>
+		</div>
+		{% if user_is_sims_co == False %}
+		<div class='col ps-5'>
+			<h2 class='text-danger Montserrat mb-2'>Ah, ah, ah! You can't do that.</h2>
+			<p><span class='fw-bold'>Error 403:</span> You need to be a SIMS Remote Coordinator for <span class='fw-bold text-danger'>{{event_name.emergency_name}}</span> to assign badges. Reach out to one of the coordinators assigned to this event to get this product approved.</p>
+			<table class='table'>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Email Address</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for person in sims_co_ids %}
+						<tr>
+							<td>{{person.User.firstname}} {{person.User.lastname}}</a></td>
+							<td>{{person.User.email}}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% elif disaster_coordinator_query %}
+			<div class='col ps-5'>
+				<h2 class='text-danger'>Ah, ah, ah! You can't do that.</h2>
+				<p><span class='fw-bold'>Error 403:</span> You need to be either a site administrator or a SIMS Remote Coordinator for <span class='fw-bold text-danger'>{{event_name.emergency_name}}</span> to approve portfolio products. Reach out to one of the coordinators assigned to this event to get this product approved.</p>
+				<table class='table'>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Email Address</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for coordinator in disaster_coordinator_query %}
+							<tr>
+								<td>{{coordinator.User.firstname}} {{coordinator.User.lastname}}</a></td>
+								<td>{{coordinator.User.email}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+		<div class='col ps-5'>
+			<h2 class='text-danger'>Ah ah ah, you didn't say the magic word!</h2>
+			<p><span class='fw-bold'>Error 403:</span> You don't have permission to do that. Reach out to a SIMS Portal administrator if you need help.</p>
+			<table class='table'>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Email Address</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for admin in list_of_admins %}
+						<tr>
+							<td>{{admin.firstname}} {{admin.lastname}}</a></td>
+							<td>{{admin.email}}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock content %}
+
+

@@ -1,0 +1,8 @@
+setup.cfg
+setup.py
+src/mimerender.py
+src/mimerender.egg-info/PKG-INFO
+src/mimerender.egg-info/SOURCES.txt
+src/mimerender.egg-info/dependency_links.txt
+src/mimerender.egg-info/requires.txt
+src/mimerender.egg-info/top_level.txt
