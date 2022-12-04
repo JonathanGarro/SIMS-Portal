@@ -331,7 +331,7 @@
 			  <div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
 				 <h3 class="text-dark my-4 emergency-title">Assignment Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#individual-learning'>What's This?</a></span></h3>
 				 {% if learning_count == 0 %}
-				 No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.
+				 <p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
 				 {% elif learning_count > 2 %}
 				 
 				 <p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data. </p>
