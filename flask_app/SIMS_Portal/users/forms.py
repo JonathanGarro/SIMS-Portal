@@ -12,6 +12,7 @@ class RegistrationForm(FlaskForm):
 	lastname = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=40)])
 	email = StringField('Email', validators=[DataRequired(), Email()])
 	ns_id = QuerySelectField('National Society Country', query_factory=lambda:NationalSociety.query.all(), get_label='country_name', allow_blank=True)
+	slack_id = StringField('SIMS Slack ID', validators=[DataRequired()])
 	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=24)])
 	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6, max=24), EqualTo('password')])
 	submit = SubmitField('Register')

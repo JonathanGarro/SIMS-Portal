@@ -17,31 +17,50 @@
 			<img src="/static/assets/img/login-main.jpg" class="img-fluid mb-4 rounded-3" alt="Photo of Bahamas Red Cross volunteer">
 		</div>
 		<div class="col-md-4">
-			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3">
+			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
 				{{ form.hidden_tag() }}
-			<h2 class="text-danger pb-4">Member Login</h2>
+			<h2 class="text-danger pb-4 Montserrat">Member Login</h2>
 			<div class="form-group pb-4">
-				<label class="pb-2 text-danger" for="email">Email</label>
-				<input type="text" name="email" class="form-control">
+				{{ form.email.label(class="form-control-label pb-2 text-danger") }}
+				
+				{% if form.email.errors %}
+					{{ form.email(class="form-control form-control-lg is-invalid") }}
+						<div class="invalid-feedback">
+							{% for error in form.email.errors %}
+								<span>{{ error }}</span>
+							{% endfor %}
+						</div>
+				{% else %}
+					{{ form.email(class="form-control form-control-lg") }}
+				{% endif %}
 			</div>
 			<div class="form-group pb-4">
-				<label class="pb-2 text-danger" for="password">Password</label>
-				<input type="password" name="password" class="form-control">
+				{{ form.password.label(class="form-control-label pb-2 text-danger") }}
+				
+				{% if form.password.errors %}
+					{{ form.password(class="form-control form-control-lg is-invalid") }}
+						<div class="invalid-feedback">
+							{% for error in form.password.errors %}
+								<span>{{ error }}</span>
+							{% endfor %}
+						</div>
+				{% else %}
+					{{ form.password(class="form-control form-control-lg") }}
+				{% endif %}
 			</div>
-			<div class="form-check">
-				{{ form.remember(class="form-check-input") }}
-				{{ form.remember.label(class="form-check-label text-danger") }}
-			</div>
-			<div class="form-group pb-3">
-				<input type="submit" value="Login" class="btn btn-danger mt-3">
-			</div>
-			<small class="text-muted">
-				<a href="{{url_for('users.reset_request')}}" class="link-danger">Forgot Password?</a>
-			</small>
+			{{ form.submit(class="btn btn-danger") }}
+			<small class="text-muted"><a href="{{url_for('users.reset_request')}}" class="link-danger"> &nbsp; Forgot Password?</a></small>
 			</form>
 			
+			
+			
+			
+			
+			
+			
+			
 			<div class="mx-auto mt-3 mb-5 p-4 bg-light rounded-3">
-				<h2 class="text-danger pb-4">New Users</h2>
+				<h2 class="text-danger pb-4 Montserrat">New Users</h2>
 			  <p>SIMS membership is managed by a small governance committee. If you are interested in supporting SIMS, begin by completing the sign up form below. A member of the committee will reach out about onboarding if you are accepted.</p><br>
 			  <a class="btn btn-danger" href="register" role="button">Sign Up</a>
 			</div>
