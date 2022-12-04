@@ -44,7 +44,11 @@ def about():
 	lateset_activation = db.session.query(Emergency).order_by(Emergency.created_at.desc()).first()
 	count_members = db.session.query(User).filter(User.status == 'Active').count()
 	return render_template('about.html', count_activations=count_activations, latest_activation=lateset_activation, count_members=count_members)
-	
+
+@main.route('/get_slack_id')
+def get_slack_id():
+	return render_template('slack-id-how-to.html')
+
 @main.route('/badges')
 def badges():
 	badges = db.engine.execute("SELECT * FROM user_badge JOIN Badge ON Badge.id = user_badge.badge_id")

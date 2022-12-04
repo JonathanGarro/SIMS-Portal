@@ -33,7 +33,7 @@ def register():
 	else:
 		if form.validate_on_submit():
 			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-			user = User(firstname=form.firstname.data, lastname=form.lastname.data, ns_id=form.ns_id.data.ns_go_id, email=form.email.data, password=hashed_password)
+			user = User(firstname=form.firstname.data, lastname=form.lastname.data, ns_id=form.ns_id.data.ns_go_id, slack_id=form.slack_id.data, email=form.email.data, password=hashed_password)
 			db.session.add(user)
 			db.session.commit()
 			new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin_landing|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
@@ -41,7 +41,7 @@ def register():
 			return redirect(url_for('users.login'))
 		else:
 			flash('Please correct the errors in the registration form.', 'danger')
-			return redirect(url_for('users.register'))
+
 		return render_template('register.html', title='Register for SIMS', form=form)
 	
 @users.route('/login', methods=['GET', 'POST'])
