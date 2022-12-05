@@ -4,34 +4,34 @@
 	<div class="row my-5">
 		<div class="col col-md-4">
 			<h4 class="text-secondary mb-1">Create New</h4>
-			<h3 class="mb-3 text-danger mb-4">Emergency Record</h3>
+			<h3 class="mb-3 text-danger mb-4 Montserrat">Emergency Record</h3>
 			<ul class="timeline">
 				<li>
-					<h5 class="text-secondary">Emergency Name</h5>
+					<h5 class="text-danger Montserrat">Emergency Name</h5>
 					<p id="sidebar-guidance">Use the same name as what you see on the GO Platform. If no record exists yet on GO, use a simple name for now and edit this record later.</p>
 				</li>
 				<li>
-					<h5 class="text-secondary">Affected Country</h5>
+					<h5 class="text-danger Montserrat">Affected Country</h5>
 					<p id="sidebar-guidance">The SIMS portal does not currently feature a many-to-many feature on locations. For emergencies that cover multiple countries, select the most affected.</p>
 				</li>
 				<li>
-					<h5 class="text-secondary">Emergency Type</h5>
+					<h5 class="text-danger Montserrat">Emergency Type</h5>
 					<p id="sidebar-guidance">Match the type seen on the GO Platform.</p>
 				</li>
 				<li>
-					<h5 class="text-secondary">Glide Number</h5>
+					<h5 class="text-danger Montserrat">Glide Number</h5>
 					<p id="sidebar-guidance">The GLIDE number is a unique identifier that helps connect data in this portal with external sources. See <a href="https://glidenumber.net/" class='text-danger'> the system's site</a> for more information.</p>
 				</li>
 				<li>
-					<h5 class="text-secondary">GO ID Number</h5>
+					<h5 class="text-danger Montserrat">GO ID Number</h5>
 					<p id="sidebar-guidance">GO ID numbers are four digits. See the table below the form on this page for recent GO emergencies.</p>
 				</li>
 				<li>
-					<h5 class="text-secondary">Activation Details</h5>
+					<h5 class="text-danger Montserrat">Activation Details</h5>
 					<p id="sidebar-guidance">Provide a brief overview of the decision to activate SIMS for this emergency, including any preliminary IM surge alerts that the network triaged.</p>
 				</li>
 				<li>
-					<h5 class="text-secondary">Slack, Dropbox and Trello</h5>
+					<h5 class="text-secondary Montserrat">Slack, Dropbox and Trello (Optional)</h5>
 					<p id="sidebar-guidance">Get the ID and URLs for these services. See <a href='/resources/sims_portal#logging-emergencies'>this article</a> in the help section of the SIMS Portal for more info.</p>
 				</li>
 			</ul>
@@ -137,7 +137,7 @@
 			<div class="row">
 				<div class="col">
 					<div class="form-group pb-4">
-						{{ form.slack_channel.label(class="form-control-label pb-2 text-danger") }}
+						{{ form.slack_channel.label(class="form-control-label pb-2 text-secondary") }}
 						
 						{% if form.slack_channel.errors %}
 							{{ form.slack_channel(class="form-control form-control-lg is-invalid") }}
@@ -153,7 +153,7 @@
 				</div>
 				<div class="col">
 					<div class="form-group pb-4">
-						{{ form.dropbox_url.label(class="form-control-label pb-2 text-danger") }}
+						{{ form.dropbox_url.label(class="form-control-label pb-2 text-secondary") }}
 						
 						{% if form.dropbox_url.errors %}
 							{{ form.dropbox_url(class="form-control form-control-lg is-invalid") }}
@@ -169,7 +169,7 @@
 				</div>
 				<div class="col">
 					<div class="form-group pb-4">
-						{{ form.trello_url.label(class="form-control-label pb-2 text-danger") }}
+						{{ form.trello_url.label(class="form-control-label pb-2 text-secondary") }}
 						
 						{% if form.trello_url.errors %}
 							{{ form.trello_url(class="form-control form-control-lg is-invalid") }}
@@ -188,7 +188,7 @@
 		
 		</form>
 		<div class='ps-1'>
-		<h4 class="text-danger mt-5">Latest GO Events</h4>
+		<h4 class="text-danger mt-5 Montserrat">Latest GO Events</h4>
 		<p>This is a list of the most recent events in GO. Use this as a reference for getting the emergency ID number. If you don't see it here, <a href="https://go.ifrc.org/emergencies" class='text-danger'>navigate to the emergency in GO</a> and use the integer in the URL.</p>
 		<table class="table table-hover table-sm">
 		<thead>
