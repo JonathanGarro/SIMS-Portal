@@ -59,3 +59,23 @@ def send_slack_dm(message, user):
 			'text': message
 	}
 	requests.post(url='https://slack.com/api/chat.postMessage', data=data)
+	
+def check_valid_slack_ids(id):
+	client = WebClient(token=current_app.config['SIMS_PORTAL_SLACK_BOT'])
+	
+	users_store = []
+	
+	def save_users_ids(users_array):
+		for user in users_array:
+			users_store.append(user["id"])
+			
+	try:
+		result = client.users_list()
+		save_users_ids(result["members"])
+	except:
+		print('slack api check_valid_slack_ids failed')	
+		
+	if id in users_store:
+		return True
+	else:
+		return False

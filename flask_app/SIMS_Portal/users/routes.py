@@ -2,7 +2,7 @@ from flask import request, render_template, url_for, flash, redirect, jsonify, B
 from SIMS_Portal import db, bcrypt, mail
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge
 from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
-from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm
+from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -32,16 +32,23 @@ def register():
 		return render_template('register.html', title='Register for SIMS', form=form)
 	else:
 		if form.validate_on_submit():
-			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-			user = User(firstname=form.firstname.data, lastname=form.lastname.data, ns_id=form.ns_id.data.ns_go_id, slack_id=form.slack_id.data, email=form.email.data, password=hashed_password)
-			db.session.add(user)
-			db.session.commit()
-			new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin_landing|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
-			flash('Your account has been created.', 'success')
-			return redirect(url_for('users.login'))
+			# ping Slack API to get list of all members' ID, then compare form data to validate that user has entered valid ID
+			slack_check = check_valid_slack_ids(form.slack_id.data)
+			if slack_check == False:
+				flash('This Slack ID is not valid and does not belong to any existing SIMS Slack accounts.', 'danger')
+				return render_template('register.html', title='Register for SIMS', form=form)
+			else:
+				hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+				user = User(firstname=form.firstname.data, lastname=form.lastname.data, ns_id=form.ns_id.data.ns_go_id, slack_id=form.slack_id.data, email=form.email.data, password=hashed_password)
+				db.session.add(user)
+				db.session.commit()
+				message = "Thank you for registering for the SIMS Portal, {}. Your account has been placed into a queue, and will be approved by a SIMS Governance Committee member. You will be alerted here when that action is taken. In the meantime, you can log into the portal and explore the resources, but you will have limited permissions.".format(form.firstname.data)
+				send_slack_dm(message, form.slack_id.data)
+				new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin_landing|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
+				flash('Your account has been created.', 'success')
+				return redirect(url_for('users.login'))
 		else:
 			flash('Please correct the errors in the registration form.', 'danger')
-
 		return render_template('register.html', title='Register for SIMS', form=form)
 	
 @users.route('/login', methods=['GET', 'POST'])
@@ -57,6 +64,8 @@ def login():
 			login_user(user, remember=form.remember.data)
 			next_page = request.args.get('next')
 			return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+		else:
+			flash('Login failed. Please check email and password', 'danger')
 	else:
 		flash('Login failed. Please check email and password', 'danger')
 	return render_template('login.html', title='Log into SIMS', form=form)
@@ -251,8 +260,6 @@ def update_specified_profile(id):
 	
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
-	if current_user.is_authenticated:
-		return redirect(url_for('main.dashboard'))
 	form = RequestResetForm()
 	if form.validate_on_submit():
 		user = User.query.filter_by(email=form.email.data).first()
@@ -263,8 +270,6 @@ def reset_request():
 	
 @users.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_token(token):
-	if current_user.is_authenticated:
-		return redirect(url_for('main.dashboard'))
 	user = User.verify_reset_token(token)
 	if user is None:
 		flash('That is an invalid or expired token.', 'warning')

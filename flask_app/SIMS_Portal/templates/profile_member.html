@@ -79,7 +79,7 @@
 				{% elif current_user.id == user_info.id %}
 				<div class="list-group mt-5">
 					  <a href="{{ url_for('users.update_profile') }}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
-					  <a href="{{ url_for('portfolios.new_portfolio') }}" class="list-group-item list-group-item-action text-secondary">Add to Portfolio</a>
+					  <a href='/reset_password' class="list-group-item list-group-item-action text-secondary">Change Password</a>
 					  <a href="/user/delete/{{user_info.id}}" class="list-group-item list-group-item-action text-danger">Delete Member</a>
 				</div>
 				{% endif %}
