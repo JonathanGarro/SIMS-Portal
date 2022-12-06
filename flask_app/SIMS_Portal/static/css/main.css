@@ -76,13 +76,7 @@ li {
 	color: #df4759;
 }
 
-.card-footer {
-	position:absolute;
-	bottom:0;
-	width:100%;
-	background-color: white;
-	border: none
-}
+
 
 .list-group-item.active {
 	background-color: rgb(192, 192, 192);
