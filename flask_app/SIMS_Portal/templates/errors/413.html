@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class='row my-5'>
+		<div class='col col-md-3'>
+			<img src='/static/assets/img/pump-brakes.gif' class='img-fluid'>
+		</div>
+		{% if user_is_sims_co == False %}
+		<div class='col ps-5'>
+			<h2 class='text-danger Montserrat mb-2'>Whoa there, fella!</h2>
+			<p><span class='fw-bold'>Error 413:</span> The file you're trying to upload is too big. Someone's gotta pay server costs around here, and we can't just post your entire vacation photo album!</p>
+		</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock content %}
+
+
