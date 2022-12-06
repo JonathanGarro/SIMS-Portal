@@ -6,7 +6,7 @@ from SIMS_Portal.users.utils import send_slack_dm
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from flask_login import login_user, logout_user, current_user, login_required
-from SIMS_Portal.portfolios.utils import save_portfolio, get_full_portfolio
+from SIMS_Portal.portfolios.utils import save_portfolio, get_full_portfolio, save_portfolio_to_dropbox
 import os
 from func_timeout import func_timeout, FunctionTimedOut
 
@@ -49,11 +49,11 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 	form = PortfolioUploadForm()
 	if form.validate_on_submit():
 		if form.file.data:
-			file = save_portfolio(form.file.data)
+			file = save_portfolio_to_dropbox(form.file.data)
 		else:
 			redirect_url = '/portfolio/new_from_assignment/{}/{}/{}'.format(assignment_id, user_id, emergency_id)
 			flash('There was an error posting your product. Please make sure you have filled out all required fields and selected a compatible file.', 'danger')
-			return redirect(request.url)
+			return redirect(redirect_url)
 		if form.external.data == True:
 			form.external.data = 1
 			status = 'Pending Approval'
@@ -61,7 +61,7 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 			form.external.data = 0
 			status = 'Personal'
 		product = Portfolio(
-			final_file_location = file, title=form.title.data, creator_id=user_id, description=form.description.data, type=form.type.data, emergency_id=emergency_id, external=form.external.data, assignment_id=assignment_id, asset_file_location=form.asset_file_location.data, product_status=status
+			final_file_location = file, title = form.title.data, creator_id = user_id, description = form.description.data, type = form.type.data, emergency_id = emergency_id, external = form.external.data, assignment_id = assignment_id, asset_file_location = form.asset_file_location.data, product_status = status
 		)
 		db.session.add(product)
 		db.session.commit()
@@ -73,7 +73,6 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 			user = user_info.slack_id
 			send_slack_dm(message, user)
 		flash('New product successfully uploaded.', 'success')
-		# return redirect(url_for('users.profile'))
 		redirect_url = '/assignment/{}'.format(assignment_id)
 		return redirect(redirect_url)
 	return render_template('create_portfolio_from_assignment.html', title='Upload New SIMS Product', form=form)
