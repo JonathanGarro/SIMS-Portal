@@ -14,22 +14,25 @@ def save_portfolio(form_file):
 	
 	return file_filename
 
-def save_portfolio_to_dropbox(form_file):
+def save_portfolio_to_dropbox(form_file, user_id, type):
 	# generate unique string to avoid filename conflicts
 	random_hex = secrets.token_hex(8)
 	# use an access token with ONLY individual scopes (don't select any team scopes)
 	dropbox_access_token = current_app.config['DROPBOX_BOT']
 	filename, file_ext = os.path.splitext(form_file.filename)
-	file_filename = random_hex + file_ext
+	file_filename = type + '-user'+ str(user_id) + '-' + random_hex + file_ext
 	local_file_path = os.path.join(current_app.root_path, 'static/assets/portfolio', file_filename)
-	dropbox_path = '/Portfolio/{}'.format(file_filename)
+	dropbox_path = '/SIMS Portal/Portfolio/{}'.format(file_filename)
 	form_file.save(local_file_path)
 	
 	client = dropbox.Dropbox(dropbox_access_token)
 	uploaded = client.files_upload(open(local_file_path, "rb").read(), dropbox_path)
 	shared_link = client.sharing_create_shared_link(dropbox_path)
 	
-	print(shared_link.url)
+	share_link = shared_link.url
+	
+	output = (file_filename, share_link)
+	
 	return file_filename
 
 def get_full_portfolio(id):

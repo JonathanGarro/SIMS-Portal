@@ -49,7 +49,7 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 	form = PortfolioUploadForm()
 	if form.validate_on_submit():
 		if form.file.data:
-			file = save_portfolio_to_dropbox(form.file.data)
+			file = save_portfolio_to_dropbox(form.file.data, user_info.id, form.type.data)
 		else:
 			redirect_url = '/portfolio/new_from_assignment/{}/{}/{}'.format(assignment_id, user_id, emergency_id)
 			flash('There was an error posting your product. Please make sure you have filled out all required fields and selected a compatible file.', 'danger')
