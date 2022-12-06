@@ -81,7 +81,19 @@
 						<a href="/portfolio/view/{{product.id}}">
 						<div class="card" id='portfolio-card' style="width: 18rem;">
 							{% if '.pdf' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+							<img src="/static/assets/portfolio/placeholders/placeholder-pdf.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+							{% elif '.ai' in product.final_file_location %}
+							<img src="/static/assets/portfolio/placeholders/placeholder-ai.png" class="card-img-top" alt="AI Placeholder Thumbnail">
+							{% elif '.html' in product.final_file_location %}
+							<img src="/static/assets/portfolio/placeholders/placeholder-html.png" class="card-img-top" alt="HTML Placeholder Thumbnail">
+							{% elif '.ppt' in product.final_file_location %}
+							<img src="/static/assets/portfolio/placeholders/placeholder-ppt.png" class="card-img-top" alt="PPT Placeholder Thumbnail">
+							{% elif '.xls' in product.final_file_location or '.xlsx' in product.final_file_location or '.csv' in product.final_file_location %}
+							<img src="/static/assets/portfolio/placeholders/placeholder-xls.png" class="card-img-top" alt="XLS Placeholder Thumbnail">
+							{% elif '.zip' in product.final_file_location %}
+							<img src="/static/assets/portfolio/placeholders/placeholder-zip.png" class="card-img-top" alt="ZIP Placeholder Thumbnail">
+							{% elif '.doc' in product.final_file_location or '.docx' in product.final_file_location %}
+							<img src="/static/assets/portfolio/placeholders/placeholder-doc.png" class="card-img-top" alt="DOC Placeholder Thumbnail">
 							{% else %}
 							<img src="/static/assets/portfolio/{{product.final_file_location}}" class="card-img-top" alt="{{product.title}}">
 							{% endif %}
