@@ -104,14 +104,14 @@
 					</div>
 					
 					<div class='row'>
+
+						<div>
+							<label class='form-control-label pb-2 text-danger'>Select File (5MB Limit)</label>
+						  <input class="form-control" id="{{ form.file }}" type="file">
+						</div>
 						<div class="form-group pb-2">
 							{{ form.external(class="form-check-input") }}
 							{{ form.external.label(class="form-check-label text-danger") }}
-						</div>
-
-						<div>
-						  <label for="{{ form.file }}" class="form-label">{{ form.file.label }}</label>
-						  <input class="form-control" id="{{ form.file }}" type="file">
 						</div>
 					</div>
 					<br>
