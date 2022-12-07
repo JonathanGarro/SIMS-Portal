@@ -63,22 +63,18 @@ def view_assignment(id):
 	assignment_length_dict = assingment_length.mappings().first()
 	assignment_length_int = int(assignment_length_dict['length'])
 	
-	assingment_portfolio = db.session.query(Portfolio).filter(Portfolio.assignment_id==id, Portfolio.product_status != 'Removed').all()
-	count_assignment_portfolio = len(assingment_portfolio)
+	assignment_portfolio = db.session.query(Portfolio).filter(Portfolio.assignment_id==id, Portfolio.product_status != 'Removed').all()
+	count_assignment_portfolio = len(assignment_portfolio)
 	
 	# get availability if reported and convert to list, else return empty list
 	if assignment_info.Assignment.availability:
 		assignment_availability = assignment_info.Assignment.availability
 		remove_brackets = assignment_availability.replace('[','').replace(']','').replace("'",'')
 		available_dates = remove_brackets.split(', ')
-
-		# available_dates = []
-		# for date in dates:
-		# 	available_dates.append(datetime.strptime(date,'%Y-%m-%d').strftime('%b %d'))
 	else:
 		available_dates = []
 		
-	return render_template('assignment_view.html', assignment_info=assignment_info, formatted_start_date=formatted_start_date, formatted_end_date=formatted_end_date, days_left_int=days_left_int, assignment_length_int=assignment_length_int, assingment_portfolio=assingment_portfolio, available_dates=available_dates, count_assignment_portfolio=count_assignment_portfolio)
+	return render_template('assignment_view.html', assignment_info=assignment_info, formatted_start_date=formatted_start_date, formatted_end_date=formatted_end_date, days_left_int=days_left_int, assignment_length_int=assignment_length_int, assignment_portfolio=assignment_portfolio, available_dates=available_dates, count_assignment_portfolio=count_assignment_portfolio)
 
 @assignments.route('/assignment/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

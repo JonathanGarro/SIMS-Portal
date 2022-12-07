@@ -50,13 +50,13 @@
 					<p>{{ product.Portfolio.description}}</p>
 				</div>
 				<div class="row">
-					<h5 class="text-secondary mt-4">Final Product</h5>
+					<h5 class="text-secondary mt-4">Product</h5>
 					<p><a href='/portfolio/download/{{product.Portfolio.id}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">Download</a></p>
 				</div>
-				{% if product.Portfolio.asset_file_location and current_user.is_authenticated %}
+				{% if product.Portfolio.dropbox_file and current_user.is_authenticated %}
 				<div class="row">
 					<h5 class="text-secondary mt-4">Source Files</h5>
-					<p><a href='https://{{product.Portfolio.asset_file_location}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">Access</a></p>
+					<p><a href='{{product.Portfolio.dropbox_file}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">Access on Dropbox</a></p>
 				</div>
 				{% endif %}
 				{% if current_user.is_admin == 1 or current_user.id == product.User.id %}
@@ -88,11 +88,7 @@
 		</div>
 		<div class="col mx-4">
 			<div class='mb-5'>
-				{% if '.pdf' in product.Portfolio.final_file_location %}
-				<img src='/static/assets/portfolio/placeholder.png' width='100%'>
-				{% else %}
-				<img src='/static/assets/portfolio/{{product.Portfolio.final_file_location}}' width='100%'>
-				{% endif %}
+				<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" alt="Product Image" width='100%'>
 			</div>
 		</div>
 	</div>

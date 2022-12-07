@@ -81,27 +81,11 @@
 			{% if count_assignment_portfolio > 0 %}
 			<h3 class="emergency-title">Product Highlights</h3>
 			<div class="row row-cols-3 row-cols-md-3 g-4 mt-2">
-				{% for product in assingment_portfolio %}
+				{% for product in assignment_portfolio %}
 					<div class="col d-flex align-items-stretch">
 						<a href="/portfolio/view/{{product.id}}">
 						<div class="card" id='portfolio-card' style="width: 18rem;">
-							{% if '.pdf' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-pdf.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
-							{% elif '.ai' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-ai.png" class="card-img-top" alt="AI Placeholder Thumbnail">
-							{% elif '.html' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-html.png" class="card-img-top" alt="HTML Placeholder Thumbnail">
-							{% elif '.ppt' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-ppt.png" class="card-img-top" alt="PPT Placeholder Thumbnail">
-							{% elif '.xls' in product.final_file_location or '.xlsx' in product.final_file_location or '.csv' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-xls.png" class="card-img-top" alt="XLS Placeholder Thumbnail">
-							{% elif '.zip' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-zip.png" class="card-img-top" alt="ZIP Placeholder Thumbnail">
-							{% elif '.doc' in product.final_file_location or '.docx' in product.final_file_location %}
-							<img src="/static/assets/portfolio/placeholders/placeholder-doc.png" class="card-img-top" alt="DOC Placeholder Thumbnail">
-							{% else %}
-							<img src="/static/assets/portfolio/{{product.final_file_location}}" class="card-img-top" alt="{{product.title}}">
-							{% endif %}
+							<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="Product Image">
 				  		<div class="card-body d-flex flex-column">
 					  		<div>
 								  <button type="button" class="btn btn-secondary btn-sm mb-3">{{product.type}}</button>

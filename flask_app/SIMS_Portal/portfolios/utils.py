@@ -25,14 +25,32 @@ def save_portfolio_to_dropbox(form_file, user_id, type):
 	dropbox_path = '/SIMS Portal/Portfolio/{}'.format(file_filename)
 	form_file.save(local_file_path)
 	
-	client = dropbox.Dropbox(dropbox_access_token)
+	client = dropbox.Dropbox(
+		dropbox_access_token,
+		app_key = current_app.config['DROPBOX_APP_KEY'],
+		app_secret = current_app.config['DROPBOX_APP_SECRET'],
+		oauth2_refresh_token = current_app.config['DROPBOX_REFRESH_TOKEN']
+	)
+	
 	uploaded = client.files_upload(open(local_file_path, "rb").read(), dropbox_path)
 	shared_link = client.sharing_create_shared_link(dropbox_path)
 	
 	share_link = shared_link.url
 	
-	output = (file_filename, share_link)
+	output = {
+		'file_filename': file_filename, 
+		'share_link': share_link
+	}
 	
+	return output
+
+def save_cover_image(form_file, user_id, type):
+	random_hex = secrets.token_hex(8)
+	filename, file_ext = os.path.splitext(form_file.filename)
+	file_filename = type + '-user'+ str(user_id) + '-' + random_hex + file_ext
+	file_path = os.path.join(current_app.root_path, 'static/assets/portfolio', file_filename)
+	form_file.save(file_path)
+
 	return file_filename
 
 def get_full_portfolio(id):

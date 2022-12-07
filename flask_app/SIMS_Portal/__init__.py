@@ -38,7 +38,7 @@ class AdminView(ModelView):
 def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(Config)
-	app.config['MAX_CONTENT_LENGTH'] = 5 * 1000 * 1000
+	app.config['MAX_CONTENT_LENGTH'] = 15 * 1000 * 1000
 	
 	db.init_app(app)
 	bcrypt.init_app(app)

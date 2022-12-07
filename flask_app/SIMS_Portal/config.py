@@ -23,3 +23,6 @@ class Config:
 	SIMS_PORTAL_SLACK_BOT = os.environ.get('SIMS_PORTAL_SLACK_BOT')
 	ROOT_URL = 'http://127.0.0.1:5000'
 	DROPBOX_BOT = os.environ.get('DROPBOX_BOT')
+	DROPBOX_APP_KEY = os.environ.get('DROPBOX_APP_KEY')
+	DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')
+	DROPBOX_REFRESH_TOKEN = os.environ.get('DROPBOX_REFRESH_TOKEN')
