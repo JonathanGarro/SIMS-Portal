@@ -68,7 +68,7 @@ def create_badge():
 	form = NewBadgeUploadForm()
 	if current_user.is_admin == 1 and form.validate_on_submit() and form.file.data:
 		file = save_new_badge(form.file.data)
-		badge = Badge(name = form.name.data, badge_url = file)
+		badge = Badge(name = form.name.data, badge_url = file, limited_edition = 0)
 		db.session.execute(badge)
 		db.session.commit()
 		flash('New badge successfully created!', 'success')
@@ -185,7 +185,7 @@ def badge_assignment_sims_co(dis_id):
 	
 	event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 	
-	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
+	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
 	
 	assigned_members = db.session.query(Emergency, Assignment, User).join(Assignment, Assignment.emergency_id == Emergency.id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id).all()
 	
@@ -195,7 +195,7 @@ def badge_assignment_sims_co(dis_id):
 	user_is_sims_co = check_sims_co(dis_id)
 	
 	if request.method == 'GET' and user_is_sims_co == True:
-		query = User.query.join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == dis_id, Assignment.role == 'Remote IM Support')
+		query = User.query.join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == dis_id, Assignment.role == 'Remote IM Support', Assignment.assignment_status == 'Active')
 		badge_form.user_name.query = query
 		return render_template('emergency_badge_assignment.html', title='Assign Badges', user_is_sims_co=user_is_sims_co, assigned_members=assigned_members, event_name=event_name, badge_form=badge_form, assigned_badges=assigned_badges)
 	elif request.method == 'POST' and user_is_sims_co == True:
