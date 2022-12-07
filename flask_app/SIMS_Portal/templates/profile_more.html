@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mb-5">
 	<div class=" row mt-5">
-		<h3 class="" style="font-family: 'Montserrat';" id='sims-blue'>{{user_info.firstname}} {{user_info.lastname}}'s Products</h3>
+		<h3 class="Montserrat sims-blue">{{user_info.firstname}} {{user_info.lastname}}'s Products</h3>
 		<p class='text-secondary'>These are all of the products that {{user_info.firstname}} has posted to the SIMS Portal.</p>
 		<div class="row row-cols-xxl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2 g-4 mt-4">
 			{% for product in user_portfolio %}
