@@ -171,7 +171,16 @@ def badge_assignment_via_SIMSCO(user_id, badge_id, assigner_id, dis_id):
 		# uses session to get assigner_justify from form
 		new_badge = user_badge.insert().values(user_id=user_id, badge_id=badge_id, assigner_id=assigner_id, assigner_justify=session.get('assigner_justify', None))
 		db.session.execute(new_badge)
-		db.session.commit()	
+		db.session.commit()
+		try:
+			assigner = db.session.query(User).filter(User.id == assigner_id).first()
+			receiver = db.session.query(User).filter(User.id == user_id).first()
+			badge = db.session.query(Badge).filter(Badge.id == badge_id).first()
+			message = 'Hi {}, you have been assigned a new badge on the SIMS Portal! {} has given you the {} badge with the following message: {}'.format(receiver.firstname, assigner.fullname, badge.name, session.get('assigner_justify', None))
+			user = db.session.query(User).filter(User.id == user_id).first()
+			send_slack_dm(message, user.slack_id)
+		except:
+			pass
 		flash('Badge successfully assigned.', 'success')
 		return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 	elif user_is_sims_co == False:
