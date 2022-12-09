@@ -1,22 +1,7 @@
-id,title,type,description,product_status,final_file_location,asset_file_location,external,collaborator_ids,approver_id,approver_message,assignment_id,creator_id,emergency_id,created_at,updated_at
-1,Humanitarian Service Points in Romania,Map,"A map showing where HSPs are located, overlaid with branch maps.",Approved,df7c93b2baa97df4.png,,1,"4,6,1",NULL,NULL,28,3,4,2022-10-26 14:12:54,2022-10-27 14:58:05
-2,Ukraine Operational Stat Overview,Infographic,A comms-focused product that highlights the overall reach statistics for the regional operation.,Personal,ddfc479a92196f9c.png,,0,"11,4",NULL,NULL,25,1,4,2022-10-26 14:14:27,2022-10-31 17:34:05
-3,Surge Deployments Infographic,Infographic,Graphic showing the breakdown of profile types that have deployed to various countries as part of the response.,Approved,93b8ad52fb3c431c.png,,1,NULL,NULL,NULL,25,1,4,2022-10-26 14:58:23,2022-10-26 17:23:43
-4,Country Plans Overview,Infographic,Simple graphic showing the varied plans that each country is carrying out in response to the emergency.,Personal,07fe657f0a4bb6db.png,,0,4,NULL,NULL,25,1,4,2022-10-26 14:59:17,2022-10-26 15:01:59
-5,Hungarian Red Cross Basemap,Map,Map showing the location of key points of interest within Hungary to support the operational manager in that country.,Approved,c66b319e397fceb7.png,,1,NULL,NULL,NULL,25,1,4,2022-10-26 15:01:21,2022-10-26 17:23:42
-6,Slovak Red Cross Dashboard,Dashboard,Rejected Product Example,Personal,cb513a7b6d27d5cd.png,,1,NULL,NULL,NULL,25,1,4,2022-10-26 17:05:23,2022-10-26 17:25:47
-7,CVA Process Map,Infographic,A flowchart outlining how users will enroll in a CVA program.,Removed,29cd133660c1b083.png,,0,NULL,NULL,NULL,25,1,4,2022-10-26 18:49:15,2022-10-26 18:51:02
-8,CVA Process Map,Infographic,A flowchart outlining how users will enroll in a CVA program.,Removed,96f1c062975218d4.png,,0,NULL,NULL,NULL,25,1,4,2022-10-26 18:49:39,2022-10-26 18:50:55
-9,CVA Process Map,Infographic,Map,Removed,bafda0a6fff8bc3a.png,,0,NULL,NULL,NULL,25,1,4,2022-10-26 18:51:22,2022-10-26 18:52:22
-10,CVA Map,Infographic,map,Removed,1b51b8e0a884a51b.png,,0,NULL,NULL,NULL,25,1,4,2022-10-26 18:52:38,2022-10-26 18:54:28
-11,CVA Map,Infographic,asdf,Removed,7440c77c41df58bd.png,,0,NULL,NULL,NULL,25,1,4,2022-10-26 18:54:43,2022-10-26 18:55:35
-12,CVA Map,Infographic,asdf,Removed,0d97790f36664ebf.png,,0,NULL,NULL,NULL,25,1,4,2022-10-26 18:55:54,2022-10-26 19:02:19
-13,CVA Map,Infographic,asdf,Approved,2347e748ed825b9c.png,,1,NULL,NULL,NULL,25,1,4,2022-10-26 19:02:42,2022-10-28 14:49:01
-14,Test,Map,asdf,Removed,af1b4c284dabb747.png,,0,NULL,NULL,NULL,25,1,4,2022-10-27 19:46:09,2022-10-27 19:48:12
-15,Test,Map,asdf,Removed,2134cdff14e58d5a.png,,0,NULL,NULL,NULL,25,1,4,2022-10-27 19:47:28,2022-10-27 19:48:04
-16,Test2,Map,asdf,Removed,16ab8f0e90a7c189.png,,1,NULL,NULL,NULL,25,1,4,2022-10-27 19:50:19,2022-10-30 18:16:45
-17,Test Icon,Infographic,asdf,Approved,8c97bee783bfc899.png,,1,NULL,NULL,NULL,25,1,4,2022-10-28 14:48:26,2022-10-28 14:49:08
-18,asdf,Dashboard,asdf,Personal,ecfa15a7ea240d5a.png,,1,1,NULL,NULL,29,4,4,2022-10-28 14:51:33,2022-10-28 15:32:13
-19,Testest,Report - Analysis,asdf,Personal,8888562bfa843e0a.png,,0,1,NULL,NULL,29,4,4,2022-10-31 15:39:18,2022-10-31 15:39:35
-20,Glady's Product,Map,,Personal,c8b5a2081faf7448.png,,0,1,NULL,NULL,32,11,4,2022-10-31 17:27:21,2022-10-31 17:29:55
-21,Data Processing Script,Other,This does stuff.,Removed,ba78218ec8cbcaae.png,,1,NULL,NULL,NULL,37,1,4,2022-11-14 18:09:54,2022-11-15 15:40:44
+id,title,type,description,product_status,local_file,image_file,dropbox_file,external,collaborator_ids,approver_id,approver_message,km_article,assignment_id,creator_id,emergency_id,created_at,updated_at
+1,Humanitarian Service Points in Romania,Map,"A map showing where HSPs are located, overlaid with branch maps.",Approved,df7c93b2baa97df4.png,,,1,"4,6,1",NULL,NULL,NULL,28,3,4,10/26/22 14:12,10/27/22 14:58
+2,Ukraine Operational Stat Overview,Infographic,A comms-focused product that highlights the overall reach statistics for the regional operation.,Personal,ddfc479a92196f9c.png,,,0,"11,4",NULL,NULL,NULL,25,1,4,10/26/22 14:14,10/31/22 17:34
+3,Surge Deployments Infographic,Infographic,Graphic showing the breakdown of profile types that have deployed to various countries as part of the response.,Approved,93b8ad52fb3c431c.png,,,1,NULL,NULL,NULL,NULL,25,1,4,10/26/22 14:58,10/26/22 17:23
+4,Country Plans Overview,Infographic,Simple graphic showing the varied plans that each country is carrying out in response to the emergency.,Personal,07fe657f0a4bb6db.png,,,0,4,NULL,NULL,NULL,25,1,4,10/26/22 14:59,10/26/22 15:01
+5,Hungarian Red Cross Basemap,Map,Map showing the location of key points of interest within Hungary to support the operational manager in that country.,Approved,c66b319e397fceb7.png,,,1,NULL,NULL,NULL,NULL,25,1,4,10/26/22 15:01,10/26/22 17:23
+6,Slovak Red Cross Dashboard,Dashboard,Rejected Product Example,Personal,cb513a7b6d27d5cd.png,,,1,NULL,NULL,NULL,NULL,25,1,4,10/26/22 17:05,10/26/22 17:25

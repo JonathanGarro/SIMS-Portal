@@ -1,4 +1,4 @@
-<img width="1705" alt="SIMS Portal Landing Page" src="static/assets/img/sims-landing-screenshot.png">
+<img width="1705" alt="SIMS Portal Landing Page" src="https://user-images.githubusercontent.com/8890661/206601682-ed87c61f-fa47-4c9b-8c7a-127bce54ba58.png">
 
 
 # SIMS-Portal-Neo

@@ -1,5 +1,5 @@
 id,emergency_name,emergency_status,emergency_glide,emergency_go_id,emergency_location_id,emergency_review_id,activation_details,slack_channel,dropbox_url,trello_url,emergency_type_id,created_at,updated_at
-4,Ukraine and Impacted Countries Crisis,Active,OT-2022-000157-UKR,5854,1,NULL,"After Russian forces invaded in late February, SIMS was activated to provide remote and deployed support. ",C0353KEK13L,https://www.dropbox.com/sh/4x1i0e6zbxx36ej/AAC56JtnSkeT878jbucWBvcka?dl=0,https://trello.com/invite/b/XNU5ZFKI/1feb44d1c647393ad4673a9a011003e8/simsukraine2022,6,2022-10-12 15:03:21,2022-11-30 21:04:21
+4,Ukraine and Impacted Countries Crisis,Active,OT-2022-000157-UKR,5854,1,NULL,"After Russian forces invaded in late February, SIMS was activated to provide remote and deployed support. ",C0353KEK13L,https://www.dropbox.com/sh/4x1i0e6zbxx36ej/AAC56JtnSkeT878jbucWBvcka?dl=0,https://trello.com/invite/b/XNU5ZFKI/1feb44d1c647393ad4673a9a011003e8/simsukraine2022,6,2022-10-12 15:03:21,2022-12-02 21:10:00
 7,Iraq Cholera Outbreak,Closed,EP-2022-000245-IRQ,6037,87,NULL,"Iraq RC requested some support, and IFRC Geneva approved activation of SIMS.",C0353KEK13L,,,1,2022-07-01 17:47:51,2022-07-01 17:49:08
 8,Democratic Republic of Congo Hunger Crisis,Closed,12341234,6068,187,NULL,We were requested to provide support remotely for the preparation for the lean season in 2022.,,,,21,2022-07-12 16:17:47,2022-12-01 19:53:46
 9,Tunisia Population Movement,Closed,,792,173,NULL,,,,,5,2022-10-03 13:26:27,2022-10-03 15:30:46
@@ -11,7 +11,7 @@ id,emergency_name,emergency_status,emergency_glide,emergency_go_id,emergency_loc
 15,Iraq Population Movement,Closed,OT-2014-000074-IRQ,389,87,NULL,Deployed two rounds of support. Supported with graphics for logistics team and satellite imagery analysis.,,,,5,2022-10-05 20:46:04,NULL
 16,Bosnia and Herzegovina Floods,Closed,FF-2014-000059-BIH,289,197,NULL,"Supported the cash program with maps for one month, provided imagery analysis and displacement mapping.",,,,12,2022-10-05 20:47:53,2022-10-07 18:44:33
 17,Solomon Islands Floods,Closed,FL-2014-000045-SLB,383,156,NULL,Provided mapping and data management support.,,,,12,2022-10-05 20:49:09,NULL
-18,West Africa Ebola Outbreak,Closed,EP-2014-000039-LBR,201,103,NULL,SIMS provided over six months of support and produced hundreds of maps.,,,,12,2022-10-05 20:57:17,NULL
+18,West Africa Ebola Outbreak,Closed,EP-2014-000039-LBR,201,103,NULL,SIMS provided over six months of support and produced hundreds of maps.,,,,1,2022-10-05 20:57:17,NULL
 19,Ethiopia Drought,Closed,DR-2015-000109-ETH,40,65,NULL,Provided remote support with mapping and infographics.,,,,20,2022-10-05 20:59:43,NULL
 20,Europe Population Movement,Closed,,0,82,NULL,SIMS provided both field-based and remote support. Note that this emergency record captures several distinct emergency appeals released by the IFRC. Deployments were to the regional office in Budapest. ,,,,5,2022-10-05 21:06:25,NULL
 21,Tanzania Cholera Outbreak,Closed,EP-2015-000058-TZA,0,189,NULL,Provided remote support with mapping of affected areas.,,,,1,2022-10-05 21:08:05,NULL
