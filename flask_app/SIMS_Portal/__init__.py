@@ -10,6 +10,7 @@ from SIMS_Portal.config import Config
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
+from flask_apscheduler import APScheduler
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -47,6 +48,16 @@ def create_app(config_class=Config):
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
 	Markdown(app)
 	
+	scheduler = APScheduler()
+	scheduler.init_app(app)
+	scheduler.start()
+	
+	@scheduler.task('cron', id='run_surge_alert_refresh', minute='*')
+	def run_surge_alert_refresh():
+		with scheduler.app.app_context():
+			from SIMS_Portal.alerts.utils import refresh_surge_alerts
+			refresh_surge_alerts()
+	
 	# # use this when migrating to new DB - will generate db file when running
 	# with app.app_context():
 	# 	db.create_all()
@@ -62,6 +73,7 @@ def create_app(config_class=Config):
 	from SIMS_Portal.stories.routes import stories
 	from SIMS_Portal.learnings.routes import learnings
 	from SIMS_Portal.reviews.routes import reviews
+	from SIMS_Portal.alerts.routes import alerts
 	from SIMS_Portal.errors.handlers import errors
 	
 	app.register_blueprint(main)
@@ -72,9 +84,10 @@ def create_app(config_class=Config):
 	app.register_blueprint(stories)
 	app.register_blueprint(learnings)
 	app.register_blueprint(reviews)
+	app.register_blueprint(alerts)
 	app.register_blueprint(errors)
 	
-	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review
+	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert
 	admin.add_view(AdminView(User, db.session))
 	admin.add_view(AdminView(Assignment, db.session))
 	admin.add_view(AdminView(Emergency, db.session))
@@ -82,6 +95,7 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Story, db.session))
 	admin.add_view(AdminView(Learning, db.session))
 	admin.add_view(AdminView(Review, db.session))
+	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	
 	return app
