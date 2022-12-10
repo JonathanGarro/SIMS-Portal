@@ -1,7 +1,7 @@
 <img width="1705" alt="SIMS Portal Landing Page" src="https://user-images.githubusercontent.com/8890661/206601682-ed87c61f-fa47-4c9b-8c7a-127bce54ba58.png">
 
 
-# SIMS-Portal-Neo
+# SIMS-Portal
 
 The Surge Information Management Support (SIMS) system is a global network of Information Management experts who support IFRC emergency response operations by providing a variety of services and products. We maintain a roster of specialists from around the world across several key areas of technical support, including GIS, data collection and management, data analysis and visualization, and much more.
 
