@@ -1,24 +1,22 @@
 from SIMS_Portal import db
+from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from SIMS_Portal.models import Alert
 from flask_apscheduler import APScheduler
+import datetime
 import math
 import requests
 
 scheduler = APScheduler()
 
-@scheduler.task('cron', id='run_surge_alert_refresh', minute='*')
+@scheduler.task('cron', id='run_surge_alert_refresh', hour='18')
 def refresh_surge_alerts():
+	print("RUNNING SURGE ALERT CRON JOB\n============================\n")
 
 	existing_alerts = db.session.query(Alert).with_entities(Alert.alert_id).all()
-	print(existing_alerts)
-	
-	
 	existing_alert_ids = []
 	for alert in existing_alerts:
 		existing_alert_ids.append(alert.alert_id)
-	
-	print("RUNNING SURGE ALERT CRON JOB\n================\n")
 	
 	api_call = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
 	r = requests.get(api_call).json()
@@ -33,43 +31,82 @@ def refresh_surge_alerts():
 	
 	output = []
 	
-	# while current_page <= page_count:
-	for x in r['results']:
-		temp_dict = {}
-		if x['id'] not in existing_alert_ids:
-			if x['molnix_tags']:
-				for y in x['molnix_tags']:
-					if y['name'] in tags_list:
-						if y['name'] in im_tags:
-							temp_dict['im_filter'] = 1
-						else:
-							temp_dict['im_filter'] = 0 
-						temp_dict['role_profile'] = y['description']
-						temp_dict['alert_date'] = x['opens']
-						temp_dict['start'] = x['start']
-						temp_dict['end'] = x['end']
-						temp_dict['alert_id'] = x['id']
-						temp_dict['molnix_id'] = x['molnix_id']
-						temp_dict['alert_status'] = x['molnix_status']
-						if x['event']:
-							temp_dict['event_name'] = x['event']['name']
-							try:
-								temp_dict['severity'] = x['event']['ifrc_severity_level_display']
-							except:
-								temp_dict['severity'] = 'n/a'
-							temp_dict['event_go_id'] = x['event']['id']
-							temp_dict['event_date'] = x['event']['disaster_start_date']
-							if x['country']:
-								temp_dict['country'] = x['country']['name']
+	while current_page <= page_count:
+		for x in r['results']:
+			temp_dict = {}
+			if x['id'] not in existing_alert_ids:
+				if x['molnix_tags']:
+					for y in x['molnix_tags']:
+						if y['name'] in tags_list:
+							if y['name'] in im_tags:
+								temp_dict['im_filter'] = 1
+							else:
+								temp_dict['im_filter'] = 0 
+							temp_dict['role_profile'] = y['description']
+							temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
+							if x['start']:
+								temp_dict['start'] = datetime.datetime.strptime(x['start'], "%Y-%m-%dT%H:%M:%SZ")
+							else:
+								temp_dict['start'] = datetime.datetime.strptime('1900-01-01T13:33:46Z', "%Y-%m-%dT%H:%M:%SZ")
+							if x['end']:
+								temp_dict['end'] = datetime.datetime.strptime(x['end'], "%Y-%m-%dT%H:%M:%SZ")
+							else:
+								temp_dict['end'] = datetime.datetime.strptime('1900-01-01T13:33:46Z', "%Y-%m-%dT%H:%M:%SZ")	
+							temp_dict['alert_id'] = x['id']
+							temp_dict['molnix_id'] = x['molnix_id']
+							temp_dict['alert_status'] = x['molnix_status']
+							if x['event']:
+								temp_dict['event_name'] = x['event']['name']
 								try:
-									temp_dict['iso3'] = x['country']['iso3']
+									temp_dict['severity'] = x['event']['ifrc_severity_level_display']
 								except:
-									temp_dict['iso3'] = ''
-								output.append(temp_dict)
-	print(output[:3])
-		# if r['next']:
-		# 	next_page = requests.get(r['next']).json()
-		# 	r = next_page
-		# 	current_page += 1
-		# else:
-		# 	break
+									temp_dict['severity'] = 'n/a'
+								temp_dict['event_go_id'] = x['event']['id']
+								temp_dict['event_date'] = datetime.datetime.strptime(x['event']['disaster_start_date'], "%Y-%m-%dT%H:%M:%SZ")
+								if x['country']:
+									temp_dict['country'] = x['country']['name']
+									try:
+										temp_dict['iso3'] = x['country']['iso3']
+									except:
+										temp_dict['iso3'] = ''
+								else:
+									temp_dict['country'] = 'MISSING COUNTRY'
+									temp_dict['iso3'] = 'ZZZ'
+							else:
+								temp_dict['event_name'] = 'MISSING EMERGENCY'
+								temp_dict['severity'] = 'MISSING EMERGENCY'
+								temp_dict['event_go_id'] = 0
+								temp_dict['event_date'] = datetime.date(2000, 1, 1)
+								temp_dict['country'] = 'MISSING EMERGENCY'
+								temp_dict['iso3'] = 'MISSING EMERGENCY'
+			output.append(temp_dict)
+			
+		if r['next']:
+			next_page = requests.get(r['next']).json()
+			r = next_page
+			current_page += 1
+		else:
+			break
+	
+	for alert in output:
+		# skip blank dicts
+		if alert:
+			individual_alert = Alert(
+				im_filter = alert['im_filter'],
+				role_profile = alert['role_profile'],
+				alert_date = alert['alert_date'],
+				start = alert['start'],
+				end = alert['end'],
+				alert_id = alert['alert_id'],
+				molnix_id = alert['molnix_id'],
+				alert_status = alert['alert_status'],
+				event_name = alert['event_name'],
+				severity = alert['severity'],
+				event_go_id = alert['event_go_id'],
+				event_date = alert['event_date'],
+				country = alert['country'],
+				iso3 = alert['iso3']
+			)
+			db.session.add(individual_alert)
+			db.session.commit()
+	print("\n==================\nFINISHED CRON JOB")
