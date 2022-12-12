@@ -1,7 +1,0 @@
-id,title,type,description,product_status,local_file,image_file,dropbox_file,external,collaborator_ids,approver_id,approver_message,km_article,assignment_id,creator_id,emergency_id,created_at,updated_at
-1,Humanitarian Service Points in Romania,Map,"A map showing where HSPs are located, overlaid with branch maps.",Approved,df7c93b2baa97df4.png,,,1,"4,6,1",NULL,NULL,NULL,28,3,4,10/26/22 14:12,10/27/22 14:58
-2,Ukraine Operational Stat Overview,Infographic,A comms-focused product that highlights the overall reach statistics for the regional operation.,Personal,ddfc479a92196f9c.png,,,0,"11,4",NULL,NULL,NULL,25,1,4,10/26/22 14:14,10/31/22 17:34
-3,Surge Deployments Infographic,Infographic,Graphic showing the breakdown of profile types that have deployed to various countries as part of the response.,Approved,93b8ad52fb3c431c.png,,,1,NULL,NULL,NULL,NULL,25,1,4,10/26/22 14:58,10/26/22 17:23
-4,Country Plans Overview,Infographic,Simple graphic showing the varied plans that each country is carrying out in response to the emergency.,Personal,07fe657f0a4bb6db.png,,,0,4,NULL,NULL,NULL,25,1,4,10/26/22 14:59,10/26/22 15:01
-5,Hungarian Red Cross Basemap,Map,Map showing the location of key points of interest within Hungary to support the operational manager in that country.,Approved,c66b319e397fceb7.png,,,1,NULL,NULL,NULL,NULL,25,1,4,10/26/22 15:01,10/26/22 17:23
-6,Slovak Red Cross Dashboard,Dashboard,Rejected Product Example,Personal,cb513a7b6d27d5cd.png,,,1,NULL,NULL,NULL,NULL,25,1,4,10/26/22 17:05,10/26/22 17:25

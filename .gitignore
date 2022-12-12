@@ -2,10 +2,6 @@
 site.db
 flask_app/SIMS_Portal/static/assets/portfolio/
 flask_app/SIMS_Portal/static/data/
-flask_app/SIMS_Portal/static/data/assignment.csv
-
-/Users/jonathan.garro/AmRC ISD Dropbox/Jonathan Garro/SIMS/SIMS-Portal/SIMS-Portal/flask_app/SIMS_Portal/static/assets/img/badges/Workshop-Nepal-22-Participant.png
-/Users/jonathan.garro/AmRC ISD Dropbox/Jonathan Garro/SIMS/SIMS-Portal/SIMS-Portal/flask_app/SIMS_Portal/static/data/assignment.csv
 
 ### Flask ###
 instance/*
