@@ -324,32 +324,23 @@ class Alert(db.Model):
 	
 	id = db.Column(db.Integer, primary_key=True)
 	
-	event_name = db.Column(db.String)
-	event_go_id = db.Column(db.Integer)
-	event_date = db.Column(db.DateTime)
+	im_filter = db.Column(db.Boolean)
 	role_profile = db.Column(db.String)
-	alert_date = db.Column(db.DateTime)
+	alert_date = db.Column(db.Date)
+	start = db.Column(db.Date)
+	end = db.Column(db.Date)
 	alert_id = db.Column(db.Integer)
+	molnix_id = db.Column(db.Integer)
 	alert_status = db.Column(db.String)
-	location = db.Column(db.String)
+	event_name = db.Column(db.String)
+	severity = db.Column(db.String)
+	event_go_id = db.Column(db.Integer)
+	event_date = db.Column(db.Date)
+	country = db.Column(db.String)
+	iso3 = db.Column(db.String)
 	
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 	
-	def __init__(self, role_profile, alert_date, alert_id, alert_status, event_name, event_go_id, event_date, location):
-		self.role_profile = role_profile
-		self.alert_date = datetime.strptime(alert_date, '%Y-%m-%dT%H:%M:%SZ')
-		self.alert_id = alert_id
-		self.alert_status = alert_status
-		self.event_name = event_name
-		self.event_go_id = event_go_id
-		self.event_date = datetime.strptime(event_date, '%Y-%m-%dT%H:%M:%SZ')
-		self.location = location
-	
-	@classmethod
-	def save_go_alerts(cls, data):
-		query = "INSERT INTO alerts (role_profile, alert_date, alert_id, alert_status, event_name, event_go_id, event_date, location) VALUES (%(role_profile)s, %(alert_date)s, %(alert_id)s, %(alert_status)s, %(event_name)s, %(event_go_id)s, %(event_date)s, %(location)s)"
-		return query
-	
 	def __repr__(self):
-		return f"Alert('{self.event_name}','{self.event_go_id}','{self.event_date}','{self.event_profile}','{self.alert_date}','{self.alert_id}','{self.alert_status}','{self.location}')"
+		return f"Alert('{self.event_name}','{self.event_go_id}','{self.event_date}','{self.role_profile}','{self.alert_date}','{self.alert_id}','{self.alert_status}','{self.location}')"
