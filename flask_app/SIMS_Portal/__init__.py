@@ -47,23 +47,16 @@ def create_app(config_class=Config):
 	mail.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
 	Markdown(app)
-	
+
 	scheduler = APScheduler()
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', minute='*')
+	@scheduler.task('cron', id='run_surge_alert_refresh', hour='18')
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts
 			refresh_surge_alerts()
-	
-	# # use this when migrating to new DB - will generate db file when running
-	# with app.app_context():
-	# 	db.create_all()
-	# 
-	# app.app_context().push()
-	# db.create_all()
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
