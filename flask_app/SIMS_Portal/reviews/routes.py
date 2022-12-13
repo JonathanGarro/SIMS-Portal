@@ -2,7 +2,7 @@ from flask import request, render_template, url_for, flash, redirect, jsonify, B
 from SIMS_Portal import db
 from SIMS_Portal.config import Config
 from SIMS_Portal.models import Review, Emergency, User
-from SIMS_Portal.reviews.forms import NewEmergencyReviewForm
+from SIMS_Portal.reviews.forms import NewEmergencyReviewForm, ProcessEmergencyReviewForm
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal.main.utils import check_sims_co
 from flask_sqlalchemy import SQLAlchemy
@@ -25,8 +25,8 @@ def new_op_review(dis_id):
 			type = form.type.data,
 			title = form.title.data,
 			description = form.description.data,
-			recommended_action = 'test',
-			follow_up = 'test',
+			recommended_action = form.recommendation.data,
+			follow_up = 'Awaiting SIMS governance processing.',
 			status = 'Open',
 			emergency_id = emergency_info.id
 		)
@@ -51,5 +51,25 @@ def view_op_review(id):
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	return render_template('emergency_review_view.html', record=record, emergency_info=emergency_info)
-	
-	
+
+@reviews.route('/operation_review/process/<int:id>', methods=['GET', 'POST'])
+@login_required
+def process_op_review(id):
+	form = ProcessEmergencyReviewForm()
+	record = db.session.query(Review).filter(Review.id == id).first()
+	emergency_info = db.session.query(Emergency, Review).join(Review, Review.emergency_id == Emergency.id).filter(Review.id == id).first()
+	if request.method == 'GET' and current_user.is_admin == 1:
+		return render_template('emergency_review_processing.html', form=form, record=record, emergency_info=emergency_info)
+	if request.method == 'POST' and current_user.is_admin == 1:
+		follow_up = form.follow_up.data
+		db.session.query(Review).filter(Review.id==id).update({'follow_up':follow_up, 'status':'Processed'})
+		db.session.commit()
+		return redirect(url_for('main.admin_landing'))
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
+	if record is None or emergency_info is None:
+		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
+	return render_template('emergency_review_processing.html', record=record, emergency_info=emergency_info)
+

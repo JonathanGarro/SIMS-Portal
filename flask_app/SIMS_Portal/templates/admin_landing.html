@@ -118,7 +118,7 @@
 								<th>Type</th>
 								<th>Category</th>
 								<th>Description</th>
-								<th>Record</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -129,7 +129,7 @@
 									<td>{{review.Review.type}}</td>
 									<td>{{review.Review.category}}</td>
 									<td>{{review.Review.description|truncate(255, True)}}</td>
-									<td><a href='/operation_review/view/{{review.Review.id}}'><button class='btn btn-success'>View</button></a></td>
+									<td><a href='/operation_review/process/{{review.Review.id}}'><button class='btn btn-secondary'>Process</button></a></td>
 								</tr>
 							{% endfor %}
 						</tbody>

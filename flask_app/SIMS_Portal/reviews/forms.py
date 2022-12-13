@@ -16,3 +16,7 @@ class NewEmergencyReviewForm(FlaskForm):
 	follow_up = StringField('SIMS Governance Follow Up Action', widget=TextArea())
 	status = SelectField('Review Item Status', choices=['Open', 'Processed', 'Dropped'])
 	submit = SubmitField('Save Review Record')
+	
+class ProcessEmergencyReviewForm(FlaskForm):
+	follow_up = StringField('SIMS Governance Follow Up Action', widget=TextArea())
+	submit = SubmitField('Process Review Record')

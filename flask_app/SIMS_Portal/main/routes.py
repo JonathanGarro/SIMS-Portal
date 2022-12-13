@@ -230,13 +230,6 @@ def badge_assignment_sims_co(dis_id):
 		print('User {} tried to assign a badge but was denied and given a 403 error.'.format(current_user.fullname))
 		return render_template('errors/403.html', list_of_admins=list_of_admins, user_is_sims_co=user_is_sims_co, event_name=event_name, sims_co_ids=sims_co_ids), 403
 
-@main.route('/staging') 
-@login_required
-def staging(): 
-	active_emergencies = db.session.query(Emergency, NationalSociety, EmergencyType).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id).filter(Emergency.emergency_status == 'Active').all()
-	
-	return render_template('visualization.html', active_emergencies=active_emergencies)
-
 @main.route('/learning')
 @login_required
 def learning():
@@ -423,4 +416,11 @@ def dashboard():
 	
 	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, most_recent_emergencies=most_recent_emergencies, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, most_recent_members=most_recent_members, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies)
 	
+@main.route('/staging') 
+@login_required
+def staging(): 
+	file = '/Users/jonathan.garro/Desktop/surge alerts/output.csv'
+	data = pd.read_csv(file)
+	print(data.severity)
 	
+	return render_template('visualization.html', data=data)
