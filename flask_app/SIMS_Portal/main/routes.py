@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge
 from SIMS_Portal.users.utils import send_slack_dm
+from SIMS_Portal.alerts.utils import refresh_surge_alerts
 import os
 import tweepy
 import re
@@ -419,8 +420,5 @@ def dashboard():
 @main.route('/staging') 
 @login_required
 def staging(): 
-	file = '/Users/jonathan.garro/Desktop/surge alerts/output.csv'
-	data = pd.read_csv(file)
-	print(data.severity)
-	
-	return render_template('visualization.html', data=data)
+	refresh_surge_alerts()
+	return render_template('visualization.html')
