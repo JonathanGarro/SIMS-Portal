@@ -43,6 +43,16 @@ def new_user_slack_alert(message):
 	except:
 		pass
 
+def new_surge_alert(message):
+	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
+	try:
+		result = client.chat_postMessage(
+			channel = 'CDUMNN3J8',
+			text = message
+		)
+	except:
+		pass
+
 # search for remote coordinators currently active
 def rem_cos_search():
 	with app.app_context():
