@@ -2,6 +2,7 @@ from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from SIMS_Portal.models import Alert
+from SIMS_Portal.users.utils import new_surge_alert
 from flask_apscheduler import APScheduler
 import datetime
 import math
