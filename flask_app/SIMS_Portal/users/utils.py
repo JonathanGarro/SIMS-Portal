@@ -43,6 +43,7 @@ def new_user_slack_alert(message):
 	except:
 		pass
 
+# send slack alert when new surge alert is released and saved to the database
 def new_surge_alert(message):
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:

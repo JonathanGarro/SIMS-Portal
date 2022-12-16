@@ -52,7 +52,7 @@ def create_app(config_class=Config):
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', hour='18')
+	@scheduler.task('cron', id='run_surge_alert_refresh', hour='1')
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts

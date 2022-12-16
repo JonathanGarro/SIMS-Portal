@@ -9,8 +9,9 @@ from collections import defaultdict, Counter
 from datetime import date, timedelta
 from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge
-from SIMS_Portal.users.utils import send_slack_dm
+from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
+# from SIMS_Portal.alerts.utils_testing import refresh_surge_alerts_tester
 import os
 import tweepy
 import re

@@ -16,23 +16,26 @@ scheduler = APScheduler()
 def refresh_surge_alerts():
 	print("RUNNING SURGE ALERT CRON JOB\n============================\n")
 
-	existing_alerts = db.session.query(Alert).all()
+	existing_alerts = db.session.query(Alert).order_by(Alert.alert_id.desc()).all()
 	existing_alert_ids = []
 	existing_statuses = []
 	for alert in existing_alerts:
 		existing_alert_ids.append(alert.alert_id)
 		temp_dict = {}
-		temp_dict['id'] = alert.alert_id
-		temp_dict['status'] = alert.alert_status
+		temp_dict['alert_id'] = alert.alert_id
+		temp_dict['alert_status'] = alert.alert_status
 		existing_statuses.append(temp_dict)
 	
 	api_call = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
 	r = requests.get(api_call).json()
 	
-	tags_list = ['ADMIN-CO', 'ASSES-CO', 'CEA- RCCE', 'CEA-CO', 'CEA-OF', 'CIVMILCO', 'COM-TL', 'COMCO', 'COMOF', 'COMPH', 'COMVID', 'CVACO', 'CVAOF', 'DEP-OPMGR', 'DRR-CO', 'EAREC-OF', 'FIELDCO', 'FIN-CO', 'HEALTH-CO', 'HEALTH-ETL', 'HEOPS', 'HRCO', 'HUMLIAS', 'IDRLCO', 'IM-CO', 'IM-PDC', 'IM-VIZ', 'IMANALYST', 'ITT-CO', 'ITT-OF', 'LIVECO', 'LIVEINCM', 'LIVEMRKT', 'LOG-CO', 'LOG-ETL', 'LOG-OF', 'LOGADMIN', 'LOGAIROPS', 'LOGCASH', 'LOGFLEET', 'LOGPIPELINE', 'LOGPROC', 'LOGWARE', 'MDHEALTH-CO', 'MEDLOG', 'MIG-CO', 'MOVCO', 'NSDCO', 'NSDVOL', 'OPMGR', 'PER-CO', 'PER-OF', 'PGI-CO', 'PGI-OF', 'PHEALTH-CO', 'PMER-CO', 'PMER-OF', 'PRD-NS', 'PRD-OF', 'PSS-CO', 'PSS-ERU', 'PSS-OF', 'PSSCMTY', 'RECCO', 'RELCO', 'RELOF', 'SEC-CO', 'SHCLUSTER-CO', 'SHCLUSTER-DEP', 'SHCLUSTER-ENV', 'SHCLUSTER-HUB', 'SHCLUSTER-IM', 'SHCLUSTER-REC', 'SHCLUSTER-TEC', 'SHELTERP-CB', 'SHELTERP-CO', 'SHELTERP-SP', 'SHELTERP-TEC', 'SHELTERP-TL', 'STAFFHEALTH', 'WASH-CO', 'WASH-ENG', 'WASH-ETL', 'WASH-HP', 'WASH-SAN', 'WASH-TEC']
+	# this list is not accessible through molnix, and must be manually updated :(
+	tags_list = ['ADMIN-CO', 'ASSESS-CO', 'CEA- RCCE', 'CEA-CO', 'CEA-OF', 'CIVMILCO', 'COM-TL', 'COMCO', 'COMOF', 'COMPH', 'COMVID', 'CVACO', 'CVAOF', 'DEP-OPMGR', 'DRR-CO', 'EAREC-OF', 'FA Of', 'FIELDCO', 'FIN-CO', 'HEALTH-CO', 'HEALTH-ETL', 'HEOPS', 'HRCO', 'HR-OF', 'HUMLIAS', 'IDRLCO', 'IM-CO', 'IM-PDC', 'IM-VIZ', 'IMANALYST', 'ITT-CO', 'ITT-OF', 'LIVECO', 'LIVEINCM', 'LIVEMRKT', 'LOG-CO', 'LOG-ETL', 'LOG-OF', 'LOGADMIN', 'LOGAIROPS', 'LOGCASH', 'LOGFLEET', 'LOGPIPELINE', 'LOGPROC', 'LOGWARE', 'MDHEALTH-CO', 'MEDLOG', 'MIG-CO', 'MOVCO', 'NSDCO', 'NSDVOL', 'OPMGR', 'PER-CO', 'PER-OF', 'PGI-CO', 'PGI-OF', 'PHEALTH-CO', 'PMER-CO', 'PMER-OF', 'PRD-NS', 'PRD-OF', 'PSS-CO', 'PSS-ERU', 'PSS-OF', 'PSSCMTY', 'RECCO', 'RELCO', 'RELOF', 'SEC-CO', 'SHCLUSTER-CO', 'SHCLUSTER-DEP', 'SHCLUSTER-ENV', 'SHCLUSTER-HUB', 'SHCLUSTER-IM', 'SHCLUSTER-REC', 'SHCLUSTER-TEC', 'SHELTERP-CB', 'SHELTERP-CO', 'SHELTERP-SP', 'SHELTERP-TEC', 'SHELTERP-TL', 'SIMSCo', 'STAFFHEALTH', 'WASH-CO', 'WASH-ENG', 'WASH-ETL', 'WASH-HP', 'WASH-OF', 'WASH-SAN', 'WASH-TEC']
 	
-	im_tags = ['IM-CO', 'IM-PDC', 'IM-VIZ', 'IMANALYST']
+	# same as molnix tags, this list must be manually updated
+	im_tags = ['IM-CO', 'IM-PDC', 'IM-VIZ', 'IMANALYST', 'SIMSCo']
 	
+	# page flipper for paginated surge alerts
 	current_page = 1
 	page_count = int(math.ceil(r['count'] / 50))
 	print(f"The GO Surge Alert API Call Returned {page_count} pages.")
@@ -115,22 +118,29 @@ def refresh_surge_alerts():
 				iso3 = alert['iso3']
 			)
 			
+			if alert['im_filter'] == 1:
+				# send IM alerts to the availability channel in SIMS slack
+				try:
+					# convert emergency classification to emoji
+					colors_to_emoji = {'Red': 'a :red_circle:', 'Orange': 'an :large_orange_circle:', 'Yellow': 'a :large_yellow_circle:'}
+					# link to ifrc sharepoint's file on the role profile
+					standard_profiles = {
+						'Information Management Coordinator': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/Ea_YRhCI_IJHkhISEh5zH2YBCUtMAdWUqiC8JH7g1Jj8AQ', 
+						'Humanitarian Information Analysis Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EYUNi8qR395Oq3Ng3SHbsXMBUbS4XdfVw03tECGEb828Nw', 
+						'Primary Data Collection Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EdB7tgvjH5dApy5PcFNZcx0BzGKQJfS2nP-L3CFKRdr5Ow', 
+						'Mapping and Data Visualization Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/ER92aBZKBpxHrH61MJf4hLEBxwEnqzfqjLVR7cscPlxDKA',
+						'SIMS Remote Coordinator': 'https://go.ifrc.org/deployments/catalogue/infoMgt'
+					}
+					# # convert start_date to datetime to allow for better date formatting in message
+					# start_date = datetime.strptime(alert['start'], '%Y-%m-%d')
+					# construct message
+					message = '\n:rotating_light: *New Information Management Surge Alert Released!* :rotating_light:\n\n The following Rapid Response profile has been requested for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, based in {}, with a desired start date of {}.\n\nYou can find the standard role profile for this position <{}|here>.'.format(alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
+					# fire off alert
+					new_surge_alert(message)
+				# skip if slack api not responsive
+				except Exception as e: 
+					print(e)
 			db.session.add(individual_alert)
 			db.session.commit()
-	
-	shortened_output = []
-	for x in output:
-		if x:
-			temp_dict = {}
-			temp_dict['id'] = x['alert_id']
-			temp_dict['status'] = x['alert_status']
-			shortened_output.append(temp_dict)
-	
-	alert_updates = DeepDiff(existing_statuses, shortened_output).get('values_changed',{})
-
-	for key, val in alert_updates.items():
-		index = re.sub('\D','', key)
-		db.session.query(Alert).filter(Alert.alert_id == existing_statuses[int(index)]['id']).update({'alert_status': val['new_value']})
-		db.session.commit()
 	
 	print("\n==================\nFINISHED CRON JOB")
