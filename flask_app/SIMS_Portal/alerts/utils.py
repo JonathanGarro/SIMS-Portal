@@ -131,8 +131,6 @@ def refresh_surge_alerts():
 						'Mapping and Data Visualization Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/ER92aBZKBpxHrH61MJf4hLEBxwEnqzfqjLVR7cscPlxDKA',
 						'SIMS Remote Coordinator': 'https://go.ifrc.org/deployments/catalogue/infoMgt'
 					}
-					# # convert start_date to datetime to allow for better date formatting in message
-					# start_date = datetime.strptime(alert['start'], '%Y-%m-%d')
 					# construct message
 					message = '\n:rotating_light: *New Information Management Surge Alert Released!* :rotating_light:\n\n The following Rapid Response profile has been requested for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, based in {}, with a desired start date of {}.\n\nYou can find the standard role profile for this position <{}|here>.'.format(alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
 					# fire off alert
