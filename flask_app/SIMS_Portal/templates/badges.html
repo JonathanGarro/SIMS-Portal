@@ -21,6 +21,30 @@
 	
 	<div class="row my-5">
 		  <div class="col-md-2">
+			  <img src='/static/assets/img/badges/Cat-Herder.png' class='img-fluid'>
+		  </div>
+		<div class="col ps-4">
+			<h3 class='text-danger Montserrat mb-2' id='14'>Cat Herder</h3>
+			{% if ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 50 %}
+				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge_counts['Cat Herder'] / count_active_members) * 100)|int < 50 and ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 25 %}
+				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge_counts['Cat Herder'] / count_active_members) * 100)|int < 25 and ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 10 %}
+				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% else %}
+				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% endif %}
+			
+			
+			<div class="progress  my-3" style="height: 20px; width: 50%">
+				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}%</div>
+			</div>
+			<p>You help manage the SIMS Network.</p>
+		</div>
+	</div>
+	
+	<div class="row my-5">
+		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/Nightingale.png' class='img-fluid'>
 		  </div>
 		<div class="col ps-4">
