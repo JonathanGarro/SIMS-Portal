@@ -153,12 +153,12 @@
 				</div>
 				{% if user_portfolio_size > 3 %}
 				<div class='mb-5'>
-					<a href='/portfolio/profile_more/{{current_user.id}}'><button type="button" class="btn btn-danger">View All of {{current_user.firstname}}'s' Products</button></a>
+					<a href='/portfolio/profile_more/{{current_user.id}}'><button type="button" class="btn btn-secondary">View All of {{current_user.firstname}}'s' Products</button></a>
 				</div>
 				{% endif %}
 			</div>
 			<div class='mb-3'>
-			<h3 class="mb-2 text-danger profile-section-header">Badges: <span class='text-dark'>{{ count_badges }}</span></h3>
+				<h3 class="mb-2 text-danger profile-section-header">Badges: <span class='text-dark'>{{ count_badges }}</span></h3>
 				<div class="row row-cols-4 row-cols-md-4 g-4 mt-2">
 				{% for badge in badges %}
 					<div class="col d-flex align-items-stretch">
@@ -166,6 +166,11 @@
 				  	</div>
 				{% endfor %}
 				</div>
+				{% if count_badges > 4 %}
+				<div class='my-4'>
+					<a href='/badges_more/{{current_user.id}}'><button type="button" class="btn btn-secondary">View All of {{current_user.firstname}}'s' Badges</button></a>
+				</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>
