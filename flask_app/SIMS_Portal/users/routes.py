@@ -102,7 +102,7 @@ def profile():
 	
 	profile_picture = url_for('static', filename='assets/img/avatars/' + current_user.image_file)
 	
-	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:current_user ORDER BY name", {'current_user': current_user.id})
+	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:current_user ORDER BY name LIMIT 4", {'current_user': current_user.id})
 	
 	count_badges = db.engine.execute("SELECT count(*) as count FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': current_user.id}).scalar()
 	
@@ -167,6 +167,26 @@ def assign_profiles(user_id, profile_id, tier):
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
+@users.route('/badges_more/<int:user_id>')
+@login_required
+def view_all_user_badges(user_id):
+	this_user = db.session.query(User).filter(User.id == user_id).first()
+	
+	all_user_badges = db.engine.execute("SELECT firstname, lastname, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge b ON b.id = user_badge.badge_id WHERE user.id=:user_id ORDER BY name", {'user_id': user_id})
+	
+	list_badges = []
+	for badge in all_user_badges:
+		temp_dict = {}
+		temp_dict['firstname'] = badge.firstname
+		temp_dict['lastname'] = badge.lastname
+		temp_dict['name'] = badge.badge_name
+		temp_dict['badge_id'] = badge.badge_id
+		temp_dict['badge_url'] = badge.badge_url
+		list_badges.append(temp_dict)
+	print(list_badges)
+	
+	return render_template('badges_more.html', list_badges = list_badges, this_user = this_user)
+	
 @users.route('/profile_edit', methods=['GET', 'POST'])
 @login_required
 def update_profile():

@@ -32,7 +32,7 @@ class LoginForm(FlaskForm):
 class AssignProfileTypesForm(FlaskForm):
 	user_name = QuerySelectField('Member', query_factory=lambda:User.query.order_by(User.firstname).filter(User.status == 'Active').all(), get_label='fullname', allow_blank=True)
 	profiles = QuerySelectField('Profiles', query_factory=lambda:Profile.query.order_by(Profile.name).all(), get_label='name', allow_blank=True, validators=[DataRequired()])
-	tier = SelectField('Tier', choices=[('',''), ('0', 'Foundational'), ('1', 'Officer'), ('2', 'Coordinator'), ('3', 'Manager')])
+	tier = SelectField('Tier', choices=[('',''), ('1', '1 - Foundational'), ('2', '2 - Officer'), ('3', '3 - Coordinator'), ('4', '4 - Manager')])
 	submit = SubmitField('Assign')
 
 class UpdateAccountForm(FlaskForm):
