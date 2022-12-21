@@ -122,7 +122,7 @@ def refresh_surge_alerts():
 				# send IM alerts to the availability channel in SIMS slack
 				try:
 					# convert emergency classification to emoji
-					colors_to_emoji = {'Red': 'a :red_circle:', 'Orange': 'an :large_orange_circle:', 'Yellow': 'a :large_yellow_circle:'}
+					colors_to_emoji = {'Red': 'a :red_circle: red', 'Orange': 'an :large_orange_circle: orange', 'Yellow': 'a :large_yellow_circle: yellow'}
 					# link to ifrc sharepoint's file on the role profile
 					standard_profiles = {
 						'Information Management Coordinator': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/Ea_YRhCI_IJHkhISEh5zH2YBCUtMAdWUqiC8JH7g1Jj8AQ', 
