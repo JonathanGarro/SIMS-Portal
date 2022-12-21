@@ -25,7 +25,7 @@
 								{% if '.pdf' in product.final_file_location %}
 								<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
 								{% else %}
-									<img src="/static/assets/portfolio/{{product.final_file_location}}" class="card-img-top" alt="{{product.description}}">
+									<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="{{product.description}}">
 								  {% endif %}
 							  <div class="card-body d-flex flex-column">
 								<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>

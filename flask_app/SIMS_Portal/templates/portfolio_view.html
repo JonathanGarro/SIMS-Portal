@@ -20,13 +20,13 @@
 				</div>
 				<div class="row">
 					<h5 class="text-secondary mt-4">Poster</h5>
-					<h4><a href="/profile/view/{{product.Portfolio.creator_id}}" class="text-danger">{{ product.User.firstname }} {{ product.User.lastname }}</a></h4>
+					<h4><a href="/profile/view/{{product.Portfolio.creator_id}}" class="text-danger Montserrat">{{ product.User.firstname }} {{ product.User.lastname }}</a></h4>
 				</div>
 				{% if list_collaborators_user_info %}
 				<div class="row">
 					<h5 class="text-secondary mt-4">Collaborators</h5>
 					{% for collaborator in list_collaborators_user_info %}
-					<h4><a href="/profile/view/{{collaborator.id}}" class="text-danger">{{collaborator.firstname}} {{collaborator.lastname}}</a></h4>
+					<h4><a href="/profile/view/{{collaborator.id}}" class="text-danger Montserrat">{{collaborator.firstname}} {{collaborator.lastname}}</a></h4>
 					{% endfor %}
 				</div>
 				{% endif %}
@@ -38,11 +38,11 @@
 				{% endif %}
 				<div class="row">
 					<h5 class="text-secondary mt-4">Product Visibility</h5>
-					<h4 class="text-danger"><a href="/resources/sims_portal#product-visibility">{{product.Portfolio.product_status}}</a></h4>
+					<h4 class="text-danger Montserrat"><a href="/resources/sims_portal#product-visibility">{{product.Portfolio.product_status}}</a></h4>
 				</div>
 				<div class="row">
 					<h5 class="text-secondary mt-4">Emergency Response</h5>
-					<h4><a href={{url_for('emergencies.view_emergency', id=product.Portfolio.emergency_id)}} class='text-danger'> {{ product.Emergency.emergency_name}}</a></h4>
+					<h4><a href={{url_for('emergencies.view_emergency', id=product.Portfolio.emergency_id)}} class='text-danger Montserrat'> {{ product.Emergency.emergency_name}}</a></h4>
 				</div>
 
 				<div class="row">
