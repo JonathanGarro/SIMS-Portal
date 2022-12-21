@@ -66,9 +66,11 @@
 							{{ form.follow_up(class="form-control form-control-lg") }}
 						{% endif %}
 					</div>
-					{{ form.submit(class="btn btn-outline-danger") }}
 				</div>
-
+					{{ form.submit(class="btn btn-danger") }}
+					</form>
+					<a href='/operation_review/drop/{{record.id}}'><button class='btn btn-outline-secondary mx-2'>Reject</button></a>
+				
 			</div>
 		</div>
 	</div>

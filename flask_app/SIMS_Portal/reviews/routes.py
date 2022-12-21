@@ -62,14 +62,20 @@ def process_op_review(id):
 		return render_template('emergency_review_processing.html', form=form, record=record, emergency_info=emergency_info)
 	if request.method == 'POST' and current_user.is_admin == 1:
 		follow_up = form.follow_up.data
-		db.session.query(Review).filter(Review.id==id).update({'follow_up':follow_up, 'status':'Processed'})
+		db.session.query(Review).filter(Review.id == id).update({'follow_up':follow_up, 'status':'Processed'})
 		db.session.commit()
 		return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	if record is None or emergency_info is None:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	return render_template('emergency_review_processing.html', record=record, emergency_info=emergency_info)
 
+@reviews.route('/operation_review/drop/<int:id>', methods=['GET', 'POST'])
+@login_required
+def drop_op_review(id):
+	db.session.query(Review).filter(Review.id == id).update({'status': 'Dropped'})
+	db.session.commit()
+	return redirect(url_for('reviews.view_op_review', id=id))
