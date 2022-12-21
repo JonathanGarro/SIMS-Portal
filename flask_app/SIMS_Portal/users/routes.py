@@ -1,7 +1,7 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
 from SIMS_Portal import db, bcrypt, mail
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge
-from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
+from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge, Profile, user_profile
+from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, AssignProfileTypesForm
 from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from flask_sqlalchemy import SQLAlchemy
@@ -153,6 +153,19 @@ def view_profile(id):
 	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': id})
 	
 	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges)
+
+@users.route('/assign_profiles/<int:user_id>/<int:profile_id>/<int:tier>', methods=['GET', 'POST'])
+@login_required
+def assign_profiles(user_id, profile_id, tier):
+	if current_user.is_admin == 1:
+		new_profile = user_profile.insert().values(user_id=user_id, profile_id=profile_id, tier=tier)
+		db.session.execute(new_profile)
+		db.session.commit()
+		flash('User has been assigned a new profile.', 'success')
+		return redirect(url_for('main.admin_landing'))
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/profile_edit', methods=['GET', 'POST'])
 @login_required

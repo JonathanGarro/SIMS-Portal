@@ -2,11 +2,11 @@ from flask import current_app
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, FileField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField
+from wtforms import StringField, PasswordField, FileField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField, RadioField
 from wtforms_sqlalchemy.fields import QuerySelectField
 from flask_sqlalchemy import SQLAlchemy
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType, Portfolio, Skill, Language
+from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType, Portfolio, Skill, Language, Profile
 
 class RegistrationForm(FlaskForm):
 	firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=40)])
@@ -28,7 +28,13 @@ class LoginForm(FlaskForm):
 	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=24)])
 	remember = BooleanField('Remember Me')
 	submit = SubmitField('Login')
-	
+
+class AssignProfileTypesForm(FlaskForm):
+	user_name = QuerySelectField('Member', query_factory=lambda:User.query.order_by(User.firstname).filter(User.status == 'Active').all(), get_label='fullname', allow_blank=True)
+	profiles = QuerySelectField('Profiles', query_factory=lambda:Profile.query.order_by(Profile.name).all(), get_label='name', allow_blank=True, validators=[DataRequired()])
+	tier = SelectField('Tier', choices=[('',''), ('0', 'Foundational'), ('1', 'Officer'), ('2', 'Coordinator'), ('3', 'Manager')])
+	submit = SubmitField('Assign')
+
 class UpdateAccountForm(FlaskForm):
 	firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=40)])
 	lastname = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=40)])

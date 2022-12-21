@@ -15,29 +15,74 @@
 	<div class='row my-5'>
 		<ul class="nav nav-tabs" id="adminNav" role="tablist">
 			<li class="nav-item" role="presentation">
-			<button class="nav-link active text-dark fw-bold" id="badge-assignment-tab" data-bs-toggle="tab" data-bs-target="#badge-assignment" type="button" role="tab" aria-controls="badge-assignment" aria-selected="true">Badge Assignment</button>
+				<button class="nav-link active text-dark fw-bold" id="manage-profiles-tab" data-bs-toggle="tab" data-bs-target="#manage-profiles" type="button" role="tab" aria-controls="manage-profiles" aria-selected="true">Manage Profiles</button>
 			</li>
 			<li class="nav-item" role="presentation">
-			<button class="nav-link text-dark fw-bold" id="pending-members-tab" data-bs-toggle="tab" data-bs-target="#pending-members" type="button" role="tab" aria-controls="pending-members" aria-selected="false">Pending Members {% if pending_users|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{pending_users|length}}</span></button>
+				<button class="nav-link text-dark fw-bold" id="badge-assignment-tab" data-bs-toggle="tab" data-bs-target="#badge-assignment" type="button" role="tab" aria-controls="badge-assignment" aria-selected="false">Assign Badge</button>
 			</li>
 			<li class="nav-item" role="presentation">
-			<button class="nav-link text-dark fw-bold" id="open-reviews-tab" data-bs-toggle="tab" data-bs-target="#open-reviews" type="button" role="tab" aria-controls="open-reviews" aria-selected="false">Open Op Reviews {% if open_reviews|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{open_reviews|length}}</span></button>
+				<button class="nav-link text-dark fw-bold" id="pending-members-tab" data-bs-toggle="tab" data-bs-target="#pending-members" type="button" role="tab" aria-controls="pending-members" aria-selected="false">Pending Members {% if pending_users|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{pending_users|length}}</span></button>
 			</li>
 			<li class="nav-item" role="presentation">
-			<button class="nav-link text-dark fw-bold" id="skill-list-tab" data-bs-toggle="tab" data-bs-target="#skill-list" type="button" role="tab" aria-controls="skill-list" aria-selected="false">Add to Skill List</button>
+				<button class="nav-link text-dark fw-bold" id="open-reviews-tab" data-bs-toggle="tab" data-bs-target="#open-reviews" type="button" role="tab" aria-controls="open-reviews" aria-selected="false">Open Reviews {% if open_reviews|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{open_reviews|length}}</span></button>
 			</li>
 			<li class="nav-item" role="presentation">
-			<button class="nav-link text-dark fw-bold" id="upload-badge-tab" data-bs-toggle="tab" data-bs-target="#upload-badge" type="button" role="tab" aria-controls="upload-badge" aria-selected="false">Upload New Badge</button>
+				<button class="nav-link text-dark fw-bold" id="skill-list-tab" data-bs-toggle="tab" data-bs-target="#skill-list" type="button" role="tab" aria-controls="skill-list" aria-selected="false">Edit Skills</button>
 			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link text-dark fw-bold" id="upload-badge-tab" data-bs-toggle="tab" data-bs-target="#upload-badge" type="button" role="tab" aria-controls="upload-badge" aria-selected="false">Upload Badge</button>
+			</li>
+
 		</ul>
+
 		<div class="tab-content" id="adminContent">
-		  <div class="tab-pane fade show active" id="badge-assignment" role="tabpanel" aria-labelledby="badge-assignment-tab">
+			
+		<div class="tab-pane fade show active" id="manage-profiles" role="tabpanel" aria-labelledby="manage-profiles-tab">
+			<br>
+			<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+			{{ badge_form.hidden_tag() }}
+			<div class='row'>
+				<div class='col'>{{ profile_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
+				<div class='col'>{{ profile_form.profiles.label(class="form-control-label pb-2 text-danger") }}</div>
+				<div class='col'>{{ profile_form.tier.label(class="form-control-label pb-2 text-danger") }}</div>
+			</div>
+			<div class='row mb-3'>
+			  <div class='col'>{{ profile_form.user_name(class="form-control form-control-lg") }} </div>
+			  <div class='col'>{{ profile_form.profiles(class="form-control form-control-lg") }}</div>
+			  <div class='col'>{{ profile_form.tier(class="form-control form-control-lg") }}</div>
+		  </div>
+			  <div class='col-2'>{{ profile_form.submit(class="btn btn-lg btn-danger mt-3 w-100") }}</div>
+		  <div class='row'>
+			</div>
+			</form>
+			<div class='mt-4'>
+				<table class='table grouped-table-rows'>
+					<thead>
+						<tr>
+							<th>Member</th>
+							<th>Profile</th>
+							<th>Tier</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for profile in all_assigned_profiles %}
+							<tr>
+								<td class='fw-bold'><a href='/profile/view/{{profile.user_id}}'>{{profile.user_name}}</a></td>
+								<td>{{profile.name}}</td>
+								<td>{{profile.max_tier}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		  <div class="tab-pane fade" id="badge-assignment" role="tabpanel" aria-labelledby="badge-assignment-tab">
 			  <br>
 			  <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
 					{{ badge_form.hidden_tag() }}
-					<div class='row'>
-					  <div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
-					  <div class='col'>{{ badge_form.badge_name.label(class="form-control-label pb-2 text-danger") }}</div>
+				<div class='row'>
+				  	<div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
+				  	<div class='col'>{{ badge_form.badge_name.label(class="form-control-label pb-2 text-danger") }}</div>
 				  </div>
 				  <div class='row mb-3'>
 					  <div class='col'>{{ badge_form.user_name(class="form-control form-control-lg") }} </div>
@@ -214,7 +259,7 @@
 				
 			</div>
 			<div class='my-5'>
-				<a href='/admin'><button class='btn btn-lg btn-danger'>Admin Backend</button></a>
+				<a href='/admin'><button class='btn btn-secondary'>Admin Backend</button></a>
 			</div>
 		</div>
 	</div>

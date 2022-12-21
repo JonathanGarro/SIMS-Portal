@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 from SIMS_Portal.main.forms import MemberSearchForm, EmergencySearchForm, ProductSearchForm, BadgeAssignmentForm, SkillCreatorForm, BadgeAssignmentViaSIMSCoForm, NewBadgeUploadForm
+from SIMS_Portal.users.forms import AssignProfileTypesForm
 from collections import defaultdict, Counter
 from datetime import date, timedelta
 from SIMS_Portal.config import Config
@@ -82,6 +83,7 @@ def create_badge():
 @main.route('/admin_landing', methods=['GET', 'POST'])
 @login_required
 def admin_landing():
+	profile_form = AssignProfileTypesForm()
 	badge_form = BadgeAssignmentForm()
 	skill_form = SkillCreatorForm()
 	badge_upload_form = NewBadgeUploadForm()
@@ -91,7 +93,10 @@ def admin_landing():
 		all_users = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.status == 'Active').order_by(User.firstname).all()
 		assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = 'Active' GROUP BY u.id ORDER BY u.firstname")
 		all_skills = db.session.query(Skill.name, Skill.category).order_by(Skill.category, Skill.name).all()
-		return render_template('admin_landing.html', pending_users=pending_users, all_users=all_users, badge_form=badge_form, assigned_badges=assigned_badges, skill_form=skill_form, all_skills=all_skills, badge_upload_form=badge_upload_form, open_reviews=open_reviews)
+		all_assigned_profiles = db.engine.execute("SELECT user_id, firstname || ' ' || lastname as user_name, profile_id, max(tier) as max_tier, user_id || profile_id as unique_code, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN user ON user.id = user_profile.user_id GROUP BY user_id, profile_id ORDER BY user_name")
+		return render_template('admin_landing.html', pending_users=pending_users, all_users=all_users, badge_form=badge_form, assigned_badges=assigned_badges, skill_form=skill_form, all_skills=all_skills, badge_upload_form=badge_upload_form, open_reviews=open_reviews, profile_form=profile_form,all_assigned_profiles=all_assigned_profiles)
+	
+	# assign badge
 	elif request.method == 'POST' and badge_form.submit_badge.data and current_user.is_admin == 1: 
 		user_id = badge_form.user_name.data.id
 		badge_id = badge_form.badge_name.data.id
@@ -113,7 +118,9 @@ def admin_landing():
 		else:
 			flash('Cannot add badge - user already has it.', 'danger')
 			return redirect(url_for('main.admin_landing'))
-	elif request.method == 'POST' and skill_form.submit_skill.data and current_user.is_admin == 1: 
+	
+	# save skill
+	elif request.method == 'POST' and skill_form.submit_skill.data and current_user.is_admin == 1:
 		new_skill = Skill(
 			name = skill_form.name.data,
 			category = skill_form.category.data
@@ -122,6 +129,8 @@ def admin_landing():
 		db.session.commit()
 		flash("New Skill Created.", "success")
 		return redirect(url_for('main.admin_landing'))
+	
+	# upload new badge
 	elif request.method == 'POST' and badge_upload_form.name.data and current_user.is_admin == 1:
 		file = save_new_badge(badge_upload_form.file.data)
 		badge = Badge(
@@ -132,6 +141,39 @@ def admin_landing():
 		db.session.commit()
 		flash('New badge successfully created!', 'success')
 		return redirect(url_for('main.admin_landing'))
+	
+	# assign profile to user
+	elif request.method == 'POST' and profile_form.user_name.data and current_user.is_admin == 1:
+		
+		user_id = profile_form.user_name.data.id
+		try:
+			profile_id = profile_form.profiles.data.id
+		except:
+			profile_id = 99
+		tier = profile_form.tier.data 
+		requested_profile_code = str(user_id) + str(profile_id) + str(tier)
+		
+		if profile_id == 99:
+			flash('A profile is required.', 'danger')
+			return redirect(url_for('main.admin_landing'))
+		
+		if tier == '':
+			flash('A tier is required.', 'danger')
+			return redirect(url_for('main.admin_landing'))
+		
+		# get the user's existing profiles and tiers, generate unique code that concats all three elements
+		users_existing_profiles = db.engine.execute("SELECT user_id, profile_id, tier, user_id || profile_id || tier as unique_code FROM user_profile WHERE user_id = {}".format(user_id))
+		
+		# iterate over SQL object to extract unique_code
+		list_to_check = []
+		for unique_code in users_existing_profiles:
+			list_to_check.append(unique_code.unique_code)
+		
+		if requested_profile_code in list_to_check:
+			flash('User already has that profile at that tier.', 'danger')
+			return redirect(url_for('main.admin_landing'))
+		else:
+			return redirect(url_for('users.assign_profiles', user_id=user_id, profile_id=profile_id, tier=tier))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403

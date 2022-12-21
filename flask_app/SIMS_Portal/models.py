@@ -16,6 +16,12 @@ import requests
 def load_user(user_id):
 	return User.query.get(int(user_id))
 
+user_profile = db.Table('user_profile',
+	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+	db.Column('profile_id', db.Integer, db.ForeignKey('profile.id')),
+	db.Column('tier', db.Integer)
+)
+
 user_skill = db.Table('user_skill', 
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
 	db.Column('skill_id', db.Integer, db.ForeignKey('skill.id'))
@@ -39,6 +45,16 @@ user_workinggroup = db.Table('user_workinggroup',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
 	db.Column('workinggroup_id', db.Integer, db.ForeignKey('workinggroup.id'))
 )
+
+class Profile(db.Model):
+	__tablename__ = 'profile'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	
+	name = db.Column(db.String)
+	
+	def __repr__(self):
+		return f"Profile('{self.id}', '{self.name}'" 
 
 class Skill(db.Model):
 	__tablename__ = 'skill'
@@ -113,6 +129,7 @@ class User(db.Model, UserMixin):
 	assignments = db.relationship('Assignment', backref='assigned_member')
 	products = db.relationship('Portfolio', backref='creator', lazy=True)
 	skills = db.relationship('Skill', secondary='user_skill', backref='members_with_skill')
+	profiles = db.relationship('Profile', secondary='user_profile', backref='members_with_profile')
 	languages = db.relationship('Language', secondary='user_language', backref='members_with_language')
 	badges = db.relationship('Badge', secondary='user_badge', backref='members_with_badge')
 	working_groups = db.relationship('WorkingGroup', secondary='user_workinggroup', backref='members_with_workinggroup')
@@ -317,7 +334,7 @@ class Portfolio(db.Model):
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 	def __repr__(self):
-		return f"Portfolio('{self.id}','{self.title}','{self.type}','{self.description}','{self.final_file_location}','{self.creator_id}','{self.collaborator_ids}')"
+		return f"Portfolio('{self.id}','{self.title}','{self.type}','{self.description}','{self.image_file}','{self.creator_id}','{self.collaborator_ids}')"
 
 class Alert(db.Model):
 	__tablename__ = 'alert'
@@ -338,6 +355,9 @@ class Alert(db.Model):
 	event_date = db.Column(db.Date)
 	country = db.Column(db.String)
 	iso3 = db.Column(db.String)
+	region = db.Column(db.String)
+	scope = db.Column(db.String)
+	appeal_type = db.Column(db.String)
 	
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
