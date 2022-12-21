@@ -15,6 +15,7 @@
 	
 	<hr class='my-3'>
 
+<!-- Section Break		 -->
 
 	<h2 class='Montserrat pt-5'>Regular Badges</h2>
 	<a href='/badges#special-edition'>↓ Jump to Limited Edition Badges</a>
@@ -24,7 +25,7 @@
 			  <img src='/static/assets/img/badges/Cat-Herder.png' class='img-fluid'>
 		  </div>
 		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='14'>Cat Herder</h3>
+			<h3 class='text-danger Montserrat mb-2' id='13'>Cat Herder</h3>
 			{% if ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 50 %}
 				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
 			{% elif ((badge_counts['Cat Herder'] / count_active_members) * 100)|int < 50 and ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 25 %}
@@ -42,6 +43,8 @@
 			<p>You help manage the SIMS Network.</p>
 		</div>
 	</div>
+
+<!-- Section Break		 -->
 	
 	<div class="row my-5">
 		  <div class="col-md-2">
@@ -66,7 +69,9 @@
 			<p>You took an innovative approach to visualizing a complicated dataset.</p>
 		</div>
 	</div>
-	
+
+<!-- Section Break		 -->
+
 	<div class="row my-5">
 		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/Gold-Medal-Relay.png' class='img-fluid'>
@@ -90,6 +95,8 @@
 			<p>You handed off the SIMS Remote Coordinator duties like an champion.</p>
 		</div>
 	</div>
+	
+<!-- Section Break		 -->
 	
 	<div class="row my-5">
 		  <div class="col-md-2">
@@ -115,6 +122,8 @@
 		</div>
 	</div>
 	
+<!-- Section Break		 -->
+	
 	<div class="row my-5">
 		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/No-Pressure.png' class='img-fluid'>
@@ -138,7 +147,9 @@
 			<p>You took on a critical task with a tight deadline, and turned in a fantastic product.</p>
 		</div>
 	</div>
-	
+
+<!-- Section Break		 -->
+
 	<div class="row my-5">
 		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/Polyglot.png' class='img-fluid'>
@@ -162,7 +173,9 @@
 			<p>Google Translate be damned!</p>
 		</div>
 	</div>
-	
+
+<!-- Section Break		 -->
+
 	<div class="row my-5">
 		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/Self-Promoter.png' class='img-fluid'>
@@ -187,7 +200,7 @@
 		</div>
 	</div>
 	
-
+<!-- Section Break		 -->
 	
 	<div class="row my-5">
 		  <div class="col-md-2">
@@ -212,7 +225,9 @@
 			<p>You're practically a tenured professor with all that knowledge you've shared!</p>
 		</div>
 	</div>
-	
+
+<!-- Section Break		 -->
+
 	<div class="row my-5">
 		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/Teaching-Moment.png' class='img-fluid'>
@@ -236,7 +251,9 @@
 			<p>You're helping upskill the network by sharing your talents.</p>
 		</div>
 	</div>
-	
+
+<!-- Section Break		 -->
+
 	<div class="row my-5">
 		  <div class="col-md-2">
 			  <img src='/static/assets/img/badges/World-Traveler.png' class='img-fluid'>
@@ -261,6 +278,9 @@
 		</div>
 	</div>
 	<h2 class='Montserrat pt-5' id='special-edition'>Special Edition Badges</h2>
+
+<!-- Section Break		 -->	
+
 	<div class="row my-5">
 		<div class="col-md-2">
 			  <img src='/static/assets/img/badges/MVP-2022.png' class='img-fluid'>
@@ -285,6 +305,8 @@
 		</div>
 	</div>
 	
+<!-- Section Break		 -->
+	
 	<div class="row my-5">
 		<div class="col-md-2">
   			<img src='/static/assets/img/badges/Workshop-Madrid-18-Organizer.png' class='img-fluid'>
@@ -305,9 +327,11 @@
 			<div class="progress  my-3" style="height: 20px; width: 50%">
 				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}%</div>
 			</div>
-			<p>You helped set up the SIMS Workshop in Madrid.</p>
+			<p>You helped set up the SIMS Workshop in Madrid. ¡Bien hecho!</p>
 		</div>
-		
+
+<!-- Section Break		 -->	
+
 		<div class="row my-5">
 			<div class="col-md-2">
 			  	<img src='/static/assets/img/badges/Workshop-Madrid-18-Participant.png' class='img-fluid'>
@@ -328,17 +352,65 @@
 				<div class="progress  my-3" style="height: 20px; width: 50%">
 					<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}%</div>
 				</div>
-				<p>You joined us for the SIMS Workshop in Madrid.</p>
+				<p>¡Qué guay! You joined us for the SIMS Workshop in Madrid.</p>
 			</div>
-		
 
-		
-		
+<!-- Section Break		 -->
+
+		<div class="row my-5">
+		<div class="col-md-2">
+			  <img src='/static/assets/img/badges/Workshop-Nepal-22-Organizer.png' class='img-fluid'>
+		</div>
+		<div class="col ps-4">
+			<h3 class='text-danger Montserrat mb-2' id='15'>SIMS Workshop Nepal 2022 Organizer</h3>
+			{% if ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int >= 50 %}
+				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int < 50 and ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int >= 25 %}
+				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int < 25 and ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int >= 10 %}
+				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% else %}
+				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% endif %}
+			
+			
+			<div class="progress  my-3" style="height: 20px; width: 50%">
+				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}%</div>
+			</div>
+			<p>You helped set up the SIMS Workshop in Nepal. Dhan'yavāda!</p>
+		</div>
+
+<!-- Section Break		 -->
+
+		<div class="row my-5">
+		<div class="col-md-2">
+			  <img src='/static/assets/img/badges/Workshop-Nepal-22-Participant.png' class='img-fluid'>
+		</div>
+		<div class="col ps-4">
+			<h3 class='text-danger Montserrat mb-2' id='16'>SIMS Workshop Nepal 2022 Organizer</h3>
+			{% if ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int >= 50 %}
+				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int < 50 and ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int >= 25 %}
+				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int < 25 and ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int >= 10 %}
+				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% else %}
+				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% endif %}
+			
+			
+			<div class="progress  my-3" style="height: 20px; width: 50%">
+				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}%</div>
+			</div>
+			<p>You joined the Nepal SIMS workshop in 2022.</p>
+		</div>
+
+<!-- Section Break		 -->
 	
-	
-	
+<!-- Section Break		 -->
+		</div>
 	</div>
 	</div>
-	<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+	</div>
 </div>
 {% endblock content %}
