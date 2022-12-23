@@ -1,3 +1,6 @@
+### IDE ###
+.nova
+
 ### SIMS Portal Specific ###
 site.db
 flask_app/SIMS_Portal/static/assets/portfolio/
