@@ -10,7 +10,7 @@ from SIMS_Portal.models import User, Emergency, Portfolio, Skill, Language, Emer
 
 class MemberSearchForm(FlaskForm):
 	name = StringField('Member Name')
-	skills = QuerySelectField('Skill', query_factory=lambda:Skill.query.all(), get_label='name', allow_blank=True)
+	skills = QuerySelectField('Skill', query_factory=lambda:Skill.query.order_by('name').all(), get_label='name', allow_blank=True)
 	languages = QuerySelectField('Language', query_factory=lambda:Language.query.order_by(Language.name).all(), get_label='name', allow_blank=True)
 	submit = SubmitField('Search Members')
 

@@ -1,108 +1,93 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class='container'>
-<div class='full-width-div'>
-<section class="container pb-2 pb-md-4 pb-lg-5 mb-3">
-  <h1 class="pb-4">Services v.1</h1>
-  <div class="row row-cols-1 row-cols-md-2">
 
-    <!-- Item -->
-    <div class="col py-4 my-2 my-sm-3">
-      <a href="services-single-v1.html" class="card card-hover h-100 border-0 shadow-lg text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
-        <div class="card-body pt-3">
-          <div class="d-inline-block bg-primary shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-            <img src="assets/img/services/icons/cms.svg" class="d-block m-1" width="40" alt="Icon">
-          </div>
-          <h2 class="h4 d-inline-flex align-items-center">
-            Custom Software Development
-            <i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-          </h2>
-          <p class="fs-sm text-body mb-0">Nisi, dis sed cursus eget pellentesque mattis. Odio eu proin aliquam a. Semper bibendum tellus non tellus, facilisi dignissim in quam massa. Aliquam, feugiat ut cum tellus, sit. Quis consectetur gravida ac ac lectus cursus egestas.</p>
-        </div>
-      </a>
-    </div>
 
-    <!-- Item -->
-    <div class="col py-4 my-2 my-sm-3">
-      <a href="services-single-v1.html" class="card card-hover h-100 border-0 shadow-lg text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-        <div class="card-body pt-3">
-          <div class="d-inline-block bg-primary shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-            <img src="assets/img/services/icons/rocket.svg" class="d-block m-1" width="40" alt="Icon">
-          </div>
-          <h2 class="h4 d-inline-flex align-items-center">
-            Software Integration
-            <i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-          </h2>
-          <p class="fs-sm text-body mb-0">Id eget blandit sapien cras massa lectus lorem placerat. Quam dolor commodo fermentum bibendum dictumst. Risus pretium eget at viverra eget. Sit neque adipiscing malesuada blandit justo, quam.</p>
-        </div>
-      </a>
-    </div>
 
-    <!-- Item -->
-    <div class="col py-4 my-2 my-sm-3">
-      <a href="services-single-v1.html" class="card card-hover h-100 border-0 shadow-lg text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-        <div class="card-body pt-3">
-          <div class="d-inline-block bg-primary shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-            <img src="assets/img/services/icons/mobile-app.svg" class="d-block m-1" width="40" alt="Icon">
-          </div>
-          <h2 class="h4 d-inline-flex align-items-center">
-            Mobile App Development
-            <i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-          </h2>
-          <p class="fs-sm text-body mb-0">Nunc, justo, diam orci, dictum purus convallis risus. Suscipit hendrerit at egestas id id blandit interdum est. Integer fames placerat turpis pretium quis hac leo lacus. Orci, dictum nunc mus quis semper eu bibendum enim, morbi.</p>
-        </div>
-      </a>
-    </div>
+<style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu {
+        width: 100vw;
+        height: 40px;
+        background: #1A1A1A;
+        color: rgba(255, 26, 104, 1);
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        background: rgba(255, 26, 104, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(255, 26, 104, 1);
+        background: white;
+      }
+    </style>
+    <canvas id="canvas"></canvas>
+<script src="https://unpkg.com/chart.js@4.0.1"></script>
 
-    <!-- Item -->
-    <div class="col py-4 my-2 my-sm-3">
-      <a href="services-single-v1.html" class="card card-hover h-100 border-0 shadow-lg text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-        <div class="card-body pt-3">
-          <div class="d-inline-block bg-primary shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-            <img src="assets/img/services/icons/analytics.svg" class="d-block m-1" width="40" alt="Icon">
-          </div>
-          <h2 class="h4 d-inline-flex align-items-center">
-            Business Analytics
-            <i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-          </h2>
-          <p class="fs-sm text-body mb-0">Gravida eget euismod tempus diam dignissim quam. Dignissim magnis blandit faucibus convallis augue nisl, etiam. Feugiat ut molestie non arcu senectus sed. Diam pellentesque sit mattis nec amet varius nunc a sed.</p>
-        </div>
-      </a>
-    </div>
 
-    <!-- Item -->
-    <div class="col py-4 my-2 my-sm-3">
-      <a href="services-single-v1.html" class="card card-hover h-100 border-0 shadow-lg text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-        <div class="card-body pt-3">
-          <div class="d-inline-block bg-primary shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-            <img src="assets/img/services/icons/web-search.svg" class="d-block m-1" width="40" alt="Icon">
-          </div>
-          <h2 class="h4 d-inline-flex align-items-center">
-            Software Testing
-            <i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-          </h2>
-          <p class="fs-sm text-body mb-0">Quis rhoncus quam venenatis facilisi. Risus dis libero nisl condimentum quis. Tincidunt ultricies vulputate ornare nunc rhoncus in. Ultrices dolor eu natoque volutpat praesent curabitur ultricies.</p>
-        </div>
-      </a>
-    </div>
+    <svg class='my-3' id="response-history-map" width='1300' height='700'></svg>
+    
+    <script>
+    
+    var svg = d3.select("svg"),
+      width = +svg.attr("width"),
+      height = +svg.attr("height");
+    
+    // Map and projection
+    var path = d3.geoPath();
+    var projection = d3.geoMercator()
+      .scale(150)
+      .center([0,20])
+      .translate([width / 2, height / 2]);
+    
+    // Data and color scale
+    var data = d3.map();
+    var colorScale = d3.scaleThreshold()
+      .domain([1, 2, 3, 4])
+      .range(d3.schemeReds[4]);
+    
+    // Load external data and boot
+    d3.queue()
+      .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
+      .defer(d3.csv, "/static/data/emergencies_viz.csv", function(d) { data.set(d.iso3, +d.count); })
+      .await(ready);
+    
+    function ready(error, topo) {
+    
+      // Draw the map
+      svg.append("g")
+      .selectAll("path")
+      .data(topo.features)
+      .enter()
+      .append("path")
+        // draw each country
+        .attr("d", d3.geoPath()
+        .projection(projection)
+        )
+        // set the color of each country
+        .attr("fill", function (d) {
+        d.total = data.get(d.id) || 0;
+        return colorScale(d.total);
+        });
+      }
+      
+      
+    
+    </script>
 
-    <!-- Item -->
-    <div class="col py-4 my-2 my-sm-3">
-      <a href="services-single-v1.html" class="card card-hover h-100 border-0 shadow-lg text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-        <div class="card-body pt-3">
-          <div class="d-inline-block bg-primary shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-            <img src="assets/img/services/icons/timer.svg" class="d-block m-1" width="40" alt="Icon">
-          </div>
-          <h2 class="h4 d-inline-flex align-items-center">
-            Project Management
-            <i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-          </h2>
-          <p class="fs-sm text-body mb-0">Massa dis morbi sagittis, tellus sit gravida. Id ut non ut in faucibus eu, ac. Tempus feugiat enim id pellentesque a sagittis vitae, convallis. Nunc, arcu enim orci ullamcorper aenean. Scelerisque eget a nibh bibendum commodo.</p>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-</div>
-</div>
+
 {% endblock content %}
