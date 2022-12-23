@@ -55,13 +55,30 @@ body {
   position: relative;
 }
 
-p {
-	font-size: 18px;
-	font: Verdana;
+h2 {
+	margin-bottom:0;
+}
+
+h2.header {
+	bottom: 0;
+	position: absolute;
+	/* background:rgba(67, 67, 67, 0.50); */
+	padding-left: 30px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: left;
+	font-size: 4em;
+	font-family: 'Montserrat';
+	width: 75%;
 }
 
 li {
 	font-size: 18px;
+}
+
+p {
+	font-size: 18px;
+	font: Verdana;
 }
 
 #box {
@@ -76,8 +93,6 @@ li {
 	color: #df4759;
 }
 
-
-
 .list-group-item.active {
 	background-color: rgb(192, 192, 192);
 	border: none;
@@ -91,10 +106,6 @@ li {
 }
 
 .portfolio-title {
-	font-family: 'Montserrat';
-}
-
-#portfolio-title {
 	font-family: 'Montserrat';
 }
 
@@ -184,22 +195,7 @@ li {
 	color: #ffffff
 }
 
-h2 {
-	margin-bottom:0;
-}
 
-h2.header {
-	bottom: 0;
-	position: absolute;
-	/* background:rgba(67, 67, 67, 0.50); */
-	padding-left: 30px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	text-align: left;
-	font-size: 4em;
-	font-family: 'Montserrat';
-	width: 75%;
-}
 
 #active-disaster-dashboard {
 	margin-top:0;
