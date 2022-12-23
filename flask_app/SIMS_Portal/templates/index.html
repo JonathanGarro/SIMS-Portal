@@ -42,24 +42,6 @@
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
 		</a>
 	</div>
-	<h3 class="text-dark Montserrat">Latest Tweets</h3>
-	<h5 class="text-secondary mb-4" id='portfolio-title'><a href='https://twitter.com/IFRC_SIMS'>@IFRC_SIMS</a></h5>
-	<div class="row row-cols-3 g-5">
-		{% for tweet in tweets %}
-		<div class="col d-flex align-items-stretch">
-			<div class="card bg-light">
-				<div class="card-body d-flex flex-column">
-					<h5 class=" mb-2">{{tweet.tweet}}</h5>
-					<small>{{tweet.created_at_year}}-{{tweet.created_at_month}}-{{tweet.created_at_day}}</small>
-					<br><br>
-					<div class='mt-auto'>
-						<a href='https://twitter.com/i/web/status/{{tweet.id}}'><button class='btn btn-sm btn-danger'>View</button></a> 
-					</div>
-				</div>
-			</div>
-		</div>
-		{% endfor %}
-	</div>
 	<div class='row mb-6'>
 	</div>
 </div>
