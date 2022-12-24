@@ -86,9 +86,9 @@ def profile():
 		ns_association = 'None' 
 	try:
 		assignment_history = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id==User.id).join(Emergency, Emergency.id==Assignment.emergency_id).filter(User.id==current_user.id, Emergency.emergency_status != 'Removed', Assignment.assignment_status != 'Removed').all()
-		
 	except:
 		pass
+		
 	deployment_history_count = len(assignment_history)
 	
 	user_portfolio = get_full_portfolio(current_user.id)
@@ -97,6 +97,8 @@ def profile():
 	user_products = db.session.query(User, Portfolio).join(Portfolio, Portfolio.creator_id==User.id).where(or_(User.id==current_user.id, Portfolio.collaborator_ids.like(user_info.id))).filter(Portfolio.product_status != 'Removed').all()
 	
 	skills_list = db.engine.execute("SELECT * FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE user.id=:current_user", {'current_user': current_user.id})
+	
+	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {}".format(current_user.id))
 	
 	languages_list = db.engine.execute("SELECT * FROM user JOIN user_language ON user.id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE user.id=:current_user", {'current_user': current_user.id})
 	
@@ -119,7 +121,7 @@ def profile():
 	except:
 		pass
 
-	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges)
+	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list)
 	
 @users.route('/profile/view/<int:id>')
 def view_profile(id):
@@ -183,10 +185,26 @@ def view_all_user_badges(user_id):
 		temp_dict['badge_id'] = badge.badge_id
 		temp_dict['badge_url'] = badge.badge_url
 		list_badges.append(temp_dict)
-	print(list_badges)
 	
 	return render_template('badges_more.html', list_badges = list_badges, this_user = this_user)
+
+@users.route('/support_profiles/<int:user_id>')
+@login_required
+def view_all_user_profiles(user_id):
+	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
+	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {}".format(user_id))
+	
+	list_profiles = []
+	for profile in qualifying_profile_list:
+		temp_dict = {}
+		temp_dict['image'] = profile.image
+		temp_dict['tier'] = profile.tier
+		list_profiles.append(temp_dict)
+
+	
+	return render_template('support_profile_details.html', list_profiles = list_profiles, this_user = this_user)
+
 @users.route('/profile_edit', methods=['GET', 'POST'])
 @login_required
 def update_profile():
