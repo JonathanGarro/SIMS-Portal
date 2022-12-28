@@ -98,7 +98,7 @@ def profile():
 	
 	skills_list = db.engine.execute("SELECT * FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE user.id=:current_user", {'current_user': current_user.id})
 	
-	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {}".format(current_user.id))
+	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(current_user.id))
 	
 	languages_list = db.engine.execute("SELECT * FROM user JOIN user_language ON user.id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE user.id=:current_user", {'current_user': current_user.id})
 	
@@ -148,13 +148,15 @@ def view_profile(id):
 	
 	languages_list = db.engine.execute("SELECT * FROM user JOIN user_language ON user.id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE user.id=:member_id", {'member_id': id})
 	
+	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(id))
+	
 	profile_picture = url_for('static', filename='assets/img/avatars/' + user_info.image_file)
 	
 	count_badges = db.engine.execute("SELECT count(*) as count FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': id}).scalar()
 	
-	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': id})
+	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name LIMIT 4", {'member_id': id})
 	
-	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges)
+	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges, qualifying_profile_list=qualifying_profile_list)
 
 @users.route('/assign_profiles/<int:user_id>/<int:profile_id>/<int:tier>', methods=['GET', 'POST'])
 @login_required
@@ -193,7 +195,7 @@ def view_all_user_badges(user_id):
 def view_all_user_profiles(user_id):
 	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
-	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {}".format(user_id))
+	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(user_id))
 	
 	list_profiles = []
 	for profile in qualifying_profile_list:
@@ -201,7 +203,6 @@ def view_all_user_profiles(user_id):
 		temp_dict['image'] = profile.image
 		temp_dict['tier'] = profile.tier
 		list_profiles.append(temp_dict)
-
 	
 	return render_template('support_profile_details.html', list_profiles = list_profiles, this_user = this_user)
 
