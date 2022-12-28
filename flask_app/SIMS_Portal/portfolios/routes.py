@@ -102,7 +102,7 @@ def view_portfolio(id):
 @portfolios.route('/portfolio/download/<int:id>')
 def download_portfolio(id):
 	product = db.session.query(Portfolio).filter(Portfolio.id==id).first()
-	path = os.path.join(current_app.root_path, 'static/assets/portfolio', product.final_file_location)
+	path = os.path.join(current_app.root_path, 'static/assets/portfolio', product.local_file)
 	return send_file(path, as_attachment=True)
 
 @portfolios.route('/portfolio/delete/<int:id>')
