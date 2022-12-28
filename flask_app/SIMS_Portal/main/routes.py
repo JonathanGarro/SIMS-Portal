@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session
-from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review
+from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, current_user, logout_user, login_required
@@ -458,8 +458,35 @@ def dashboard():
 	most_recent_emergencies = db.session.query(Emergency).order_by(Emergency.created_at.desc()).limit(7).all()
 	most_recent_members = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.status == 'Active').order_by(User.created_at.desc()).limit(7).all()
 	
-	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, most_recent_emergencies=most_recent_emergencies, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, most_recent_members=most_recent_members, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies)
+	surge_alerts = db.session.query(Alert).all()
 	
+	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, most_recent_emergencies=most_recent_emergencies, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, most_recent_members=most_recent_members, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts)
+
+@main.route('/role_profile/<type>')
+def view_role_profile(type):
+	capitalized_type = type.capitalize()
+	
+	users_with_profile = db.engine.execute("SELECT user.id, firstname, lastname, max(tier) as tier, image_file FROM user JOIN user_profile ON user.id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = '{}' GROUP BY user.id".format(capitalized_type))
+	
+	users_with_profile_tier_1 = []
+	users_with_profile_tier_2 = []
+	users_with_profile_tier_3 = []
+	users_with_profile_tier_4 = []
+	for user in users_with_profile:
+		if user.tier == 1:
+			users_with_profile_tier_1.append(user)
+		elif user.tier == 2:
+			users_with_profile_tier_2.append(user)
+		elif user.tier == 3:
+			users_with_profile_tier_3.append(user)
+		elif user.tier == 4:
+			users_with_profile_tier_4.append(user)
+	
+	count_users_with_profile = db.engine.execute("SELECT count(distinct(user.id)) as count FROM user JOIN user_profile ON user.id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = '{}'".format(capitalized_type))
+	unpacked_count = [x.count for x in count_users_with_profile][0]
+	
+	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)
+
 @main.route('/staging') 
 @login_required
 def staging(): 
