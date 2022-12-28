@@ -29,7 +29,10 @@ def new_emergency():
 		db.session.commit()
 		flash('New emergency successfully created.', 'success')
 		return redirect(url_for('main.dashboard'))
-	latest_emergencies = Emergency.get_latest_go_emergencies()
+	try:
+		latest_emergencies = Emergency.get_latest_go_emergencies()
+	except:
+		latest_emergencies = [{'dis_id': 0, 'dis_name': 'GO API CALL FAILED'}]
 	return render_template('create_emergency.html', title='Create New Emergency', form=form, latest_emergencies=latest_emergencies)
 
 @emergencies.route('/emergency/<int:id>', methods=['GET', 'POST'])
