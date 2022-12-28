@@ -37,7 +37,7 @@
 						<a href='/support_profiles/{{current_user.id}}'><small class='px-3'>See Details</small></a>
 						</div>
 						{% for profile in qualifying_profile_list %}
-							<button type="button" class="btn btn-danger btn-sm mb-2">{{profile.name}} - Level {{profile.tier}}</button>
+							<button type="button" class="btn btn-secondary btn-sm mb-2">{{profile.name}} - Level {{profile.tier}}</button>
 						{% endfor %}
 					</div>
 				</div>
@@ -46,7 +46,7 @@
 					<div>
 					<h5 class="text-secondary mt-4">Skills</h5>
 					{% for skill in skills_list %}
-						<button type="button" class="btn btn-danger btn-sm mb-2">{{skill.name}}</button>
+						<button type="button" class="btn btn-secondary btn-sm mb-2">{{skill.name}}</button>
 					{% endfor %}
 					</div>
 				</div>
@@ -55,7 +55,7 @@
 					<div>
 					<h5 class="text-secondary mt-4">Languages</h5>
 					{% for language in languages_list %}
-						<button type="button" class="btn btn-danger btn-sm mb-2">{{language.name}}</button>
+						<button type="button" class="btn btn-secondary btn-sm mb-2">{{language.name}}</button>
 					{% endfor %}
 					</div>
 				</div>
@@ -126,7 +126,7 @@
 					No deployments or remote support provided yet.
 				{% else %}
 				<table class="table">
-			  	<thead class="">
+			  	<thead>
 					<tr>
 				  	<th>Event</th>
 				  	<th>Assignment</th>
@@ -157,7 +157,7 @@
 						
 					  	<div class="card-body d-flex flex-column">
 							<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
-							<h5 class="card-title mt-auto">{{product.title}}</h5>
+							<h5 class="card-title Montserrat mt-auto">{{product.title}}</h5>
 							</a>
 					  	</div>
 						</div>
