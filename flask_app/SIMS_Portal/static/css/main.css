@@ -292,6 +292,26 @@ p {
 	margin-bottom: 4rem; // or the value you want
 }
 
+.nav-link, .nav-link:hover {
+	color: #5b5b5b
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+	color: #fff;
+	background-color: #dc3545;
+}
+
+.page-link {
+	color: rgb(101, 101, 101)
+}
+
+.page-item.active .page-link {
+	background-color: lightgrey !important;
+	border: 1px solid lightgrey;
+	color: red;
+}
+
+
 .parallax {
   position: relative;
 }
@@ -344,6 +364,10 @@ p {
   background: rgb(45, 108, 23);
 }
 
+.table > :not(:first-child) {
+	border-top: 0;
+}
+
 .tweet {
   color: #1DA1F2;
   font-weight: bold;
@@ -390,6 +414,7 @@ p {
 
 #datatable {
 	margin-bottom: 20px;
+	margin-top: 0px;
 }
 
 #date-label {
