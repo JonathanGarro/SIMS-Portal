@@ -124,32 +124,42 @@
 						<div class='col d-flex align-items-center'>
 							<a class='btn btn-outline-danger w-100' href='/get_slack_id'>Finding your Slack ID</a>
 						</div>
-					<div class="form-group pb-4">
-						{{ form.password.label(class="form-control-label pb-2 text-danger") }}
-						{% if form.password.errors %}
-							{{ form.password(class="form-control form-control-lg is-invalid") }}
-								<div class="invalid-feedback">
-									{% for error in form.password.errors %}
-										<span>{{ error }}</span>
-									{% endfor %}
-								</div>
-						{% else %}
-							{{ form.password(class="form-control form-control-lg") }}
-						{% endif %}
 					</div>
-					<div class="form-group pb-4">
-						{{ form.confirm_password.label(class="form-control-label pb-2 text-danger") }}
-						{% if form.confirm_password.errors %}
-							{{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
-								<div class="invalid-feedback">
-									{% for error in form.confirm_password.errors %}
-										<span>{{ error }}</span>
-									{% endfor %}
+						<div class='row'>
+							<div class='col'>
+								<div class="form-group pb-4">
+									{{ form.password.label(class="form-control-label pb-2 text-danger") }}
+									{% if form.password.errors %}
+										{{ form.password(class="form-control form-control-lg is-invalid") }}
+											<div class="invalid-feedback">
+												{% for error in form.password.errors %}
+													<span>{{ error }}</span>
+												{% endfor %}
+											</div>
+									{% else %}
+										{{ form.password(class="form-control form-control-lg") }}
+									{% endif %}
 								</div>
-						{% else %}
-							{{ form.confirm_password(class="form-control form-control-lg") }}
-						{% endif %}
-					</div>
+							</div>
+							<div class='col'>
+								<div class="form-group pb-4">
+									{{ form.confirm_password.label(class="form-control-label pb-2 text-danger") }}
+									{% if form.confirm_password.errors %}
+										{{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+											<div class="invalid-feedback">
+												{% for error in form.confirm_password.errors %}
+													<span>{{ error }}</span>
+												{% endfor %}
+											</div>
+									{% else %}
+										{{ form.confirm_password(class="form-control form-control-lg") }}
+									{% endif %}
+								</div>
+							</div>
+						</div>
+						
+					
+					
 					{{ form.submit(class="btn btn-danger w-25") }}
 				</fieldset>
 			</form>
