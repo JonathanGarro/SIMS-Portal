@@ -10,41 +10,16 @@
 			
 			<p>In order to effectively ramp up and maintain these multilateral operations, leaders need a clear understanding of the emergency’s impact and the needs of the affected population, as well as systems and tools to collect and manage data about the operation’s response. That’s where the Surge Information Management Support (SIMS) network comes in. As an <a href='https://go.ifrc.org/deployments/catalogue'>IFRC Global Tool</a>, SIMS offers a wide array of technical support through remote volunteers spread across the globe.</p>
 			
-			<div class="row g-5 row-cols-1 row-cols-lg-2 pb-5 pt-4">
-				  <div class="feature col">
-					<img src="/static/assets/img/activate.png" width="75" height="75" class="img-fluid mb-4" alt="Activations">
-					<h2 class='text-danger'>{{count_activations}} Activations</h2>
-					<p class='lead'>SIMS has been activated {{count_activations}} times since its inception in 2013, most recently in response to <span class='fw-bold'>{{latest_activation.emergency_name}}</span>.</p>
-				  </div>
-				  <div class="feature col">
-					<img src="/static/assets/img/members.png" width="75" height="75" class="img-fluid mb-4" alt="Responsive image">
-					<h2 class='text-danger'>{{count_members}} Members</h2>
-					<p class='lead'>There are {{count_members}} <a href='/members' >active members</a> of the SIMS network ready to provide support across a variety of technical areas.</p>
-				  </div>
-			</div>
-			
-			<p>While some information management functions require specialists to deploy alongside other field-based roles, there are many others that can be done remotely, such as: </p>
-			
-			<ul>
-				<li>Production of maps to understand the impact of the event as well as the progress being made to meet people’s needs</li>
-				<li>Creation of infographics, dashboards, and other static and interactive media to support reporting needs for a wide array of internal and external audiences</li>
-				<li>Design and deployment of mobile survey forms that help with large-scale data collection</li>
-				<li>Analysis of large data sets to extract key insights that can inform operational decision-making</li>
-				<li>Setup of data management systems to improve collaboration and ensure effective service delivery</li>
-			</ul>
-			
-			<p>You can see our <a href='/portfolio'>public portfolio here</a> for examples of the work that SIMS produces during an emergency response.</p>
-			
 			<h2 class="mb-3 mt-5 Montserrat sims-blue">Profiles</h2>
 			
-			<p class='mb-5'>Most SIMS members have a diverse range of technical skills, but we generally organize remote supporters by the following profiles:</p>
+			<p class='mb-5'>Most SIMS members have a diverse range of technical skills, but we generally organize remote supporters by the following specific profiles. <span class='fw-bold'>Click on a card to learn more</span> about the role and relevant competencies.</p>
 			
 			<section class="pb-2 pb-md-4 pb-lg-5">
 			  <div class="row row-cols-1 row-cols-md-2">
 			
 				<!-- Item -->
 				<div class="col py-4 my-2 my-sm-3">
-				  <a href="#" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+				  <a href="/role_profile/Geo" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
 					<div class="card-body pt-3">
 					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
 						<img src="static/assets/img/profiles-gis.png" class="d-block m-1" width="40" alt="Icon">
@@ -150,14 +125,29 @@
 			
 		</div>
 		<div class='col ps-5'>
-			<div class="card border-start-danger border-0 p-4 bg-light">
+			
+				<div class='col'>
+				  <div class="card bg-light p-4 mb-3">
+
+					<h3 class='sims-blue Montserrat mb-2'>{{count_activations}} Activations</h3>
+					<p class='lead'>SIMS has been activated {{count_activations}} times since its inception in 2013, most recently in response to <span class='fw-bold'>{{latest_activation.emergency_name}}</span>.</p>
+				  </div>
+				  <div class="card bg-light p-4 mb-3">
+
+					<h3 class='sims-blue Montserrat'>{{count_members}} Members</h3>
+					<p class='lead'>There are {{count_members}} <a href='/members' >active members</a> of the SIMS network ready to provide support across a variety of technical areas.</p>
+				  </div>
+				</div>
+			
+			
+			<div class="card border-start-danger p-4 bg-light">
 				<h3 class='mb-5 Montserrat sims-blue'>Activation Process</h3>
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
 					<img src='/static/assets/img/disaster-strikes.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h4>Disaster Strikes</h4>
+					<h5 class='Montserrat'>Disaster Strikes</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
@@ -169,7 +159,7 @@
 					<img src='/static/assets/img/alert-released.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h4>Request for SIMS</h4>
+					<h5 class='Montserrat'>Request for SIMS</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
@@ -181,7 +171,7 @@
 					<img src='/static/assets/img/sims-activate.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h4>SIMS Activated</h4>
+					<h5 class='Montserrat'>SIMS Activated</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
@@ -193,7 +183,7 @@
 					<img src='/static/assets/img/remote-coordinator.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h4>Coordinator Assigned</h4>
+					<h5 class='Montserrat'>Coordinator Assigned</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
@@ -205,7 +195,7 @@
 					<img src='/static/assets/img/produce.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h4>Services Delivered</h4>
+					<h5 class='Montserrat'>Services Delivered</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
@@ -217,7 +207,7 @@
 					<img src='/static/assets/img/transition.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h4>Phase Out</h4>
+					<h5 class='Montserrat'>Phase Out</h5>
 					</div>
 				</div>
 				<div class='row pb-2'>
