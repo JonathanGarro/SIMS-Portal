@@ -63,6 +63,18 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+	$('#alert-table').DataTable({
+		order: [[5, 'desc']],
+		"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+		  if (aData[6] == "True") {
+			$('td', nRow).css('background-color', 'DarkSlateGray');
+			$('td', nRow).css('color', 'White');
+		  }
+		}
+	});
+});
+
+$(document).ready(function () {
 	$('#datatable-extended').DataTable({
 		language: { search: "Search:  " },
 		"paging": false,
@@ -70,6 +82,32 @@ $(document).ready(function () {
 		order: [[1, 'desc']],
 	});
 });
+
+$(document).ready(function() {
+	$('#datatable-assigned-profiles').DataTable( {
+		order: [[0, 'asc']],
+		columnDefs: [
+		{
+			target: 0,
+			visible: false,
+			searchable: true,
+		}],
+		rowGroup: {
+			dataSrc: 0
+		},
+ 
+	} );
+} );
+
+$(document).ready(function() {
+	$('#datatable-active-assignments').DataTable( {
+		order: [[0, 'asc']],
+		"bLengthChange": false,
+		"searching": false,
+	} );
+} );
+
+
 
 $(function(){
 	$(".typed").typed({
