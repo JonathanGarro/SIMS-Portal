@@ -204,17 +204,17 @@
 			</div>
 			{% endif %}
 			
-			<ul class="nav nav-tabs mb-5" id="emergencyNav" role="tablist">
+			<ul class="nav nav-pills mb-5" id="emergencyNav" role="tablist">
 				<li class="nav-item" role="presentation">
-				<button class="nav-link active text-danger" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true"><h5>Overview</h5></button>
+				<button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
 				</li>
 				{% if values|length > 0 %}
 				<li class="nav-item" role="presentation">
-				<button class="nav-link text-danger" id="availability-tab" data-bs-toggle="tab" data-bs-target="#availability" type="button" role="tab" aria-controls="availability" aria-selected="false"><h5>Availability</h5></button>
+				<button class="nav-link" id="availability-tab" data-bs-toggle="pill" data-bs-target="#availability" type="button" role="tab" aria-controls="availability" aria-selected="false">Availability</button>
 				</li>
 				{% endif %}
 				<li class="nav-item" role="presentation">
-				<button class="nav-link text-danger" id="learning-tab" data-bs-toggle="tab" data-bs-target="#learning" type="button" role="tab" aria-controls="learning" aria-selected="false"><h5>Learning</h5></button>
+				<button class="nav-link" id="learning-tab" data-bs-toggle="pill" data-bs-target="#learning" type="button" role="tab" aria-controls="learning" aria-selected="false">Learning</button>
 				</li>
 			</ul>
 			<div class="tab-content" id="emergencyContent">
@@ -230,7 +230,7 @@
 					  <h3 class="mb-3 text-dark emergency-title">Member Support: <span class='text-danger'>{{ deployment_history_count }}</span></h3>
 					  {% else %}
 					  <h3 class="text-dark emergency-title mb-3">Member Support: <span class='text-danger'>{{ deployment_history_count }}</span></h3>
-					  <table class="table">
+					  <table class="table" id="datatable-active-assignments">
 						<thead class="">
 						  <tr>
 							<th>Member</th>
