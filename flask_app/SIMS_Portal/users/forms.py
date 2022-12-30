@@ -64,13 +64,13 @@ class UpdateAccountForm(FlaskForm):
 				raise ValidationError('Email is already registered.')
 
 class RequestResetForm(FlaskForm):
-	email = StringField('Email', validators=[DataRequired(), Email()])
+	slack_id = StringField('Slack ID', validators=[DataRequired()])
 	submit = SubmitField('Request Password Reset')
 	
-	def validate_email(self, email):
-		user = User.query.filter_by(email=email.data).first()
+	def validate_slack(self, email):
+		user = User.query.filter(User.slack_id == slack_id.data).first()
 		if user is None:
-			raise ValidationError('There is no account with that email.')
+			raise ValidationError('There is no account with that Slack ID.')
 
 class ResetPasswordForm(FlaskForm):
 	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=24)])

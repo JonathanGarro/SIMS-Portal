@@ -1,25 +1,28 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
+	<div class="mt-4" id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
+		{% endwith %}
+	</div>
+</div>
+<div class="container">
 	<div class="row my-5">
 		<div class="col col-md-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light">
+			<div class="card border-3 rounded p-4 bg-light">
 
-				<h4 class="text-danger mb-4 Montserrat">Password Reset</h4>
-				<ul class="timeline">
-					<li>
-						<h5 class="text-secondary Montserrat">Reset Process</h5>
-						<p>Enter the email address that you originally registered with.</p>
-					</li>
-					<li>
-						<h5 class="text-secondary Montserrat">Click the Link</h5>
-						<p>Click the link in the email you receive. It expires after 30 minutes. You will be redirected to the site and be able to choose a new password.</p>
-					</li>
-					<li>
-						<h5 class="text-secondary Montserrat">Check Your Spam Folder</h5>
-						<p>If you don't see an email, check your spam folder. If you still don't find the email, contact a site administrator and they can manually trigger a new email reset for you.</p>
-					</li>
-				</ul>
+				<h3 class="text-danger mb-4 Montserrat">Password Reset</h3>
+				<h5 class="text-secondary Montserrat">Enter Slack ID</h5>
+				<p>Enter the Slack ID that you originally registered with. <a href='/get_slack_id'>How to find your Slack ID.</a></p>
+				<h5 class="text-secondary Montserrat">Click the Link</h5>
+				<p>Click the link in the Slack message you receive. It expires after 30 minutes. You will be redirected to the site and be able to choose a new password.</p>
 
 			</div>
 		</div>
@@ -28,17 +31,17 @@
 				{{ form.hidden_tag() }}
 				<div class="row">
 						<div class="form-group pb-4">
-							{{ form.email.label(class="form-control-label pb-2 text-danger") }}
+							{{ form.slack_id.label(class="form-control-label pb-2 text-danger") }}
 							
-							{% if form.email.errors %}
-								{{ form.email(class="form-control form-control-lg is-invalid") }}
+							{% if form.slack_id.errors %}
+								{{ form.slack_id(class="form-control form-control-lg is-invalid") }}
 									<div class="invalid-feedback">
-										{% for error in form.email.errors %}
+										{% for error in form.slack_id.errors %}
 											<span>{{ error }}</span>
 										{% endfor %}
 									</div>
 							{% else %}
-								{{ form.email(class="form-control form-control-lg") }}
+								{{ form.slack_id(class="form-control form-control-lg") }}
 							{% endif %}
 						</div>
 					  </div>

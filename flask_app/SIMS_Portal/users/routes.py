@@ -2,7 +2,7 @@ from flask import request, render_template, url_for, flash, redirect, jsonify, B
 from SIMS_Portal import db, bcrypt, mail
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge, Profile, user_profile
 from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, AssignProfileTypesForm
-from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids
+from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids, send_reset_slack
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -326,11 +326,19 @@ def update_specified_profile(id):
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
 	form = RequestResetForm()
+	valid_slack_ids = db.session.query(User).all()
+	list_slack_ids = []
+	for id in valid_slack_ids:
+		list_slack_ids.append(id.slack_id)
 	if form.validate_on_submit():
-		user = User.query.filter_by(email=form.email.data).first()
-		send_reset_email(user)
-		flash('An email has been sent with instructions to reset your password.', 'info')
-		return redirect(url_for('users.login'))
+		user = User.query.filter(User.slack_id == form.slack_id.data).first()
+		if form.slack_id.data in list_slack_ids:
+			send_reset_slack(user)
+			flash('A Slack message has been sent with instructions to reset your password.', 'info')
+			return redirect(url_for('users.login'))
+		else:
+			flash("That Slack ID does not match any existing users. Contact a Portal administrator if you continue having issues locating your ID.", 'danger')
+			return redirect('/reset_password')
 	return render_template('reset_request.html', title='Reset Password', form=form)
 	
 @users.route('/reset_password/<token>', methods=['GET', 'POST'])

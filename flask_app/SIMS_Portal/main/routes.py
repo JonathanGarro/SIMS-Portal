@@ -10,7 +10,7 @@ from collections import defaultdict, Counter
 from datetime import date, timedelta
 from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge
-from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert
+from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
 # from SIMS_Portal.alerts.utils_testing import refresh_surge_alerts_tester
 import os
@@ -488,7 +488,6 @@ def view_role_profile(type):
 	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)
 
 @main.route('/staging') 
-@login_required
 def staging(): 
 	refresh_surge_alerts()
 	return render_template('visualization.html')

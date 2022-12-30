@@ -21,15 +21,22 @@ def save_picture(form_picture):
 	resized_image.save(picture_path)
 	
 	return picture_filename
-	
+
+def send_reset_slack(user):
+	token = user.get_reset_token()
+	reset_link = url_for("users.reset_token", token=token, _external=True)
+	print(reset_link)
+	msg = "Looks like you requested a password reset. If you did not request this, simply ignore this message. Otherwise, follow the directions on the page linked here: {}".format(reset_link)
+	send_slack_dm(msg, user.slack_id)
+
 def send_reset_email(user):
 	token = user.get_reset_token()
 	msg = Message('Password reset request for SIMS', sender='sims_portal@dissolvingdata.com', recipients=[user.email])
 	msg.body = f'''Login issues, huh? No sweat, it happens to the best of us. To reset your password, visit the following link:
-{url_for("users.reset_token", token=token, _external=True)}
+	{url_for("users.reset_token", token=token, _external=True)}
 	
-If you did not make this request, then simply ignore this email and no changes will be made.
-'''
+	If you did not make this request, then simply ignore this email and no changes will be made.
+	'''
 	mail.send(msg)
 
 # send slack alert when new user signs up
