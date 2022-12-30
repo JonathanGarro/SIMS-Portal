@@ -22,7 +22,7 @@ def view_story(emergency_id):
 		for day in member_days:
 			sum_days += day[1]
 		sum_days = int(sum_days)
-		products_created = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == emergency_id, Portfolio.product_status == 'Active').count()
+		products_created = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == emergency_id, Portfolio.product_status == 'Approved').count()
 
 		return render_template('story.html', story_data=story_data, emergency_name=emergency_name, members_supporting=members_supporting, sum_days=sum_days, products_created=products_created)
 	else:
