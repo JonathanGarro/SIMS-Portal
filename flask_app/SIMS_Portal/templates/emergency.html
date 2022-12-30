@@ -251,7 +251,7 @@
 							{% endfor %}
 						</tbody>
 					  </table>
-					  <p class='mt-4'><a href='/emergency/gantt/{{emergency_info.Emergency.id}}'><button type="button" class='btn btn-danger text-light'>View as Gantt Chart</button></a></p>
+					  <p class='mt-4'><a href='/emergency/gantt/{{emergency_info.Emergency.id}}'><button type="button" class='btn btn-secondary text-light'>View as Gantt Chart</button></a></p>
 					  {% endif %}
 				  </div>
 				  <h3 class="mb-1 text-dark mb-4 emergency-title">Response Products: <span class='text-danger'>{{ emergency_portfolio_size }}</span></h3>
@@ -276,7 +276,7 @@
 			  </div>
 				  {% if emergency_portfolio_size > 3 %}
 				  <div class='mb-5'>
-					  <a href='/portfolio/emergency_more/{{emergency_info.Emergency.id}}'><button type="button" class="btn btn-danger">View All Products Posted for this Operation</button></a>
+					  <a href='/portfolio/emergency_more/{{emergency_info.Emergency.id}}'><button type="button" class="btn btn-secondary">View All Products Posted for this Operation</button></a>
 				  </div>
 				  {% endif %}
 			  </div>
