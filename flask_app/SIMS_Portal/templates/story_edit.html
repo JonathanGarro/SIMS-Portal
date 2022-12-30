@@ -4,7 +4,7 @@
 	<div class="row my-5">
 		<div class="col-md-4">
 			<h4 class="text-secondary mb-1">Edit</h4>
-			<h2 class="text-danger mb-4">Response Story</h2>
+			<h2 class="text-danger mb-4 Montserrat">Response Story</h2>
 			<ul class="timeline">
 				<li>
 					<h5 class="text-danger Montserrat">Header Image</h5>
@@ -27,7 +27,7 @@
 			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
 				{{ form.hidden_tag() }}
 				<div class="row">
-					<h4 class="text-danger pb-3">Edit Response Story for {{emergency_name[0]}}</h4>
+					<h4 class="text-danger pb-3 Montserrat">Edit Response Story for {{emergency_name[0]}}</h4>
 						<img src='/static/assets/img/stories/{{story.header_image}}' class='img-fluid mb-4'>
 							<div class="form-group pb-4">
 								{{ form.header_image.label(class="form-control-label pb-2 text-danger") }}
@@ -73,7 +73,7 @@
 										{% endfor %}
 									</div>
 							{% else %}
-								{{ form.entry(class="form-control form-control-lg datepicker", type="date") }}
+								{{ form.entry(class="form-control form-control-lg ", type="date") }}
 							{% endif %}
 						</div>
 
@@ -81,7 +81,7 @@
 					
 				</div>
 
-				{{ form.submit(class="btn btn-outline-danger") }} <a href='#' data-toggle="modal" data-target="#confirm-delete"><div class='btn btn-danger btn-outline ms-3'>Delete Story</div></a>
+				{{ form.submit(class="btn btn-success") }} <a href='#' data-toggle="modal" data-target="#confirm-delete"><div class='btn btn-outline-danger btn-outline ms-3'>Delete Story</div></a>
 			</form>
 			<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="deleteStory" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
