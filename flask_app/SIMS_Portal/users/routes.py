@@ -32,8 +32,21 @@ def register():
 		return render_template('register.html', title='Register for SIMS', form=form)
 	else:
 		if form.validate_on_submit():
+			# check that slack id not already associated with an existing member
+			existing_users_slack_ids = db.session.query(User).with_entities(User.slack_id).filter(User.slack_id != None).all()
+			list_ids_to_check = []
+			for id in existing_users_slack_ids:
+				list_ids_to_check.append(id.slack_id)
+			if form.slack_id.data in list_ids_to_check:
+				flash('This Slack ID is already associated with a registered member.', 'danger')
+				return render_template('register.html', title='Register for SIMS', form=form)
+			
 			# ping Slack API to get list of all members' ID, then compare form data to validate that user has entered valid ID
-			slack_check = check_valid_slack_ids(form.slack_id.data)
+			try:
+				slack_check = check_valid_slack_ids(form.slack_id.data)
+			except:
+				flash('Slack API is not responsive. Please contact a SIMS Portal administrator to complete registration.', 'danger')
+				return render_template('register.html', title='Register for SIMS', form=form)
 			if slack_check == False:
 				flash('This Slack ID is not valid and does not belong to any existing SIMS Slack accounts.', 'danger')
 				return render_template('register.html', title='Register for SIMS', form=form)
