@@ -26,7 +26,7 @@ def send_reset_slack(user):
 	token = user.get_reset_token()
 	reset_link = url_for("users.reset_token", token=token, _external=True)
 	print(reset_link)
-	msg = "Looks like you requested a password reset. If you did not request this, simply ignore this message. Otherwise, follow the directions on the page linked here: {}".format(reset_link)
+	msg = "Looks like you requested a password reset. If you did not request this, simply ignore this message. Otherwise, follow the directions on the page <{}|linked here>.".format(reset_link)
 	send_slack_dm(msg, user.slack_id)
 
 def send_reset_email(user):
