@@ -14,9 +14,9 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light">
+			<div class="card border border-3 p-4 bg-light">
 				<div class="row">
-					<img src="{{ profile_picture }}" class="img-fluid mb-4" >
+					<img src="{{ profile_picture }}" class="img-fluid mb-4 img-rounded" >
 				</div>
 				<div class="row">
 					<h2 class="text-danger profile-section-header">{{ current_user.firstname }} {{ current_user.lastname }}</h2>
@@ -36,9 +36,11 @@
 						<h5 class="text-secondary">Support Profiles</h5>
 						<a href='/support_profiles/{{current_user.id}}'><small class='px-3'>See Details</small></a>
 						</div>
-						{% for profile in qualifying_profile_list %}
-							<button type="button" class="btn btn-secondary btn-sm mb-2">{{profile.name}} - Level {{profile.tier}}</button>
-						{% endfor %}
+						<div class="row row-cols-xxl-3 row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-1 g-4 mt-2">
+							{% for profile in qualifying_profile_list %}
+							<img class='my-2 img-fluid' src='/static/assets/img/Profile-Badge-{{profile.image}}-sm.png'">
+							{% endfor %}
+						</div>
 					</div>
 				</div>
 				
@@ -75,11 +77,11 @@
 					{% endif %}
 					</div>
 				</div>
-			
-				<div class="list-group mt-5">
-			  		<a href="{{ url_for('users.update_profile') }}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
-				  	<a href='/reset_password' class="list-group-item list-group-item-action text-secondary">Change Password</a>
-			  		<a href="#" class="list-group-item list-group-item-action text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Member</a>
+				
+				<a href='{{ url_for('users.update_profile') }}'><button class='btn btn-outline-secondary w-100 mt-5'>Update Profile</button></a>
+				<a href='/reset_password'><button class='btn btn-outline-secondary w-100 my-2'>Change Password</button></a>
+				<a href='#' data-toggle="modal" data-target="#confirm-delete"><button class='btn btn-outline-danger w-100 mb-2'>Delete Account</button></a>
+				
 					  <!-- Modal -->
 					  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						  <div class="modal-dialog modal-dialog-centered" role="document">
@@ -102,7 +104,7 @@
 						</div>
 
 					  
-				</div>
+
 			</div>
 		</div>
 		<div class="col mx-4">
