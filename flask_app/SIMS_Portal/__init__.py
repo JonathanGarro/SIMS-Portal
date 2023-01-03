@@ -11,6 +11,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
+from flask_babel import Babel
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -46,7 +47,14 @@ def create_app(config_class=Config):
 	login_manager.init_app(app)
 	mail.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
+	babel = Babel(app)
 	Markdown(app)
+
+	@babel.localeselector
+	def get_locale():
+		user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
+		print("Flask app running with language set to: {}".format(user_lang))
+		return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 	scheduler = APScheduler()
 	scheduler.init_app(app)
