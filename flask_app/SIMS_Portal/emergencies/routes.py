@@ -135,7 +135,7 @@ def edit_emergency(id):
 @login_required
 def emergency_gantt(id):
 	emergency_info = db.session.query(Emergency).filter(Emergency.id == id).first()
-	assignments = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == id).with_entities(Assignment.start_date, Assignment.end_date, User.fullname).order_by(Assignment.start_date.asc()).all()
+	assignments = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == id, Assignment.assignment_status == 'Active').with_entities(Assignment.start_date, Assignment.end_date, User.fullname).order_by(Assignment.start_date.asc()).all()
 	start_end_dates = []
 	for dates in assignments:
 		start_end_dates.append([dates.start_date.strftime('%Y-%m-%d'), dates.end_date.strftime('%Y-%m-%d')])
