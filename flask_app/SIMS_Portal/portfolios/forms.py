@@ -12,7 +12,7 @@ class PortfolioUploadForm(FlaskForm):
 	creator_id = QuerySelectField('Creator', query_factory=lambda:User.query.filter_by(status='Active'), get_label='fullname', allow_blank=True)
 	description = TextAreaField('Description')
 	type = SelectField('File Type', choices=['', 'Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other'], validators=[DataRequired()])
-	file = FileField('Attach File (10MB Max)')
+	file = FileField('Zipped Final Product and File Assets (15MB Max)')
 	image_file = FileField('Attach Cover Image', validators=[DataRequired()])
 	external = BooleanField('Share Publicly')
 	submit = SubmitField('Upload SIMS Product')
