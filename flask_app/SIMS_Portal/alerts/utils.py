@@ -129,6 +129,8 @@ def refresh_surge_alerts():
 		else:
 			break
 	
+	count_new_records = 0
+	
 	# add new records
 	for alert in output:
 		if alert and alert['alert_id'] not in existing_alert_ids:
@@ -246,8 +248,8 @@ def refresh_surge_alerts():
 			try:
 				db.session.add(individual_alert)
 				db.session.commit()
-				print(f'new alert: {individual_alert}')
+				count_new_records += 1
 			except:
 				pass
 	
-	print("\n==================\nFINISHED CRON JOB\n")
+	print("\n==================\nFINISHED CRON JOB WITH {} NEW RECORDS\n".format(count_new_records))
