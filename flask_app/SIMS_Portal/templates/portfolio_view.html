@@ -14,7 +14,7 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light">
+			<div class="card border-3 p-4 bg-light">
 				<div class="row">
 					<h2 class="sims-blue mb-5 portfolio-title">{{ product.Portfolio.title }}</h2>
 				</div>
@@ -60,8 +60,8 @@
 				</div>
 				{% endif %}
 				{% if current_user.is_admin == 1 or current_user.id == product.User.id %}
-				<div class="list-group mt-5">
-					  <a href="#" class="list-group-item list-group-item-action text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Product</a>
+
+					  <a href="#" class="pt-5" data-toggle="modal" data-target="#confirm-delete"><button class='btn btn-danger w-100'>Delete Product</button></a>
 					  <!-- Modal -->
 						<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-centered" role="document">
@@ -82,7 +82,7 @@
 							  </div>
 							</div>
 						  </div>
-				</div>
+
 				{% endif %}
 			</div>
 		</div>
