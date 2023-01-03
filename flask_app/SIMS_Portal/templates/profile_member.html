@@ -14,7 +14,7 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light">
+			<div class="card border-3 p-4 bg-light">
 				{% if user_info.status == 'Removed' %}
 				<div class='row  px-2'>
 					<div class="alert alert-danger" role="alert">
@@ -43,9 +43,11 @@
 							<h5 class="text-secondary">Support Profiles</h5>
 							<a href='/support_profiles/{{user_info.id}}'><small class='px-3'>See Details</small></a>
 						</div>
-						{% for profile in qualifying_profile_list %}
-							<button type="button" class="btn btn-secondary btn-sm mb-2">{{profile.name}} - Level {{profile.tier}}</button>
-						{% endfor %}
+						<div class="row row-cols-xxl-3 row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-2 g-4 mt-2">
+							{% for profile in qualifying_profile_list %}
+							<img class='my-2 img-fluid' src='/static/assets/img/Profile-Badge-{{profile.image}}-sm.png' data-toggle="tooltip" data-placement="top" title="{{profile.name}}">
+							{% endfor %}
+						</div>
 					</div>
 				</div>
 
@@ -85,10 +87,10 @@
 				</div>
 				
 				{% if current_user.is_admin == 1 %}
-				<div class="list-group mt-5">
-					  <a href="/profile_edit/{{user_info.id}}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
-					  <a href="/user/delete/{{user_info.id}}" class="list-group-item list-group-item-action text-danger">Delete Member</a>
-				</div>
+
+				<a href="/profile_edit/{{user_info.id}}"><button class='btn btn-outline-secondary w-100 mt-5'>Update Profile</button></a>
+				<a href="/user/delete/{{user_info.id}}"><button class='btn btn-outline-danger w-100 mt-2'>Delete Member</button></a>
+
 				{% elif current_user.id == user_info.id %}
 				<div class="list-group mt-5">
 					  <a href="{{ url_for('users.update_profile') }}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
