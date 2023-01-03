@@ -27,3 +27,4 @@ class Config:
 	DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')
 	DROPBOX_REFRESH_TOKEN = os.environ.get('DROPBOX_REFRESH_TOKEN')
 	SCHEDULER_TIMEZONE = "America/New_York"
+	LANGUAGES = ['en', 'es']
