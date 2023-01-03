@@ -24,22 +24,22 @@ main = Blueprint('main', __name__)
 
 @main.route('/') 
 def index(): 
-	consumer_key = current_app.config['CONSUMER_KEY']
-	consumer_secret = current_app.config['CONSUMER_SECRET']
-	access_token = current_app.config['ACCESS_TOKEN']
-	access_token_secret = current_app.config['ACCESS_TOKEN_SECRET']
-	
-	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-	auth.set_access_token(access_token, access_token_secret)
-	api = tweepy.API(auth)
-	
-	public_tweets = api.user_timeline(screen_name='IFRC_SIMS', count=3, tweet_mode="extended")
-	
-	# list comprehension to grab relevant fields and regex to remove URLs in tweet
-	tweets = [{'tweet': re.sub(r"http\S+", "", t.full_text), 'created_at_year': t.created_at.year, 'created_at_month': t.created_at.month, 'created_at_day': t.created_at.day, 'headshot_url': t.user.profile_image_url, 'username': t.user.name, 'screen_name': t.user.screen_name, 'location': t.user.location, 'id': t.id_str} for t in public_tweets]
+	# consumer_key = current_app.config['CONSUMER_KEY']
+	# consumer_secret = current_app.config['CONSUMER_SECRET']
+	# access_token = current_app.config['ACCESS_TOKEN']
+	# access_token_secret = current_app.config['ACCESS_TOKEN_SECRET']
+	# 
+	# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+	# auth.set_access_token(access_token, access_token_secret)
+	# api = tweepy.API(auth)
+	# 
+	# public_tweets = api.user_timeline(screen_name='IFRC_SIMS', count=3, tweet_mode="extended")
+	# 
+	# # list comprehension to grab relevant fields and regex to remove URLs in tweet
+	# tweets = [{'tweet': re.sub(r"http\S+", "", t.full_text), 'created_at_year': t.created_at.year, 'created_at_month': t.created_at.month, 'created_at_day': t.created_at.day, 'headshot_url': t.user.profile_image_url, 'username': t.user.name, 'screen_name': t.user.screen_name, 'location': t.user.location, 'id': t.id_str} for t in public_tweets]
 	
 	latest_stories = db.session.query(Story, Emergency).join(Emergency, Emergency.id == Story.emergency_id).order_by(Story.id.desc()).limit(3).all()
-	return render_template('index.html', latest_stories=latest_stories, tweets=tweets)
+	return render_template('index.html', latest_stories=latest_stories)
 	
 @main.route('/about')
 def about():
@@ -93,7 +93,7 @@ def admin_landing():
 		all_users = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.status == 'Active').order_by(User.firstname).all()
 		assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = 'Active' GROUP BY u.id ORDER BY u.firstname")
 		all_skills = db.session.query(Skill.name, Skill.category).order_by(Skill.category, Skill.name).all()
-		all_assigned_profiles = db.engine.execute("SELECT user_id, firstname || ' ' || lastname as user_name, profile_id, max(tier) as max_tier, user_id || profile_id as unique_code, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN user ON user.id = user_profile.user_id GROUP BY user_id, profile_id ORDER BY user_name")
+		all_assigned_profiles = db.engine.execute("SELECT user_id, firstname || ' ' || lastname as user_name, profile_id, max(tier) as max_tier, user_id || profile_id as unique_code, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN user ON user.id = user_profile.user_id WHERE user.status = 'Active' GROUP BY user_id, profile_id ORDER BY user_name")
 		return render_template('admin_landing.html', pending_users=pending_users, all_users=all_users, badge_form=badge_form, assigned_badges=assigned_badges, skill_form=skill_form, all_skills=all_skills, badge_upload_form=badge_upload_form, open_reviews=open_reviews, profile_form=profile_form,all_assigned_profiles=all_assigned_profiles)
 	
 	# assign badge
