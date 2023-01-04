@@ -263,11 +263,16 @@ def badge_assignment_sims_co(dis_id):
 		for badge in users_badges:
 			users_badges_ids.append(badge.badge_id)
 		
-		# check that user does not already have the badge
-		if badge_id not in users_badges_ids:
-			return redirect(url_for('main.badge_assignment_via_SIMSCO', user_id=user_id, badge_id=badge_id, assigner_id=current_user.id, dis_id=dis_id))
+		if badge_form.validate_on_submit():
+			# check that user does not already have the badge
+			if badge_id not in users_badges_ids:
+				# pass to assignment route for database interaction
+				return redirect(url_for('main.badge_assignment_via_SIMSCO', user_id=user_id, badge_id=badge_id, assigner_id=current_user.id, dis_id=dis_id))
+			else:
+				flash('Cannot add badge - user already has it.', 'danger')
+				return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 		else:
-			flash('Cannot add badge - user already has it.', 'danger')
+			flash('Please fill out all sections of the form.', 'warning')
 			return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
