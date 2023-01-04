@@ -62,6 +62,46 @@ $(document).ready(function () {
 	});
 });
 
+$(document).ready(function() {
+	$('#skills-datatable').DataTable( {
+		order: [[0, 'asc']],
+		"autoWidth": false,
+		"pageLength": 100,
+		columnDefs: [
+		{
+			target: 0,
+			visible: false,
+			searchable: true,
+		}],
+		rowGroup: {
+			dataSrc: 0
+		},
+ 
+	} );
+} );
+
+$(document).ready(function () {
+	$('#members-datatable').DataTable({
+		order: [[1, 'asc']],
+		columnDefs: [{
+			target: 6,
+			visible: false,
+			searchable: true,
+		},
+		{
+			target: 7, 
+			visible: false,
+			searchable: true,
+		},
+		{
+			target: 8, 
+			visible: false,
+			searchable: true,
+		}
+	],
+	});
+});
+
 $(document).ready(function () {
 	$('#alert-table').DataTable({
 		order: [[5, 'desc']],
@@ -116,8 +156,6 @@ $(document).ready(function() {
 		"searching": false,
 	} );
 } );
-
-
 
 $(function(){
 	$(".typed").typed({
