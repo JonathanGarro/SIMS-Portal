@@ -13,7 +13,7 @@
 		{% endwith %}
 	</div>
 	<div class='row my-5'>
-		<ul class="nav nav-tabs" id="adminNav" role="tablist">
+		<ul class="nav nav-tabs px-3" id="adminNav" role="tablist">
 			<li class="nav-item" role="presentation">
 				<button class="nav-link active text-dark fw-bold" id="manage-profiles-tab" data-bs-toggle="tab" data-bs-target="#manage-profiles" type="button" role="tab" aria-controls="manage-profiles" aria-selected="true">Manage Profiles</button>
 			</li>
@@ -39,7 +39,7 @@
 			
 		<div class="tab-pane fade show active" id="manage-profiles" role="tabpanel" aria-labelledby="manage-profiles-tab">
 			<br>
-			<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+			<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
 			{{ badge_form.hidden_tag() }}
 			<div class='row'>
 				<div class='col'>{{ profile_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
@@ -79,7 +79,7 @@
 		</div>
 		  <div class="tab-pane fade" id="badge-assignment" role="tabpanel" aria-labelledby="badge-assignment-tab">
 			  <br>
-			  <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+			  <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
 					{{ badge_form.hidden_tag() }}
 				<div class='row'>
 				  	<div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
@@ -187,7 +187,7 @@
 				
 				<div class="tab-pane fade" id="skill-list" role="tabpanel" aria-labelledby="skill-list-tab">
 					<br>					
-					<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+					<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3 border border-3" novalidate>
 						  {{ skill_form.hidden_tag() }}
 						  <div class='row'>
 							<div class='col-md-5'>{{ skill_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
@@ -201,11 +201,11 @@
 						</div>
 					  </form>
 					  <br>
-					  <table class='table'>
+					  <table class='table' id='skills-datatable'>
 						  <thead>
 							  <tr>
-								  <th style="width:35%">Category</th>
-								  <th>Skill</th>
+								  <th></th>
+								  <th></th>
 							  </tr>
 						  </thead>
 						  <tbody>
@@ -221,7 +221,7 @@
 				
 				<div class="tab-pane fade" id="upload-badge" role="tabpanel" aria-labelledby="upload-badge-tab">
 					<br>
-					<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+					<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
 					{{ badge_upload_form.hidden_tag() }}
 					<div class='row'>
 						<div class='col'>
