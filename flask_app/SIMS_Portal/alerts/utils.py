@@ -12,7 +12,6 @@ from deepdiff import DeepDiff
 
 scheduler = APScheduler()
 
-@scheduler.task('cron', id='run_surge_alert_refresh', hour='18')
 def refresh_surge_alerts():
 	print("\n\nRUNNING SURGE ALERT CRON JOB\n============================\n")
 	existing_alerts = db.session.query(Alert).order_by(Alert.alert_id.desc()).all()
@@ -60,11 +59,11 @@ def refresh_surge_alerts():
 						if x['start']:
 							temp_dict['start'] = datetime.datetime.strptime(x['start'], "%Y-%m-%dT%H:%M:%SZ")
 						else:
-							temp_dict['start'] = datetime.datetime.strptime('1900-01-01T13:33:46Z', "%Y-%m-%dT%H:%M:%SZ")
+							temp_dict['start'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
 						if x['end']:
 							temp_dict['end'] = datetime.datetime.strptime(x['end'], "%Y-%m-%dT%H:%M:%SZ")
 						else:
-							temp_dict['end'] = datetime.datetime.strptime('1900-01-01T13:33:46Z', "%Y-%m-%dT%H:%M:%SZ")	
+							temp_dict['end'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")	
 						temp_dict['alert_id'] = x['id']
 						temp_dict['molnix_id'] = x['molnix_id']
 						temp_dict['alert_status'] = x['molnix_status']
@@ -252,4 +251,4 @@ def refresh_surge_alerts():
 			except:
 				pass
 	
-	print("\n==================\nFINISHED CRON JOB WITH {} NEW RECORDS\n".format(count_new_records))
+	print("\n========================\nFINISHED CRON JOB WITH {} NEW RECORDS\n".format(count_new_records))
