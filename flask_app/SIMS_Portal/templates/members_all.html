@@ -4,10 +4,17 @@
   <div class='row my-5'>
     <td scope="row">
       <h3 class="Montserrat sims-blue">All SIMS Members</h3>
-      <p class="lead">Looking for members who speak a language or have a particular skill? <a href="/search/members" class="text-danger">Try the search feature</a>.</p>
+      <p class="lead">Looking for members who speak a language or have a particular skill? The search below will query the following fields:</p>
+      <div class='ms-3 mb-3'>
+        <ul class="lead">
+          <li><span class="fw-bold sims-blue">Skills</span>: Look for members who have a specific skill. See your <a href="/profile_edit">profile-edit page</a> for the full list of values to search for.</li>
+          <li><span class="fw-bold sims-blue">Profile Types</span>: See who qualifies for a specific profile type, including <span class="fst-italic">Geospatial, Web Visualization, Information Design, Data Transformation and Analysis, Data Collection and Survey Design, SIMS Remote Coordination</span>.</li>
+          <li><span class="fw-bold sims-blue">Languages</span>: Find SIMS members that speak a particular language.</li>
+        </ul>
+      </div>
     </td>
     <br><br><br>
-    <table class='table table-striped table-hover' id='datatable'>
+    <table class='table table-striped table-hover' id='members-datatable'>
       <thead>
         <tr>
           <th><h4>Photo</h4></th>
@@ -16,7 +23,9 @@
           <th><h4>Role</h4></th>
           <th><h4>Assignments</h4></th>
           <th><h4>Slack</h4></th>
-          <th><h4>Email</h4></th>
+          <th><h4>Languages</h4></th>
+          <th><h4>Profiles</h4></th>
+          <th><h4>Skills</h4></th>
         </tr>
       </thead>
       <tbody>
@@ -32,11 +41,13 @@
             {% endif %}
             <td class="align-middle"><h5>{{member.assignment_count}}</h5></td>
             {% if member.slack_id %}
-              <td class="align-middle"><a href='https://sims-ifrc.slack.com/team/{{member.slack_id}}'><h5>Message</h5></a></td>
+              <td class="align-middle"><a href='https://sims-ifrc.slack.com/team/{{member.slack_id}}'><h5><img src='/static/assets/img/slack-icon.png' height='30px'></h5></a></td>
             {% else %}
               <td class="align-middle"></td>
             {% endif %}
-            <td class="align-middle"><a href="mailto: {{member.email}}"><h5>Email</h5></a></td>
+            <td class="align-middle"><h5>{{member.languages}}</h5></td>
+            <td class="align-middle"><h5>{{member.profiles}}</h5></td>
+            <td class="align-middle"><h5>{{member.skills}}</h5></td>
           </tr>
         {% endfor %}
       </tbody>
