@@ -15,21 +15,21 @@
 						<button class="btn btn-outline-secondary btn-sm mt-1 mb-3" type="button" data-toggle="collapse" data-target="#qualifiedMembers" aria-expanded="false" aria-controls="qualifiedMembers" id="memberListToggle">Toggle List of Members</button>
 						<div class="collapse" id="qualifiedMembers">
 							<p><small>Click on a member's name to view their profile</small></p>
-							<h5 class='text-secondary Montserrat'>Tier 4</h5>
+							<h5 class='text-danger Montserrat'>Tier 4</h5>
 							{% for member in users_with_profile_tier_4%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-danger btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
-							<h5 class='text-secondary Montserrat mt-3'>Tier 3</h5>
+							<h5 class='text-danger Montserrat mt-3'>Tier 3</h5>
 							{% for member in users_with_profile_tier_3%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-danger btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
-							<h5 class='text-secondary Montserrat mt-3'>Tier 2</h5>
+							<h5 class='text-danger Montserrat mt-3'>Tier 2</h5>
 							{% for member in users_with_profile_tier_2%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-danger btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
-							<h5 class='text-secondary Montserrat mt-3'>Tier 1</h5>
+							<h5 class='text-danger Montserrat mt-3'>Tier 1</h5>
 							{% for member in users_with_profile_tier_1%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-danger btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 						</div><br>
 					</div>
