@@ -42,7 +42,7 @@ class BadgeAssignmentViaSIMSCoForm(FlaskForm):
 	
 class SkillCreatorForm(FlaskForm):
 	name = StringField('Skill Name')
-	category = SelectField('Skill Category', choices=['Geospatial', 'Mobile Data Collection', "Graphic Design", 'Data Visualization', 'Web Development', 'Coding', 'Data Management', 'Information Analysis'])
+	category = SelectField('Skill Category', choices=['Coding', 'Data & Information Analysis', 'Data Management', 'Data Visualization', 'Geospatial', "Graphic Design", 'Mobile Data Collection', 'Web Development'])
 	submit_skill = SubmitField('Add Skill')
 
 class NewBadgeUploadForm(FlaskForm):
