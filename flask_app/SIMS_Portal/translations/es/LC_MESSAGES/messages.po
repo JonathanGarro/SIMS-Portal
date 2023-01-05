@@ -1,0 +1,37 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-01-03 15:25-0500\n"
+"PO-Revision-Date: 2023-01-03 15:32-0500\n"
+"Last-Translator: \n"
+"Language-Team: es <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.11.0\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: SIMS_Portal/templates/index.html:9
+msgid ""
+"SIMS is a global network of Information Management experts who support "
+"IFRC emergency response operations by providing a variety of services "
+"and products. We maintain a roster of specialists from around the world "
+"across several key areas of technical support, including geospatial "
+"analysis, web-based and static data visualization, mobile data "
+"collection, scenario planning, and much more."
+msgstr ""
+"SIMS es una red mundial de expertos en gestión de la información que "
+"apoyan las operaciones de respuesta a emergencias de la FICR "
+"proporcionando una variedad de servicios y productos. Mantenemos una "
+"lista de especialistas de todo el mundo en varias áreas clave de apoyo "
+"técnico, incluido el análisis geoespacial, la visualización de datos "
+"estáticos y basados en la web, la recopilación de datos móviles, la "
+"planificación de escenarios y mucho más."

@@ -388,9 +388,9 @@
 				 {% else %}  
 				 <p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
 				 {% endif %}
-				 <h3 class="text-dark my-4 emergency-title">Operational Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#op-learning'>What's This?</a></span></h3>
+				 <h3 class="text-dark my-5 emergency-title">Operational Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#op-learning'>What's This?</a></span></h3>
 				   {% if existing_reviews %}
-				   <table class='table table-striped mt-4'>
+				   <table class='table mt-4' id='datatable-op-reviews'>
 					   <thead>
 						   <tr>
 							   <th>Title</th>

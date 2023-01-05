@@ -157,6 +157,14 @@ $(document).ready(function() {
 	} );
 } );
 
+$(document).ready(function() {
+	$('#datatable-op-reviews').DataTable( {
+		order: [[3, 'asc']],
+		"bLengthChange": false,
+		"searching": false,
+	} );
+} );
+
 $(function(){
 	$(".typed").typed({
 		strings: ["infographics.", "mobile data collection.", "basemaps."],
