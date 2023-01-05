@@ -16,9 +16,24 @@
 	<script src="https://d3js.org/d3.v4.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 	<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+	<script type="text/javascript">
+		ImageArray = new Array();
+		ImageArray[0] = 'login-afg-assess.jpg';
+		ImageArray[1] = 'login-afg-vol.jpg';
+		ImageArray[2] = 'login-bha-truck.jpg';
+		ImageArray[3] = 'login-ukr-vol.jpg';
+		ImageArray[4] = 'login-vct-vest.jpg';
+	
+	function getRandomImage() {
+		var num = Math.floor( Math.random() * 5);
+		var img = ImageArray[num];
+		document.getElementById("randImage").innerHTML = ('<img src="' + 'static/assets/img/' + img + '" class="img-fluid rounded border border-4">')
+	}
+	</script>
+
 	<title>SIMS</title>
 </head>
-<body class="d-flex flex-column min-vh-100" data-spy="scroll" data-target=".card" data-offset="50">
+<body class="d-flex flex-column min-vh-100" data-spy="scroll" data-target=".card" data-offset="50" onload="getRandomImage()">
 	<header>
 	<nav id="navbar_top" class="navbar navbar-expand-md navbar-dark bg-danger navbar-static-top py-3">
 	 <div class="container">
