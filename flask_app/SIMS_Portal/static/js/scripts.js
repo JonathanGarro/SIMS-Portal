@@ -83,6 +83,10 @@ $(document).ready(function() {
 $(document).ready(function () {
 	$('#members-datatable').DataTable({
 		order: [[1, 'asc']],
+		dom: 'frtipB',
+		buttons: [
+			'copy', 'csv'
+		],
 		columnDefs: [{
 			target: 6,
 			visible: false,
@@ -105,6 +109,10 @@ $(document).ready(function () {
 $(document).ready(function () {
 	$('#alert-table').DataTable({
 		order: [[5, 'desc']],
+		dom: 'frtipB',
+		buttons: [
+			'copy', 'csv'
+		],
 		columnDefs: [{
 			target: 6,
 			visible: false,
