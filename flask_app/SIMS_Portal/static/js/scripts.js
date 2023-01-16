@@ -158,6 +158,14 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
+	$('#datatable-member-assignments').DataTable( {
+		order: [[2, 'asc']],
+		"bLengthChange": false,
+		"searching": false,
+	} );
+} );
+
+$(document).ready(function() {
 	$('#datatable-active-assignments').DataTable( {
 		order: [[0, 'asc']],
 		"bLengthChange": false,
