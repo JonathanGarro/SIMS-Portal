@@ -24,20 +24,6 @@ main = Blueprint('main', __name__)
 
 @main.route('/') 
 def index(): 
-	# consumer_key = current_app.config['CONSUMER_KEY']
-	# consumer_secret = current_app.config['CONSUMER_SECRET']
-	# access_token = current_app.config['ACCESS_TOKEN']
-	# access_token_secret = current_app.config['ACCESS_TOKEN_SECRET']
-	# 
-	# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-	# auth.set_access_token(access_token, access_token_secret)
-	# api = tweepy.API(auth)
-	# 
-	# public_tweets = api.user_timeline(screen_name='IFRC_SIMS', count=3, tweet_mode="extended")
-	# 
-	# # list comprehension to grab relevant fields and regex to remove URLs in tweet
-	# tweets = [{'tweet': re.sub(r"http\S+", "", t.full_text), 'created_at_year': t.created_at.year, 'created_at_month': t.created_at.month, 'created_at_day': t.created_at.day, 'headshot_url': t.user.profile_image_url, 'username': t.user.name, 'screen_name': t.user.screen_name, 'location': t.user.location, 'id': t.id_str} for t in public_tweets]
-	
 	latest_stories = db.session.query(Story, Emergency).join(Emergency, Emergency.id == Story.emergency_id).order_by(Story.id.desc()).limit(3).all()
 	return render_template('index.html', latest_stories=latest_stories)
 	
@@ -98,10 +84,13 @@ def admin_landing():
 	
 	# assign badge
 	elif request.method == 'POST' and badge_form.submit_badge.data and current_user.is_admin == 1: 
-		user_id = badge_form.user_name.data.id
-		badge_id = badge_form.badge_name.data.id
-		session['assigner_justify'] = badge_form.assigner_justify.data
-
+		if badge_form.validate_on_submit():
+			user_id = badge_form.user_name.data.id
+			badge_id = badge_form.badge_name.data.id
+			session['assigner_justify'] = badge_form.assigner_justify.data
+		else:
+			flash('Please fill out all badge assignment fields.', 'danger')
+			return redirect(url_for('main.admin_landing'))
 		users_badges = db.engine.execute('SELECT user.id, user_badge.user_id, user_badge.badge_id FROM user JOIN user_badge ON user_badge.user_id = user.id WHERE user.id = {}'.format(user_id))
 		users_badges_ids = []
 		for badge in users_badges:
