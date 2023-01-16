@@ -13,12 +13,12 @@
 		{% endwith %}
 	</div>
 	<div class="row my-5">
-		<div class="col col-md-4 rounded rounded-3 mb-5 ">
+		<div class="col col-md-4 rounded rounded-3 mb-5">
 			<div class="card border border-3 p-4 bg-light">
 				<div class="row">
-					<img src="{{ profile_picture }}" class="img-fluid mb-4 img-rounded" >
+					<img src="{{ profile_picture }}" class="img-fluid mb-4" >
 				</div>
-				<div class="row">
+				<div class="row mb-5">
 					<h2 class="text-danger profile-section-header">{{ current_user.firstname }} {{ current_user.lastname }}</h2>
 				</div>
 				<div class="row">
@@ -127,7 +127,7 @@
 				{% if deployment_history_count == 0 %}
 					No deployments or remote support provided yet.
 				{% else %}
-				<table class="table">
+				<table class="table" id='datatable-member-assignments'>
 			  	<thead>
 					<tr>
 				  	<th>Event</th>
