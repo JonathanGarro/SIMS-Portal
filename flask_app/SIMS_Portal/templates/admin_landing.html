@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-	<div class="mt-4" id="hideMe">
+	<div id="hideMe">
 		{% with messages = get_flashed_messages(with_categories=true) %}
 			   {% if messages %}
 				   {% for category, message in messages %}
-					   <div class="alert alert-{{ category }}">
+					   <div class="mt-4 alert alert-{{ category }}">
 						   {{ message }} 
 					   </div>
 				   {% endfor %}
@@ -90,7 +90,7 @@
 					  <div class='col'>{{ badge_form.badge_name(class="form-control form-control-lg") }}</div>
 				  </div>
 				  <div class='row'>
-					  <div class='col'>{{ badge_form.assigner_justify.label(class="form-control-label pb-2 text-secondary") }} </div>
+					  <div class='col'>{{ badge_form.assigner_justify.label(class="form-control-label pb-2 text-danger") }} </div>
 				  </div>
 				  <div class='row mb-3'>
 					  <div class='col'>{{ badge_form.assigner_justify(class="form-control form-control-lg") }} </div>

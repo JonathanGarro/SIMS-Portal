@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-	<div class="mt-4" id="hideMe">
+	<div id="hideMe">
 		{% with messages = get_flashed_messages(with_categories=true) %}
 			   {% if messages %}
 				   {% for category, message in messages %}
-					   <div class="alert alert-{{ category }}">
+					   <div class="mt-4 alert alert-{{ category }}">
 						   {{ message }} 
 					   </div>
 				   {% endfor %}

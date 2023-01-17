@@ -2,11 +2,11 @@
 {% block content %}
 
 <div class="container">
-	<div class="mt-4" id="hideMe">
+	<div id="hideMe">
 		{% with messages = get_flashed_messages(with_categories=true) %}
 			   {% if messages %}
 				   {% for category, message in messages %}
-					   <div class="alert alert-{{ category }}">
+					   <div class="mt-4 alert alert-{{ category }}">
 						   {{ message }} 
 					   </div>
 				   {% endfor %}
@@ -85,7 +85,11 @@
 					<div class="col d-flex align-items-stretch">
 						<a href="/portfolio/view/{{product.id}}">
 						<div class="card" id='portfolio-card' style="width: 18rem;">
+							{% if '.py' in product.local_file %}
+							<img src="/static/assets/img/placeholder-py.png" class="card-img-top" alt="Python Placeholder">
+							{% else %}
 							<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="Product Image">
+							{% endif %}
 				  		<div class="card-body d-flex flex-column">
 					  		<div>
 								  <button type="button" class="btn btn-secondary btn-sm mb-3">{{product.type}}</button>

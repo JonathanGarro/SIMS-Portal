@@ -3,11 +3,11 @@
 {% extends "layout.html" %}
 {% block content %}
 	<div class="container">
-		<div class="mt-4" id="hideMe">
+		<div id="hideMe">
 			{% with messages = get_flashed_messages(with_categories=true) %}
 				   {% if messages %}
 					   {% for category, message in messages %}
-						   <div class="alert alert-{{ category }}">
+						   <div class="mt-4 alert alert-{{ category }}">
 							   {{ message }} 
 						   </div>
 					   {% endfor %}
@@ -15,7 +15,7 @@
 			{% endwith %}
 		</div>
 	</div>
-	<div class="container">
+	<div class="container mt-3">
 		<div class="row">
 			{% if pending_user_check|length == 1 and current_user.is_admin == 1 %}
 			<div class="alert alert-warning alert-dismissible fade show" role="alert">
