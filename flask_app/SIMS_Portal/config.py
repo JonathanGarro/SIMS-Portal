@@ -28,3 +28,4 @@ class Config:
 	DROPBOX_REFRESH_TOKEN = os.environ.get('DROPBOX_REFRESH_TOKEN')
 	SCHEDULER_TIMEZONE = "America/New_York"
 	LANGUAGES = ['en', 'es']
+	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif']
