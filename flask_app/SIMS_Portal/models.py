@@ -124,6 +124,7 @@ class User(db.Model, UserMixin):
 	linked_in = db.Column(db.String(120))
 	messaging_number_country_code = db.Column(db.Integer)
 	messaging_number = db.Column(db.Integer)
+	time_zone = db.Column(db.String(120))
 	
 	ns_id = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
 	
@@ -316,6 +317,7 @@ class Portfolio(db.Model):
 	
 	title = db.Column(db.String(200), nullable=False)
 	type = db.Column(db.String(100), nullable=False)
+	format = db.Column(db.String(100))
 	description = db.Column(db.Text)
 	product_status = db.Column(db.String(100), default='Personal')
 	local_file = db.Column(db.String(100), nullable=False)

@@ -49,10 +49,6 @@
 					<h5 class="text-secondary Montserrat mt-4">Description</h5>
 					<p>{{ product.Portfolio.description}}</p>
 				</div>
-				<div class="row">
-					<h5 class="text-secondary Montserrat mt-4">Product</h5>
-					<p><a href='/portfolio/download/{{product.Portfolio.id}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">Download</a></p>
-				</div>
 				{% if product.Portfolio.dropbox_file and current_user.is_authenticated %}
 				<div class="row">
 					<h5 class="text-secondary Montserrat mt-4">Source Files</h5>
@@ -88,7 +84,11 @@
 		</div>
 		<div class="col mx-4">
 			<div class='mb-5'>
-				<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" alt="Product Image" width='100%'>
+				{% if 'user' in product.Portfolio.image_file %}
+				<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="img img-fluid" alt="Product Image">
+				{% else %}
+				<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="img img-fluid" alt="Product Placeholder Icon">
+				{% endif %}
 			</div>
 		</div>
 	</div>

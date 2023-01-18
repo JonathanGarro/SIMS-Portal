@@ -144,7 +144,11 @@
 					<div class="col d-flex align-items-stretch">
 						<div class="card" id="portfolio-card" style="width: 18rem;">
 							<a href="/portfolio/view/{{product.id}}">
-							<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt='{{product.title}}'>
+							{% if 'user' in product.image_file %}
+							<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="Product Image">
+							{% else %}
+							<img src="/static/assets/img/portfolio_placeholders/{{product.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
+							{% endif %}
 						  <div class="card-body d-flex flex-column">
 						  	<div class='pb-4'>
 							  <button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button>

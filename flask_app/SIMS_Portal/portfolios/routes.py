@@ -15,13 +15,13 @@ portfolios = Blueprint('portfolios', __name__)
 @portfolios.route('/portfolio')
 def portfolio():
 	type_search = ''
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Report - Analysis', 'Other']
+	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
 	public_portfolio = db.session.query(Portfolio).filter(Portfolio.external==1, Portfolio.product_status=='Approved').all()
 	return render_template('portfolio_public.html', title="SIMS Products", public_portfolio=public_portfolio, type_list=type_list, type_search=type_search)
 	
 @portfolios.route('/portfolio/filter/<type>', methods=['GET', 'POST'])
 def filter_portfolio(type):
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Report - Analysis', 'Other']
+	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
 	type_search = "{}".format(type)
 	public_portfolio = db.session.query(Portfolio).filter(Portfolio.external==1, Portfolio.product_status=='Approved', Portfolio.type == type_search).all()
 	return render_template('portfolio_public.html', title="SIMS Products", public_portfolio=public_portfolio, type_search=type_search, type_list=type_list)
@@ -31,13 +31,13 @@ def filter_portfolio(type):
 def all_products():
 	type_search = ''
 	full_portfolio = db.session.query(Portfolio).filter(Portfolio.product_status != 'Removed').all()
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Report - Analysis', 'Other']
+	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
 	return render_template('portfolio_all.html', title="SIMS Products", full_portfolio=full_portfolio, type_list=type_list, type_search=type_search)
 
 @portfolios.route('/portfolio_private/filter/<type>', methods=['GET', 'POST'])
 @login_required
 def filter_portfolio_private(type):
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Report - Analysis', 'Other']
+	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
 	type_search = "{}".format(type)
 	full_portfolio = db.session.query(Portfolio).filter(Portfolio.product_status != 'Removed', Portfolio.type == type_search).all()
 	return render_template('portfolio_all.html', title="SIMS Products", full_portfolio=full_portfolio, type_search=type_search, type_list=type_list)
@@ -56,6 +56,8 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 			return redirect(redirect_url)
 		if form.image_file.data:
 			cover_image = save_cover_image(form.image_file.data, user_info.id, form.type.data)
+		else:
+			cover_image = form.format.data + '.png'
 		if form.external.data == True:
 			form.external.data = 1
 			status = 'Pending Approval'
@@ -63,7 +65,7 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 			form.external.data = 0
 			status = 'Personal'
 		product = Portfolio(
-			local_file = file['file_filename'], title = form.title.data, creator_id = user_id, description = form.description.data, type = form.type.data, emergency_id = emergency_id, external = form.external.data, assignment_id = assignment_id, dropbox_file = file['share_link'], product_status = status, image_file = cover_image
+			local_file = file['file_filename'], title = form.title.data, creator_id = user_id, description = form.description.data, type = form.type.data, emergency_id = emergency_id, external = form.external.data, assignment_id = assignment_id, dropbox_file = file['share_link'], product_status = status, image_file = cover_image, format = form.format.data,
 		)
 		db.session.add(product)
 		db.session.commit()

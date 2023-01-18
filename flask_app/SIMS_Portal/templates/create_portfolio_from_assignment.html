@@ -30,61 +30,72 @@
 		<div class="col">
 			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
 				{{ form.hidden_tag() }}
-				<div class="row">
-					<h4 class="text-secondary pb-3 Montserrat">All Fields Required</h4>
-						<div class="col-md-6">
-							<div class="form-group pb-4">
-								{{ form.title.label(class="form-control-label pb-2 text-danger") }}
-								{% if form.title.errors %}
-									{{ form.title(class="form-control form-control-lg is-invalid") }}
-										<div class="invalid-feedback">
-											{% for error in form.title.errors %}
-												<span>{{ error }}</span>
-											{% endfor %}
-										</div>
-								{% else %}
-									{{ form.title(class="form-control form-control-lg") }}
-								{% endif %}
-							</div>
-						</div>
-					<div class="col">
+					<div class="row">
 						<div class="form-group pb-4">
-							{{ form.type.label(class="form-control-label pb-2 text-danger") }}
-							{% if form.type.errors %}
-								{{ form.type(class="form-control form-control-lg is-invalid") }}
+							{{ form.title.label(class="form-control-label pb-2 text-danger") }}
+							{% if form.title.errors %}
+								{{ form.title(class="form-control form-control-lg is-invalid") }}
 									<div class="invalid-feedback">
-										{% for error in form.type.errors %}
+										{% for error in form.title.errors %}
 											<span>{{ error }}</span>
 										{% endfor %}
 									</div>
 							{% else %}
-								{{ form.type(class="form-control form-control-lg") }}
+								{{ form.title(class="form-control form-control-lg") }}
 							{% endif %}
 						</div>
 					</div>
-				</div>
-				
-					<div class="row">
-
+						<div class="row">
+								<div class="form-group pb-4">
+									{{ form.description.label(class="form-control-label pb-2 text-danger") }}
+									
+									{% if form.description.errors %}
+										{{ form.description(class="form-control form-control-lg is-invalid") }}
+											<div class="invalid-feedback">
+												{% for error in form.description.errors %}
+													<span>{{ error }}</span>
+												{% endfor %}
+											</div>
+									{% else %}
+										{{ form.description(class="form-control form-control-lg") }}
+									{% endif %}
+								</div>
+						</div>
+					<div class='row'>
+						<div class="col">
 							<div class="form-group pb-4">
-								{{ form.description.label(class="form-control-label pb-2 text-danger") }}
-								
-								{% if form.description.errors %}
-									{{ form.description(class="form-control form-control-lg is-invalid") }}
+								{{ form.type.label(class="form-control-label pb-2 text-danger") }}
+								{% if form.type.errors %}
+									{{ form.type(class="form-control form-control-lg is-invalid") }}
 										<div class="invalid-feedback">
-											{% for error in form.description.errors %}
+											{% for error in form.type.errors %}
 												<span>{{ error }}</span>
 											{% endfor %}
 										</div>
 								{% else %}
-									{{ form.description(class="form-control form-control-lg") }}
+									{{ form.type(class="form-control form-control-lg") }}
 								{% endif %}
 							</div>
+						</div>
+						<div class="col">
+							<div class="form-group pb-4">
+								{{ form.format.label(class="form-control-label pb-2 text-danger") }}
+								{% if form.format.errors %}
+									{{ form.format(class="form-control form-control-lg is-invalid") }}
+										<div class="invalid-feedback">
+											{% for error in form.format.errors %}
+												<span>{{ error }}</span>
+											{% endfor %}
+										</div>
+								{% else %}
+									{{ form.format(class="form-control form-control-lg") }}
+								{% endif %}
+							</div>
+						</div>
 					</div>
-					
 					<div class='row'>
 						<div class="form-group pb-4">
-							{{ form.image_file.label(class="form-control-label pb-2 text-danger") }}
+							{{ form.image_file.label(class="form-control-label pb-2 text-secondary") }}
 							
 							{% if form.image_file.errors %}
 								{{ form.image_file(class="form-control form-control is-invalid") }}
