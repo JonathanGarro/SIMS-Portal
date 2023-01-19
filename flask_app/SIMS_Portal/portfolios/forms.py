@@ -10,7 +10,7 @@ class PortfolioUploadForm(FlaskForm):
 	title = StringField('Product Title', validators=[DataRequired()])
 	emergency_id = QuerySelectField('Emergency', query_factory=lambda:Emergency.query.all(), get_label='emergency_name', allow_blank=True)
 	creator_id = QuerySelectField('Creator', query_factory=lambda:User.query.filter_by(status='Active'), get_label='fullname', allow_blank=True)
-	description = TextAreaField('Description')
+	description = TextAreaField('Description', validators=[DataRequired()])
 	type = SelectField('File Type', choices=['', 'Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other'], validators=[DataRequired()])
 	file = FileField('Final Product and File Assets (15MB Max)')
 	image_file = FileField('Attach Cover Image (Optional - See Sidebar Guidance)')

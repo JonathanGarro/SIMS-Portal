@@ -29,3 +29,4 @@ class Config:
 	SCHEDULER_TIMEZONE = "America/New_York"
 	LANGUAGES = ['en', 'es']
 	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif']
+	PORTFOLIO_TYPES = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']

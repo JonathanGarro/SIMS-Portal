@@ -15,13 +15,14 @@ portfolios = Blueprint('portfolios', __name__)
 @portfolios.route('/portfolio')
 def portfolio():
 	type_search = ''
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	# type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	type_list = current_app.config['PORTFOLIO_TYPES']
 	public_portfolio = db.session.query(Portfolio).filter(Portfolio.external==1, Portfolio.product_status=='Approved').all()
 	return render_template('portfolio_public.html', title="SIMS Products", public_portfolio=public_portfolio, type_list=type_list, type_search=type_search)
 	
 @portfolios.route('/portfolio/filter/<type>', methods=['GET', 'POST'])
 def filter_portfolio(type):
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	type_list = current_app.config['PORTFOLIO_TYPES']
 	type_search = "{}".format(type)
 	public_portfolio = db.session.query(Portfolio).filter(Portfolio.external==1, Portfolio.product_status=='Approved', Portfolio.type == type_search).all()
 	return render_template('portfolio_public.html', title="SIMS Products", public_portfolio=public_portfolio, type_search=type_search, type_list=type_list)
@@ -31,13 +32,13 @@ def filter_portfolio(type):
 def all_products():
 	type_search = ''
 	full_portfolio = db.session.query(Portfolio).filter(Portfolio.product_status != 'Removed').all()
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	type_list = current_app.config['PORTFOLIO_TYPES']
 	return render_template('portfolio_all.html', title="SIMS Products", full_portfolio=full_portfolio, type_list=type_list, type_search=type_search)
 
 @portfolios.route('/portfolio_private/filter/<type>', methods=['GET', 'POST'])
 @login_required
 def filter_portfolio_private(type):
-	type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	type_list = current_app.config['PORTFOLIO_TYPES']
 	type_search = "{}".format(type)
 	full_portfolio = db.session.query(Portfolio).filter(Portfolio.product_status != 'Removed', Portfolio.type == type_search).all()
 	return render_template('portfolio_all.html', title="SIMS Products", full_portfolio=full_portfolio, type_search=type_search, type_list=type_list)
