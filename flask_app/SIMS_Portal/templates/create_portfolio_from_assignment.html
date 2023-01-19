@@ -13,22 +13,23 @@
 	{% endwith %}
 	</div>
 	<div class="row my-5">
-		<div class="col-md-4">
-			<h4 class="text-secondary mb-1">Upload</h4>
+		<div class="col-md-4 pe-5">
+			<h4 class="text-secondary Montserrat mb-1">Upload</h4>
 			<h2 class="text-danger mb-4 Montserrat">New Product</h2>
 
-				<h5 class="text-secondary Montserrat mt-4">Cover Image and File</h5>
-				<p class="sidebar-guidance">There are two required uploads: a cover image and the actual file(s). The portal needs an image to display on portfolio views, and many files don't have visuals that the portal can create a thumbnail from (e.g. an Excel file). In order to have a visual representation of the product, you'll need to share a screenshot. If the product <span class='fw-bold'>is already visual in nature</span> (e.g. a PNG or JPEG map or infographic), then use that for the cover image.</p>
-				
-				<p class="sidebar-guidance">The file assets is where you'll upload your final product and supporting files <span class='fw-bold'> in a .zip file</span>. If you're uploading a map, for instance, you'd want to zip all your QGIS files, spreadsheets, and any other files necessary to recreate your product.</p>
+				<h5 class="text-secondary Montserrat mt-4">Product Title and Description</h5>
+				<p class="sidebar-guidance">Give the product a short but descriptive title. Use the description box to explain what the product was designed for, how it was used, your process for creating it, and any other relevant information.</p>
+
+				<h5 class="text-secondary Montserrat mt-4">Cover Image and Final Product</h5>
+				<p class="sidebar-guidance">The <span class='fw-bold'>Final Product and File Assets</span> will be where you upload the actual product. If your product has multiple files (e.g. a QGIS file for the basemap and an AI file with the polished layout), then zip them together. It is recommended to upload a screenshot on the <span class='fw-bold'>Attach Cover Image</span> field, either as a PNG or JPEG, so that viewers can preview what the final product is. <span class='fw-bold'>If you do not upload a cover image, then the system will show a generic placeholder image based on the file type.</span></p>
 
 				<h5 class="text-secondary Montserrat mt-4">Share Publicly</h5>
-				<p class="sidebar-guidance">By default, products that are posted are saved to your assignment and visible on your profile page. If you want them to be visible on the emergency page's portfolio and to external visitors of the site, then they must be manually approved by the SIMS Remote Coordinator. Checking this box will place the product in a review queue for them.</p>
+				<p class="sidebar-guidance">By default, products that you post are saved to your assignment and visible on your profile page. If you want them to be visible on the emergency page's portfolio and to external visitors of the site, then they must be manually approved by the SIMS Remote Coordinator for this emergency. Checking this box will place the product in a review queue for them.</p>
 
 
 		</div>
 		<div class="col">
-			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
 				{{ form.hidden_tag() }}
 					<div class="row">
 						<div class="form-group pb-4">
@@ -134,6 +135,9 @@
 					</div>
 					<br>
 				{{ form.submit(class="btn btn-outline-danger") }}
+
+				<div class="alert alert-warning mt-3" role="alert">When uploading, your file will be sent to the Dropbox account that stores files for the SIMS Portal, which may take a few moments. Do not navigate away from this page or hit "Upload" again until the page changes.</div>
+
 			</form>
 		</div>
 	</div>
