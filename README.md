@@ -1,4 +1,4 @@
-<img width="1705" alt="SIMS Portal Landing Page" src="https://user-images.githubusercontent.com/8890661/206601682-ed87c61f-fa47-4c9b-8c7a-127bce54ba58.png">
+<img width="1705" alt="SIMS Portal Landing Page" src="https://user-images.githubusercontent.com/8890661/213471972-66d5bad9-7c6b-41fd-843a-f79e1934f433.png">
 
 
 # SIMS-Portal
