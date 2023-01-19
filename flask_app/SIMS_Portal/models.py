@@ -64,7 +64,10 @@ class Skill(db.Model):
 	
 	name = db.Column(db.String)
 	category = db.Column(db.String)
-
+	
+	def __repr__(self):
+		return f"Skill('{self.name}','{self.category}')"
+	
 class Language(db.Model):
 	__tablename__ = 'language'
 	
