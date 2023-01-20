@@ -1,45 +1,105 @@
 {% extends "layout.html" %}
 {% block content %}
 	<div class="container">
-		<h3 class="mt-5 Montserrat sims-blue">SIMS Full Portfolio</h3>
-		<p class='lead'>This page shows all products that have been uploaded, regardless of whether they have been marked as "External". Filter by product type, and click on a card to see more information about the product.</p>
-		<div class="col mt-3">
-			{% for type in type_list %}
-				{% if type == type_search %}
-					<a href='/portfolio_private/filter/{{type}}'><button class='btn btn-danger btn-sm m-1'>{{type}}</button></a>
-				{% else %}
-					<a href='/portfolio_private/filter/{{type}}'><button class='btn btn-secondary btn-sm m-1'>{{type}}</button></a>
-				{% endif %}
-			{% endfor %}
-			
-			{% if type_search %}
-				<a href='/all_products'><button class='btn btn-dark btn-sm m-1'>&otimes; Clear Filter</button></a>
-			{% endif %}
-		<div class='row mb-5'>
-			<div class='col-md-12'>
-				<div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
-					{% for product in full_portfolio %}
-						  <div class="col d-flex align-items-stretch">
-							<a href='/portfolio/view/{{product.id}}' class='text-danger'>
-							<div class="card" id="portfolio-card">
-								{% if 'user' in product.image_file %}
-								<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="Product Image">
-								{% else %}
-								<img src="/static/assets/img/portfolio_placeholders/{{product.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
-								{% endif %}
-							  <div class="card-body d-flex flex-column">
-								<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
-								<h5 class="card-title mt-auto mb-2" id='invert-card-text'>{{product.title}}</h5>
-							  </a>
-							  </div>
-							</div>
-						  </div>
-					{% endfor %}
-				</div>
+		
+		<div class='d-flex justify-content-between mt-4 bg-light rounded border-3 border px-4 py-3'>
+			<div>
+				<h2 class='text-dark Montserrat'>SIMS Full Portfolio</h2>
 			</div>
+			<div>
+				<ul class="nav nav-pills" id="dashboardNav" role="tablist">
+			  	<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="active-ops-tab" data-bs-toggle="pill" data-bs-target="#show-cards" type="button" role="tab" aria-controls="active-ops" aria-selected="true">Cards</button>
+			  	</li>
+			  	<li class="nav-item" role="presentation">
+					<button class="nav-link" id="surge-alerts-tab" data-bs-toggle="pill" data-bs-target="#show-table" type="button" role="tab" aria-controls="surge-alerts" aria-selected="false">Table</button>
+			  	</li>
+				</ul>
+			</div>
+		</div>
 
-				
+		<div class="tab-content" id="fullPortfolio">
+			<div class="tab-pane show fade active" id="show-cards" role="tabpanel" aria-labelledby="show-cards-tab">
+	
+				<div class="col mt-4">
+					{% for type in type_list %}
+						{% if type == type_search %}
+							<a href='/portfolio_private/filter/{{type}}'><button class='btn btn-danger btn-sm m-1'>{{type}}</button></a>
+						{% else %}
+							<a href='/portfolio_private/filter/{{type}}'><button class='btn btn-secondary btn-sm m-1'>{{type}}</button></a>
+						{% endif %}
+					{% endfor %}
+					
+					{% if type_search %}
+						<a href='/all_products'><button class='btn btn-dark btn-sm m-1'>&otimes; Clear Filter</button></a>
+					{% endif %}
+					<div class='row mb-5'>
+						<div class='col-md-12'>
+							<div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
+								{% for product in full_portfolio %}
+						  			<div class="col d-flex align-items-stretch">
+										<a href='/portfolio/view/{{product.Portfolio.id}}' class='text-danger'>
+										<div class="card" id="portfolio-card">
+											{% if 'user' in product.Portfolio.image_file %}
+											<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
+											{% else %}
+											<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
+											{% endif %}
+							  			<div class="card-body d-flex flex-column">
+											<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
+											<h5 class="card-title mt-auto mb-2" id='invert-card-text'>{{product.Portfolio.title}}</h5>
+							  			</a>
+							  		</div>
+							</div>
+						</div>
+								{% endfor %}
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+	<div class="tab-pane fade" id="show-table" role="tabpanel" aria-labelledby="show-table-tab">
+		<div class='mt-4'>
+		<table class='table table-striped table-hover w-100' id='datatable-full-portfolio'>
+			<thead>
+				<tr>
+			  	<th><h5 class='Montserrat'>Image</h5></th>
+			  	<th><h5 class='Montserrat'>Title</h5></th>
+			  	<th><h5 class='Montserrat'>Emergency</h5></th>
+			  	<th><h5 class='Montserrat'>Poster</h5></th>
+			  	<th><h5 class='Montserrat'>Type</h5></th>
+			  	<th><h5 class='Montserrat'>Format</h5></th>
+			  	<th><h5 class='Montserrat'>Description</h5></th>
+			  	<th><h5 class='Montserrat'>External</h5></th>
+				<th><h5 class='Montserrat'>Date Posted</h5></th>
+				</tr>
+		  	</thead>
+		  	<tbody>
+				{% for product in full_portfolio %}
+			  	<tr>
+				  	{% if 'user' in product.Portfolio.image_file %}
+				  	<td class="fw-bold text-dangeralign-middle"><a href='/portfolio/view/{{product.Portfolio.id}}'><img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" alt="Product Image" height='75px'></a></td>
+				  	{% else %}
+				  	<td class="fw-bold text-danger align-middle"><a href='/portfolio/view/{{product.Portfolio.id}}'><img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" alt="Product Placeholder Icon" height='75px'></a></td>
+				  	{% endif %}
+					<td class="fw-bold text-danger align-middle"><a href='/portfolio/view/{{product.Portfolio.id}}'>{{product.Portfolio.title}}</a></td>
+					<td class="align-middle"><a href='/emergency/{{product.Emergency.id}}'>{{product.Emergency.emergency_name}}</a></td>
+					<td class="align-middle">{{product.User.firstname}} {{product.User.lastname}}</td>
+					<td class="align-middle">{{product.Portfolio.type}}</td>
+					<td class="align-middle">{{product.Portfolio.format}}</td>
+					<td class="align-middle">{{product.Portfolio.description|truncate(75, True)}}</td>
+					<td class="align-middle">{{product.Portfolio.external}}</td>
+					<td class="align-middle">{{product.Portfolio.created_at}}</td>
+					
+			  	</tr>
+				{% endfor %}
+		  	</tbody>
+		</table>
+		</div>
+	</div>
+	</div>
+</div>			
+</div>
+</div>
+</div>
 {% endblock content %}

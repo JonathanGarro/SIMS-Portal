@@ -158,6 +158,36 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
+	$('#datatable-full-portfolio').DataTable( {
+		order: [[8, 'desc']],
+		"autoWidth": false,
+		columnDefs: [
+		{
+			target: 8,
+			visible: false,
+			searchable: true,
+		}],
+	} );
+} );
+
+$(document).ready(function() {
+	$('#datatable-assigned-badges').DataTable( {
+		order: [[0, 'asc']],
+		"autoWidth": false,
+		columnDefs: [
+		{
+			target: 0,
+			visible: false,
+			searchable: true,
+		}],
+		rowGroup: {
+			dataSrc: 0
+		},
+ 
+	} );
+} );
+
+$(document).ready(function() {
 	$('#datatable-member-assignments').DataTable( {
 		order: [[2, 'asc']],
 		"bLengthChange": false,

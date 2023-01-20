@@ -31,7 +31,7 @@ def filter_portfolio(type):
 @login_required
 def all_products():
 	type_search = ''
-	full_portfolio = db.session.query(Portfolio).filter(Portfolio.product_status != 'Removed').all()
+	full_portfolio = db.session.query(Portfolio, User, Emergency).join(User, User.id == Portfolio.creator_id).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Portfolio.product_status != 'Removed').all()
 	type_list = current_app.config['PORTFOLIO_TYPES']
 	return render_template('portfolio_all.html', title="SIMS Products", full_portfolio=full_portfolio, type_list=type_list, type_search=type_search)
 
@@ -40,7 +40,7 @@ def all_products():
 def filter_portfolio_private(type):
 	type_list = current_app.config['PORTFOLIO_TYPES']
 	type_search = "{}".format(type)
-	full_portfolio = db.session.query(Portfolio).filter(Portfolio.product_status != 'Removed', Portfolio.type == type_search).all()
+	full_portfolio = db.session.query(Portfolio, User, Emergency).join(User, User.id == Portfolio.creator_id).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Portfolio.product_status != 'Removed', Portfolio.type == type_search).all()
 	return render_template('portfolio_all.html', title="SIMS Products", full_portfolio=full_portfolio, type_search=type_search, type_list=type_list)
 
 @portfolios.route('/portfolio/new_from_assignment/<int:assignment_id>/<int:user_id>/<int:emergency_id>', methods=['GET', 'POST'])
@@ -266,8 +266,3 @@ def add_supporter_to_product(product_id):
 		db.session.commit()
 		flash('You are now listed as a collaborator!', 'success')
 		return redirect(url_for('portfolios.view_portfolio', id=product_id))
-
-
-
-
-
