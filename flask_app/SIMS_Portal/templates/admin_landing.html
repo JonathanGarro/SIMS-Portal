@@ -57,7 +57,7 @@
 			</form>
 			<div class='mt-5'>
 				<h3 class='text-danger Montserrat mb-3'>Active Users' Profiles</h3>
-				<table class='table grouped-table-rows' id='datatable-assigned-profiles'>
+				<table class='table grouped-table-rows' id='datatable-assigned-profiles' width="100%">
 					<thead>
 						<tr>
 							<th>Member</th>
@@ -69,7 +69,7 @@
 						{% for profile in all_assigned_profiles %}
 							<tr>
 								<td class='fw-bold'><a href='/profile/view/{{profile.user_id}}'>{{profile.user_name}}</a></td>
-								<td>{{profile.name}}</td>
+								<td>&nbsp; &nbsp; {{profile.name}}</td>
 								<td>{{profile.max_tier}}</td>
 							</tr>
 						{% endfor %}
@@ -101,7 +101,7 @@
 				</form>
 				<h3 class='text-danger mt-5 Montserrat'>Users with Badges</h3>
 				See the <a href='/badges'>badges index page</a> for a full listing and definition of available badges.
-				  <table class='table table-striped mt-4'>
+				  <table class='table grouped-table-rows mt-4' id='datatable-assigned-badges' width="100%">
 					  <thead>
 						  <tr>
 							  <th>Member</th>
@@ -112,7 +112,7 @@
 						  {% for user in assigned_badges %}
 							  <tr>
 								  <td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
-								  <td>{{user.badges}}</td>
+								  <td>&nbsp; &nbsp; {{user.badges}}</td>
 							  </tr>
 						  {% endfor %}
 					  </tbody>
