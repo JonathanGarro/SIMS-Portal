@@ -260,10 +260,10 @@
 					  <div class="col d-flex align-items-stretch">
 						  <a href="/portfolio/view/{{product.Portfolio.id}}">
 						  <div class="card" id='portfolio-card' style="width: 18rem;">
-							  {% if '.pdf' in product.Portfolio.final_file_location %}
-							  <img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
+							  {% if 'user' in product.Portfolio.image_file %}
+							  <img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
 							  {% else %}
-							  <img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top" alt="...">
+							  <img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
 							  {% endif %}
 							  <div class="card-body d-flex flex-column">
 									<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
@@ -329,7 +329,7 @@
 
 			  </div>
 			  <div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
-				 <h3 class="text-dark my-4 emergency-title">Assignment Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#individual-learning'>What's This?</a></span></h3>
+				 <h3 class="text-dark mt-4 emergency-title">Assignment Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#individual-learning'>What's This?</a></span></h3>
 				 {% if learning_count == 0 %}
 				 <p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
 				 {% elif learning_count > 2 %}
@@ -388,7 +388,7 @@
 				 {% else %}  
 				 <p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
 				 {% endif %}
-				 <h3 class="text-dark my-5 emergency-title">Operational Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#op-learning'>What's This?</a></span></h3>
+				 <h3 class="text-dark mt-5 emergency-title">Operational Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#op-learning'>What's This?</a></span></h3>
 				   {% if existing_reviews %}
 				   <table class='table mt-4' id='datatable-op-reviews'>
 					   <thead>
