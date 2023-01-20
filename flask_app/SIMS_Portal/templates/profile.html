@@ -79,9 +79,12 @@
 					</div>
 				</div>
 				
+				<span class='text-secondary font-small mt-4'>{% if users_time_now_string %}User's Local Time: <span class='fw-bold'>{{users_time_now_string}}</span>{% endif %}</span>
+				
 				<a href='{{ url_for('users.update_profile') }}'><button class='btn btn-outline-secondary w-100 mt-5'>Update Profile</button></a>
 				<a href='/reset_password'><button class='btn btn-outline-secondary w-100 my-2'>Change Password</button></a>
 				<a href='#' data-toggle="modal" data-target="#confirm-delete"><button class='btn btn-outline-danger w-100 mb-2'>Delete Account</button></a>
+				
 				
 					  <!-- Modal -->
 					  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

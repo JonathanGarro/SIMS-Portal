@@ -149,7 +149,25 @@
 						{% else %}
 							{{ form.unit(class="form-control form-control-lg") }}
 						{% endif %}
+						</div>
 					</div>
+				</div>
+				<div class='row'>
+					<div class='col'>
+						<div class="form-group pb-4">
+						{{ form.time_zone.label(class="form-control-label pb-2 text-secondary") }} <span class='text-secondary' tabindex="0" data-toggle="tooltip" title="Select the time zone that you typically work from.">ⓘ</span>
+						
+						{% if form.time_zone.errors %}
+							{{ form.time_zone(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.time_zone.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ form.time_zone(class="form-control form-control-lg") }}
+						{% endif %}
+						</div>
 					</div>
 				</div>
 				<div class="row">
