@@ -9,6 +9,7 @@ from sqlalchemy import or_
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_mail import Message
 from datetime import datetime, date
+import pytz
 
 users = Blueprint('users', __name__)
 
@@ -93,6 +94,12 @@ def logout():
 @login_required
 def profile():
 	user_info = User.query.filter(User.id==current_user.id).first()
+	if user_info.time_zone:
+		users_tz = user_info.time_zone
+		users_time_now = pytz.timezone(users_tz)
+		users_time_now_string = datetime.now(users_time_now).strftime("%I:%M %p")
+	else: 
+		users_time_now_string = ''
 	try:
 		ns_association = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.id==current_user.id).with_entities(NationalSociety.ns_name).first()[0]	
 	except:
@@ -134,7 +141,7 @@ def profile():
 	except:
 		pass
 
-	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list)
+	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list, users_time_now_string=users_time_now_string)
 	
 @users.route('/profile/view/<int:id>')
 def view_profile(id):
@@ -236,6 +243,7 @@ def update_profile():
 		current_user.email = form.email.data
 		current_user.job_title = form.job_title.data
 		current_user.unit = form.unit.data
+		current_user.time_zone = form.time_zone.data
 		try:
 			current_user.ns_id = form.ns_id.data.ns_go_id
 		except:
@@ -260,6 +268,7 @@ def update_profile():
 		form.email.data = current_user.email
 		form.job_title.data = current_user.job_title
 		form.unit.data = current_user.unit
+		form.time_zone.data = current_user.time_zone
 		form.ns_id.data = current_user.ns_id
 		form.bio.data = current_user.bio
 		form.slack_id.data = current_user.slack_id
