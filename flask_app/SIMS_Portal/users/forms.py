@@ -7,6 +7,7 @@ from wtforms_sqlalchemy.fields import QuerySelectField
 from flask_sqlalchemy import SQLAlchemy
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType, Portfolio, Skill, Language, Profile
+from SIMS_Portal.users.utils import time_zone_options
 
 class RegistrationForm(FlaskForm):
 	firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=40)])
@@ -53,6 +54,7 @@ class UpdateAccountForm(FlaskForm):
 	roles = StringField('SIMS Roles')
 	messaging_number_country_code = IntegerField('Country Code', validators=[Optional()])
 	messaging_number = IntegerField('Messaging Number (Integers Only)', validators=[Optional()])
+	time_zone = SelectField('Time Zone', choices=time_zone_options, validators=[Optional()])
 	languages = SelectMultipleField('Languages', choices=lambda:[language.name for language in Language.query.order_by(Language.name).all()], render_kw={'style':'height: 400px'})
 	skills = SelectMultipleField('Skills', choices=lambda:[skill.name for skill in Skill.query.order_by(Skill.name).all()], render_kw={'style':'height: 400px'})
 	submit = SubmitField('Update Profile')
