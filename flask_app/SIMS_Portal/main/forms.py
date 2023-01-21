@@ -46,6 +46,8 @@ class SkillCreatorForm(FlaskForm):
 	submit_skill = SubmitField('Add Skill')
 
 class NewBadgeUploadForm(FlaskForm):
-	name = StringField('Badge Name')
+	name = StringField('Badge Name', validators=[DataRequired()])
 	file = FileField('Attach File', validators=[FileAllowed(['png'])])
+	description = StringField('Badge Description', validators=[DataRequired()])
+	limited_edition = BooleanField('Limited Edition?')
 	upload_badge = SubmitField('Upload New Badge')

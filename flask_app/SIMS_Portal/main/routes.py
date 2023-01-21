@@ -12,7 +12,6 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
-# from SIMS_Portal.alerts.utils_testing import refresh_surge_alerts_tester
 import os
 import tweepy
 import re
@@ -40,16 +39,22 @@ def get_slack_id():
 
 @main.route('/badges')
 def badges():
-	badges = db.engine.execute("SELECT * FROM user_badge JOIN Badge ON Badge.id = user_badge.badge_id")
+	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = 0 GROUP BY name")
+	all_badges = db.session.query(Badge).all()
+	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == 1).all()
 	count_active_members = db.session.query(User).filter(User.status == 'Active').count()
 	
-	# loop over each item in sqlalchemy object, append the badge name to a list, and use Counter() to summarize
-	count_list = []
-	for badge in badges:
-		count_list.append(badge[7])
-	badge_counts = Counter(count_list)
+	list_assigned_badges = []
+	for badge in assigned_badges:
+		temp_dict = {}
+		temp_dict['name'] = badge.name
+		temp_dict['id'] = badge.id
+		temp_dict['count'] = badge.count
+		temp_dict['description'] = badge.description
+		temp_dict['limited_edition'] = badge.limited_edition
+		list_assigned_badges.append(temp_dict)
 	
-	return render_template('badges.html', badge_counts=badge_counts, count_active_members=count_active_members)
+	return render_template('badges.html', count_active_members=count_active_members, all_badges=all_badges, list_assigned_badges=list_assigned_badges, all_limited_edition_badges=all_limited_edition_badges)
 
 @main.route('/badges/create', methods=['GET', 'POST'])
 @login_required
@@ -57,7 +62,12 @@ def create_badge():
 	form = NewBadgeUploadForm()
 	if current_user.is_admin == 1 and form.validate_on_submit() and form.file.data:
 		file = save_new_badge(form.file.data)
-		badge = Badge(name = form.name.data, badge_url = file, limited_edition = 0)
+		if form.limited_edition.data == True:
+			is_limited_edition = 1
+		else:
+			is_limited_edition = 0
+		badge = Badge(name = form.name.data, badge_url = file, limited_edition = is_limited_edition, description = form.description.data)
+		print(badge)
 		db.session.execute(badge)
 		db.session.commit()
 		flash('New badge successfully created!', 'success')
@@ -121,10 +131,16 @@ def admin_landing():
 	
 	# upload new badge
 	elif request.method == 'POST' and badge_upload_form.name.data and current_user.is_admin == 1:
+		if badge_upload_form.limited_edition.data == True:
+			is_limited_edition = 1
+		else:
+			is_limited_edition = 0
 		file = save_new_badge(badge_upload_form.file.data)
 		badge = Badge(
 			name = badge_upload_form.name.data, 
-			badge_url = file
+			badge_url = file, 
+			limited_edition = is_limited_edition,
+			description = badge_upload_form.description.data
 		)
 		db.session.add(badge)
 		db.session.commit()
