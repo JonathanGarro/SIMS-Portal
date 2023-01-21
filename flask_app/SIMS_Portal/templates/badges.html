@@ -3,414 +3,63 @@
 <div class="container mb-5">
 	
 	<div class="row my-5">
-		<div class="col-md-10 ps-4">
+		<div class="col-md-10">
 			<h1 class="" style="font-family: 'Montserrat'; color: #540C06">SIMS Badges</h1>
 			<p class='lead'>Badges are manually assigned by SIMS Remote Coordinators or SIMS Portal Administrators to recognize special achievements and contributions made by members of the network. This page automatically calculates how common each badge is by dividing the number of badge assignments by the total active SIMS members. </p>
 			<p class='lead'>There are regular badges that are always available for assignment, and badges that are only available for certain periods of time or under special circumstances. Scroll to the "Limited Edition" badges for more information.</p>
 		</div>
 		  <div class="col">
-			<img src='/static/assets/img/badges/SIMS-Badge.png' class='img-fluid'>
+			<img src='/static/assets/img/badges/SIMS-Badge.png' class='img-fluid mt-3'>
 		  </div>
 	</div>
-	
-	<hr class='my-3'>
 
-<!-- Section Break		 -->
-
-	<h2 class='Montserrat pt-5'>Regular Badges</h2>
+	<h2 class='Montserrat'>Regular Badges</h2>
 	<a href='/badges#special-edition'>↓ Jump to Limited Edition Badges</a>
 	
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Cat-Herder.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='13'>Cat Herder</h3>
-			{% if ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Cat Herder'] / count_active_members) * 100)|int < 50 and ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Cat Herder'] / count_active_members) * 100)|int < 25 and ((badge_counts['Cat Herder'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Cat Herder'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You help manage the SIMS Network.</p>
-		</div>
-	</div>
-
-<!-- Section Break		 -->
-	
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Nightingale.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='14'>Florence Nightingale</h3>
-			{% if ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int < 50 and ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int < 25 and ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Florence Nightingale'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You took an innovative approach to visualizing a complicated dataset.</p>
-		</div>
-	</div>
-
-<!-- Section Break		 -->
-
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Gold-Medal-Relay.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='9'>Gold Medal Relay</h3>
-			{% if ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int < 50 and ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int < 25 and ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Gold Medal Relay'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You handed off the SIMS Remote Coordinator duties like an champion.</p>
-		</div>
-	</div>
-	
-<!-- Section Break		 -->
-	
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Maiden-Voyage.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='3'>Maiden Voyage</h3>
-			{% if ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int < 50 and ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int < 25 and ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Maiden Voyage'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You've let out your sails and headed off on your first field deployment.</p>
-		</div>
-	</div>
-	
-<!-- Section Break		 -->
-	
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/No-Pressure.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='7'>No Pressure</h3>
-			{% if ((badge_counts['No Pressure'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['No Pressure'] / count_active_members) * 100)|int < 50 and ((badge_counts['No Pressure'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['No Pressure'] / count_active_members) * 100)|int < 25 and ((badge_counts['No Pressure'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['No Pressure'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You took on a critical task with a tight deadline, and turned in a fantastic product.</p>
-		</div>
-	</div>
-
-<!-- Section Break		 -->
-
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Polyglot.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='1'>Polyglot</h3>
-			{% if ((badge_counts['Polyglot'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Polyglot'] / count_active_members) * 100)|int < 50 and ((badge_counts['Polyglot'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Polyglot'] / count_active_members) * 100)|int < 25 and ((badge_counts['Polyglot'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Polyglot'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>Google Translate be damned!</p>
-		</div>
-	</div>
-
-<!-- Section Break		 -->
-
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Self-Promoter.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='4'>Self Promoter</h3>
-			{% if ((badge_counts['Self Promoter'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Self Promoter'] / count_active_members) * 100)|int < 50 and ((badge_counts['Self Promoter'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Self Promoter'] / count_active_members) * 100)|int < 25 and ((badge_counts['Self Promoter'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Self Promoter'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You're helping the network know more about you with an updated profile.</p>
-		</div>
-	</div>
-	
-<!-- Section Break		 -->
-	
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Super-Scholar.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='8'>Super Scholar</h3>
-			{% if ((badge_counts['Super Scholar'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Super Scholar'] / count_active_members) * 100)|int < 50 and ((badge_counts['Super Scholar'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Super Scholar'] / count_active_members) * 100)|int < 25 and ((badge_counts['Super Scholar'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Super Scholar'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You're practically a tenured professor with all that knowledge you've shared!</p>
-		</div>
-	</div>
-
-<!-- Section Break		 -->
-
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/Teaching-Moment.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='6'>Teaching Moment</h3>
-			{% if ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int < 50 and ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int < 25 and ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-			<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Teaching Moment'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You're helping upskill the network by sharing your talents.</p>
-		</div>
-	</div>
-
-<!-- Section Break		 -->
-
-	<div class="row my-5">
-		  <div class="col-md-2">
-			  <img src='/static/assets/img/badges/World-Traveler.png' class='img-fluid'>
-		  </div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='5'>World Traveler</h3>
-			{% if ((badge_counts['World Traveler'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['World Traveler'] / count_active_members) * 100)|int < 50 and ((badge_counts['World Traveler'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['World Traveler'] / count_active_members) * 100)|int < 25 and ((badge_counts['World Traveler'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['World Traveler'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>That passport must be running out of pages, because you're getting around.</p>
-		</div>
-	</div>
-	<h2 class='Montserrat pt-5' id='special-edition'>Special Edition Badges</h2>
-
-<!-- Section Break		 -->	
-
-	<div class="row my-5">
+	{% for badge in list_assigned_badges %}
+	<div class="row my-5" id={{badge.id}}>
 		<div class="col-md-2">
-			  <img src='/static/assets/img/badges/MVP-2022.png' class='img-fluid'>
+			<img src='/static/assets/img/badges/{{badge.name | replace(" ","-")}}.png' class='img-fluid'>
 		</div>
 		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='2'>Most Valuable SIMS Member 2022</h3>
-			{% if ((badge_counts['MVP 2022'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['MVP 2022'] / count_active_members) * 100)|int < 50 and ((badge_counts['MVP 2022'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['MVP 2022'] / count_active_members) * 100)|int < 25 and ((badge_counts['MVP 2022'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			<h3 class='text-danger Montserrat mb-2'>{{badge.name}}</h3>
+			{% if ((badge['count'] / count_active_members) * 100)|int >= 50%}
+				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge['count'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge['count'] / count_active_members) * 100)|int < 50 and ((badge['count'] / count_active_members) * 100)|int >= 25%}
+				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge['count'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge['count'] / count_active_members) * 100)|int < 25 and ((badge['count'] / count_active_members) * 100)|int >= 10%}
+				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge['count'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+			{% elif ((badge['count'] / count_active_members) * 100)|int <=9%}
+				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge['count'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
+
 			{% endif %}
-			
-			
-			<div class="progress my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['MVP 2022'] / count_active_members) * 100)|int }}%</div>
+	
+			<div class="progress  my-3" style="height: 20px; width: 50%">
+				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge['count'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge['count'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge['count'] / count_active_members) * 100)|int }}%</div>
 			</div>
-			<p>Your contributions this year have been recognized by the SIMS Network, which has chosen you as its most valuable member!</p>
+			<p>{{badge.description}}</p>
 		</div>
 	</div>
+	{% endfor %}
 	
-<!-- Section Break		 -->
-	
-	<div class="row my-5">
-		<div class="col-md-2">
-  			<img src='/static/assets/img/badges/Workshop-Madrid-18-Organizer.png' class='img-fluid'>
-		</div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='10'>SIMS Workshop Madrid 2018 Organizer</h3>
-			{% if ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int < 50 and ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int < 25 and ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Madrid Workshop 2018 Organizer'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You helped set up the SIMS Workshop in Madrid. ¡Bien hecho!</p>
-		</div>
-
-<!-- Section Break		 -->	
-
-		<div class="row my-5">
+	<div class='row mt-5' id='special-edition'>
+		<h2 class='Montserrat'>Limited Edition Badges</h2>
+		{% for badge in all_limited_edition_badges %}
+		<div class="row mt-5" id={{badge.id}}>
 			<div class="col-md-2">
-			  	<img src='/static/assets/img/badges/Workshop-Madrid-18-Participant.png' class='img-fluid'>
+				<img src='/static/assets/img/badges/{{badge.name | replace(" ","-")}}.png' class='img-fluid'>
 			</div>
 			<div class="col ps-4">
-				<h3 class='text-danger Montserrat mb-2' id='11'>SIMS Workshop Madrid 2018 Participant</h3>
-				{% if ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int >= 50 %}
-					<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-				{% elif ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int < 50 and ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int >= 25 %}
-					<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-				{% elif ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int < 25 and ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int >= 10 %}
-					<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-				{% else %}
-					<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-				{% endif %}
-				
-				
-				<div class="progress  my-3" style="height: 20px; width: 50%">
-					<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Madrid Workshop 2018 Participant'] / count_active_members) * 100)|int }}%</div>
-				</div>
-				<p>¡Qué guay! You joined us for the SIMS Workshop in Madrid.</p>
+				<h3 class='text-danger Montserrat mb-2'>{{badge.name}}</h3>
+				<p>{{badge.description}}</p>
 			</div>
-
-<!-- Section Break		 -->
-
-		<div class="row my-5">
-		<div class="col-md-2">
-			  <img src='/static/assets/img/badges/Workshop-Nepal-22-Organizer.png' class='img-fluid'>
 		</div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='15'>SIMS Workshop Nepal 2022 Organizer</h3>
-			{% if ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int < 50 and ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int < 25 and ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Nepal Workshop 2022 Organizer'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You helped set up the SIMS Workshop in Nepal. Dhan'yavāda!</p>
-		</div>
-
-<!-- Section Break		 -->
-
-		<div class="row my-5">
-		<div class="col-md-2">
-			  <img src='/static/assets/img/badges/Workshop-Nepal-22-Participant.png' class='img-fluid'>
-		</div>
-		<div class="col ps-4">
-			<h3 class='text-danger Montserrat mb-2' id='16'>SIMS Workshop Nepal 2022 Organizer</h3>
-			{% if ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int >= 50 %}
-				<button class='btn btn-sm badge-common'>Common</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int < 50 and ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int >= 25 %}
-				<button class='btn btn-sm badge-unusual'>Unusual</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% elif ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int < 25 and ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int >= 10 %}
-				<button class='btn btn-sm badge-rare'>Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% else %}
-				<button class='btn btn-sm badge-exrare'>Extremely Rare</button> &nbsp <span class='fw-bold text-secondary'>{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}% of SIMS members have this badge</span>
-			{% endif %}
-			
-			
-			<div class="progress  my-3" style="height: 20px; width: 50%">
-				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge_counts['Nepal Workshop 2022 Participant'] / count_active_members) * 100)|int }}%</div>
-			</div>
-			<p>You joined the Nepal SIMS workshop in 2022.</p>
-		</div>
-
-<!-- Section Break		 -->
+		{% endfor %}
+	</div>
 	
-<!-- Section Break		 -->
-		</div>
-	</div>
-	</div>
-	</div>
+	
+
+	
+	
 </div>
 {% endblock content %}
