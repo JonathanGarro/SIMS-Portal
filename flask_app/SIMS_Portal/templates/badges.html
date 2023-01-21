@@ -13,7 +13,14 @@
 		  </div>
 	</div>
 
+
 	<h2 class='Montserrat'>Regular Badges</h2>
+
+	
+	<hr class='my-3'>
+
+	<h2 class='Montserrat pt-5'>Regular Badges</h2>
+
 	<a href='/badges#special-edition'>↓ Jump to Limited Edition Badges</a>
 	
 	{% for badge in list_assigned_badges %}
@@ -21,6 +28,14 @@
 		<div class="col-md-2">
 			<img src='/static/assets/img/badges/{{badge.name | replace(" ","-")}}.png' class='img-fluid'>
 		</div>
+
+	</div>
+	
+	<div class="row my-5">
+		  <div class="col-md-2">
+			  <img src='/static/assets/img/badges/Nightingale.png' class='img-fluid'>
+		  </div>
+
 		<div class="col ps-4">
 			<h3 class='text-danger Montserrat mb-2'>{{badge.name}}</h3>
 			{% if ((badge['count'] / count_active_members) * 100)|int >= 50%}
