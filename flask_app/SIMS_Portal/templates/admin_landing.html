@@ -231,7 +231,6 @@
 							<div>{{ badge_upload_form.file.label(class="form-control-label pb-2 text-danger") }}</div>
 						</div>
 					</div>
-					
 					<div class='row'>
 						<div class='col'>
 							<div>{{ badge_upload_form.name(class="form-control form-control-lg") }}</div>
@@ -240,7 +239,22 @@
 							<div><input class="form-control form-control-lg" id="{{ badge_upload_form.file }}" type="file"></div>
 						</div>
 					</div>
-					<div class='col'>{{ badge_upload_form.upload_badge(class="btn btn-lg btn-danger w-25") }}</div>
+					
+					<div class='row'>
+						<div class='col'>
+							<div>{{ badge_upload_form.description.label(class="form-control-label pb-2 text-danger") }}</div>
+						</div>
+					</div>
+					<div class='row'>
+						<div class='col'>
+							<div>{{ badge_upload_form.description(class="form-control form-control-lg") }}</div>
+						</div>
+					</div>
+					<div class='row mt-3'>
+						<div>{{ badge_upload_form.limited_edition.label(class="form-control-label pb-2 text-danger") }} &nbsp; {{ badge_upload_form.limited_edition(class="form-check-input") }}</div>
+					</div>
+					
+					<div class='col mt-4'>{{ badge_upload_form.upload_badge(class="btn btn-lg btn-danger w-25") }}</div>
 				
 					</form>
 				<div class='row my-5'>

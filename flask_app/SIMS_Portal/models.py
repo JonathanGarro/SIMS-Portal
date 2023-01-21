@@ -50,7 +50,6 @@ class Profile(db.Model):
 	__tablename__ = 'profile'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	name = db.Column(db.String)
 	image = db.Column(db.String)
 	
@@ -61,7 +60,6 @@ class Skill(db.Model):
 	__tablename__ = 'skill'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	name = db.Column(db.String)
 	category = db.Column(db.String)
 	
@@ -72,7 +70,6 @@ class Language(db.Model):
 	__tablename__ = 'language'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	name = db.Column(db.String)
 
 class Badge(db.Model):
@@ -81,13 +78,17 @@ class Badge(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
 	badge_url = db.Column(db.String)
+	description = db.Column(db.String)
 	limited_edition = db.Column(db.Boolean, default=False)
+	
+	def __repr__(self):
+		return f"Badge('{self.name}')"
+		
 
 class NationalSociety(db.Model):
 	__tablename__ = 'nationalsociety'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	ns_name = db.Column(db.String(120), nullable=False)
 	country_name = db.Column(db.String(120), nullable=False)
 	ns_go_id = db.Column(db.Integer)
@@ -106,7 +107,6 @@ class User(db.Model, UserMixin):
 	__tablename__ = 'user'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	firstname = db.Column(db.String(40), nullable=False)
 	lastname = db.Column(db.String(40), nullable=False)
 	status = db.Column(db.String(20), default='Pending')
@@ -168,7 +168,6 @@ class Assignment(db.Model):
 	__tablename__ = 'assignment'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	role = db.Column(db.String(100))
 	start_date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
 	end_date = db.Column(db.Date, nullable=False)
@@ -193,10 +192,8 @@ class Learning(db.Model):
 	__tablename__ = 'learning'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	overall_score = db.Column(db.Integer, nullable=False)
 	overall_exp = db.Column(db.String, nullable=False)
-	
 	got_support = db.Column(db.Integer)
 	internal_resource = db.Column(db.Integer)
 	external_resource = db.Column(db.Integer)
@@ -231,7 +228,6 @@ class WorkingGroup(db.Model):
 	__tablename__ = 'workinggroup'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	wg_name = db.Column(db.String, nullable=False)
 	wg_description = db.Column(db.Text)
 	wg_url = db.Column(db.String)
@@ -244,7 +240,6 @@ class Story(db.Model):
 	__tablename__ = 'story'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	header_image = db.Column(db.String, nullable=False, default='default-banner.jpg')
 	header_caption = db.Column(db.String, nullable=False, default='default-banner.jpg')
 	entry = db.Column(db.Text)
@@ -258,7 +253,6 @@ class Emergency(db.Model):
 	__tablename__ = 'emergency'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	emergency_name = db.Column(db.String(100), nullable=False)
 	emergency_status = db.Column(db.String(100), nullable=False, default='Active')
 	emergency_glide = db.Column(db.String(20))
@@ -304,7 +298,6 @@ class EmergencyType(db.Model):
 	__tablename__ = 'emergencytype'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	emergency_type_go_id = db.Column(db.Integer)
 	emergency_type_name = db.Column(db.String)
 	
@@ -317,7 +310,6 @@ class Portfolio(db.Model):
 	__tablename__ = 'portfolio'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	title = db.Column(db.String(200), nullable=False)
 	type = db.Column(db.String(100), nullable=False)
 	format = db.Column(db.String(100))
@@ -346,7 +338,6 @@ class Alert(db.Model):
 	__tablename__ = 'alert'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	
 	im_filter = db.Column(db.Boolean)
 	role_profile = db.Column(db.String)
 	alert_date = db.Column(db.Date)
