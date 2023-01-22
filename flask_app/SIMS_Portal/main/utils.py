@@ -3,7 +3,7 @@ import logging
 import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment
+from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge
 from SIMS_Portal import db
 from flask_login import current_user
 
@@ -84,3 +84,20 @@ def save_new_badge(file, name):
 	file.save(file_path)
 	
 	return file_path_extension
+
+def auto_badge_assigner_big_wig():
+	"""
+	Checks for users that have 5 or more remote support assignments and assigns the Big Wig badge if they don't already have it.
+	"""
+	remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
+	existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 20")
+	
+	list_user_ids_with_big_wig = []
+	for user in existing_big_wig_badges:
+		list_user_ids_with_big_wig.append(user.user_id)	
+	
+	for user in remote_assignment_counts:
+		if user.count_assignments >= 5 and user.user_id not in list_user_ids_with_big_wig:
+			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 20, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
+			db.session.execute(new_badge)
+	db.session.commit()
