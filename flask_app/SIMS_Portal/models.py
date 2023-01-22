@@ -162,7 +162,7 @@ class User(db.Model, UserMixin):
 		return self.firstname + " " + self.lastname
 	
 	def __repr__(self):
-		return f"User('{self.id}, {self.firstname}','{self.lastname}','{self.email}','{self.image_file}', {self.ns_id})"
+		return f"User({self.id}, {self.firstname} {self.lastname}, {self.email})"
 
 class Assignment(db.Model):
 	__tablename__ = 'assignment'
