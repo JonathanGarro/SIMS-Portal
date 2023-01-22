@@ -61,7 +61,7 @@ def badges():
 def create_badge():
 	form = NewBadgeUploadForm()
 	if current_user.is_admin == 1 and form.validate_on_submit() and form.file.data:
-		file = save_new_badge(form.file.data)
+		file = save_new_badge(form.file.data, form.name.data)
 		if form.limited_edition.data == True:
 			is_limited_edition = 1
 		else:
@@ -135,9 +135,9 @@ def admin_landing():
 			is_limited_edition = 1
 		else:
 			is_limited_edition = 0
-		file = save_new_badge(badge_upload_form.file.data)
+		file = save_new_badge(badge_upload_form.file.data, badge_upload_form.name.data)
 		badge = Badge(
-			name = badge_upload_form.name.data, 
+			name = badge_upload_form.name.data.title(), 
 			badge_url = file, 
 			limited_edition = is_limited_edition,
 			description = badge_upload_form.description.data

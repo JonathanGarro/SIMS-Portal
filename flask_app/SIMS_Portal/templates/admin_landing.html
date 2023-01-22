@@ -101,23 +101,24 @@
 				</form>
 				<h3 class='text-danger mt-5 Montserrat'>Users with Badges</h3>
 				See the <a href='/badges'>badges index page</a> for a full listing and definition of available badges.
-				  <table class='table grouped-table-rows mt-4' id='datatable-assigned-badges' width="100%">
-					  <thead>
-						  <tr>
-							  <th>Member</th>
-							  <th>Badges</th>
-						  </tr>
-					  </thead>
-					  <tbody>
-						  {% for user in assigned_badges %}
-							  <tr>
-								  <td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
-								  <td>&nbsp; &nbsp; {{user.badges}}</td>
-							  </tr>
-						  {% endfor %}
-					  </tbody>
-				  </table>
-				
+				<div class='mt-3'>
+					<table class='table grouped-table-rows' id='datatable-assigned-badges' width="100%">
+  					<thead>
+	  					<tr>
+		  					<th>Member</th>
+		  					<th>Badges</th>
+	  					</tr>
+  					</thead>
+  					<tbody>
+	  					{% for user in assigned_badges %}
+		  					<tr>
+			  					<td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
+			  					<td>&nbsp; &nbsp; {{user.badges}}</td>
+		  					</tr>
+	  					{% endfor %}
+  					</tbody>
+					</table>
+				</div>
 				
 		  	</div>
 			  

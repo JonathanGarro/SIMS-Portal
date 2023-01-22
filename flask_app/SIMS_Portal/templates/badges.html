@@ -34,7 +34,7 @@
 
 			{% endif %}
 	
-			<div class="progress  my-3" style="height: 20px; width: 50%">
+			<div class="progress  my-3" style="height: 30px;">
 				<div class="progress-bar bg-secondary" role="progressbar" style="width: {{ ((badge['count'] / count_active_members) * 100)|int }}%;" aria-valuenow="{{ ((badge['count'] / count_active_members) * 100)|int }}" aria-valuemin="0" aria-valuemax="100">{{ ((badge['count'] / count_active_members) * 100)|int }}%</div>
 			</div>
 			<p>{{badge.description}}</p>

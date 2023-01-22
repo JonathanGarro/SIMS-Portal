@@ -60,7 +60,9 @@ def generate_new_response_map():
 			writer.writerow([x.iso3, x.count])
 
 def check_sims_co(emergency_id):
-	"""Takes in an emergency id record and verifies that the current user is listed as a SIMS Remove Coordinator for that record in order to allow additional permission sets."""
+	"""
+	Takes in an emergency id record and verifies that the current user is listed as a SIMS Remove Coordinator for that record in order to allow additional permission sets.
+	"""
 	sims_co_ids = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == emergency_id, Assignment.role == 'SIMS Remote Coordinator').all()
 	sims_co_list = []
 	for coordinator in sims_co_ids:
@@ -72,12 +74,10 @@ def check_sims_co(emergency_id):
 		
 	return user_is_sims_co
 
-def save_new_badge(file):
+def save_new_badge(file, name):
 	filename, file_ext = os.path.splitext(file.filename)
-	# save user-defined file name as the 'name' of the badge
-	# name = filename
-	# remove spaces for badge_url
-	filename = filename.replace(" ", "-")
+
+	filename = name.title().replace(' ','-')
 	file_merged = filename + file_ext
 	file_path = os.path.join(current_app.root_path, 'static/assets/img/badges', file_merged)
 	file_path_extension = '/static/assets/img/badges/' + file_merged
