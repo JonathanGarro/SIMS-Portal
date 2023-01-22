@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, current_app
+from SIMS_Portal import db
 
 errors = Blueprint('errors', __name__)
 
@@ -8,7 +9,8 @@ def error_404(error):
 	
 @errors.app_errorhandler(403)
 def error_403(error):
-	return render_template('errors/403.html'), 403
+	list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+	return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 		
 @errors.app_errorhandler(500)
 def error_500(error):
