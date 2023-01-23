@@ -56,12 +56,11 @@ def create_app(config_class=Config):
 		print("Flask app running with language set to: {}".format(user_lang))
 		return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-
 	scheduler = APScheduler()
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', hour='7')
+	@scheduler.task('cron', id='run_surge_alert_refresh', hour='12')
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts
