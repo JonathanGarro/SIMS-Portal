@@ -12,6 +12,9 @@ from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
 from flask_babel import Babel
+import logging
+from logging.handlers import RotatingFileHandler
+import os
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -36,11 +39,10 @@ class AdminView(ModelView):
 	def inaccessible_callback(self, name, **kwargs):
 		return render_template('errors/403.html'), 403
 
-
 def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(Config)
-	app.config['MAX_CONTENT_LENGTH'] = 15 * 1000 * 1000
+	app.config['MAX_CONTENT_LENGTH'] = 50 * 1000 * 1000
 	
 	db.init_app(app)
 	bcrypt.init_app(app)
@@ -55,7 +57,21 @@ def create_app(config_class=Config):
 		user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
 		print("Flask app running with language set to: {}".format(user_lang))
 		return request.accept_languages.best_match(app.config['LANGUAGES'])
-
+	
+	# logging
+	if not app.debug:
+		if not os.path.exists('logs'):
+			os.mkdir('logs')
+		file_handler = RotatingFileHandler('logs/sims-portal.log', maxBytes=10240,
+									   	backupCount=25)
+		file_handler.setFormatter(logging.Formatter(
+			'%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+		file_handler.setLevel(logging.INFO)
+		app.logger.addHandler(file_handler)
+		
+		app.logger.setLevel(logging.INFO)
+		app.logger.info('SIMS Portal Started Up')
+	
 	scheduler = APScheduler()
 	scheduler.init_app(app)
 	scheduler.start()

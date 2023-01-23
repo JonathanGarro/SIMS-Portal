@@ -20,7 +20,7 @@ def fetch_slack_channels():
 			save_conversations(result["channels"])
 			
 		except SlackApiError as e:
-			logger.error("Error fetching conversations: {}".format(e))
+			current_app.logger.error("Error fetching conversations: {}".format(e))
 			
 	# put conversations into the JavaScript object
 	def save_conversations(conversations):
@@ -89,127 +89,142 @@ def auto_badge_assigner_maiden_voyage():
 	"""
 	Checks for users that have at least one remote support assignment and assigns the Maiden Voyage badge if they don't already have it.
 	"""
-	remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
-	existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 3")
-	
-	list_user_ids_with_maiden_voyage = []
-	for user in existing_big_wig_badges:
-		list_user_ids_with_maiden_voyage.append(user.user_id)	
-	
-	for user in remote_assignment_counts:
-		if user.count_assignments >= 1 and user.user_id not in list_user_ids_with_maiden_voyage:
-			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 3, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
-			db.session.execute(new_badge)
-	db.session.commit()
+	try:
+		remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
+		existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 3")
+		
+		list_user_ids_with_maiden_voyage = []
+		for user in existing_big_wig_badges:
+			list_user_ids_with_maiden_voyage.append(user.user_id)	
+		
+		for user in remote_assignment_counts:
+			if user.count_assignments >= 1 and user.user_id not in list_user_ids_with_maiden_voyage:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 3, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Maiden Voyage Auto-Assign Failed: {}'.format(e))
 	
 def auto_badge_assigner_big_wig():
 	"""
 	Checks for users that have 5 or more remote support assignments and assigns the Big Wig badge if they don't already have it.
 	"""
-	remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
-	existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 20")
+	try:
+		remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
+		existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 20")
 	
-	list_user_ids_with_big_wig = []
-	for user in existing_big_wig_badges:
-		list_user_ids_with_big_wig.append(user.user_id)	
-	
-	for user in remote_assignment_counts:
-		if user.count_assignments >= 5 and user.user_id not in list_user_ids_with_big_wig:
-			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 20, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
-			db.session.execute(new_badge)
-	db.session.commit()
+		list_user_ids_with_big_wig = []
+		for user in existing_big_wig_badges:
+			list_user_ids_with_big_wig.append(user.user_id)	
+		
+		for user in remote_assignment_counts:
+			if user.count_assignments >= 5 and user.user_id not in list_user_ids_with_big_wig:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 20, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Big Wig Auto-Assign Failed: {}'.format(e))
 
 def auto_badge_assigner_self_promoter():
 	"""
 	Checks for users that have at least 1 skill shared on their profile and assigns the Self Promoter badge if they don't already have it.
 	"""
-	users_with_skills = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(skill.name, ', ') as skill_names, GROUP_CONCAT(skill.id, ', ') as skill_ids FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id GROUP BY user.id")
-	existing_self_promoter_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 4")
-	
-	list_user_ids_with_self_promoter = []
-	for user in existing_self_promoter_badges:
-		list_user_ids_with_self_promoter.append(user.user_id)
+	try:
+		users_with_skills = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(skill.name, ', ') as skill_names, GROUP_CONCAT(skill.id, ', ') as skill_ids FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id GROUP BY user.id")
+		existing_self_promoter_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 4")
 		
-	for user in users_with_skills:
-		if user.user_id not in list_user_ids_with_self_promoter:
-			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 4, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
-			db.session.execute(new_badge)
-	db.session.commit()
+		list_user_ids_with_self_promoter = []
+		for user in existing_self_promoter_badges:
+			list_user_ids_with_self_promoter.append(user.user_id)
+			
+		for user in users_with_skills:
+			if user.user_id not in list_user_ids_with_self_promoter:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 4, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Self Promoter Auto-Assign Failed: {}'.format(e))
 
 def auto_badge_assigner_polyglot():
 	"""
 	Checks for users that have at least 2 languages listed on their profile and assigns the Polyglot badge if they don't already have it.
 	"""
-	users_with_languages = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(language.id, ', ') as languages FROM user JOIN user_language ON user_language.user_id = user.id JOIN language ON language.id = user_language.language_id GROUP BY user_id")
-	existing_polyglot_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 1")
-	
-	list_users_with_languages = []
-	for user in users_with_languages:
-		temp_dict = {}
-		temp_dict['user_id'] = user.user_id
-		list_langs = []
-		for lang in user['languages'].split(","):
-			list_langs.append(int(lang))
-		temp_dict['langs'] = list_langs
-		for x in temp_dict['langs']:
-			temp_dict['lang_count'] = len(temp_dict['langs'])
-		list_users_with_languages.append(temp_dict)
-	
-	list_user_ids_with_polyglot = []
-	for user in existing_polyglot_badges:
-		list_user_ids_with_polyglot.append(user.user_id)
-	
-	for user in list_users_with_languages:
-		if user['user_id'] not in list_user_ids_with_polyglot and user['lang_count'] > 1:
-			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 1, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user['user_id'])
-			db.session.execute(new_badge)
-	db.session.commit()
+	try:
+		users_with_languages = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(language.id, ', ') as languages FROM user JOIN user_language ON user_language.user_id = user.id JOIN language ON language.id = user_language.language_id GROUP BY user_id")
+		existing_polyglot_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 1")
+		
+		list_users_with_languages = []
+		for user in users_with_languages:
+			temp_dict = {}
+			temp_dict['user_id'] = user.user_id
+			list_langs = []
+			for lang in user['languages'].split(","):
+				list_langs.append(int(lang))
+			temp_dict['langs'] = list_langs
+			for x in temp_dict['langs']:
+				temp_dict['lang_count'] = len(temp_dict['langs'])
+			list_users_with_languages.append(temp_dict)
+		
+		list_user_ids_with_polyglot = []
+		for user in existing_polyglot_badges:
+			list_user_ids_with_polyglot.append(user.user_id)
+		
+		for user in list_users_with_languages:
+			if user['user_id'] not in list_user_ids_with_polyglot and user['lang_count'] > 1:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 1, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user['user_id'])
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Polyglot Auto-Assign Failed: {}'.format(e))
 	
 def auto_badge_assigner_autobiographer():
 	"""
 	Checks for users that have at 500+ characters in their bio and assigns the Autobiographer badge if they don't already have it.
 	"""
-	all_users = db.session.query(User).filter(User.bio != '').all()
-	existing_autobiographer_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 21")
-	
-	list_user_ids_with_autobiographer = []
-	for user in existing_autobiographer_badges:
-		list_user_ids_with_autobiographer.append(user.user_id)
-	
-	for user in all_users:
-		if user.id not in list_user_ids_with_autobiographer and len(user.bio) > 500:
-			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 21, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-			db.session.execute(new_badge)
-	db.session.commit()
+	try:
+		all_users = db.session.query(User).filter(User.bio != '').all()
+		existing_autobiographer_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 21")
+		
+		list_user_ids_with_autobiographer = []
+		for user in existing_autobiographer_badges:
+			list_user_ids_with_autobiographer.append(user.user_id)
+		
+		for user in all_users:
+			if user.id not in list_user_ids_with_autobiographer and len(user.bio) > 500:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 21, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Autobiographer Auto-Assign Failed: {}'.format(e))
 
 def auto_badge_assigner_jack_of_all_trades():
 	"""
 	Checks for users that have at 500+ characters in their bio and assigns the Autobiographer badge if they don't already have it.
 	"""
-	users_with_profiles = db.engine.execute("SELECT firstname || ' ' || lastname as name, user.id AS user_id, GROUP_CONCAT(DISTINCT profile.id) AS profiles FROM user JOIN user_profile ON user_profile.user_id = user.id JOIN profile ON profile.id = user_profile.profile_id GROUP BY user.id")
-	existing_jack_of_all_trades_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 22")
-	
-	list_users_with_profiles = []
-	for user in users_with_profiles:
-		temp_dict = {}
-		temp_dict['user_id'] = user.user_id
-		list_profs = []
-		for prof in user['profiles'].split(","):
-			list_profs.append(int(prof))
-		temp_dict['profs'] = list_profs
-		for x in temp_dict['profs']:
-			temp_dict['prof_count'] = len(temp_dict['profs'])
-		list_users_with_profiles.append(temp_dict)
-	
-	list_user_ids_with_jack_of_all_trades = []
-	for user in existing_jack_of_all_trades_badges:
-		list_user_ids_with_jack_of_all_trades.append(user.user_id)
-
-	print(list_users_with_profiles)
-	print(list_user_ids_with_jack_of_all_trades)
-	
-	for user in list_users_with_profiles:
-		if user['user_id'] not in list_user_ids_with_jack_of_all_trades and user['prof_count'] > 5:
-			new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 22, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user['user_id'])
-			db.session.execute(new_badge)
-	db.session.commit()
+	try:
+		users_with_profiles = db.engine.execute("SELECT firstname || ' ' || lastname as name, user.id AS user_id, GROUP_CONCAT(DISTINCT profile.id) AS profiles FROM user JOIN user_profile ON user_profile.user_id = user.id JOIN profile ON profile.id = user_profile.profile_id GROUP BY user.id")
+		existing_jack_of_all_trades_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 22")
+		
+		list_users_with_profiles = []
+		for user in users_with_profiles:
+			temp_dict = {}
+			temp_dict['user_id'] = user.user_id
+			list_profs = []
+			for prof in user['profiles'].split(","):
+				list_profs.append(int(prof))
+			temp_dict['profs'] = list_profs
+			for x in temp_dict['profs']:
+				temp_dict['prof_count'] = len(temp_dict['profs'])
+			list_users_with_profiles.append(temp_dict)
+		
+		list_user_ids_with_jack_of_all_trades = []
+		for user in existing_jack_of_all_trades_badges:
+			list_user_ids_with_jack_of_all_trades.append(user.user_id)
+		
+		for user in list_users_with_profiles:
+			if user['user_id'] not in list_user_ids_with_jack_of_all_trades and user['prof_count'] > 5:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 22, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user['user_id'])
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Jack of All Trades Auto-Assign Failed: {}'.format(e))

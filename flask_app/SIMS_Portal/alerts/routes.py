@@ -10,4 +10,3 @@ from datetime import date, timedelta
 import pandas as pd
 
 alerts = Blueprint('alerts', __name__)
-

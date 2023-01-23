@@ -24,6 +24,9 @@ main = Blueprint('main', __name__)
 @main.route('/') 
 def index(): 
 	latest_stories = db.session.query(Story, Emergency).join(Emergency, Emergency.id == Story.emergency_id).order_by(Story.id.desc()).limit(3).all()
+	
+	current_app.logger.warning("Hello, World!")
+	
 	return render_template('index.html', latest_stories=latest_stories)
 	
 @main.route('/about')
