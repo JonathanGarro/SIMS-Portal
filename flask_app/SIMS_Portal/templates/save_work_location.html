@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container mt-5'>
+	<div class='row'>
+		<div class='col-7 pe-5'>
+			<h4 class='text-danger Montserrat'>Save Your Location</h4>
+			<p class='lead'>Use the search field to find your city. You can save as specific or vague of a location as you wish, but it is recommended that you <span class='fw-bold'>not save your specific address</span> for privacy reasons.</p>
+			<p class='lead'>Adding your location helps establish time zones for remote support, and allows for visualizations that show the global distribution of members. A nightly cron job processes locations for those maps to avoid server overload, so please wait at least 24 hours for your location to be reflected. If you still don't see it after that time, please contact a <a href='/portal_admins'>portal administrator</a>.</p>
+		</div>
+		<div class='col'>
+			<div class='mt-5'>
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
+					{{ form.hidden_tag() }}
+					<div class='row'>
+						<div class='col'>{{ form.location.label(class="form-control-label pb-2 text-danger") }}</div>
+					</div>
+					<div class='row mb-3'>
+						<div class='col'>{{ form.location(class="form-control form-control-lg") }} </div>
+					</div>
+					<div class='row'>
+		  				<div class='col'>{{ form.submit(class="btn btn-lg btn-danger w-50") }}</div>
+	  				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}
