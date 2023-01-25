@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<h3 class='mt-4 text-danger Montserrat'>SIMS Portal Administrators</h3>
+	<div class='mt-3'>
+		<table class='table grouped-table-rows' id='datatable' width="100%">
+		  <thead>
+			  <tr>
+				  <th>Member</th>
+				  <th>National Society</th>
+				  <th>Slack</th>
+				  <th>Email</th>
+			  </tr>
+		  </thead>
+		  <tbody>
+			  {% for admin in list_admins %}
+				  <tr>
+					  <td><a href='/profile/view/{{admin.User.id}}'>{{admin.User.firstname}} {{admin.User.lastname}}</a></td>
+					  <td>{{admin.NationalSociety.ns_name}}</td>
+					  <td><a href='https://sims-ifrc.slack.com/team/{{admin.slack_id}}'>Message</td>
+					  <td><a href="mailto:{{admin.User.email}}">Email</td>
+				  </tr>
+			  {% endfor %}
+		  </tbody>
+		</table>
+	</div>
+</div>
+{% endblock content %}
