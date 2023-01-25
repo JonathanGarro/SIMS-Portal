@@ -30,3 +30,6 @@ class Config:
 	LANGUAGES = ['en', 'es']
 	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif']
 	PORTFOLIO_TYPES = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	LOGTAIL_SOURCE_TOKEN = os.environ.get('LOGTAIL_SOURCE_TOKEN')
+	POSITION_STACK_TOKEN = os.environ.get('POSITION_STACK_TOKEN')
+	GOOGLE_MAPS_TOKEN = os.environ.get('GOOGLE_MAPS_TOKEN')
