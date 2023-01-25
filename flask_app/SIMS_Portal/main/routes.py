@@ -10,7 +10,7 @@ from collections import defaultdict, Counter
 from datetime import date, timedelta
 from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades
-from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack
+from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
 import os
 import tweepy
@@ -18,15 +18,13 @@ import re
 import csv
 import json
 import pandas as pd
+import logging
 
 main = Blueprint('main', __name__)
 
 @main.route('/') 
 def index(): 
 	latest_stories = db.session.query(Story, Emergency).join(Emergency, Emergency.id == Story.emergency_id).order_by(Story.id.desc()).limit(3).all()
-	
-	current_app.logger.warning("Hello, World!")
-	
 	return render_template('index.html', latest_stories=latest_stories)
 	
 @main.route('/about')
@@ -35,6 +33,11 @@ def about():
 	lateset_activation = db.session.query(Emergency).order_by(Emergency.created_at.desc()).first()
 	count_members = db.session.query(User).filter(User.status == 'Active').count()
 	return render_template('about.html', count_activations=count_activations, latest_activation=lateset_activation, count_members=count_members)
+
+@main.route('/portal_admins')
+def portal_admins():
+	list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == 1).all()
+	return render_template('portal_admins.html', list_admins=list_admins)
 
 @main.route('/get_slack_id')
 def get_slack_id():
@@ -104,21 +107,22 @@ def admin_landing():
 		else:
 			flash('Please fill out all badge assignment fields.', 'danger')
 			return redirect(url_for('main.admin_landing'))
-		users_badges = db.engine.execute('SELECT user.id, user_badge.user_id, user_badge.badge_id FROM user JOIN user_badge ON user_badge.user_id = user.id WHERE user.id = {}'.format(user_id))
-		users_badges_ids = []
-		for badge in users_badges:
-			users_badges_ids.append(badge.badge_id)
 
 		# get list of assigned badges, create column that concats user_id and badge_id to create unique identifier
-		badge_ids = db.engine.execute("SELECT user_id || badge_id as unique_code FROM user_badge")
+		badge_ids = db.engine.execute("SELECT user_id || badge_id as unique_code FROM user_badge WHERE user_id = {}".format(user_id))
+
 		list_to_check = []
 		for id in badge_ids:
 			list_to_check.append(id[0])
+		
+		attempted_user_badge_code = str(user_id) + str(badge_id)
+		
 		# check list against the values we're trying to save, and proceed if user doesn't already have that badge
-		if (str(user_id) + str(badge_id)) not in list_to_check:
+		if attempted_user_badge_code not in list_to_check:
 			return redirect(url_for('main.badge_assignment', user_id=user_id, badge_id=badge_id))
 		else:
 			flash('Cannot add badge - user already has it.', 'danger')
+			current_app.logger.warning('The system raised an error when trying to assign a badge. Badge-{} was assigned to User-{}, but was given an error that they already have it.'.format(badge_id, user_id))
 			return redirect(url_for('main.admin_landing'))
 	
 	# save skill
@@ -231,8 +235,8 @@ def badge_assignment_via_SIMSCO(user_id, badge_id, assigner_id, dis_id):
 			message = 'Hi {}, you have been assigned a new badge on the SIMS Portal! {} has given you the {} badge with the following message: {}'.format(receiver.firstname, assigner.fullname, badge.name, session.get('assigner_justify', None))
 			user = db.session.query(User).filter(User.id == user_id).first()
 			send_slack_dm(message, user.slack_id)
-		except:
-			pass
+		except Exception as e:
+			current_app.logger.error('Badge Assignment via SIMS Remote Coordinator Failed: {}'.format(e))
 		flash('Badge successfully assigned.', 'success')
 		return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 	elif user_is_sims_co == False:
@@ -323,128 +327,6 @@ def resources_slack_channels():
 def resources_sims_portal():
 	return render_template('/resources/sims_portal.html')
 
-@main.route('/search/members', methods=['GET', 'POST'])
-def search_members():
-	member_form = MemberSearchForm()
-	if request.method == 'GET':
-		return render_template('search_members.html', member_form=member_form)
-	if member_form.name.data or member_form.skills.data or member_form.languages.data: 
-		name_search = member_form.name.data
-		# convert name search to proper syntax for LIKE operator
-		search_for_name = "'%{}%'".format(name_search)
-		try:
-			skill_search = member_form.skills.data.id
-			skill_search_name = member_form.skills.data.name
-		except:
-			skill_search = 0
-			skill_search_name = ''
-		try:
-			language_search = member_form.languages.data.id
-			language_search_name = member_form.languages.data.name
-		except:
-			language_search = 0
-			language_search_name = ''
-		if name_search:
-			name_query_converted = "SELECT user.id, firstname, lastname, email, job_title, slack_id FROM user WHERE firstname LIKE {} OR lastname LIKE {}".format(search_for_name, search_for_name)
-			query_by_name = db.engine.execute(name_query_converted)
-			result_by_name = [r._asdict() for r in query_by_name]
-		else:
-			query_by_name = db.engine.execute("SELECT user.id, firstname, lastname, email, job_title, slack_id FROM user WHERE firstname LIKE 'xxxx'")
-			result_by_name = [r._asdict() for r in query_by_name]
-	
-		if skill_search:
-			query_by_skill = db.engine.execute("SELECT user.id, firstname, lastname, email, job_title, slack_id FROM user JOIN user_skill ON user_skill.user_id = user.id JOIN skill ON skill.id = user_skill.skill_id WHERE skill_id = :skill", {'skill': skill_search})
-			result_by_skill = [r._asdict() for r in query_by_skill]
-		else:
-			query_by_skill = db.engine.execute("SELECT user.id, firstname, lastname, email, job_title, slack_id FROM user JOIN user_skill ON user_skill.user_id = user.id JOIN skill ON skill.id = user_skill.skill_id WHERE skill_id = 0")
-			result_by_skill = [r._asdict() for r in query_by_skill]
-		if language_search:
-			query_by_language = db.engine.execute("SELECT user.id, firstname, lastname, email, job_title, slack_id FROM user JOIN user_language ON user_language.user_id = user.id JOIN language ON language.id = user_language.language_id WHERE language_id = :language", {'language': language_search})
-			result_by_language = [r._asdict() for r in query_by_language]
-		else:
-			query_by_language = db.engine.execute("SELECT user.id, firstname, lastname, email, job_title, slack_id FROM user JOIN user_language ON user_language.user_id = user.id JOIN language ON language.id = user_language.language_id WHERE language_id = 0")
-			result_by_language = [r._asdict() for r in query_by_language]
-		
-		# merge all queries into one list
-		master_search = {x['id']:x for x in result_by_language + result_by_skill + result_by_name}.values()
-		return render_template('search_members_results.html', master_search=master_search)
-
-@main.route('/search/emergencies', methods=['GET', 'POST'])
-@login_required
-def search_emergencies():
-	emergency_form = EmergencySearchForm()
-	if request.method == 'GET':
-		return render_template('search_emergencies.html', emergency_form=emergency_form)
-	if emergency_form.name.data or emergency_form.status.data or emergency_form.type.data or emergency_form.location.data or emergency_form.glide.data: 
-		emergency_search = emergency_form.name.data
-		# convert name search to proper syntax for LIKE operator
-		search_for_emergency = "'%{}%'".format(emergency_search)
-		
-		glide_search = emergency_form.glide.data
-		# convert name search to proper syntax for LIKE operator
-		search_for_glide = "'%{}%'".format(glide_search)
-		try:
-			status_search = emergency_form.status.data
-		except:
-			status_search = ''
-		try:
-			type_search = emergency_form.type.data.emergency_type_go_id
-			type_search_name = emergency_form.type.data.emergency_type_name
-		except:
-			type_search = 0
-			type_search_name = ''
-		try:
-			location_search = emergency_form.location.data.id
-			location_search_name = emergency_form.location.data.country_name
-		except:
-			location_search = 0
-			location_search_name = ''
-			
-		if emergency_search:
-			emergency_query_converted = "SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE emergency_name LIKE {}".format(search_for_emergency)
-			query_by_name = db.engine.execute(emergency_query_converted)
-			result_by_name = [r._asdict() for r in query_by_name]
-		else:
-			query_by_name = db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE emergency_name LIKE 'xxxx'")
-			result_by_name = [r._asdict() for r in query_by_name]
-
-		if status_search:
-			status_query_converted = "SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE emergency_status = '{}'".format(status_search)
-			query_by_status = db.engine.execute(status_query_converted)
-			result_by_status = [r._asdict() for r in query_by_status]
-		else:
-			query_by_status = db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_status LIKE 'xxxx'")
-			result_by_status = [r._asdict() for r in query_by_status]
-
-		if glide_search:
-			glide_query_converted = "SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_glide LIKE {}".format(search_for_glide)
-			query_by_glide = db.engine.execute(glide_query_converted)
-			result_by_glide = [r._asdict() for r in query_by_glide]
-		else:
-			query_by_glide = db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_glide LIKE 'xxxx'")
-			result_by_glide = [r._asdict() for r in query_by_glide]
-			
-		if type_search:
-			type_query_converted = "SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_type_id = {}".format(type_search)
-			query_by_type = db.engine.execute(type_query_converted)
-			result_by_type = [r._asdict() for r in query_by_type]
-		else:
-			query_by_type =db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_type_id = 0")
-			result_by_type = [r._asdict() for r in query_by_type]
-			
-		if location_search:
-			location_query_converted = "SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE n.country_name = '{}'".format(location_search_name)
-			query_by_location = db.engine.execute(location_query_converted)
-			result_by_location = [r._asdict() for r in query_by_location]
-		else:
-			query_by_location =db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, n.country_name, t.emergency_type_name FROM emergency e JOIN nationalsociety n ON n.ns_go_id = e.emergency_location_id JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE n.country_name = 'xxxx'")
-			result_by_location = [r._asdict() for r in query_by_location]
-		
-		# merge all queries into one list and remove duplicates
-		master_search = {x['id']:x for x in result_by_name + result_by_glide + result_by_status + result_by_location + result_by_type}.values()
-		
-		return render_template('search_emergencies_results.html', master_search=master_search)
-
 @main.route('/dashboard')
 @login_required
 def dashboard():
@@ -502,11 +384,12 @@ def view_role_profile(type):
 
 @main.route('/staging') 
 def staging(): 
-	refresh_surge_alerts()
+	# refresh_surge_alerts()
 	# auto_badge_assigner_big_wig()
 	# auto_badge_assigner_maiden_voyage()
 	# auto_badge_assigner_self_promoter()
 	# auto_badge_assigner_polyglot()
 	# auto_badge_assigner_autobiographer()
 	# auto_badge_assigner_jack_of_all_trades()
+	# update_member_locations()
 	return render_template('visualization.html')
