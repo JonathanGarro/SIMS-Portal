@@ -54,7 +54,7 @@ class Profile(db.Model):
 	image = db.Column(db.String)
 	
 	def __repr__(self):
-		return f"Profile('{self.id}', '{self.name}'" 
+		return f"Profile('{self.name}')" 
 
 class Skill(db.Model):
 	__tablename__ = 'skill'
@@ -71,6 +71,9 @@ class Language(db.Model):
 	
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
+	
+	def __repr__(self):
+		return f"Language('{self.name}')"
 
 class Badge(db.Model):
 	__tablename__ = 'badge'
