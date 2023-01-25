@@ -89,6 +89,7 @@ def auto_badge_assigner_maiden_voyage():
 	"""
 	Checks for users that have at least one remote support assignment and assigns the Maiden Voyage badge if they don't already have it.
 	"""
+	current_app.logger.info('Maiden Voyage Auto-Assign Ran')
 	try:
 		remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
 		existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 3")
@@ -109,6 +110,7 @@ def auto_badge_assigner_big_wig():
 	"""
 	Checks for users that have 5 or more remote support assignments and assigns the Big Wig badge if they don't already have it.
 	"""
+	current_app.logger.info('Big Wig Auto-Assign Ran')
 	try:
 		remote_assignment_counts = db.engine.execute("SELECT user.id as user_id, firstname, lastname, count(assignment.id) as count_assignments FROM user JOIN assignment ON assignment.user_id = user.id WHERE assignment.assignment_status <> 'Removed' GROUP BY user.id")
 		existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 20")
@@ -129,6 +131,7 @@ def auto_badge_assigner_self_promoter():
 	"""
 	Checks for users that have at least 1 skill shared on their profile and assigns the Self Promoter badge if they don't already have it.
 	"""
+	current_app.logger.info('Self Promoter Auto-Assign Ran')
 	try:
 		users_with_skills = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(skill.name, ', ') as skill_names, GROUP_CONCAT(skill.id, ', ') as skill_ids FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id GROUP BY user.id")
 		existing_self_promoter_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 4")
@@ -149,6 +152,7 @@ def auto_badge_assigner_polyglot():
 	"""
 	Checks for users that have at least 2 languages listed on their profile and assigns the Polyglot badge if they don't already have it.
 	"""
+	current_app.logger.info('Polyglot Auto-Assign Ran')
 	try:
 		users_with_languages = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(language.id, ', ') as languages FROM user JOIN user_language ON user_language.user_id = user.id JOIN language ON language.id = user_language.language_id GROUP BY user_id")
 		existing_polyglot_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 1")
@@ -181,6 +185,7 @@ def auto_badge_assigner_autobiographer():
 	"""
 	Checks for users that have at 500+ characters in their bio and assigns the Autobiographer badge if they don't already have it.
 	"""
+	current_app.logger.info('Biographer Auto-Assign Ran')
 	try:
 		all_users = db.session.query(User).filter(User.bio != '').all()
 		existing_autobiographer_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 21")
@@ -201,6 +206,7 @@ def auto_badge_assigner_jack_of_all_trades():
 	"""
 	Checks for users that have at 500+ characters in their bio and assigns the Autobiographer badge if they don't already have it.
 	"""
+	current_app.logger.info('Jack of All Trades Auto-Assign Ran')
 	try:
 		users_with_profiles = db.engine.execute("SELECT firstname || ' ' || lastname as name, user.id AS user_id, GROUP_CONCAT(DISTINCT profile.id) AS profiles FROM user JOIN user_profile ON user_profile.user_id = user.id JOIN profile ON profile.id = user_profile.profile_id GROUP BY user.id")
 		existing_jack_of_all_trades_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 22")
