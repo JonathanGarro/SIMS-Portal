@@ -14,6 +14,8 @@ from flask_apscheduler import APScheduler
 from flask_babel import Babel
 import logging
 from logging.handlers import RotatingFileHandler
+from logging.config import dictConfig
+from logtail import LogtailHandler
 import os
 
 db = SQLAlchemy()
@@ -55,17 +57,14 @@ def create_app(config_class=Config):
 	@babel.localeselector
 	def get_locale():
 		user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
-		print("Flask app running with language set to: {}".format(user_lang))
 		return request.accept_languages.best_match(app.config['LANGUAGES'])
 	
 	# logging
 	if not app.debug:
 		if not os.path.exists('logs'):
 			os.mkdir('logs')
-		file_handler = RotatingFileHandler('logs/sims-portal.log', maxBytes=10240,
-									   	backupCount=25)
-		file_handler.setFormatter(logging.Formatter(
-			'%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+		file_handler = RotatingFileHandler('logs/sims-portal.log', maxBytes=1000000, backupCount=10)
+		file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
 		file_handler.setLevel(logging.INFO)
 		app.logger.addHandler(file_handler)
 		
@@ -76,11 +75,22 @@ def create_app(config_class=Config):
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', hour='12')
+	@scheduler.task('cron', id='run_surge_alert_refresh', hour='9')
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts
 			refresh_surge_alerts()
+	
+	@scheduler.task('cron', id='run_auto_badge_assigners', hour='12')
+	def run_auto_badge_assigners():
+		with scheduler.app.app_context():
+			from SIMS_Portal.main.utils import auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades
+			auto_badge_assigner_big_wig()
+			auto_badge_assigner_maiden_voyage()
+			auto_badge_assigner_self_promoter()
+			auto_badge_assigner_polyglot()
+			auto_badge_assigner_autobiographer()
+			auto_badge_assigner_jack_of_all_trades()
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
