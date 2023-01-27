@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<section class="position-relative overflow-hidden mb-3">
+<section class="position-relative overflow-hidden">
 	<div class="container pt-lg-2">
 		<div class="row flex-lg-nowrap">
 			<div class="col-lg-5 col-xl-5 text-center text-lg-start pt-5 mt-xl-4">
@@ -15,15 +15,15 @@
 			</div>
 			<div class='col'>
 				<div class='mt-6'>
-					<svg viewBox="150 0 650 650" preserveAspectRatio="none"></svg>
+					<svg viewBox="100 0 650 650" preserveAspectRatio="none"></svg>
 					<script src="https://d3js.org/d3.v4.min.js"></script>
 					<script src="https://d3js.org/topojson.v1.min.js"></script>
 					<script>
 						const width = 750;
 						const height = 750;
 				  		const config = {
-				  		speed: 0.005,
-				  		verticalTilt: -20,
+				  		speed: 0.02,
+				  		verticalTilt: -15,
 				  		horizontalTilt: 0
 						}
 						let locations = [];
@@ -71,7 +71,7 @@
 					
 						function enableRotation() {
 							d3.timer(function (elapsed) {
-								projection.rotate([config.speed * elapsed - 120, config.verticalTilt, config.horizontalTilt]);
+								projection.rotate([config.speed * elapsed - 10, config.verticalTilt, config.horizontalTilt]);
 								svg.selectAll("path").attr("d", path);
 								drawMarkers();
 							});
@@ -89,9 +89,14 @@
 								.attr('fill', d => {
 									const coordinate = [d.longitude, d.latitude];
 									gdistance = d3.geoDistance(coordinate, projection.invert(center));
-									return gdistance > 1.57 ? 'none' : 'red';
+									return gdistance > 1.8 ? 'none' : 'red';
 								})
-								.attr('r', 3);
+								.attr('stroke', d => {
+									const coordinate = [d.longitude, d.latitude];
+									gdistance = d3.geoDistance(coordinate, projection.invert(center));
+									return gdistance > 1.8 ? 'none' : 'white';
+								})
+								.attr('r', 4);
 					
 							markerGroup.each(function () {
 								this.parentNode.appendChild(this);
@@ -101,13 +106,12 @@
 						svg.append("text").attr("x", 620).attr("y", 500).text("SIMS Member").style("font-size", "12px").attr("alignment-baseline","middle")
 					</script>
 				</div>
-
 				<!-- <img src='/static/assets/img/top-banner.png' class='img-fluid mt-5' usemap="#image-map"> -->
 			</div>
 		</div>
 	</div>
 </section>
-<div class="container mt-5">
+<div class="container">
 	<h3 class="text-dark mt-2 Montserrat">Latest Response Stories</h3>
 	<div id="carouselStories" class="carousel slide mt-4 mb-5" data-ride="carousel">
 		<ol class="carousel-indicators">
