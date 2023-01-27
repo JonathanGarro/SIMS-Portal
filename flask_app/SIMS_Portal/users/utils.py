@@ -104,7 +104,7 @@ def check_valid_slack_ids(id):
 		return False
 
 def search_location(query):
-	position_stack_token = '974f0eeb709c33f0b7dd819ed4e95191'
+	position_stack_token = current_app.config['POSITION_STACK_TOKEN']
 
 	conn = http.client.HTTPConnection('api.positionstack.com')
 	
