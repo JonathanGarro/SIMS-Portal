@@ -338,12 +338,14 @@ def save_user_location(user_id):
 				found_location = search_location(location_query)
 				latitude = found_location[0]
 				longitude = found_location[1]
-				label = found_location[2]
-				print(found_location)
+				place_label = found_location[2]
+				time_zone = found_location[3]
 				# remove spaces for Google Maps API
 				converted_location = location_query.replace(' ', '+')
 				# put results into session to pass to /confirm_work_location/ route
 				session['coordinates'] = [latitude, longitude]
+				session['time_zone'] = time_zone
+				session['place_label'] = place_label
 				google_token = current_app.config['GOOGLE_MAPS_TOKEN']
 				query_url = 'https://www.google.com/maps/embed/v1/place?key={}&q={}'.format(google_token, converted_location)
 				return render_template('validate_location.html', query_url=query_url, user_id=user_id)
@@ -357,8 +359,10 @@ def save_user_location(user_id):
 def confirm_user_location(user_id):
 	user_info = db.session.query(User).filter(User.id == user_id).first()
 	coordinates = session.get('coordinates', None)
+	place_label = session.get('place_label', None)
+	time_zone = session.get('time_zone', None)
 	if current_user.is_admin == 1 or current_user.id == user_id:
-		db.session.query(User).filter(User.id==user_id).update({'time_zone':str(coordinates)})
+		db.session.query(User).filter(User.id==user_id).update({'coordinates':str(coordinates), 'place_label':place_label, 'time_zone': time_zone})
 		db.session.commit()
 		flash("You've successfully saved your location!", "success")
 		current_app.logger.info("User-{} ({} {}) has updated their location.".format(user_info.id, user_info.firstname, user_info.lastname))

@@ -392,12 +392,5 @@ def staging():
 	# auto_badge_assigner_autobiographer()
 	# auto_badge_assigner_jack_of_all_trades()
 	# update_member_locations()
-	
-	markers=[
-		{
-		'lat':27.70169,
-		'lon':85.3206,
-		'popup':'This is the middle of the map.'
-		}
-	]
-	return render_template('visualization.html', markers=markers)
+
+	return render_template('visualization.html')

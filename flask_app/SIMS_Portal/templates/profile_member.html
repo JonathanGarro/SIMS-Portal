@@ -36,8 +36,9 @@
 					<h5 class="text-secondary Montserrat mt-4">National Society</h5>
 					<h4 class='profile-section-header'>{{ ns_association }}</h4>
 				</div>
-				</div>
-				<div class="card border border-3 p-4 bg-light mt-3">
+			</div>
+			
+			<div class="card border border-3 p-4 bg-light mt-3">
 				<div class="row my-2">
 					<div>
 						<div class="d-flex justify-content-start">
@@ -87,19 +88,30 @@
 					</div>
 				</div>
 				
-				{% if current_user.is_admin == 1 %}
-
-				<a href="/profile_edit/{{user_info.id}}"><button class='btn btn-outline-secondary w-100 mt-5'>Update Profile</button></a>
-				<a href="/user/delete/{{user_info.id}}"><button class='btn btn-outline-danger w-100 mt-2'>Delete Member</button></a>
-
-				{% elif current_user.id == user_info.id %}
-				<div class="list-group mt-5">
-					  <a href="{{ url_for('users.update_profile') }}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
-					  <a href='/reset_password' class="list-group-item list-group-item-action text-secondary">Change Password</a>
-					  <a href="/user/delete/{{user_info.id}}" class="list-group-item list-group-item-action text-danger">Delete Member</a>
+				{% if user_info.place_label %}
+				<div class="row">
+					<div>
+					<h5 class="text-secondary Montserrat mt-4">Location</h5>
+						<p class="text-danger fw-bold">{{user_info.place_label}}</p>
+					</div>
 				</div>
 				{% endif %}
 			</div>
+			{% if current_user.is_admin == 1 %}
+			<div class="card border border-3 p-4 bg-light mt-3">
+				<h5 class="text-secondary Montserrat mt-1">Profile Settings</h5>
+				<a href="/profile_edit/{{user_info.id}}"><button class='btn btn-outline-secondary w-100 mt-2'>Update Profile</button></a>
+				<a href='/save_work_location/{{user_info.id}}'><button class='btn btn-outline-secondary w-100 mt-2'>Update Location</button></a>
+				<a href="/user/delete/{{user_info.id}}"><button class='btn btn-outline-danger w-100 mt-2'>Delete Member</button></a>
+	
+				{% elif current_user.id == user_info.id %}
+				<div class="list-group mt-5">
+					<a href="{{ url_for('users.update_profile') }}" class="list-group-item list-group-item-action text-secondary">Update Profile</a>
+					<a href='/reset_password' class="list-group-item list-group-item-action text-secondary">Change Password</a>
+					<a href="/user/delete/{{user_info.id}}" class="list-group-item list-group-item-action text-danger">Delete Member</a>
+				</div>
+			</div>
+			{% endif %}
 		</div>
 		<div class="col mx-4">
 			<div class='mb-5'>

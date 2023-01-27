@@ -104,37 +104,40 @@ def check_valid_slack_ids(id):
 		return False
 
 def search_location(query):
-	position_stack_token = current_app.config['POSITION_STACK_TOKEN']
-	
+	position_stack_token = '974f0eeb709c33f0b7dd819ed4e95191'
+
 	conn = http.client.HTTPConnection('api.positionstack.com')
 	
 	params = urllib.parse.urlencode({
 		'access_key': position_stack_token,
 		'query': query,
 		'limit': 1,
+		'timezone_module': 1,
 		})
 	
 	conn.request('GET', '/v1/forward?{}'.format(params))
 	
 	res = conn.getresponse()
 	data = res.read()
-	x = (data.decode('utf-8'))
+	decoded_data = (data.decode('utf-8'))
 	
-	lat_long = json.loads(x)
-	lat = (lat_long['data'][0]['latitude'])
-	long = (lat_long['data'][0]['longitude'])
-	label = (lat_long['data'][0]['label'])
-	
-	return lat, long, label
+	response = json.loads(decoded_data)
+	lat = (response['data'][0]['latitude'])
+	long = (response['data'][0]['longitude'])
+	place = (response['data'][0]['label'])
+	time_zone = (response['data'][0]['timezone_module']['name'])
+	offset = (response['data'][0]['timezone_module']['offset_sec']) / 3600
+
+	return lat, long, place, time_zone, offset
 	
 def update_member_locations():
 	member_coordinates = db.session.query(User).all()
 	
 	list_of_location_dicts = []
 	for member in member_coordinates:
-		if member.time_zone:
+		if member.coordinates:
 			locations_dict = {}
-			strip_brackets = member.time_zone.replace('[', '').replace(']', '').split(", ")
+			strip_brackets = member.coordinates.replace('[', '').replace(']', '').split(", ")
 			locations_dict["latitude"] = float(strip_brackets[0])
 			locations_dict["longitude"] = float(strip_brackets[1])
 			list_of_location_dicts.append(locations_dict)

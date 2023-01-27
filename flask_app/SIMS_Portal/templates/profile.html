@@ -45,41 +45,53 @@
 						</div>
 					</div>
 
-				<div class="row mt-3">
-					<div>
-					<h5 class="text-secondary Montserrat">Skills</h5>
-					{% for skill in skills_list %}
-						<button type="button" class="btn btn-dark btn-sm mb-2">{{skill.name}}</button>
-					{% endfor %}
+					<div class="row mt-3">
+						<div>
+						<h5 class="text-secondary Montserrat">Skills</h5>
+						{% for skill in skills_list %}
+							<button type="button" class="btn btn-dark btn-sm mb-2">{{skill.name}}</button>
+						{% endfor %}
+						</div>
 					</div>
+					
+					<div class="row">
+						<div>
+						<h5 class="text-secondary Montserrat mt-4">Languages</h5>
+						{% for language in languages_list %}
+							<button type="button" class="btn btn-dark btn-sm mb-2">{{language.name}}</button>
+						{% endfor %}
+						</div>
+					</div>
+				
+					<div class="row">
+						<div>
+						<h5 class="text-secondary Montserrat mt-4">Contact</h5>
+						<a href="mailto: {{user_info.email}}"'><img src='/static/assets/img/profile-email.png' height='50px'></a>
+						{% if user_info.twitter %}
+							<a href='https://twitter.com/{{user_info.twitter}}'><img src='/static/assets/img/profile-twitter.png' height='50px'></a>
+						{% endif %}
+						{% if user_info.github %}
+							<a href='https://github.com/{{user_info.github}}'><img src='/static/assets/img/profile-github.png' height='50px'></a>
+						{% endif %}
+						{% if user_info.slack_id %}
+							<a href='https://sims-ifrc.slack.com/team/{{user_info.slack_id}}'><img src='/static/assets/img/profile-slack.png' height='50px'></a>
+						{% endif %}
+						</div>
+					</div>
+				
+					{% if user_info.place_label %}
+					<div class="row">
+						<div>
+						<h5 class="text-secondary Montserrat mt-4">Location</h5>
+							<p class="text-danger fw-bold">{{user_info.place_label}}</p>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 				
-				<div class="row">
-					<div>
-					<h5 class="text-secondary Montserrat mt-4">Languages</h5>
-					{% for language in languages_list %}
-						<button type="button" class="btn btn-dark btn-sm mb-2">{{language.name}}</button>
-					{% endfor %}
-					</div>
-				</div>
-				
-				<div class="row">
-					<div>
-					<h5 class="text-secondary Montserrat mt-4">Contact</h5>
-					<a href="mailto: {{user_info.email}}"'><img src='/static/assets/img/profile-email.png' height='50px'></a>
-					{% if user_info.twitter %}
-						<a href='https://twitter.com/{{user_info.twitter}}'><img src='/static/assets/img/profile-twitter.png' height='50px'></a>
-					{% endif %}
-					{% if user_info.github %}
-						<a href='https://github.com/{{user_info.github}}'><img src='/static/assets/img/profile-github.png' height='50px'></a>
-					{% endif %}
-					{% if user_info.slack_id %}
-						<a href='https://sims-ifrc.slack.com/team/{{user_info.slack_id}}'><img src='/static/assets/img/profile-slack.png' height='50px'></a>
-					{% endif %}
-					</div>
-				</div>
-				
-				<a href='{{ url_for('users.update_profile') }}'><button class='btn btn-outline-secondary w-100 mt-5'>Update Profile</button></a>
+				<div class="card border border-3 p-4 bg-light mt-3">
+					<h5 class="text-secondary Montserrat mt-1">Profile Settings</h5>
+				<a href='{{ url_for('users.update_profile') }}'><button class='btn btn-outline-secondary w-100 mt-2'>Update Profile</button></a>
 				<a href='/save_work_location/{{user_info.id}}'><button class='btn btn-outline-secondary w-100 mt-2'>Update Location</button></a>
 				<a href='/reset_password'><button class='btn btn-outline-secondary w-100 mt-2'>Change Password</button></a>
 				<a href='#' data-toggle="modal" data-target="#confirm-delete"><button class='btn btn-outline-danger w-100 my-2'>Delete Account</button></a>

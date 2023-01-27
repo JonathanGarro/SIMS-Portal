@@ -130,7 +130,9 @@ class User(db.Model, UserMixin):
 	linked_in = db.Column(db.String(120))
 	messaging_number_country_code = db.Column(db.Integer)
 	messaging_number = db.Column(db.Integer)
+	coordinates = db.Column(db.String(120))
 	time_zone = db.Column(db.String(120))
+	place_label = db.Column(db.String(120))
 	
 	ns_id = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
 	
