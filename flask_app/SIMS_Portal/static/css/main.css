@@ -473,10 +473,6 @@ a.page-link:hover {
 	font-size: 20px;
 }
 
-#leaflet {
-	height: 180px;
-}
-
 #navbar_top_login {
 	background: #5c0000 !important;
 }
