@@ -9,6 +9,7 @@ import secrets
 import requests
 import http.client, urllib.parse
 import json
+import logging
 
 def save_picture(form_picture):
 	random_hex = secrets.token_hex(8)
@@ -77,7 +78,10 @@ def send_slack_dm(message, user):
 			'as_user': True,
 			'text': message
 	}
-	requests.post(url='https://slack.com/api/chat.postMessage', data=data)
+	try:
+		requests.post(url='https://slack.com/api/chat.postMessage', data=data)
+	except Exception as e:
+		current_app.logger.error('send_slack_dm failed: {}'.format(e))
 	
 def check_valid_slack_ids(id):
 	client = WebClient(token=current_app.config['SIMS_PORTAL_SLACK_BOT'])
@@ -91,8 +95,8 @@ def check_valid_slack_ids(id):
 	try:
 		result = client.users_list()
 		save_users_ids(result["members"])
-	except:
-		print('slack api check_valid_slack_ids failed')	
+	except Exception as e:
+		current_app.logger.error('check_valid_slack_ids failed: {}'.format(e))	
 		
 	if id in users_store:
 		return True
@@ -119,9 +123,10 @@ def search_location(query):
 	lat_long = json.loads(x)
 	lat = (lat_long['data'][0]['latitude'])
 	long = (lat_long['data'][0]['longitude'])
+	label = (lat_long['data'][0]['label'])
 	
-	return lat, long
-
+	return lat, long, label
+	
 def update_member_locations():
 	member_coordinates = db.session.query(User).all()
 	

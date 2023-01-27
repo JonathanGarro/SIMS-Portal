@@ -333,17 +333,23 @@ def save_user_location(user_id):
 		return render_template('save_work_location.html', form=form)
 	if request.method == 'POST':
 		if form.validate_on_submit():
-			location_query = form.location.data
-			found_location = search_location(location_query)
-			latitude = found_location[0]
-			longitude = found_location[1]
-			# remove spaces for Google Maps API
-			converted_location = location_query.replace(' ', '+')
-			# put results into session to pass to /confirm_work_location/ route
-			session['coordinates'] = [latitude, longitude]
-			google_token = current_app.config['GOOGLE_MAPS_TOKEN']
-			query_url = 'https://www.google.com/maps/embed/v1/place?key={}&q={}'.format(google_token, converted_location)
-			return render_template('validate_location.html', query_url=query_url, user_id=user_id)
+			if current_user.is_admin == 1 or current_user.id == user_id:
+				location_query = form.location.data
+				found_location = search_location(location_query)
+				latitude = found_location[0]
+				longitude = found_location[1]
+				label = found_location[2]
+				print(found_location)
+				# remove spaces for Google Maps API
+				converted_location = location_query.replace(' ', '+')
+				# put results into session to pass to /confirm_work_location/ route
+				session['coordinates'] = [latitude, longitude]
+				google_token = current_app.config['GOOGLE_MAPS_TOKEN']
+				query_url = 'https://www.google.com/maps/embed/v1/place?key={}&q={}'.format(google_token, converted_location)
+				return render_template('validate_location.html', query_url=query_url, user_id=user_id)
+			else:
+				flash("You are not allowed to edit other people's location.", "danger")
+				return redirect(url_for('users.save_user_location', user_id = user_id))
 		else:
 			return redirect('users.save_user_location')
 
@@ -351,14 +357,17 @@ def save_user_location(user_id):
 def confirm_user_location(user_id):
 	user_info = db.session.query(User).filter(User.id == user_id).first()
 	coordinates = session.get('coordinates', None)
-	print(coordinates)
-	db.session.query(User).filter(User.id==user_id).update({'time_zone':str(coordinates)})
-	db.session.commit()
-	flash("You've successfully saved your location!", "success")
-	current_app.logger.info("User-{} ({} {}) has updated their location.".format(user_info.id, user_info.firstname, user_info.lastname))
-	update_member_locations()
-	return redirect(url_for('users.profile'))
-
+	if current_user.is_admin == 1 or current_user.id == user_id:
+		db.session.query(User).filter(User.id==user_id).update({'time_zone':str(coordinates)})
+		db.session.commit()
+		flash("You've successfully saved your location!", "success")
+		current_app.logger.info("User-{} ({} {}) has updated their location.".format(user_info.id, user_info.firstname, user_info.lastname))
+		update_member_locations()
+		return redirect(url_for('users.profile'))
+	else:
+		flash('You are not allowed to edit other the locations of other users.', 'danger')
+		return redirect('users.save_user_location', user_id = user_id)
+		
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
 	form = RequestResetForm()
