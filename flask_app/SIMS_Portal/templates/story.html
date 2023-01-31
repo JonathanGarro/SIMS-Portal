@@ -28,7 +28,7 @@
 		{% if current_user.is_admin == 1 %}
 		<a href="/story/edit/{{story_data.emergency_id}}" class="list-group-item list-group-item-secondary mb-2">Edit Story</a>
 		{% endif %}
-			<div class='card px-5 py-4 bg-light border-0 rounded'>
+			<div class='card px-5 py-4 bg-light border-3 rounded'>
 	  		<div class="row mb-4">
 				<img class='w-50' src="/static/assets/img/members.png"  class="mb-5" alt="">
 				<h3 class='text-danger'>{{members_supporting}} Members</h3>
