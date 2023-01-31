@@ -9,7 +9,7 @@ from SIMS_Portal.users.forms import AssignProfileTypesForm
 from collections import defaultdict, Counter
 from datetime import date, timedelta
 from SIMS_Portal.config import Config
-from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades
+from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_assigner_edward_tufte
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
 import os
@@ -392,5 +392,6 @@ def staging():
 	# auto_badge_assigner_autobiographer()
 	# auto_badge_assigner_jack_of_all_trades()
 	# update_member_locations()
-
+	# auto_assigner_edward_tufte()
+	current_app.logger.error('Logger error testing.')
 	return render_template('visualization.html')

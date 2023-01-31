@@ -25,6 +25,17 @@ login_manager.login_view = 'users.login' # 'login' refers to the route to redire
 login_manager.login_message_category = 'danger'
 mail = Mail()
 
+dictConfig({
+	'version': 1,
+	'handlers': {
+		"logtail": {
+			"class": "logtail.LogtailHandler",
+			"source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN')
+		},
+	},
+	"root": {"level": "DEBUG", "handlers": ["logtail"]},
+})
+
 from SIMS_Portal import models
 
 # AdminView inherits from ModelView to only show tables in the admin page if user is logged in AND is listed as an admin
@@ -75,7 +86,7 @@ def create_app(config_class=Config):
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', hour='9')
+	@scheduler.task('cron', id='run_surge_alert_refresh', hour='13')
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts
