@@ -1,3 +1,19 @@
+	<!-- Random image picker for login page -->
+<script type="text/javascript">
+	ImageArray = new Array();
+	ImageArray[0] = 'login-afg-assess.jpg';
+	ImageArray[1] = 'login-afg-vol.jpg';
+	ImageArray[2] = 'login-bha-truck.jpg';
+	ImageArray[3] = 'login-ukr-vol.jpg';
+	ImageArray[4] = 'login-vct-vest.jpg';
+
+function getRandomImage() {
+	var num = Math.floor( Math.random() * 5);
+	var img = ImageArray[num];
+	document.getElementById("randImage").innerHTML = ('<img src="' + 'static/assets/img/' + img + '" class="img-fluid rounded ">')
+}
+</script>
+
 {% extends "layout.html" %}
 {% block content %}
 <div class="container mt-4">
