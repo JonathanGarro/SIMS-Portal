@@ -1,4 +1,4 @@
-from flask import url_for, current_app
+from flask import url_for, current_app, flash, redirect
 from PIL import Image
 from flask_mail import Message
 from SIMS_Portal import mail, db
@@ -129,6 +129,7 @@ def search_location(query):
 	offset = (response['data'][0]['timezone_module']['offset_sec']) / 3600
 
 	return lat, long, place, time_zone, offset
+
 	
 def update_member_locations():
 	member_coordinates = db.session.query(User).all()
