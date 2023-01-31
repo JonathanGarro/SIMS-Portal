@@ -335,20 +335,25 @@ def save_user_location(user_id):
 		if form.validate_on_submit():
 			if current_user.is_admin == 1 or current_user.id == user_id:
 				location_query = form.location.data
-				found_location = search_location(location_query)
-				latitude = found_location[0]
-				longitude = found_location[1]
-				place_label = found_location[2]
-				time_zone = found_location[3]
-				# remove spaces for Google Maps API
-				converted_location = location_query.replace(' ', '+')
-				# put results into session to pass to /confirm_work_location/ route
-				session['coordinates'] = [latitude, longitude]
-				session['time_zone'] = time_zone
-				session['place_label'] = place_label
-				google_token = current_app.config['GOOGLE_MAPS_TOKEN']
-				query_url = 'https://www.google.com/maps/embed/v1/place?key={}&q={}'.format(google_token, converted_location)
-				return render_template('validate_location.html', query_url=query_url, user_id=user_id)
+				try:
+					found_location = search_location(location_query)
+					latitude = found_location[0]
+					longitude = found_location[1]
+					place_label = found_location[2]
+					time_zone = found_location[3]
+					# remove spaces for Google Maps API
+					converted_location = location_query.replace(' ', '+')
+					# put results into session to pass to /confirm_work_location/ route
+					session['coordinates'] = [latitude, longitude]
+					session['time_zone'] = time_zone
+					session['place_label'] = place_label
+					google_token = current_app.config['GOOGLE_MAPS_TOKEN']
+					query_url = 'https://www.google.com/maps/embed/v1/place?key={}&q={}'.format(google_token, converted_location)
+					return render_template('validate_location.html', query_url=query_url, user_id=user_id)
+				except Exception as e:
+					flash('The PositionStack API is not responsive. Please try again later.', 'warning')
+					current_app.logger.error('PositionStack API call failed: {}'.format(e))
+					return redirect(url_for('users.profile'))
 			else:
 				flash("You are not allowed to edit other people's location.", "danger")
 				return redirect(url_for('users.save_user_location', user_id = user_id))
