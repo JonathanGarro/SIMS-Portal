@@ -234,3 +234,28 @@ def auto_badge_assigner_jack_of_all_trades():
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Jack of All Trades Auto-Assign Failed: {}'.format(e))
+
+def auto_assigner_edward_tufte():
+	"""
+	Checks for users that have at 5+ public infographics posted to the Portal and assigns the Edward Tufte badge if they don't already have it.
+	"""
+	try:
+		current_app.logger.info('Edward Tufte Auto-Assign Ran')
+		existing_edward_tufte_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 26")
+		
+		all_users = db.session.query(User).all()
+		
+		list_user_ids_with_edward_tufte = []
+		for user in existing_edward_tufte_badges:
+			list_user_ids_with_edward_tufte.append(user.user_id)
+			
+		users_eligible_for_edward_tufte = db.engine.execute("SELECT user.id, firstname, lastname, type, count(*) as count FROM user JOIN portfolio ON portfolio.creator_id = user.id WHERE product_status = 'Approved' AND type = 'Infographic' GROUP BY user.id HAVING count >= 5")
+		
+		list_users_eligible_for_edward_tufte = []
+		for user in users_eligible_for_edward_tufte:
+			if user.id not in list_user_ids_with_edward_tufte:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 26, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Edward Tufte Auto-Assign Failed: {}'.format(e))
