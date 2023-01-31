@@ -36,12 +36,11 @@
 				<div class="col d-flex align-items-stretch">
 					<a href="/portfolio/view/{{product.Portfolio.id}}">
 					<div class="card" id="portfolio-card" style="width: 18rem;">
-					{% if '.pdf' in product.Portfolio.final_file_location %}
-					<img src="/static/assets/portfolio/placeholder.png" class="card-img-top" alt="PDF Placeholder Thumbnail">
-					{% else %}
-					<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top" alt="...">
-					{% endif %}
-					
+						{% if product.Portfolio.image_file|length > 10 %}
+						<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top">
+						{% else %}
+						<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top">
+						{% endif %}
 					  <div class="card-body d-flex flex-column">
 						<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
 						<h5 class="card-title mt-auto">{{product.Portfolio.title}}</h5>
