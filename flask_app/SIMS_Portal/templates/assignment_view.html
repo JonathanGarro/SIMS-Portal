@@ -15,7 +15,7 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light rounded rounded-4">
+			<div class="card border-3 p-4 bg-light rounded rounded-4">
 			<a href='/profile/view/{{assignment_info.User.id}}'><h1 class="text-danger mb-1 emergency-title">{{assignment_info.User.firstname}} {{assignment_info.User.lastname}}</h1></a>
 			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}} </h5></a>
 			
@@ -46,7 +46,7 @@
 
 				<br>
 
-				<div class="list-group mt-4">
+				<div class="list-group mt-4 border-0">
 					{% if current_user.is_admin == 1 or current_user.id == assignment_info.Assignment.user_id %}
 						{% if assignment_info.Assignment.role == 'Remote IM Support' %}
 						<a href='/assignment/availability/{{assignment_info.Assignment.id}}/{{assignment_info.Assignment.start_date}}/{{assignment_info.Assignment.end_date}}' class='list-group-item list-group-item-action text-secondary'>Report Availability</a>
@@ -61,6 +61,17 @@
 						{% endif %}
 					{% endif %}
 				</div>
+
+				{% if assignment_info.User.place_label %}
+				<div class="row">
+					<div>
+					<h5 class="text-secondary Montserrat mt-5">User's Location</h5>
+						<p class="text-danger fw-bold">{{assignment_info.User.place_label}}</p>
+					<h5 class="text-secondary Montserrat mt-1">Time Zone</h5>
+					<p class="text-danger fw-bold">{{assignment_info.User.time_zone}}</p>
+					</div>
+				</div>
+				{% endif %}
 
 			</div>
 		</div>
@@ -84,7 +95,7 @@
 				{% for product in assignment_portfolio %}
 					<div class="col d-flex align-items-stretch">
 						<a href="/portfolio/view/{{product.id}}">
-						<div class="card" id='portfolio-card' style="width: 18rem;">
+						<div class="card " id='portfolio-card' style="width: 18rem;">
 							{% if 'user' in product.image_file %}
 							<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="Product Image">
 							{% else %}
@@ -96,7 +107,7 @@
 							  </div>
 							<h5 class="card-title text-danger">{{product.title}}</h5>
 						</div>
-						<div class="card-footer bg-transparent text-secondary">
+						<div class="card-footer bg-transparent text-secondary mt-auto">
 							<small class="text-muted">{{product.product_status}}</small>
 							</a>
 					</div>
