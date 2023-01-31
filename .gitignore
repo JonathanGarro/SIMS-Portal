@@ -5,6 +5,7 @@
 site.db
 flask_app/SIMS_Portal/static/assets/portfolio/
 flask_app/SIMS_Portal/static/data/
+flask_app/SIMS_Portal/static/assets/img/avatars
 
 ### Flask ###
 instance/*
