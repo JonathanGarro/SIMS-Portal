@@ -245,7 +245,7 @@ def refresh_surge_alerts():
 						new_surge_alert(message)
 					# skip if slack api not responsive
 					except Exception as e: 
-						print(e)
+						current_app.logger.error('Send IM Surge Alert to Slack failed: {}'.format(e))
 				try:
 					db.session.add(individual_alert)
 					db.session.commit()
