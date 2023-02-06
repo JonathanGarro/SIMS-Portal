@@ -235,15 +235,13 @@ def auto_badge_assigner_jack_of_all_trades():
 	except Exception as e:
 		current_app.logger.error('Jack of All Trades Auto-Assign Failed: {}'.format(e))
 
-def auto_assigner_edward_tufte():
+def auto_badge_assigner_edward_tufte():
 	"""
 	Checks for users that have at 5+ public infographics posted to the Portal and assigns the Edward Tufte badge if they don't already have it.
 	"""
 	try:
 		current_app.logger.info('Edward Tufte Auto-Assign Ran')
 		existing_edward_tufte_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 26")
-		
-		all_users = db.session.query(User).all()
 		
 		list_user_ids_with_edward_tufte = []
 		for user in existing_edward_tufte_badges:
@@ -259,3 +257,47 @@ def auto_assigner_edward_tufte():
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Edward Tufte Auto-Assign Failed: {}'.format(e))
+
+def auto_badge_assigner_world_traveler():
+	"""
+	Checks for users that have assignments tagged to emergencies in five distinct countries and assigns the World Traveler badge if they don't already have it.
+	"""
+	try:
+		current_app.logger.info('World Traveler Auto-Assign Ran')
+		existing_world_traveler_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 5")
+		
+		list_user_ids_with_world_traveler = []
+		for user in existing_world_traveler_badges:
+			list_user_ids_with_world_traveler.append(user.user_id)
+	
+		users_eligible_for_world_traveler = db.engine.execute("SELECT user.id, firstname, lastname, count(distinct country_name) as count_countries FROM User JOIN Assignment ON Assignment.user_id = User.id JOIN Emergency ON Emergency.id = Assignment.emergency_id JOIN nationalsociety ON nationalsociety.ns_go_id = emergency.emergency_location_id GROUP BY user.id HAVING count_countries > 4")
+	
+		for user in users_eligible_for_world_traveler:
+			if user.id not in list_user_ids_with_world_traveler:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 5, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('World Traveler Auto-Assign Failed: {}'.format(e))
+		
+def auto_badge_assigner_old_salt():
+	"""
+	Checks for users that have 5 assignments with SIMS Remote Coordinator as the role and assigns the Old Salt badge if they don't already have it.
+	"""
+	try:
+		current_app.logger.info('Old Salt Auto-Assign Ran')
+		existing_old_salt_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 27")
+		
+		list_user_ids_with_old_salt = []
+		for user in existing_old_salt_badges:
+			list_user_ids_with_old_salt.append(user.user_id)
+		
+		users_eligible_for_old_salt = db.engine.execute("SELECT assignment.id, user.id, firstname, lastname, count(*) as count FROM assignment JOIN user ON user.id = assignment.user_id WHERE role = 'SIMS Remote Coordinator' GROUP BY user.id HAVING count > 2")
+		
+		for user in users_eligible_for_old_salt:
+			if user.id not in list_user_ids_with_old_salt:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 27, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Old Salt Auto-Assign Failed: {}'.format(e))
