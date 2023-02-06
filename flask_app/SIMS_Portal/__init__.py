@@ -33,7 +33,7 @@ dictConfig({
 			"source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN')
 		},
 	},
-	"root": {"level": "DEBUG", "handlers": ["logtail"]},
+	"root": {"level": "INFO", "handlers": ["logtail"]},
 })
 
 from SIMS_Portal import models
@@ -86,7 +86,7 @@ def create_app(config_class=Config):
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', hour='13')
+	@scheduler.task('cron', id='run_surge_alert_refresh', hour='14')
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts
@@ -95,13 +95,14 @@ def create_app(config_class=Config):
 	@scheduler.task('cron', id='run_auto_badge_assigners', hour='12')
 	def run_auto_badge_assigners():
 		with scheduler.app.app_context():
-			from SIMS_Portal.main.utils import auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades
+			from SIMS_Portal.main.utils import auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_assigner_world_traveler
 			auto_badge_assigner_big_wig()
 			auto_badge_assigner_maiden_voyage()
 			auto_badge_assigner_self_promoter()
 			auto_badge_assigner_polyglot()
 			auto_badge_assigner_autobiographer()
 			auto_badge_assigner_jack_of_all_trades()
+			auto_assigner_world_traveler()
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
