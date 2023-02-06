@@ -33,7 +33,7 @@ def new_assignment_from_disaster(dis_id):
 		assignment = Assignment(user_id=form.user_id.data.id, emergency_id=dis_id, start_date=form.start_date.data, end_date=form.end_date.data, role=form.role.data, assignment_details=form.assignment_details.data, remote=form.remote.data)
 		db.session.add(assignment)
 		db.session.commit()
-		current_app.logger.info('New assignment created for user #{}.'.format(form.user_id.data.id))
+		current_app.logger.info('New assignment created for User-{}.'.format(form.user_id.data.id))
 		
 		# attempt to send slack message to user after successful assignment creation
 		try:
