@@ -1,7 +1,6 @@
 from SIMS_Portal import db, login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from authlib.jose import jwt, JoseError
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from datetime import datetime
