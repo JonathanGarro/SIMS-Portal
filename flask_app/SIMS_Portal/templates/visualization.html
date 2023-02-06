@@ -1,93 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+ integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+ crossorigin=""/>
+ <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+  integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+  crossorigin=""></script>
+  
+  <div id="map"></div>
+<script>
+var map = L.map('map').setView([51.505, -0.09], 13);
 
-
-
-<style>
-      * {
-        margin: 0;
-        padding: 0;
-        font-family: sans-serif;
-      }
-      .chartMenu {
-        width: 100vw;
-        height: 40px;
-        background: #1A1A1A;
-        color: rgba(255, 26, 104, 1);
-      }
-      .chartMenu p {
-        padding: 10px;
-        font-size: 20px;
-      }
-      .chartCard {
-        width: 100vw;
-        height: calc(100vh - 40px);
-        background: rgba(255, 26, 104, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .chartBox {
-        width: 700px;
-        padding: 20px;
-        border-radius: 20px;
-        border: solid 3px rgba(255, 26, 104, 1);
-        background: white;
-      }
-    </style>
-    <canvas id="canvas"></canvas>
-<script src="https://unpkg.com/chart.js@4.0.1"></script>
-
-
-    <svg class='my-3' id="response-history-map" width='1300' height='700'></svg>
-    
-    <script>
-    
-    var svg = d3.select("svg"),
-      width = +svg.attr("width"),
-      height = +svg.attr("height");
-    
-    // Map and projection
-    var path = d3.geoPath();
-    var projection = d3.geoMercator()
-      .scale(150)
-      .center([0,20])
-      .translate([width / 2, height / 2]);
-    
-    // Data and color scale
-    var data = d3.map();
-    var colorScale = d3.scaleThreshold()
-      .domain([1, 2, 3, 4])
-      .range(d3.schemeReds[4]);
-    
-    // Load external data and boot
-    d3.queue()
-      .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-      .defer(d3.csv, "/static/data/emergencies_viz.csv", function(d) { data.set(d.iso3, +d.count); })
-      .await(ready);
-    
-    function ready(error, topo) {
-    
-      // Draw the map
-      svg.append("g")
-      .selectAll("path")
-      .data(topo.features)
-      .enter()
-      .append("path")
-        // draw each country
-        .attr("d", d3.geoPath()
-        .projection(projection)
-        )
-        // set the color of each country
-        .attr("fill", function (d) {
-        d.total = data.get(d.id) || 0;
-        return colorScale(d.total);
-        });
-      }
-      
-      
-    
-    </script>
-
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+</script>
 
 {% endblock content %}
