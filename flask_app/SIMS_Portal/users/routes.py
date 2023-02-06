@@ -181,6 +181,7 @@ def assign_profiles(user_id, profile_id, tier):
 		new_profile = user_profile.insert().values(user_id=user_id, profile_id=profile_id, tier=tier)
 		db.session.execute(new_profile)
 		db.session.commit()
+		current_app.logger.info('A new profile has been assigned to User-{}'.format(user_id))
 		flash('User has been assigned a new profile.', 'success')
 		return redirect(url_for('main.admin_landing'))
 	else:
