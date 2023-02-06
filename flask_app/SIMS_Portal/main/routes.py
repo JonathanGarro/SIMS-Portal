@@ -9,11 +9,10 @@ from SIMS_Portal.users.forms import AssignProfileTypesForm
 from collections import defaultdict, Counter
 from datetime import date, timedelta
 from SIMS_Portal.config import Config
-from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_assigner_edward_tufte
+from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler, auto_badge_assigner_old_salt
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
 import os
-import tweepy
 import re
 import csv
 import json
@@ -73,7 +72,6 @@ def create_badge():
 		else:
 			is_limited_edition = 0
 		badge = Badge(name = form.name.data, badge_url = file, limited_edition = is_limited_edition, description = form.description.data)
-		print(badge)
 		db.session.execute(badge)
 		db.session.commit()
 		flash('New badge successfully created!', 'success')
@@ -133,6 +131,7 @@ def admin_landing():
 		)
 		db.session.add(new_skill)
 		db.session.commit()
+		current_app.logger.info('A new skill has been added to the list by {} {}.'.format(current_user.firstname, current_user.lastname))
 		flash("New Skill Created.", "success")
 		return redirect(url_for('main.admin_landing'))
 	
@@ -151,6 +150,7 @@ def admin_landing():
 		)
 		db.session.add(badge)
 		db.session.commit()
+		current_app.logger.info('A new badge called {} has been created and added to the Portal.'.format(badge.name))
 		flash('New badge successfully created!', 'success')
 		return redirect(url_for('main.admin_landing'))
 	
@@ -237,6 +237,7 @@ def badge_assignment_via_SIMSCO(user_id, badge_id, assigner_id, dis_id):
 			send_slack_dm(message, user.slack_id)
 		except Exception as e:
 			current_app.logger.error('Badge Assignment via SIMS Remote Coordinator Failed: {}'.format(e))
+		current_app.logger.info('A new badge has been assigned to User-{}'.format(receiver.id))
 		flash('Badge successfully assigned.', 'success')
 		return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 	elif user_is_sims_co == False:
@@ -382,16 +383,40 @@ def view_role_profile(type):
 	
 	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)
 
+@main.route('/manual_refresh/<func>')
+@login_required
+def manual_refresh(func):
+	if current_user.is_admin == 1:
+		badge_refresh_list = ['big_wig', 'maiden_voyage', 'self_promoter', 'polyglot', 'autobiographer', 'jack_of_all_trades','edward_tufte', 'world_traveler','old_salt']
+		if func in badge_refresh_list:
+			function_constructor = 'auto_badge_assigner_' + func + '()'
+		else:
+			function_constructor = func + '()'
+		eval(function_constructor)
+		current_app.logger.info('User-{} ran the {} function manually.'.format(current_user.id, func))
+		flash('Function ran successfully.', 'success')
+		return redirect(url_for('main.admin_landing'))
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+
 @main.route('/staging') 
 def staging(): 
-	# refresh_surge_alerts()
-	# auto_badge_assigner_big_wig()
-	# auto_badge_assigner_maiden_voyage()
-	# auto_badge_assigner_self_promoter()
-	# auto_badge_assigner_polyglot()
-	# auto_badge_assigner_autobiographer()
-	# auto_badge_assigner_jack_of_all_trades()
-	# update_member_locations()
-	# auto_assigner_edward_tufte()
-	current_app.logger.error('Logger error testing.')
-	return render_template('visualization.html')
+	if current_user.is_admin == 1:
+		refresh_surge_alerts()
+		# auto_badge_assigner_big_wig()
+		# auto_badge_assigner_maiden_voyage()
+		# auto_badge_assigner_self_promoter()
+		# auto_badge_assigner_polyglot()
+		# auto_badge_assigner_autobiographer()
+		# auto_badge_assigner_jack_of_all_trades()
+		# update_member_locations()
+		# auto_assigner_edward_tufte()
+		# auto_badge_assigner_world_traveler()
+		# auto_badge_assigner_old_salt()
+		return render_template('visualization.html')
+	else:
+		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
+		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
