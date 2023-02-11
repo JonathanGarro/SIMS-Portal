@@ -40,7 +40,7 @@
 					
 						function drawGlobe() {  
 							d3.queue()
-								.defer(d3.json, 'https://gist.githubusercontent.com/mbostock/4090846/raw/d534aba169207548a8a3d670c9c2cc719ff05c47/world-110m.json')          
+								.defer(d3.json, '/static/data/world-110m.json')          
 								.defer(d3.json, '/static/data/locations.json')
 								.await((error, worldData, locationData) => {
 									svg.selectAll(".segment")
@@ -89,12 +89,12 @@
 								.attr('fill', d => {
 									const coordinate = [d.longitude, d.latitude];
 									gdistance = d3.geoDistance(coordinate, projection.invert(center));
-									return gdistance > 1.8 ? 'none' : 'red';
+									return gdistance > 1.5 ? 'none' : 'red';
 								})
 								.attr('stroke', d => {
 									const coordinate = [d.longitude, d.latitude];
 									gdistance = d3.geoDistance(coordinate, projection.invert(center));
-									return gdistance > 1.8 ? 'none' : 'white';
+									return gdistance > 1.5 ? 'none' : 'white';
 								})
 								.attr('r', 4);
 					

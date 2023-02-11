@@ -12,6 +12,7 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler, auto_badge_assigner_old_salt
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
+from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations
 import os
 import re
 import csv
@@ -29,9 +30,10 @@ def index():
 @main.route('/about')
 def about():
 	count_activations = db.session.query(Emergency).count()
+	all_activations = db.session.query(Emergency).all()
 	lateset_activation = db.session.query(Emergency).order_by(Emergency.created_at.desc()).first()
 	count_members = db.session.query(User).filter(User.status == 'Active').count()
-	return render_template('about.html', count_activations=count_activations, latest_activation=lateset_activation, count_members=count_members)
+	return render_template('about.html', count_activations=count_activations, latest_activation=lateset_activation, count_members=count_members, all_activations=all_activations)
 
 @main.route('/portal_admins')
 def portal_admins():
@@ -150,7 +152,7 @@ def admin_landing():
 		)
 		db.session.add(badge)
 		db.session.commit()
-		current_app.logger.info('A new badge called {} has been created and added to the Portal.'.format(badge.name))
+		current_app.logger.info('A new badge called {} has been added to the Portal by User-{}.'.format(badge.name, current_user.id))
 		flash('New badge successfully created!', 'success')
 		return redirect(url_for('main.admin_landing'))
 	
@@ -383,6 +385,14 @@ def view_role_profile(type):
 	
 	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)
 
+@main.route('/manual_refresh')
+@login_required
+def manual_refresh_landing():
+	badge_refresh_list = ['big_wig', 'maiden_voyage', 'self_promoter', 'polyglot', 'autobiographer', 'jack_of_all_trades','edward_tufte', 'world_traveler','old_salt']
+	sorted_badge_refresh_list = sorted(badge_refresh_list)
+	if current_user.is_admin == 1:
+		return render_template('manual_refresh.html', sorted_badge_refresh_list=sorted_badge_refresh_list)
+
 @main.route('/manual_refresh/<func>')
 @login_required
 def manual_refresh(func):
@@ -394,8 +404,8 @@ def manual_refresh(func):
 			function_constructor = func + '()'
 		eval(function_constructor)
 		current_app.logger.info('User-{} ran the {} function manually.'.format(current_user.id, func))
-		flash('Function ran successfully.', 'success')
-		return redirect(url_for('main.admin_landing'))
+		flash('{} function ran successfully.'.format(func), 'success')
+		return redirect(url_for('main.manual_refresh_landing'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
@@ -404,7 +414,7 @@ def manual_refresh(func):
 @main.route('/staging') 
 def staging(): 
 	if current_user.is_admin == 1:
-		refresh_surge_alerts()
+		# refresh_surge_alerts()
 		# auto_badge_assigner_big_wig()
 		# auto_badge_assigner_maiden_voyage()
 		# auto_badge_assigner_self_promoter()
@@ -415,6 +425,7 @@ def staging():
 		# auto_assigner_edward_tufte()
 		# auto_badge_assigner_world_traveler()
 		# auto_badge_assigner_old_salt()
+		update_response_locations()
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))

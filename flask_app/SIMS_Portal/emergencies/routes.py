@@ -3,6 +3,7 @@ from SIMS_Portal import db
 from SIMS_Portal.config import Config
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Alert, Portfolio, Story, Learning, Review
 from SIMS_Portal.emergencies.forms import NewEmergencyForm, UpdateEmergencyForm
+from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations
 from SIMS_Portal.assignments.utils import aggregate_availability
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
@@ -10,6 +11,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from collections import Counter
 from datetime import datetime
 import json
+import logging
 
 emergencies = Blueprint('emergencies', __name__)
 
@@ -27,12 +29,16 @@ def new_emergency():
 		emergency = Emergency(emergency_name=form.emergency_name.data, emergency_location_id=form.emergency_location_id.data.ns_go_id, emergency_type_id=form.emergency_type_id.data.emergency_type_go_id, emergency_glide=form.emergency_glide.data, emergency_go_id=form.emergency_go_id.data, activation_details=form.activation_details.data, slack_channel=form.slack_channel.data, dropbox_url=form.dropbox_url.data, trello_url=form.trello_url.data)
 		db.session.add(emergency)
 		db.session.commit()
+		update_response_locations()
+		update_active_response_locations()
+		current_app.logger.info('A new emergency record has been created for {} by User-{}'.format(form.emergency_name.data, current_user.id))
 		flash('New emergency successfully created.', 'success')
 		return redirect(url_for('main.dashboard'))
 	try:
 		latest_emergencies = Emergency.get_latest_go_emergencies()
 	except:
 		latest_emergencies = [{'dis_id': 0, 'dis_name': 'GO API CALL FAILED'}]
+		current_app.logger.error('The GO API failed to return recent emergencies for the New Emergency form.')
 	return render_template('create_emergency.html', title='Create New Emergency', form=form, latest_emergencies=latest_emergencies)
 
 @emergencies.route('/emergency/<int:id>', methods=['GET', 'POST'])
@@ -156,6 +162,7 @@ def closeout_emergency(id):
 		try:
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Closed'})
 			db.session.commit()
+			update_active_response_locations()
 			flash("Emergency closed out.", 'success')
 		except:
 			flash("Error closing emergency. Check that the emergency ID exists.")
@@ -171,6 +178,7 @@ def delete_emergency(id):
 		try:
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Removed'})
 			db.session.commit()
+			update_active_response_locations()
 			flash("Emergency deleted.", 'success')
 		except:
 			flash("Error deleting emergency. Check that the emergency ID exists.")

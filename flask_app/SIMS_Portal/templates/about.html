@@ -1,14 +1,119 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <div class="container">
 	<div class="row my-5">
 		<div class="col-lg-8">
-			<h2 class='mb-3 Montserrat sims-blue'>Overview</h2>
-						
-			<p>In the immediate aftermath of an emergency, the country's Red Cross or Red Crescent National Society jumps into action to scale up a response that meets the immediate needs of the people affected by the event. When the operational needs exceed the capacity of the National Society, a multilateral response scales up with support from the IFRC to mobilize financial, logistical, and human resources from around the world.</p>
+			<h2 class='my-3 Montserrat sims-blue'>Overview</h2>
+			<p>In the aftermath of an emergency, the country's Red Cross or Red Crescent National Society jumps into action to scale up a response that meets the immediate needs of the people affected by the event. When the operational needs exceed the capacity of the National Society, a multilateral response scales up with support from the <a href='https://www.ifrc.org/'>IFRC</a> to mobilize financial, logistical, and human resources from around the world.</p>
 			
-			<p>In order to effectively ramp up and maintain these multilateral operations, leaders need a clear understanding of the emergency’s impact and the needs of the affected population, as well as systems and tools to collect and manage data about the operation’s response. That’s where the Surge Information Management Support (SIMS) network comes in. As an <a href='https://go.ifrc.org/deployments/catalogue'>IFRC Global Tool</a>, SIMS offers a wide array of technical support through remote volunteers spread across the globe.</p>
+			<p class='mb-5'>In order to effectively ramp up and maintain these multilateral operations, leaders need a clear understanding of the emergency’s impact and the needs of the affected population, and access to systems and tools to collect and manage data about the operation’s response. That’s where the Surge Information Management Support (SIMS) network comes in. As an <a href='https://go.ifrc.org/deployments/catalogue'>IFRC Global Tool</a>, SIMS offers a wide array of technical support through remote volunteers spread across the globe.</p>
+			
+			<div class="border rounded d3-map-base border-3">
+				<rect style="fill: none; stroke: #8d8d8d; stroke-width: .25px;">
+				<svg viewBox="-450 -300 950 550" preserveAspectRatio="none"></svg>
+				</rect>
+			</div>
+
+			<script>
+			// config
+			const color0 = 'rgb(237, 237, 237)'
+			const color1 = 'rgb(252, 197, 197)'
+			const color2 = 'rgb(250, 120, 120)'
+			const color3 = 'rgb(217, 41, 41)'
+			const color4 = 'rgb(161, 2, 2)'
+			
+			
+			var svg = d3.select("svg"),
+			  width = +svg.attr("width"),
+			  height = +svg.attr("height");
+			
+			// Map and projection
+			var path = d3.geoPath();
+			var projection = d3.geoMercator()
+			  .scale(150)
+			  .center([0,20])
+			  .translate([width / 2, height / 2]);
+			
+			
+			// Data and color scale
+			var data = d3.map();
+			var colorScale = d3.scaleThreshold()
+			  .domain([1, 2, 3, 4])
+			  .range([color0, color1, color2, color3, color4]);
+			
+			// Load external data and boot
+			d3.queue()
+			  .defer(d3.json, "/static/data/response-locations-base.json")
+			  .defer(d3.csv, "/static/data/emergencies_viz.csv", function(d) { data.set(d.iso3, +d.count); })
+			  .await(ready);
+			
+			function ready(error, topo) {
+			
+			  // Draw the map
+			  svg.append("g")
+				.selectAll("path")
+				.data(topo.features)
+				.enter()
+				.append("path")
+				  // draw each country
+				  .attr("d", d3.geoPath()
+					.projection(projection)
+				  )
+				  // set the color of each country
+				  .attr("fill", function (d) {
+					d.total = data.get(d.id) || 0;
+					return colorScale(d.total);
+				  })
+				  ;
+				}
+				
+				// manual legend
+				svg.append("text").attr("x", -410).attr("y", 90).text("# SIMS of Activations").style("font-size", "18px").style("fill", "#666262").attr("alignment-baseline","middle")
+				
+				svg.append("circle").attr("cx",-390).attr("cy",125).attr("r", 8).style("fill", color1)
+				svg.append("circle").attr("cx",-390).attr("cy",150).attr("r", 8).style("fill", color2)
+				svg.append("circle").attr("cx",-390).attr("cy",175).attr("r", 8).style("fill", color3)
+				svg.append("circle").attr("cx",-390).attr("cy",200).attr("r", 8).style("fill", color4)
+
+				svg.append("text").attr("x", -370).attr("y", 125).text("1").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
+				svg.append("text").attr("x", -370).attr("y", 150).text("2").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
+				svg.append("text").attr("x", -370).attr("y", 175).text("3").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
+				svg.append("text").attr("x", -370).attr("y", 200).text("4 or more").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
+				
+
+			</script>
+			
+			<div class="accordion mt-3 my-5" id="accordionExample">
+			  <div class="accordion-item">
+				<h2 class="accordion-header" id="responsesTable">
+				  <button class="accordion-button bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+					View Table of Responses
+				  </button>
+				</h2>
+				<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="responsesTable" data-bs-parent="#accordionExample">
+				  <div class="accordion-body">
+					<table class='table table-striped table-hover w-100' id='datatable'>
+						<thead>
+							<tr>
+								<th><h5 class='Montserrat'>Emergency</h5></th>
+								<th><h5 class='Montserrat'>Status</h5></th>
+								<th><h5 class='Montserrat'>Glide No.</h5></th>
+							</tr>
+							<tbody>
+							{% for emergency in all_activations %}
+							<tr>
+								<td class="fw-bold text-dangeralign-middle">{{emergency.emergency_name}}</td>
+								<td class="text-dangeralign-middle">{{emergency.emergency_status}}</td>
+								<td class="text-dangeralign-middle">{{emergency.emergency_glide}}</td>
+							</tr>
+							{% endfor %}
+							</tbody>
+						</thead>
+					</table>
+				  </div>
+				</div>
+			  </div>
+			</div>
 			
 			<h2 class="mb-3 mt-5 Montserrat sims-blue">Profiles</h2>
 			
