@@ -27,8 +27,7 @@ def save_picture(form_picture):
 def send_reset_slack(user):
 	token = user.get_reset_token()
 	reset_link = url_for("users.reset_token", token=token, _external=True)
-	print(reset_link)
-	msg = "Looks like you requested a password reset. If you did not request this, simply ignore this message. Otherwise, follow the directions on the page <{}|linked here>.".format(reset_link)
+	msg = "Looks like you requested a password reset. *If you did not request this, simply ignore this message.* Otherwise, follow the directions on the page <{}|linked here>.".format(reset_link)
 	send_slack_dm(msg, user.slack_id)
 
 def send_reset_email(user):
@@ -67,7 +66,6 @@ def new_surge_alert(message):
 def rem_cos_search():
 	with app.app_context():
 		active_SIMS_cos = db.session.query(Assignment, User, Emergency).join(User, User.id == Assignment.user_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.emergency_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').all()
-		print(active_SIMS_cos)
 
 # general purpose DM messaging bot
 def send_slack_dm(message, user):
@@ -144,12 +142,9 @@ def update_member_locations():
 			list_of_location_dicts.append(locations_dict)
 			
 	json_output = json.dumps(list_of_location_dicts)
-	print(json_output)
 
 	json_file_path = "SIMS_Portal/static/data/locations.json"
 	if os.path.exists(json_file_path):
 		os.remove(json_file_path)
 	with open(json_file_path, "w") as outfile:
 		outfile.write(json_output)
-	
-	
