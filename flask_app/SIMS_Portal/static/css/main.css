@@ -280,6 +280,11 @@ p {
 	border: none;
 }
 
+.d3-map-base {
+	border-color: #dee2e6;
+	background-color: #f8f9fa
+}
+
 .Montserrat {
 	font-family: 'Montserrat';
 }
