@@ -282,7 +282,7 @@ def auto_badge_assigner_world_traveler():
 		
 def auto_badge_assigner_old_salt():
 	"""
-	Checks for users that have 5 assignments with SIMS Remote Coordinator as the role and assigns the Old Salt badge if they don't already have it.
+	Checks for users that have 3 assignments with SIMS Remote Coordinator as the role and assigns the Old Salt badge if they don't already have it.
 	"""
 	try:
 		current_app.logger.info('Old Salt Auto-Assign Ran')
