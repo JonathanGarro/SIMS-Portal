@@ -126,7 +126,7 @@ def edit_emergency(id):
 		emergency_info.trello_url = form.trello_url.data
 		db.session.commit()
 		flash('Emergency record updated!', 'success')
-		return redirect(url_for('main.dashboard'))
+		return redirect(url_for('emergencies.view_emergency', id=id))
 	elif request.method == 'GET':
 		form.emergency_name.data = emergency_info.emergency_name
 		form.emergency_glide.data = emergency_info.emergency_glide
