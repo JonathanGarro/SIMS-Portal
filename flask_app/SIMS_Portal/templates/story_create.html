@@ -4,30 +4,25 @@
 	<div class="row my-5">
 		<div class="col-md-4">
 			<h4 class="text-secondary mb-1">Create New</h4>
-			<h2 class="text-danger mb-4">Response Story</h2>
-			<ul class="timeline">
-				<li>
-					<h5 class="text-secondary">Header Image</h5>
-					<p id="sidebar-guidance">The templating engine here expects an image that is <span class='fw-bold text-danger'>1300 x 650 pixels</span>. Images not matching those dimensions will be automatically resized, so please use an image editor (<a href='https://www.adobe.com/express/feature/image/resize'>Adobe offers a free online tool</a>) to manually adjust the size of the photo in order to avoid unexpected cropping.</p>
-				</li>
-				<li>
-					<h5 class="text-secondary">Header Caption</h5>
-					<p id="sidebar-guidance">If using a photo taken from the IFRC shaRED photo library, the image will have metadata connected to the file that you should paste here, including giving proper credit to the photographer.</p>
-				</li>
-				<li>
-					<h5 class="text-secondary">Entry</h5>
-					<p id="sidebar-guidance">The entry field accepts <a href='https://www.markdownguide.org/basic-syntax/'>markdown syntax</a>, so use that to stylize your text. Use it to create links, post hosted images, set section headers, and more.</p>
-					
-					<p id="sidebar-guidance">To create section headers, use <span class='fw-bold text-danger'> two hash symbols with a space, then your text.</span> For example, <span class='fw-bold text-danger'>"## Operation Overview"</span>.</p>
-				</li>
-			</ul>
+			<h2 class="text-danger mb-4 Montserrat">Response Story</h2>
+
+			<h5 class="text-secondary">Header Image</h5>
+			<p class="sidebar-guidance">The templating engine here expects an image that is <span class='fw-bold text-danger'>1300 x 650 pixels</span>. Images not matching those dimensions will be automatically resized, so please use an image editor (<a href='https://www.adobe.com/express/feature/image/resize'>Adobe offers a free online tool</a>) to manually adjust the size of the photo in order to avoid unexpected cropping.</p>
+
+			<h5 class="text-secondary">Header Caption</h5>
+			<p class="sidebar-guidance">If using a photo taken from the IFRC shaRED photo library, the image will have metadata connected to the file that you should paste here, including giving proper credit to the photographer.</p>
+
+			<h5 class="text-secondary">Entry</h5>
+			<p class="sidebar-guidance">The entry field accepts <a href='https://www.markdownguide.org/basic-syntax/'>markdown syntax</a>, so use that to stylize your text. Use it to create links, post hosted images, set section headers, and more.</p>
+			
+			<p class="sidebar-guidance">To create section headers, use <span class='fw-bold text-danger'> two hash symbols with a space, then your text.</span> For example, <span class='fw-bold text-danger'>"## Operation Overview"</span>.</p>
 
 		</div>
 		<div class="col">
-			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
 				{{ form.hidden_tag() }}
 				<div class="row">
-					<h4 class="text-danger pb-3">Create New Story for {{emergency_name[0]}}</h4>
+					<h4 class="text-danger pb-3 Montserrat">Create New Story for {{emergency_name[0]}}</h4>
 
 							<div class="form-group pb-4">
 								{{ form.header_image.label(class="form-control-label pb-2 text-danger") }}

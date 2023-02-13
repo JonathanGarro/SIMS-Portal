@@ -16,29 +16,29 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4">
-			<div class="card p-4 bg-light">
-				<h5 class="text-secondary py-1 Montserrat">Response Operation</h5>
-				<h1 class="text-danger mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
+			<div class="card p-4" style='background-color: #5C0000'>
+				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
+				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
 
 				{% if  emergency_info.Emergency.emergency_status == 'Active' %}
 				
-				<div class="d-flex flex-row bd-highlight align-items-center">
-					<div class="bd-highlight"><img src='/static/assets/img/active-emergency.png'></a></div>
-					<div class="ps-4 bd-highlight"><span class='lead' id='emergency-story-link'>Active Response</span></div>
+				<div class="d-flex flex-row align-items-center justify-content-start">
+					<div class=""><img class='img img-fluid' src='/static/assets/img/active-emergency.png'></div>
+					<div class="ps-4 "><span class='text-light lead' id='emergency-story-link'>Active Response</span></div>
 				</div>
 				
 				{% elif  emergency_info.Emergency.emergency_status == 'Removed' %}
 				
-				<div class="d-flex flex-row bd-highlight align-items-center">
-					<div class="bd-highlight"><img src='/static/assets/img/closed-emergency.png'></a></div>
-					<div class="ps-4 bd-highlight"><span class='lead' id='emergency-story-link'>Deleted Record</span></div>
+				<div class="d-flex flex-row align-items-center justify-content-start">
+					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png'></div>
+					<div class="ps-4 "><span class='text-light lead' id='emergency-story-link'>Deleted Record</span></div>
 				</div>
 				
 				{% else %}
 
-				<div class="d-flex flex-row bd-highlight align-items-center">
-					<div class="bd-highlight"><img src='/static/assets/img/closed-emergency.png'></a></div>
-					<div class="ps-4 bd-highlight"><span class='lead' id='emergency-story-link'>Closed Response</span></div>
+				<div class="d-flex flex-row align-items-center justify-content-start">
+					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png'></div>
+					<div class="ps-4 "><span class='text-light lead' id='emergency-story-link'>Closed Response</span></div>
 				</div>
 				
 				{% endif %}
@@ -46,7 +46,7 @@
 			</div>
 			<br>
 			<!-- Main sidebar buttons -->
-			<div class="card p-4 bg-light">
+			<div class="card p-4 bg-light border border-3">
 				<h5 class="text-secondary py-2 Montserrat">Available Actions</h5>
 				<ul class="list-group border-0">
 					<li class="list-group-item d-flex justify-content-between align-items-center">
@@ -80,7 +80,7 @@
 					</li>
 				</ul>
 				<br>
-				<ul class='list-group  border-0'>
+				<ul class='list-group border-0'>
 					{% if current_user.is_admin == 1 or user_is_sims_co %}
 					<h5 class="text-secondary pt-3 pb-2 Montserrat">Record Management</h5>
 						{% if check_for_story %}
@@ -147,7 +147,7 @@
 			</div>
 			<!-- End main sidebar buttons -->
 			<br>
-			<div class="card p-4 bg-light">
+			<div class="card p-4 bg-light border border-3">
 				<h5 class="text-secondary py-2 Montserrat">Response Tools</h5>
 				<div class="row mt-3 justify-content-center">
 					{% if emergency_info.Emergency.slack_channel == None or emergency_info.Emergency.slack_channel == '' %}
@@ -178,7 +178,7 @@
 				</div>
 			</div>
 			<br>
-			<div class="card p-4 bg-light">
+			<div class="card p-4 bg-light border border-3">
 				<h5 class='text-secondary mb-3 Montserrat'>{{emergency_info.NationalSociety.country_name}}</h5>
 
 				<img id='flag-image' src='https://flagcdn.com/h240/{{emergency_info.NationalSociety.iso2|lower}}.png' class='img-fluid mb-3'>
