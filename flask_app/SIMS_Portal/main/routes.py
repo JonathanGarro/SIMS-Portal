@@ -12,7 +12,7 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler, auto_badge_assigner_old_salt
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts
-from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations
+from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations, get_trello_tasks
 import os
 import re
 import csv
@@ -425,7 +425,10 @@ def staging():
 		# auto_assigner_edward_tufte()
 		# auto_badge_assigner_world_traveler()
 		# auto_badge_assigner_old_salt()
-		update_response_locations()
+		# update_response_locations()
+		trello_board_url = 'https://trello.com/b/RbfET4cp/simst%C3%BCrkiye-syria-earthquake2023'
+		x = get_trello_tasks(trello_board_url)
+		print(x)
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))

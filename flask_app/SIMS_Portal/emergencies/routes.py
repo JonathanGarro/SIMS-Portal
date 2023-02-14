@@ -3,7 +3,7 @@ from SIMS_Portal import db
 from SIMS_Portal.config import Config
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Alert, Portfolio, Story, Learning, Review
 from SIMS_Portal.emergencies.forms import NewEmergencyForm, UpdateEmergencyForm
-from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations
+from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, get_trello_tasks
 from SIMS_Portal.assignments.utils import aggregate_availability
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
@@ -97,13 +97,19 @@ def view_emergency(id):
 	
 	deployment_history_count = len(deployments)
 	
-	return render_template('emergency.html', title='Emergency View', emergency_info=emergency_info, deployments=deployments, emergency_portfolio=emergency_portfolio, check_for_story=check_for_story, learning_data=learning_data, learning_keys=learning_keys, learning_values=learning_values, learning_count=learning_count, avg_learning_keys=avg_learning_keys, avg_learning_values=avg_learning_values, deployment_history_count=deployment_history_count, user_is_sims_co=user_is_sims_co, pending_products=pending_products, emergency_portfolio_size=emergency_portfolio_size, values=values, labels=labels, kill_chart=kill_chart, existing_reviews=existing_reviews)
+	try:
+		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)
+
+	except:
+		to_do_trello = None
+	
+	return render_template('emergency.html', title='Emergency View', 
+	emergency_info=emergency_info, deployments=deployments, emergency_portfolio=emergency_portfolio, check_for_story=check_for_story, learning_data=learning_data, learning_keys=learning_keys, learning_values=learning_values, learning_count=learning_count, avg_learning_keys=avg_learning_keys, avg_learning_values=avg_learning_values, deployment_history_count=deployment_history_count, user_is_sims_co=user_is_sims_co, pending_products=pending_products, emergency_portfolio_size=emergency_portfolio_size, values=values, labels=labels, kill_chart=kill_chart, existing_reviews=existing_reviews, to_do_trello=to_do_trello)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
 def edit_emergency(id):
 	form = UpdateEmergencyForm()
 	emergency_info = db.session.query(Emergency).filter(Emergency.id == id).first()
-	# emergency_info = db.session.query(Emergency, EmergencyType).join(EmergencyType, EmergencyType.emergency_type_go_id==Emergency.emergency_type_id).filter(Emergency.id==id).first()
 	if form.validate_on_submit():
 		emergency_info.emergency_name = form.emergency_name.data
 		try: 

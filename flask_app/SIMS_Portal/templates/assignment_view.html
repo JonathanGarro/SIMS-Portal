@@ -95,7 +95,7 @@
 				{% for product in assignment_portfolio %}
 					<div class="col d-flex align-items-stretch">
 						<a href="/portfolio/view/{{product.id}}">
-						<div class="card " id='portfolio-card' style="width: 18rem;">
+						<div class="card portfolio-card" style="width: 18rem;">
 							{% if 'user' in product.image_file %}
 							<img src="/static/assets/portfolio/{{product.image_file}}" class="card-img-top" alt="Product Image">
 							{% else %}

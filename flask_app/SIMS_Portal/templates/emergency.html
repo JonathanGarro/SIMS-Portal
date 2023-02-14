@@ -216,6 +216,11 @@
 				<li class="nav-item" role="presentation">
 				<button class="nav-link" id="learning-tab" data-bs-toggle="pill" data-bs-target="#learning" type="button" role="tab" aria-controls="learning" aria-selected="false">Learning</button>
 				</li>
+				{% if to_do_trello %}
+				<li class="nav-item" role="presentation">
+				<button class="nav-link" id="trello-tab" data-bs-toggle="pill" data-bs-target="#trello" type="button" role="tab" aria-controls="trello" aria-selected="false">Trello Tasks</button>
+				</li>
+				{% endif %}
 			</ul>
 			<div class="tab-content" id="emergencyContent">
 			  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
@@ -414,29 +419,34 @@
 				   <p>There are no operational reviews completed yet for this emergency. The SIMS Remote Coordinator(s) for this operation are the only users that can complete them - reach out to them if you'd like to add to the learning for this response!</p>
 				   {% endif %}
 			  </div>
-			</div>
-			
-			{% if response_length %}
-			<div class='row mt-5'>
-				<h3 class="text-dark" id='emergency-title'>Trello Cards Under 'Doing' <span class="badge rounded-pill bg-danger" id="smallbadge">{{response_length}}</span></h3> 
-				<div class="row row-cols-3 row-cols-md-3 g-4 mt-3">
-				{% for card in response %}
-				<div class="col d-flex align-items-stretch">
-					<div class="card bg-light" style="width: 18rem;">
-						<div class="card-header">{{card['name']}}</div>
-				  		<div class="card-body d-flex flex-column">
-							<p class="card-text">{{ card['desc']|markdown|truncate(100) }}</p>
-				  		</div>
-				  		<div class="card-body d-flex flex-column">
-							<a href="{{card['url']}}" class="card-link mt-auto">View Card</a>
-				  		</div>
+			  
+			  <div class="tab-pane fade" id="trello" role="tabpanel" aria-labelledby="trello-tab">
+			   {% if to_do_trello %}
+			   <h3 class="text-dark mt-4 emergency-title">Open Trello Tasks</h3>
+			   <p>The following cards represent Trello tasks that are still listed in the "To Do" column.</p>
+				  <div class="row row-cols-3 row-cols-md-3 g-4 mt-3">
+				  {% for card in to_do_trello %}
+					<div class="col d-flex align-items-stretch">
+						<div class="card bg-light portfolio-card" style="width: 18rem;">
+						<div class="card-body d-flex flex-column">
+							<h5 class='Montserrat text-danger'>{{card['card_name']}}</h5>
+							{% if card['desc']|length > 0 %}
+							<p class="card-text text-secondary">{{card['desc']|markdown|truncate(200, True)}}</p>
+							{% else %}
+							<p class="card-text text-secondary">No description</p>
+							{% endif %}
+							</div>
+						<div class="card-body d-flex flex-column">
+							<a href="{{card['url']}}" class="card-link mt-auto"><button class='btn btn-sm btn-secondary'>View Card</button></a>
+						</div>
+						</div>
 					</div>
-				</div>
-				{% endfor %}
-				</div>
+				  {% endfor %}
+			  </div>
 			</div>
 			{% endif %}
 		</div>
+	</div>
 	</div>
 </div>
 {% endblock content %}
