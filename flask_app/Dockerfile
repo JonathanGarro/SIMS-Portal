@@ -1,12 +1,11 @@
-# syntax=docker/dockerfile:1
-
-FROM python:3.8-slim-buster
-
-WORKDIR /python-docker
-
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-
+FROM python:3.9-slim-buster
+WORKDIR /app
+RUN apt update && apt install -y gcc python3-dev
+COPY ./requirements.txt /app
+RUN pip install -r requirements.txt
 COPY . .
-
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+EXPOSE 5000
+ENV FLASK_APP=run.py
+ENV FLASK_DEBUG=1
+ENV SQLALCHEMY_DATABASE_URI='sqlite:///site.db'
+CMD ["flask", "run", "--host", "0.0.0.0"]
