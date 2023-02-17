@@ -116,6 +116,10 @@ p {
 	width: 100%;
 }
 
+.card-bg-red {
+	background-color: #5C0000;
+}
+
 .card-img-top {
 	width: 100%;
 	height: 15vw;
@@ -343,8 +347,13 @@ p {
   border-color: red
 }
 
+
 .portfolio-title {
 	font-family: 'Montserrat';
+}
+
+.profile-category {
+	color: #c8c8c8
 }
 
 .profile-section-header {
