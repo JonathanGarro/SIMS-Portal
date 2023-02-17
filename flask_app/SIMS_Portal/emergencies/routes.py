@@ -99,12 +99,13 @@ def view_emergency(id):
 	
 	try:
 		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)
-
+		count_cards = len(to_do_trello)
 	except:
 		to_do_trello = None
+		count_cards = 0
 	
 	return render_template('emergency.html', title='Emergency View', 
-	emergency_info=emergency_info, deployments=deployments, emergency_portfolio=emergency_portfolio, check_for_story=check_for_story, learning_data=learning_data, learning_keys=learning_keys, learning_values=learning_values, learning_count=learning_count, avg_learning_keys=avg_learning_keys, avg_learning_values=avg_learning_values, deployment_history_count=deployment_history_count, user_is_sims_co=user_is_sims_co, pending_products=pending_products, emergency_portfolio_size=emergency_portfolio_size, values=values, labels=labels, kill_chart=kill_chart, existing_reviews=existing_reviews, to_do_trello=to_do_trello)
+	emergency_info=emergency_info, deployments=deployments, emergency_portfolio=emergency_portfolio, check_for_story=check_for_story, learning_data=learning_data, learning_keys=learning_keys, learning_values=learning_values, learning_count=learning_count, avg_learning_keys=avg_learning_keys, avg_learning_values=avg_learning_values, deployment_history_count=deployment_history_count, user_is_sims_co=user_is_sims_co, pending_products=pending_products, emergency_portfolio_size=emergency_portfolio_size, values=values, labels=labels, kill_chart=kill_chart, existing_reviews=existing_reviews, to_do_trello=to_do_trello, count_cards=count_cards)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
 def edit_emergency(id):
