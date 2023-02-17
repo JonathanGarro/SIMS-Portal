@@ -57,8 +57,9 @@ def get_trello_tasks(trello_board_url):
 	"""
 	Takes in a Trello board URL, isolates the Board ID, queries Trello for lists on that board called "To Do", then returns info for those cards.
 	"""
+	# isolate board ID from URL
 	board_id = trello_board_url.split('/')[4]
-	
+	# insert board ID into query URL to grab all lists and their IDs from that board
 	boards_url = "https://api.trello.com/1/boards/{}/lists".format(board_id)
 	
 	headers = {
@@ -76,15 +77,15 @@ def get_trello_tasks(trello_board_url):
 		headers=headers,
 		params=query
 	)
-	
+	# translate lists to legible format
 	board_results = json.dumps(json.loads(boards_response.text), sort_keys=True, indent=4, separators=(",", ": "))
 	
-	# overrides
+	# override incorrectly formatted booleans
 	true = True
 	false = False
 	null = ''
 	
-	# get "To Do" list ID
+	# get list ID that matches name "To Do"
 	df_board_results = pd.DataFrame(eval(board_results))
 	list_id = df_board_results.loc[df_board_results['name'] == 'To Do']
 	str_id = list_id['id'].to_string(index=False)
@@ -98,9 +99,10 @@ def get_trello_tasks(trello_board_url):
 	   headers=headers,
 	   params=query
 	)
-	
+	# convert results to json
 	cards_json = cards_response.json()
 	
+	# store list of dictionaries with relevant data
 	card_info_list = []
 	for card in cards_json:
 		temp_dict = {}
@@ -112,6 +114,5 @@ def get_trello_tasks(trello_board_url):
 		temp_dict['due'] = card['due']
 		card_info_list.append(temp_dict)
 	
-	print(len(card_info_list))
 	return card_info_list
 		
