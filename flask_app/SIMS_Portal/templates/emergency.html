@@ -16,7 +16,7 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4">
-			<div class="card p-4" style='background-color: #5C0000'>
+			<div class="card p-4 card-bg-red">
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
 
@@ -218,7 +218,7 @@
 				</li>
 				{% if to_do_trello %}
 				<li class="nav-item" role="presentation">
-				<button class="nav-link" id="trello-tab" data-bs-toggle="pill" data-bs-target="#trello" type="button" role="tab" aria-controls="trello" aria-selected="false">Trello Tasks</button>
+				<button class="nav-link" id="trello-tab" data-bs-toggle="pill" data-bs-target="#trello" type="button" role="tab" aria-controls="trello" aria-selected="false"><span class="badge rounded-pill bg-secondary" style="font-size:1rem;">{{count_cards}}</span> Trello Tasks</button>
 				</li>
 				{% endif %}
 			</ul>
@@ -427,7 +427,7 @@
 				  <div class="row row-cols-3 row-cols-md-3 g-4 mt-3">
 				  {% for card in to_do_trello %}
 					<div class="col d-flex align-items-stretch">
-						<div class="card bg-light portfolio-card" style="width: 18rem;">
+						<div class="card bg-light portfolio-card border border-3" style="width: 18rem;">
 						<div class="card-body d-flex flex-column">
 							<h5 class='Montserrat text-danger'>{{card['card_name']}}</h5>
 							{% if card['desc']|length > 0 %}
@@ -448,5 +448,6 @@
 		</div>
 	</div>
 	</div>
+</div>
 </div>
 {% endblock content %}

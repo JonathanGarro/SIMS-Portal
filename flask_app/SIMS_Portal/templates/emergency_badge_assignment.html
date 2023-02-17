@@ -16,7 +16,7 @@
 		<div class="col col-md-4 rounded rounded-3">
 			<div class="card border-0 p-4">
 				<div class="row">
-					<h4 class="text-secondary">Badge Assignment</h4>
+					<h5 class="text-secondary Montserrat">Badge Assignment for</h5>
 					<h2 class="text-danger Montserrat mb-5">{{event_name.emergency_name}}</h2>
 				</div>
 				<div class="row">
@@ -28,7 +28,7 @@
 		</div>
 		<div class="col mx-4">
 			<div class='mb-5'>
-				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3" novalidate>
+				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3 border border-3" novalidate>
 					  {{ badge_form.hidden_tag() }}
 					  <div class='row'>
 						<div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>

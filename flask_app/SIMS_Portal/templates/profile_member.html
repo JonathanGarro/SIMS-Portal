@@ -14,7 +14,7 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-md-4 rounded rounded-3">
-			<div class="card border-3 p-4 bg-light">
+			<div class="card p-4 card-bg-red">
 				{% if user_info.status == 'Removed' %}
 				<div class='row  px-2'>
 					<div class="alert alert-danger" role="alert">
@@ -26,15 +26,17 @@
 					<img src="{{ profile_picture }}" class="img-fluid mb-4" >
 				</div>
 				<div class="row mb-2">
-					<h2 class="text-danger profile-section-header">{{ user_info.firstname }} {{ user_info.lastname }}</h2>
+					<h2 class="text-light profile-section-header">{{ user_info.firstname }} {{ user_info.lastname }}</h2>
 				</div>
+				{% if user_info.job_title %}
 				<div class="row">
-					<h5 class="text-secondary Montserrat mt-4">Role</h5>
-					<h4 class='profile-section-header'>{{ user_info.job_title }}</h4>
+					<h5 class="Montserrat mt-4 profile-category">Role</h5>
+					<h4 class='Montserrat text-light'>{{ user_info.job_title }}</h4>
 				</div>
+				{% endif %}
 				<div class="row">
-					<h5 class="text-secondary Montserrat mt-4">National Society</h5>
-					<h4 class='profile-section-header'>{{ ns_association }}</h4>
+					<h5 class="Montserrat mt-4 profile-category">National Society</h5>
+					<h4 class='Montserrat text-light'>{{ ns_association }}</h4>
 				</div>
 			</div>
 			

@@ -4,28 +4,24 @@
 	<div class="row my-5">
 		<div class="col-md-4">
 			<h4 class="text-secondary mb-1">Edit Existing</h4>
-			<h2 class="text-danger mb-4">Assignment</h2>
-			<ul class="timeline">
-				<li>
-					<h5 class="text-secondary">Role Type</h5>
-					<p id="sidebar-guidance">Use "Remote IM Support" for any non-deployed volunteer support being provided (except for SIMS Coordinators, which have their own option).</p>
-				</li>
-				<li>
-					<h5 class="text-secondary">Start and End Date</h5>
-					<p id="sidebar-guidance">For deployments, use arrival and departure dates. For remote IM support, use general estimates. You can always come back and update the end date later.</p>
-				</li>
-				<li>
-					<h5 class="text-secondary">Assignment Description</h5>
-					<p id="sidebar-guidance">Provide general overview of assignment. Mention if this is a second/third round, what this person is doing, where they deployed (if applicable), etc.</p>
-				</li>
-			</ul>
+			<h2 class="text-danger mb-4 Montserrat">Assignment</h2>
+
+				<h5 class="text-secondary">Role Type</h5>
+				<p id="sidebar-guidance">Use "Remote IM Support" for any non-deployed volunteer support being provided (except for SIMS Coordinators, which have their own option).</p>
+
+				<h5 class="text-secondary">Start and End Date</h5>
+				<p id="sidebar-guidance">For deployments, use arrival and departure dates. For remote IM support, use general estimates. You can always come back and update the end date later.</p>
+
+				<h5 class="text-secondary">Assignment Description</h5>
+				<p id="sidebar-guidance">Provide general overview of assignment. Mention if this is a second/third round, what this person is doing, where they deployed (if applicable), etc.</p>
+
 
 		</div>
 		<div class="col">
-			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3" novalidate>
+			<form action="" method="POST" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
 				{{ form.hidden_tag() }}
 				<div class="row">
-					<h4 class="text-danger pb-3">{{assignment_info.User.firstname}}'s Assignment</h4>
+					<h4 class="text-danger pb-3 Montserrat">{{assignment_info.User.firstname}}'s Assignment Details</h4>
 
 
 					<div class="col">
