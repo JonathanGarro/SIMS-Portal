@@ -12,6 +12,7 @@ from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
 from flask_babel import Babel
+import babel
 import logging
 from logging.handlers import RotatingFileHandler
 from logging.config import dictConfig
@@ -65,10 +66,10 @@ def create_app(config_class=Config):
 	babel = Babel(app)
 	Markdown(app)
 
-	@babel.localeselector
-	def get_locale():
-		user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
-		return request.accept_languages.best_match(app.config['LANGUAGES'])
+	# @babel.localeselector
+	# def get_locale():
+	# 	user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
+	# 	return request.accept_languages.best_match(app.config['LANGUAGES'])
 	
 	# logging
 	if not app.debug:

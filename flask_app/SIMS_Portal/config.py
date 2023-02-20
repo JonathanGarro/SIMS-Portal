@@ -2,6 +2,8 @@ import os
 
 class Config:
 	SECRET_KEY = os.environ.get('SECRET_KEY')
+	SESSION_TYPE = 'filesystem'
+	SESSION_PERMANENT = False
 	SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 	CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
 	CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
