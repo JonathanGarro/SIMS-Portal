@@ -250,6 +250,11 @@ p {
   z-index: 1;
 }
 
+.emergency-status-label {
+	font-family: 'Montserrat';
+	color: #6D757D;
+}
+
 .emergency-title {
 	font-family: 'Montserrat';
 }
@@ -470,11 +475,6 @@ a.page-link:hover {
 	font-size:.8em;
 	font-weight: bold;
 	color: #df4759;
-}
-
-#emergency-story-link {
-	font-family: 'Montserrat';
-	color: #6D757D;
 }
 
 #grayscale-img {

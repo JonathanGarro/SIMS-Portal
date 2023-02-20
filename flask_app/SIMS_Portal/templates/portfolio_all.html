@@ -39,7 +39,7 @@
 								{% for product in full_portfolio %}
 						  			<div class="col d-flex align-items-stretch">
 										<a href='/portfolio/view/{{product.Portfolio.id}}' class='text-danger'>
-										<div class="card" id="portfolio-card">
+										<div class="card portfolio-card">
 											{% if 'user' in product.Portfolio.image_file %}
 											<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
 											{% else %}

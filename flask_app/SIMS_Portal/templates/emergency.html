@@ -23,22 +23,22 @@
 				{% if  emergency_info.Emergency.emergency_status == 'Active' %}
 				
 				<div class="d-flex flex-row align-items-center justify-content-start">
-					<div class=""><img class='img img-fluid' src='/static/assets/img/active-emergency.png'></div>
-					<div class="ps-4 "><span class='text-light lead' id='emergency-story-link'>Active Response</span></div>
+					<div class=""><img class='img img-fluid' src='/static/assets/img/active-emergency.png' alt="Response Status Icon Active"></div>
+					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Active Response</span></div>
 				</div>
 				
 				{% elif  emergency_info.Emergency.emergency_status == 'Removed' %}
 				
 				<div class="d-flex flex-row align-items-center justify-content-start">
-					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png'></div>
-					<div class="ps-4 "><span class='text-light lead' id='emergency-story-link'>Deleted Record</span></div>
+					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png' alt="Response Status Icon Inactive"></div>
+					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Deleted Record</span></div>
 				</div>
 				
 				{% else %}
 
 				<div class="d-flex flex-row align-items-center justify-content-start">
-					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png'></div>
-					<div class="ps-4 "><span class='text-light lead' id='emergency-story-link'>Closed Response</span></div>
+					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png' alt="Response Status Icon Inactive"></div>
+					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Closed Response</span></div>
 				</div>
 				
 				{% endif %}
@@ -151,21 +151,21 @@
 				<h5 class="text-secondary py-2 Montserrat">Response Tools</h5>
 				<div class="row mt-3 justify-content-center">
 					{% if emergency_info.Emergency.slack_channel == None or emergency_info.Emergency.slack_channel == '' %}
-					<div class="col" align="center"><img src="/static/assets/img/icons/slack.png" height="50px"></div>
+					<div class="col" align="center"><img src="/static/assets/img/icons/slack.png" height="50px" alt='Tool Icon Slack Not Linked'></div>
 					{% else %}
-					<div class="col" align="center"><a href='https://slack.com/app_redirect?channel={{emergency_info.Emergency.slack_channel}}'><img src="/static/assets/img/icons/slack-selected.png" height="50px"></a></div>
+					<div class="col" align="center"><a href='https://slack.com/app_redirect?channel={{emergency_info.Emergency.slack_channel}}'><img src="/static/assets/img/icons/slack-selected.png" height="50px" alt='Tool Icon Slack Linked'></a></div>
 					{% endif %}
 					
 					{% if emergency_info.Emergency.dropbox_url == None or emergency_info.Emergency.dropbox_url == '' %}
-					<div class="col" align="center"><img src="/static/assets/img/icons/dropbox.png" height="50px"></div>
+					<div class="col" align="center"><img src="/static/assets/img/icons/dropbox.png" height="50px" alt='Tool Icon Dropbox Not Linked'></div>
 					{% else %}
-					<div class="col" align="center"><a href='{{emergency_info.Emergency.dropbox_url}}'><img src="/static/assets/img/icons/dropbox-selected.png" height="50px"></a></div>
+					<div class="col" align="center"><a href='{{emergency_info.Emergency.dropbox_url}}'><img src="/static/assets/img/icons/dropbox-selected.png" height="50px" alt='Tool Icon Dropbox Linked'></a></div>
 					{% endif %}
 					
 					{% if emergency_info.Emergency.trello_url == None or emergency_info.Emergency.trello_url == '' %}
-					<div class="col" align="center"><img src="/static/assets/img/icons/trello.png" height="50px"></div>
+					<div class="col" align="center"><img src="/static/assets/img/icons/trello.png" height="50px" alt='Tool Icon Trello Not Linked'></div>
 					{% else %}
-					<div class="col" align="center"><a href='{{emergency_info.Emergency.trello_url}}'><img src="/static/assets/img/icons/trello-selected.png" height="50px"></a></div>
+					<div class="col" align="center"><a href='{{emergency_info.Emergency.trello_url}}'><img src="/static/assets/img/icons/trello-selected.png" height="50px" alt='Tool Icon Trello Linked'></a></div>
 					{% endif %}
 				</div>
 				<div class='row mt-5'>
