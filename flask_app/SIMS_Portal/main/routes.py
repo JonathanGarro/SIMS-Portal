@@ -363,7 +363,6 @@ def dashboard():
 @main.route('/role_profile/<type>')
 def view_role_profile(type):
 	capitalized_type = type.capitalize()
-	
 	users_with_profile = db.engine.execute("SELECT user.id, firstname, lastname, max(tier) as tier, image_file FROM user JOIN user_profile ON user.id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = '{}' GROUP BY user.id".format(capitalized_type))
 	
 	users_with_profile_tier_1 = []
