@@ -423,8 +423,30 @@
 			  <div class="tab-pane fade" id="trello" role="tabpanel" aria-labelledby="trello-tab">
 			   {% if to_do_trello %}
 			   <h3 class="text-dark mt-4 emergency-title">Open Trello Tasks</h3>
-			   <p>The following cards represent Trello tasks that are still listed in the "To Do" column.</p>
-				  <div class="row row-cols-3 row-cols-md-3 g-4 mt-3">
+			   <p>The following cards represent Trello tasks that are still listed in the "To Do" column. Click on the task name to see the card on Trello.</p>
+			   <table class='dataTable'>
+				   <table class='table table-striped table-hover' id='datatable'>
+					   <thead>
+						   <tr>
+							   <th>Task</th>
+							   <th>Description</th>
+						   </tr>
+					   </thead>
+					   <tbody>
+						   {% for card in to_do_trello %}
+						   <tr>
+							   <td class='align-middle h5 Montserrat text-danger'><a href="{{card['url']}}">{{card['card_name']}}</a></td>
+							   {% if card['desc']|length > 0 %}
+							   <td class='align-middle'>{{card['desc']|markdown|truncate(200, True)}}</td>
+							   {% else %}
+							   <td class='align-middle'>No Description</td>
+							   {% endif %}
+						   </tr>
+						   {% endfor %}
+					   </tbody>
+				   </table>
+			   
+				  <!-- <div class="row row-cols-3 row-cols-md-3 g-4 mt-3">
 				  {% for card in to_do_trello %}
 					<div class="col d-flex align-items-stretch">
 						<div class="card bg-light portfolio-card border border-3" style="width: 18rem;">
@@ -442,7 +464,7 @@
 						</div>
 					</div>
 				  {% endfor %}
-			  </div>
+			  </div> -->
 			</div>
 			{% endif %}
 		</div>

@@ -3,11 +3,12 @@
 <div class="container mb-5">
 	<div class=" row mt-5">
 		<h3 class="Montserrat sims-blue">{{this_user.firstname}} {{this_user.lastname}}'s Badges</h3>
+		<p class='lead mb-3'>Hover over a badge to see why it was assigned (either automatically by the Portal or by another user). Click on the badge to learn more about it.</p>
 		<div class='mb-3'>
 			<div class="row row-cols-4 row-cols-md-4 g-4 mt-2">
 			{% for badge in list_badges %}
 				<div class="col d-flex align-items-stretch">
-					  <a href='/badges#{{badge.badge_id}}'><img src="{{badge.badge_url}}" class="img-fluid"></a>
+					  <a href='/badges#{{badge.badge_id}}'><img src="{{badge.badge_url}}" class="img-fluid" data-toggle="tooltip" data-placement="top" title="{{badge.assigner_justify}}"></a>
 				  </div>
 			{% endfor %}
 			</div>
