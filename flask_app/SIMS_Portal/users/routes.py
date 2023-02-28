@@ -5,7 +5,8 @@ from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountFo
 from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids, send_reset_slack, search_location, update_member_locations
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
+from sqlalchemy import or_, Integer
+from sqlalchemy.dialects.postgresql import ARRAY
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_mail import Message
 from datetime import datetime, date
@@ -16,7 +17,8 @@ users = Blueprint('users', __name__)
 
 @users.route('/members')
 def members():
-	members = db.engine.execute("SELECT user.id AS user_id, user.ns_id AS user_ns_id, user.firstname, user.lastname, nationalsociety.ns_go_id, user.image_file, user.job_title, nationalsociety.ns_name FROM user LEFT OUTER JOIN nationalsociety ON nationalsociety.ns_go_id = user.ns_id WHERE status = 'Active'")
+	
+	members = db.session.query(User).filter(User.status == 'Active').all()
 	return render_template('members.html', members=members)
 
 @users.route('/members/all') 
@@ -110,7 +112,7 @@ def profile():
 	user_portfolio = get_full_portfolio(current_user.id)
 	user_portfolio_size = len(user_portfolio)
 	
-	user_products = db.session.query(User, Portfolio).join(Portfolio, Portfolio.creator_id==User.id).where(or_(User.id==current_user.id, Portfolio.collaborator_ids.like(user_info.id))).filter(Portfolio.product_status != 'Removed').all()
+	user_products = db.session.query(User, Portfolio).join(Portfolio, Portfolio.creator_id==User.id).where(or_(User.id==current_user.id, Portfolio.collaborator_ids.like(str(user_info.id)))).filter(Portfolio.product_status != 'Removed').all()
 	
 	skills_list = db.engine.execute("SELECT * FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE user.id=:current_user", {'current_user': current_user.id})
 	
@@ -120,9 +122,9 @@ def profile():
 	
 	profile_picture = url_for('static', filename='assets/img/avatars/' + current_user.image_file)
 	
-	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:current_user ORDER BY name LIMIT 4", {'current_user': current_user.id})
+	badges = db.engine.execute('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id))
 	
-	count_badges = db.engine.execute("SELECT count(*) as count FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': current_user.id}).scalar()
+	count_badges = db.engine.execute("SELECT count(user_id) as count FROM user_badge WHERE user_id = {}".format(current_user.id)).scalar()
 	
 	# highlight assignments for which end date has not passed (i.e. is active assignment)
 	def convert_date_to_int(date):
@@ -193,13 +195,14 @@ def assign_profiles(user_id, profile_id, tier):
 def view_all_user_badges(user_id):
 	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
-	all_user_badges = db.engine.execute("SELECT firstname, lastname, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge b ON b.id = user_badge.badge_id WHERE user.id=:user_id ORDER BY name", {'user_id': user_id})
+	all_user_badges = db.engine.execute("SELECT firstname, lastname, assigner_justify, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge b ON b.id = user_badge.badge_id WHERE user.id=:user_id ORDER BY name", {'user_id': user_id})
 	
 	list_badges = []
 	for badge in all_user_badges:
 		temp_dict = {}
 		temp_dict['firstname'] = badge.firstname
 		temp_dict['lastname'] = badge.lastname
+		temp_dict['assigner_justify'] = badge.assigner_justify
 		temp_dict['name'] = badge.badge_name
 		temp_dict['badge_id'] = badge.badge_id
 		temp_dict['badge_url'] = badge.badge_url
