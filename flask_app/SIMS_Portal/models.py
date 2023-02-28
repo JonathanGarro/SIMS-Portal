@@ -93,7 +93,7 @@ class NationalSociety(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	ns_name = db.Column(db.String(120), nullable=False)
 	country_name = db.Column(db.String(120), nullable=False)
-	ns_go_id = db.Column(db.Integer)
+	ns_go_id = db.Column(db.Integer, unique=True)
 	iso2 = db.Column(db.String(2))
 	iso3 = db.Column(db.String(3))
 	
