@@ -7,5 +7,4 @@ COPY . .
 EXPOSE 5000
 ENV FLASK_APP=run.py
 ENV FLASK_DEBUG=1
-ENV SQLALCHEMY_DATABASE_URI='sqlite:///site.db'
 CMD ["flask", "run", "--host", "0.0.0.0"]
