@@ -163,13 +163,10 @@ def admin_landing():
 		try:
 			profile_id = profile_form.profiles.data.id
 		except:
-			profile_id = 99
-		tier = profile_form.tier.data 
-		requested_profile_code = str(user_id) + str(profile_id) + str(tier)
-		
-		if profile_id == 99:
 			flash('A profile is required.', 'danger')
 			return redirect(url_for('main.admin_landing'))
+		tier = profile_form.tier.data 
+		requested_profile_code = str(user_id) + str(profile_id) + str(tier)
 		
 		if tier == '':
 			flash('A tier is required.', 'danger')
