@@ -19,6 +19,7 @@ from logging.config import dictConfig
 from logtail import LogtailHandler
 import os
 
+load_dotenv()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
