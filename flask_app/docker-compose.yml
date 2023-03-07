@@ -2,8 +2,8 @@ services:
   web:
     build: .
     volumes: 
-      - ./volumes/db:/app/db
-      - ./volumes/assets:/app/SIMS_Portal/static/assets
+      - ./db:/app/db
+      - ./assets:/app/SIMS_Portal/static/assets
     ports:
       - "5001:5000"
     env_file: ./.env
