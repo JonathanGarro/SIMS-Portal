@@ -87,35 +87,35 @@
 			<ul class="navbar-nav ms-auto">
 				{% if current_user.is_admin == 1 %}
 					{% if '/admin_landing' in request.path %}
-					<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Admin Portal</button></li>
+					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Admin Portal</button></li>
 					{% else %}
-					<li class="nav-item px-2"><a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';">Admin Portal</a></li>
+					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';">Admin Portal</a></li>
 					{% endif %}
 				{% endif %}
 				{% if '/emergencies/all' in request.path %}
-					<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Emergencies</button></li>
+					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Emergencies</button></li>
 				{% else %}
-					<li class="nav-item px-2"><a class="nav-link text-light" href="{{ url_for('emergencies.view_all_emergencies')}}" style="font-family: 'Montserrat';">Emergencies</a></li>
+					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('emergencies.view_all_emergencies')}}" style="font-family: 'Montserrat';">Emergencies</a></li>
 				{% endif %}
 				{% if '/members/all' in request.path %}
-					<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Members</button></li>
+					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Members</button></li>
 				{% else %}
-					<li class="nav-item px-2"><a class="nav-link text-light" href="{{ url_for('users.members_all')}}" style="font-family: 'Montserrat';">Members</a></li>
+					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('users.members_all')}}" style="font-family: 'Montserrat';">Members</a></li>
 				{% endif %}
 				{% if '/all_products' in request.path %}
-					<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Portfolio</button></li>
+					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Portfolio</button></li>
 				{% else %}
-					<li class="nav-item px-2"><a class="nav-link text-light" href="{{ url_for('portfolios.all_products')}}" style="font-family: 'Montserrat';">Portfolio</a></li>
+					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('portfolios.all_products')}}" style="font-family: 'Montserrat';">Portfolio</a></li>
 				{% endif %}
 				{% if '/learning' in request.path %}
-					<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Learning</button></li>
+					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Learning</button></li>
 				{% else %}
-					<li class="nav-item px-2"><a class="nav-link text-light" href="{{ url_for('main.learning')}}" style="font-family: 'Montserrat';">Learning</a></li>
+					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('main.learning')}}" style="font-family: 'Montserrat';">Learning</a></li>
 				{% endif %}
 				{% if '/resources' in request.path %}
-					<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Resources</button></li>
+					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Resources</button></li>
 				{% else %}
-					<li class="nav-item ps-2"><a class="nav-link text-light" href="{{ url_for('main.resources')}}" style="font-family: 'Montserrat';">Resources</a></li>
+					<li class="nav-item-bottom ps-2"><a class="nav-link text-light" href="{{ url_for('main.resources')}}" style="font-family: 'Montserrat';">Resources</a></li>
 				{% endif %}
 			</ul>
 		</div>

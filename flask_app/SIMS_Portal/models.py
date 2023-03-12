@@ -2,7 +2,6 @@ from SIMS_Portal import db, login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
 from datetime import datetime
 from flask_login import UserMixin, current_user
 from sqlalchemy.orm import declarative_base, relationship, column_property

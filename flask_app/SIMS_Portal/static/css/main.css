@@ -306,6 +306,10 @@ p {
 	margin-bottom: 4rem; // or the value you want
 }
 
+.nav-item-bottom {
+	font-size: 14px
+}
+
 .nav-link, .nav-link:hover {
 	color: #5b5b5b
 }

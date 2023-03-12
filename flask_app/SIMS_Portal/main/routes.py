@@ -296,6 +296,10 @@ def badge_assignment_sims_co(dis_id):
 def learning():
 	return render_template('learning.html')
 
+@main.route('/privacy')
+def privacy_policy():
+	return render_template('privacy_policy.html')
+
 @main.route('/resources')
 @login_required
 def resources():

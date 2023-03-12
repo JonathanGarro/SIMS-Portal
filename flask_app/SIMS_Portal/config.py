@@ -30,7 +30,7 @@ class Config:
 	DROPBOX_REFRESH_TOKEN = os.environ.get('DROPBOX_REFRESH_TOKEN')
 	SCHEDULER_TIMEZONE = "America/New_York"
 	LANGUAGES = ['en', 'es']
-	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif']
+	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif', '.jpeg']
 	PORTFOLIO_TYPES = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
 	LOGTAIL_SOURCE_TOKEN = os.environ.get('LOGTAIL_SOURCE_TOKEN')
 	POSITION_STACK_TOKEN = os.environ.get('POSITION_STACK_TOKEN')
