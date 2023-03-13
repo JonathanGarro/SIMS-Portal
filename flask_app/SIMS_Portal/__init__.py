@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
-from flask_mail import Mail
 from datetime import datetime	
 from SIMS_Portal.config import Config
 from flask_admin import Admin
@@ -25,7 +24,6 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'users.login' # 'login' refers to the route to redirect to when user tries to access a page where @login_required but not currently logged in
 login_manager.login_message_category = 'danger'
-mail = Mail()
 
 dictConfig({
 	'version': 1,
@@ -62,7 +60,6 @@ def create_app(config_class=Config):
 	db.init_app(app)
 	bcrypt.init_app(app)
 	login_manager.init_app(app)
-	mail.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
 	babel = Babel(app)
 	Markdown(app)
@@ -88,11 +85,11 @@ def create_app(config_class=Config):
 	scheduler.init_app(app)
 	scheduler.start()
 	
-	@scheduler.task('cron', id='run_surge_alert_refresh', hour='12')
-	def run_surge_alert_refresh():
-		with scheduler.app.app_context():
-			from SIMS_Portal.alerts.utils import refresh_surge_alerts
-			refresh_surge_alerts()
+	# @scheduler.task('cron', id='run_surge_alert_refresh', hour='12')
+	# def run_surge_alert_refresh():
+	# 	with scheduler.app.app_context():
+	# 		from SIMS_Portal.alerts.utils import refresh_surge_alerts
+	# 		refresh_surge_alerts()
 	
 	@scheduler.task('cron', id='run_auto_badge_assigners', hour='11')
 	def run_auto_badge_assigners():
