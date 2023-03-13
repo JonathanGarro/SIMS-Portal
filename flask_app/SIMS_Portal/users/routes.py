@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session
-from SIMS_Portal import db, bcrypt, mail
+from SIMS_Portal import db, bcrypt
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge, Profile, user_profile
 from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, AssignProfileTypesForm, UserLocationForm
 from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids, send_reset_slack, search_location, update_member_locations

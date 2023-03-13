@@ -1,7 +1,7 @@
 from flask import url_for, current_app, flash, redirect
 from PIL import Image
 from flask_mail import Message
-from SIMS_Portal import mail, db
+from SIMS_Portal import db
 from SIMS_Portal.models import User, Assignment, Emergency
 from slack_sdk import WebClient
 import os

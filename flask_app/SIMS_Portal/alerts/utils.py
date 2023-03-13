@@ -9,7 +9,6 @@ import math
 import requests
 import logging
 import re
-from deepdiff import DeepDiff
 
 scheduler = APScheduler()
 
