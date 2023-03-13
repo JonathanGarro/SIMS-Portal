@@ -204,6 +204,13 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
+	$('#datatable-privacy-policy').DataTable( {
+		"bLengthChange": false,
+		"searching": false,
+	} );
+} );
+
+$(document).ready(function() {
 	$('#datatable-op-reviews').DataTable( {
 		order: [[3, 'asc']],
 		"bLengthChange": false,
