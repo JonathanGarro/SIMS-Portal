@@ -107,11 +107,6 @@
 				{% else %}
 					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('portfolios.all_products')}}" style="font-family: 'Montserrat';">Portfolio</a></li>
 				{% endif %}
-				{% if '/learning' in request.path %}
-					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Learning</button></li>
-				{% else %}
-					<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('main.learning')}}" style="font-family: 'Montserrat';">Learning</a></li>
-				{% endif %}
 				{% if '/resources' in request.path %}
 					<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Resources</button></li>
 				{% else %}
