@@ -12,6 +12,7 @@ flask_app/SIMS_Portal/static/assets/portfolio/
 flask_app/SIMS_Portal/static/assets/img/avatars
 flask_app/SIMS_Portal/static/data/
 flask_app/SIMS_Portal/vector.toml
+flask_app/assets
 flask_app/vector.toml
 vector.toml
 Procfile
