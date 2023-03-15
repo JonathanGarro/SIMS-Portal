@@ -22,7 +22,7 @@ load_dotenv()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = 'users.login' # 'login' refers to the route to redirect to when user tries to access a page where @login_required but not currently logged in
+login_manager.login_view = 'users.login' 
 login_manager.login_message_category = 'danger'
 
 dictConfig({
