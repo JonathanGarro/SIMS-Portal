@@ -13,7 +13,7 @@ class Config:
 	SCHEDULER_API_ENABLED = True
 	TRELLO_KEY = os.environ.get('TRELLO_KEY')
 	TRELLO_TOKEN = os.environ.get('TRELLO_TOKEN')
-	DATA_FOLDER = '/SIMS_Portal/static/data/'
+	DATA_FOLDER = os.environ.get('DATA_FOLDER', '/SIMS_Portal/static/data/')
 	SLACK_BOT_TOKEN_NEW_USER = os.environ.get('SLACK_BOT_TOKEN_NEW_USER')
 	SIMS_PORTAL_SLACK_BOT = os.environ.get('SIMS_PORTAL_SLACK_BOT')
 	ROOT_URL = 'http://127.0.0.1:5000'
@@ -29,4 +29,4 @@ class Config:
 	POSITION_STACK_TOKEN = os.environ.get('POSITION_STACK_TOKEN')
 	GOOGLE_MAPS_TOKEN = os.environ.get('GOOGLE_MAPS_TOKEN')
 	WERKZEUG_DEBUG_PIN = '443-431-665'
-	UPLOAD_FOLDER = os.getcwd()
+	UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', os.getcwd())
