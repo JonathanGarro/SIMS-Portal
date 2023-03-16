@@ -400,10 +400,10 @@ def reset_request():
 			current_app.logger.warning('User-{} requested a password reset, but the system could not find the requested Slack ID.'.format(current_user.id))
 			return redirect('/reset_password')
 	elif request.method == 'GET':
-		if current_user.slack_id:
+		if current_user.is_authenticated:
 			form.slack_id.data = current_user.slack_id
 		else:
-			flash('Your profile does not have a Slack ID associated. Please manually enter your ID. See sidebar for guidance.', 'warning')
+			form.slack_id.data = ''
 	return render_template('reset_request.html', title='Reset Password', form=form)
 	
 @users.route('/reset_password/<token>', methods=['GET', 'POST'])
