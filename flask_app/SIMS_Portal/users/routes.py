@@ -2,7 +2,7 @@ from flask import request, render_template, url_for, flash, redirect, jsonify, B
 from SIMS_Portal import db, bcrypt
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge, Profile, user_profile
 from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, AssignProfileTypesForm, UserLocationForm
-from SIMS_Portal.users.utils import save_picture, send_reset_email, new_user_slack_alert, send_slack_dm, check_valid_slack_ids, send_reset_slack, search_location, update_member_locations
+from SIMS_Portal.users.utils import save_picture, new_user_slack_alert, send_slack_dm, check_valid_slack_ids, send_reset_slack, search_location, update_member_locations
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, Integer
@@ -392,7 +392,10 @@ def reset_request():
 		user = User.query.filter(User.slack_id == form.slack_id.data).first()
 		if form.slack_id.data in list_slack_ids:
 			send_reset_slack(user)
-			current_app.logger.info('User-{} requested a password reset.'.format(current_user.id))
+			try:
+				current_app.logger.info('User-{} requested a password reset.'.format(current_user.id))
+			except: 
+				pass
 			flash('A Slack message has been sent with instructions to reset your password.', 'info')
 			return redirect(url_for('users.login'))
 		else:
