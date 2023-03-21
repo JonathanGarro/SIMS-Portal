@@ -12,7 +12,7 @@ class NewEmergencyForm(FlaskForm):
 	emergency_type_id = QuerySelectField('Emergency Type', query_factory=lambda:EmergencyType.query.all(), get_label='emergency_type_name', allow_blank=True, validators=[DataRequired()])
 	emergency_glide = StringField('GLIDE Number')
 	emergency_go_id = IntegerField('GO ID Number')
-	activation_details = TextAreaField('SIMS Activation Details')
+	activation_details = TextAreaField('SIMS Activation Details', validators=[DataRequired()])
 	slack_channel = StringField('Slack Channel ID')
 	dropbox_url = StringField('Dropbox URL')
 	trello_url = StringField('Trello URL')
