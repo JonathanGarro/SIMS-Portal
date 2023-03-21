@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM --platform=linux/amd64 python:3.9-slim-buster
 WORKDIR /app
 RUN apt update && apt install -y gcc python3-dev
 COPY ./requirements.txt /app
