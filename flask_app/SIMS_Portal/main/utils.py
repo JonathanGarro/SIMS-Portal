@@ -286,7 +286,7 @@ def auto_badge_assigner_old_salt():
 	"""
 	try:
 		current_app.logger.info('Old Salt Auto-Assign Ran')
-		existing_old_salt_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 27")
+		existing_old_salt_badges = db.engine.execute("SELECT user_id, badge_id FROM user_badge WHERE badge_id = 25")
 		
 		list_user_ids_with_old_salt = []
 		for user in existing_old_salt_badges:
@@ -296,7 +296,7 @@ def auto_badge_assigner_old_salt():
 		
 		for user in users_eligible_for_old_salt:
 			if user.id not in list_user_ids_with_old_salt:
-				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 27, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 25, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
 				db.session.execute(new_badge)
 		db.session.commit()
 	except Exception as e:
