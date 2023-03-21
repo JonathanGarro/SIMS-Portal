@@ -31,7 +31,7 @@ def index():
 def about():
 	count_activations = db.session.query(Emergency).count()
 	all_activations = db.session.query(Emergency).all()
-	lateset_activation = db.session.query(Emergency).order_by(Emergency.created_at.desc()).first()
+	lateset_activation = db.session.query(Emergency).order_by(Emergency.created_at.desc()).filter(Emergency.emergency_status != 'Removed').first()
 	count_members = db.session.query(User).filter(User.status == 'Active').count()
 	return render_template('about.html', count_activations=count_activations, latest_activation=lateset_activation, count_members=count_members, all_activations=all_activations)
 
