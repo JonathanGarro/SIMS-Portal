@@ -266,3 +266,40 @@ def add_supporter_to_product(product_id):
 		db.session.commit()
 		flash('You are now listed as a collaborator!', 'success')
 		return redirect(url_for('portfolios.view_portfolio', id=product_id))
+
+@portfolios.route('/portfolio/remove_supporter/<int:product_id>')
+@login_required
+def remove_supporter_from_product(product_id):
+	product = db.session.query(Portfolio).filter(Portfolio.id == product_id).first()
+	product_owner = product.creator_id
+	user_id = current_user.id
+	collaborators = db.session.query(Portfolio).filter(Portfolio.id == product_id).first()
+	if user_id == product_owner:
+		flash('You are listed as the owner of this product and cannot untag yourself. You can delete the product if you wish to remove it from your profile.','danger')
+		return redirect(url_for('portfolios.view_portfolio', id=product_id))
+	if collaborators.collaborator_ids is not None:
+		# split the string by comma and convert to list
+		split_collaborators = collaborators.collaborator_ids.split(',')
+		# convert str to int
+		list_collaborators = [eval(i) for i in split_collaborators]
+		
+		if user_id in list_collaborators:
+			list_collaborators.remove(user_id)
+			string_of_collaborators = ','.join(str(x) for x in list_collaborators)
+			db.session.query(Portfolio).filter(Portfolio.id == product_id).update({'collaborator_ids':string_of_collaborators})
+			db.session.commit()
+			
+			# if removing supporter leaves blank column on collaborator_ids, replace text with "NULL"
+			new_collaborators = db.session.query(Portfolio).filter(Portfolio.id == product_id).with_entities(Portfolio.collaborator_ids).first()
+			if len(new_collaborators.collaborator_ids) < 1:
+				db.session.query(Portfolio).filter(Portfolio.id == product_id).update({'collaborator_ids': 0 })
+				db.session.commit()
+			
+			flash('You have removed yourself as a collaborator on this product.', 'success')
+			return redirect(url_for('portfolios.view_portfolio', id=product_id))
+		else: 
+			flash('You are not listed as a collaborator on this product. If you think this error message is not correct, please contact a site administrator.', 'danger')
+			return redirect(url_for('portfolios.view_portfolio', id=product_id))
+	else:
+		flash('This product has no collaborators listed that can be removed.', 'danger')
+		return redirect(url_for('portfolios.view_portfolio', id=product_id))

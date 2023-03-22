@@ -32,8 +32,10 @@
 				{% endif %}
 				{% if current_user.is_authenticated %}
 				<br>
-				<div class="row">
-					<p><a href="/portfolio/add_supporter/{{product.Portfolio.id}}" class="btn btn-sm btn-secondary mt-1" id="override-link-color">Add To My Profile</a> <span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#shared-products" class='text-light'>?</a></span></p>
+				<div class="btn-group" role="group" aria-label="Basic example">
+					<a href="/portfolio/add_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-secondary">Add to Profile</button></a>&nbsp;
+					<a href="/portfolio/remove_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-danger">Remove from Profile</button></a>&nbsp;
+					<a href="/resources/sims_portal#shared-products"><button type="button" class="btn btn-sm btn-secondary">?</button></a>
 				</div>
 				{% endif %}
 				<div class="row">
