@@ -5,6 +5,7 @@ from flask import current_app
 from SIMS_Portal import db
 from SIMS_Portal.models import Portfolio, User
 from PIL import Image
+import logging
 
 def save_portfolio(form_file):
 	random_hex = secrets.token_hex(8)
@@ -53,12 +54,15 @@ def save_cover_image(form_file, user_id, type):
 	form_file.save(file_path)
 	
 	# downscale image to max width of 850px
-	basewidth = 850
-	img = Image.open(file_path)
-	wpercent = (basewidth/float(img.size[0]))
-	hsize = int((float(img.size[1])*float(wpercent)))
-	img = img.resize((basewidth,hsize), Image.Resampling.LANCZOS)
-	img.save(file_path)
+	try:
+		basewidth = 850
+		img = Image.open(file_path)
+		wpercent = (basewidth/float(img.size[0]))
+		hsize = int((float(img.size[1])*float(wpercent)))
+		img = img.resize((basewidth,hsize), Image.Resampling.LANCZOS)
+		img.save(file_path)
+	except Exception as e: 
+		current_app.logger.error('Resize image on save_cover_image function failed: {}'.format(e))
 
 	return file_filename
 
