@@ -4,6 +4,7 @@ import dropbox
 from flask import current_app
 from SIMS_Portal import db
 from SIMS_Portal.models import Portfolio, User
+from PIL import Image
 
 def save_portfolio(form_file):
 	random_hex = secrets.token_hex(8)
@@ -50,6 +51,14 @@ def save_cover_image(form_file, user_id, type):
 	file_filename = type + '-user'+ str(user_id) + '-' + random_hex + file_ext
 	file_path = os.path.join(current_app.root_path, 'static/assets/portfolio', file_filename)
 	form_file.save(file_path)
+	
+	# downscale image to max width of 850px
+	basewidth = 850
+	img = Image.open(file_path)
+	wpercent = (basewidth/float(img.size[0]))
+	hsize = int((float(img.size[1])*float(wpercent)))
+	img = img.resize((basewidth,hsize), Image.Resampling.LANCZOS)
+	img.save(file_path)
 
 	return file_filename
 
