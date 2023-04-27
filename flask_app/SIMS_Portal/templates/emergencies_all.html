@@ -17,6 +17,7 @@
 			</tr>
   		</tbody>
 		</table>
+		
 		<table class="table table-striped mt-5" id='datatable'>
   		<thead class="">
 			<tr>
@@ -24,19 +25,19 @@
 	  			<th><h4>Status</h4></th>
 	  			<th><h4>Type</h4></th>
 	  			<th><h4>Location</h4></th>
-	  			<th><h4># of Assignments</h4></th>
+	  			<!-- <th><h4># of Assignments</h4></th> -->
 	  			<th><h4>GLIDE</h4></th>
 			</tr>
   		</thead>
   		<tbody>
-	  		{% for emergency in emergencies %}
+	  		{% for emergency in emergencies_alt %}
 	  		<tr>
-				<td class="align-middle fw-bold"><a href="/emergency/{{emergency.id}}" class="link-danger"><h5>{{emergency.emergency_name}}</h5></a></td>
-				<td class="align-middle"><h5>{{emergency.emergency_status}}</h5></td>
-				<td class="align-middle"><h5>{{emergency.emergency_type_name}}</h5></td>  
-				<td class="align-middle"><h5>{{emergency.country_name}}</h5></td> 
-				<td class="align-middle"><h5>{{emergency.count_assignments}}</h5></td>  
-				<td class="align-middle"><h5>{{emergency.emergency_glide}}</h5></td>
+				<td class="align-middle fw-bold"><a href="" class="link-danger"><h5>{{emergency.Emergency.emergency_name}}</h5></a></td>
+				<td class="align-middle"><h5>{{emergency.Emergency.emergency_status}}</h5></td>
+				<td class="align-middle"><h5>{{emergency.EmergencyType.emergency_type_name}}</h5></td>  
+				<td class="align-middle"><h5>{{emergency.NationalSociety.country_name}}</h5></td> 
+				<!-- <td class="align-middle"><h5>{{emergency.count_assignments}}</h5></td>   -->
+				<td class="align-middle"><h5>{{emergency.Emergency.emergency_glide}}</h5></td>
 	  		</tr>
 	  		{% endfor %}
   		</tbody>
