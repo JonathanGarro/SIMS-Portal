@@ -15,7 +15,7 @@ def save_picture(form_picture):
 	random_hex = secrets.token_hex(8)
 	filename, file_ext = os.path.splitext(form_picture.filename)
 	picture_filename = random_hex + file_ext
-	picture_path = os.path.join(current_app.root_path, f'{current_app.config["UPLOAD_FOLDER"]}/assets/img/avatars', picture_filename)
+	picture_path = os.path.join(current_app.config["UPLOAD_FOLDER"], picture_filename)
 	
 	output_size = (400, 400)
 	resized_image = Image.open(form_picture)

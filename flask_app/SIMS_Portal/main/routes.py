@@ -1,4 +1,5 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session
+from flask.helpers import send_from_directory
 from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
@@ -435,3 +436,10 @@ def staging():
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+
+@main.route("/uploads/<path:name>")
+def download_file(name):
+    return send_from_directory(
+        current_app.config['UPLOAD_FOLDER'], name,
+    )
