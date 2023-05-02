@@ -29,4 +29,4 @@ class Config:
 	POSITION_STACK_TOKEN = os.environ.get('POSITION_STACK_TOKEN')
 	GOOGLE_MAPS_TOKEN = os.environ.get('GOOGLE_MAPS_TOKEN')
 	WERKZEUG_DEBUG_PIN = '443-431-665'
-	UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', os.getcwd())
+	UPLOAD_BUCKET = 'sims-portal-uploads'

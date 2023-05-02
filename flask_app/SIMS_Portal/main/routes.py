@@ -1,5 +1,5 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session
-from flask.helpers import send_from_directory
+import boto3
+from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session, send_file
 from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +14,7 @@ from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts, refresh_surge_alerts_latest
 from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations, get_trello_tasks
+import io
 import os
 import re
 import csv
@@ -440,6 +441,9 @@ def staging():
 
 @main.route("/uploads/<path:name>")
 def download_file(name):
-    return send_from_directory(
-        current_app.config['UPLOAD_FOLDER'], name,
-    )
+    s3 = boto3.resource('s3')
+    file_stream = io.BytesIO()
+    s3_object = s3.Object(current_app.config['UPLOAD_BUCKET'], name)
+    s3_object.download_fileobj(file_stream)
+    file_stream.seek(0)
+    return send_file(file_stream, mimetype=s3_object.content_type)
