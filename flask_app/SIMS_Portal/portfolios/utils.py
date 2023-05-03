@@ -1,5 +1,8 @@
 import os
+import tempfile
 import secrets
+
+import boto3
 import dropbox
 from flask import current_app
 from SIMS_Portal import db
@@ -7,14 +10,6 @@ from SIMS_Portal.models import Portfolio, User
 from PIL import Image
 import logging
 
-def save_portfolio(form_file):
-	random_hex = secrets.token_hex(8)
-	filename, file_ext = os.path.splitext(form_file.filename)
-	file_filename = random_hex + file_ext
-	file_path = os.path.join(current_app.root_path, 'static/assets/portfolio', file_filename)
-	form_file.save(file_path)
-	
-	return file_filename
 
 def save_portfolio_to_dropbox(form_file, user_id, type):
 	# generate unique string to avoid filename conflicts
@@ -50,21 +45,23 @@ def save_cover_image(form_file, user_id, type):
 	random_hex = secrets.token_hex(8)
 	filename, file_ext = os.path.splitext(form_file.filename)
 	file_filename = type + '-user'+ str(user_id) + '-' + random_hex + file_ext
-	file_path = os.path.join(current_app.root_path, 'static/assets/portfolio', file_filename)
-	form_file.save(file_path)
+	file_path = f"portfolio_cover_images/{file_filename}"
 	
 	# downscale image to max width of 850px
 	try:
-		basewidth = 850
-		img = Image.open(file_path)
-		wpercent = (basewidth/float(img.size[0]))
-		hsize = int((float(img.size[1])*float(wpercent)))
-		img = img.resize((basewidth,hsize), Image.Resampling.LANCZOS)
-		img.save(file_path)
+		with tempfile.NamedTemporaryFile(suffix=f".{file_ext}") as resized_image_file:
+			basewidth = 850
+			img = Image.open(form_file)
+			wpercent = (basewidth/float(img.size[0]))
+			hsize = int((float(img.size[1])*float(wpercent)))
+			img = img.resize((basewidth,hsize), Image.Resampling.LANCZOS)
+			img.save(resized_image_file.name)
+			s3 = boto3.client("s3")
+			s3.upload_file(resized_image_file.name, current_app.config["UPLOAD_BUCKET"], file_path)
 	except Exception as e: 
 		current_app.logger.error('Resize image on save_cover_image function failed: {}'.format(e))
 
-	return file_filename
+	return file_path
 
 def get_full_portfolio(id):
 	"""Takes in a user's ID and gets all of their products, including those that they are listed as the creator (original poster to the portal) and those that they tagged themselves as a collaborator"""
