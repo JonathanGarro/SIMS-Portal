@@ -1,3 +1,4 @@
+import boto3
 from flask import url_for, current_app, flash, redirect
 from PIL import Image
 from flask_mail import Message
@@ -6,6 +7,7 @@ from SIMS_Portal.models import User, Assignment, Emergency
 from slack_sdk import WebClient
 import os
 import secrets
+import tempfile
 import requests
 import http.client, urllib.parse
 import json
@@ -15,14 +17,17 @@ def save_picture(form_picture):
 	random_hex = secrets.token_hex(8)
 	filename, file_ext = os.path.splitext(form_picture.filename)
 	picture_filename = random_hex + file_ext
-	picture_path = os.path.join(current_app.root_path, f'{current_app.config["UPLOAD_FOLDER"]}/assets/img/avatars', picture_filename)
-	
-	output_size = (400, 400)
-	resized_image = Image.open(form_picture)
-	resized_image.thumbnail(output_size)
-	resized_image.save(picture_path)
-	
-	return picture_filename
+	picture_path = f"pictures/{picture_filename}"
+
+	with tempfile.NamedTemporaryFile(suffix=f".{file_ext}") as resized_image_file:
+		output_size = (400, 400)
+		resized_image = Image.open(form_picture)
+		resized_image.thumbnail(output_size)
+		resized_image.save(resized_image_file.name)
+		s3 = boto3.client("s3")
+		s3.upload_file(resized_image_file.name, current_app.config["UPLOAD_BUCKET"], picture_path)
+
+	return picture_path
 
 def send_reset_slack(user):
 	token = user.get_reset_token()

@@ -120,7 +120,7 @@ def profile():
 	
 	languages_list = db.engine.execute("SELECT * FROM user JOIN user_language ON user.id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE user.id=:current_user", {'current_user': current_user.id})
 	
-	profile_picture = url_for('static', filename='assets/img/avatars/' + current_user.image_file)
+	profile_picture = '/uploads/' + current_user.image_file
 	
 	badges = db.engine.execute('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id))
 	
@@ -168,7 +168,7 @@ def view_profile(id):
 	
 	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(id))
 	
-	profile_picture = url_for('static', filename='assets/img/avatars/' + user_info.image_file)
+	profile_picture = '/uploads/' + user_info.image_file
 	
 	count_badges = db.engine.execute("SELECT count(*) as count FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': id}).scalar()
 	
@@ -275,7 +275,7 @@ def update_profile():
 		form.linked_in.data = current_user.linked_in
 		form.messaging_number_country_code.data = current_user.messaging_number_country_code
 		form.messaging_number.data = current_user.messaging_number
-	profile_picture = url_for('static', filename='assets/img/avatars/' + current_user.image_file)
+	profile_picture = '/uploads/' + current_user.image_file
 	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association)
 
 @users.route('/profile_edit/<int:id>', methods=['GET', 'POST'])
@@ -324,7 +324,7 @@ def update_specified_profile(id):
 			form.twitter.data = this_user.twitter
 			form.linked_in.data = this_user.linked_in
 			form.slack_id.data = this_user.slack_id
-		profile_picture = url_for('static', filename='assets/img/avatars/' + this_user.image_file)
+		profile_picture = '/uploads/' + this_user.image_file
 		return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, current_user=this_user)
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()

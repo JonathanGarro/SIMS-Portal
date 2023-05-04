@@ -1,4 +1,5 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session
+import boto3
+from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session, send_file
 from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
@@ -13,6 +14,7 @@ from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts, refresh_surge_alerts_latest
 from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations, get_trello_tasks
+import io
 import os
 import re
 import csv
@@ -435,3 +437,13 @@ def staging():
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+
+@main.route("/uploads/<path:name>")
+def download_file(name):
+    s3 = boto3.resource('s3')
+    file_stream = io.BytesIO()
+    s3_object = s3.Object(current_app.config['UPLOAD_BUCKET'], name)
+    s3_object.download_fileobj(file_stream)
+    file_stream.seek(0)
+    return send_file(file_stream, mimetype=s3_object.content_type)

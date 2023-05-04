@@ -87,7 +87,7 @@
 		<div class="col mx-4">
 			<div class='mb-5'>
 				{% if 'user' in product.Portfolio.image_file %}
-				<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="img img-fluid" alt="Product Image">
+				<img src="/uploads/{{product.Portfolio.image_file}}" class="img img-fluid" alt="Product Image">
 				{% else %}
 				<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="img img-fluid" alt="Product Placeholder Icon">
 				{% endif %}

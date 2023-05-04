@@ -31,7 +31,7 @@
       <tbody>
         {% for member in members %}
           <tr>
-            <td><img src='/static/assets/img/avatars/{{member.image_file}}' height='75px'></td>
+            <td><img src='/uploads/{{member.image_file}}' height='75px'></td>
             <td class="fw-bold align-middle"><a href="/profile/view/{{member.id}}" class='link-danger'><h5>{{member.firstname}} {{member.lastname}}</h5></a></td>
             <td class="align-middle"><h5>{{member.ns_name}}</h5></td>
             {% if member.job_title %}

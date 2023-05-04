@@ -41,7 +41,7 @@
 										<a href='/portfolio/view/{{product.Portfolio.id}}' class='text-danger'>
 										<div class="card portfolio-card">
 											{% if 'user' in product.Portfolio.image_file %}
-											<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
+											<img src="/uploads/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
 											{% else %}
 											<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
 											{% endif %}
@@ -78,7 +78,7 @@
 				{% for product in full_portfolio %}
 			  	<tr>
 				  	{% if 'user' in product.Portfolio.image_file %}
-				  	<td class="fw-bold text-dangeralign-middle"><a href='/portfolio/view/{{product.Portfolio.id}}'><img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" alt="Product Image" height='75px'></a></td>
+				  	<td class="fw-bold text-dangeralign-middle"><a href='/portfolio/view/{{product.Portfolio.id}}'><img src="/uploads/{{product.Portfolio.image_file}}" alt="Product Image" height='75px'></a></td>
 				  	{% else %}
 				  	<td class="fw-bold text-danger align-middle"><a href='/portfolio/view/{{product.Portfolio.id}}'><img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" alt="Product Placeholder Icon" height='75px'></a></td>
 				  	{% endif %}
