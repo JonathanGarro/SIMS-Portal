@@ -1,5 +1,6 @@
 import boto3
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session, send_file
+import botocore
+from flask import abort, request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session, send_file
 from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
@@ -444,6 +445,9 @@ def download_file(name):
     s3 = boto3.resource('s3')
     file_stream = io.BytesIO()
     s3_object = s3.Object(current_app.config['UPLOAD_BUCKET'], name)
-    s3_object.download_fileobj(file_stream)
+    try:
+        s3_object.download_fileobj(file_stream)
+    except botocore.exceptions.ClientError:
+        abort(404)
     file_stream.seek(0)
     return send_file(file_stream, mimetype=s3_object.content_type)
