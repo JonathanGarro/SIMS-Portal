@@ -28,12 +28,15 @@ login_manager.login_message_category = 'danger'
 dictConfig({
 	'version': 1,
 	'handlers': {
+		"console": {
+			"class": "logging.StreamHandler",
+		},
 		"logtail": {
 			"class": "logtail.LogtailHandler",
 			"source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN')
 		},
 	},
-	"root": {"level": "INFO", "handlers": ["logtail"]},
+	"root": {"level": "INFO", "handlers": ["logtail", "console"]},
 })
 
 from SIMS_Portal import models
