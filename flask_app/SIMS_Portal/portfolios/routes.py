@@ -6,7 +6,7 @@ from SIMS_Portal.users.utils import send_slack_dm
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from flask_login import login_user, logout_user, current_user, login_required
-from SIMS_Portal.portfolios.utils import save_portfolio, get_full_portfolio, save_portfolio_to_dropbox, save_cover_image
+from SIMS_Portal.portfolios.utils import get_full_portfolio, save_portfolio_to_dropbox, save_cover_image
 import os
 from func_timeout import func_timeout, FunctionTimedOut
 
