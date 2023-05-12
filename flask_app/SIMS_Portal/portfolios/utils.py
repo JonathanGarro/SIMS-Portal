@@ -49,7 +49,7 @@ def save_cover_image(form_file, user_id, type):
 	
 	# downscale image to max width of 850px
 	try:
-		with tempfile.NamedTemporaryFile(suffix=f".{file_ext}") as resized_image_file:
+		with tempfile.NamedTemporaryFile(suffix=file_ext) as resized_image_file:
 			basewidth = 850
 			img = Image.open(form_file)
 			wpercent = (basewidth/float(img.size[0]))

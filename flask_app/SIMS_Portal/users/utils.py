@@ -19,7 +19,7 @@ def save_picture(form_picture):
 	picture_filename = random_hex + file_ext
 	picture_path = f"pictures/{picture_filename}"
 
-	with tempfile.NamedTemporaryFile(suffix=f".{file_ext}") as resized_image_file:
+	with tempfile.NamedTemporaryFile(suffix=file_ext) as resized_image_file:
 		output_size = (400, 400)
 		resized_image = Image.open(form_picture)
 		resized_image.thumbnail(output_size)
