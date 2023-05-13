@@ -5,7 +5,7 @@ from SIMS_Portal.models import Story, Emergency, User, Assignment, Portfolio
 from SIMS_Portal.stories.forms import NewStoryForm, UpdateStoryForm
 from flask_sqlalchemy import SQLAlchemy
 from SIMS_Portal.stories.utils import save_header, check_sims_co
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, text
 from flask_login import login_user, logout_user, current_user, login_required
 
 stories = Blueprint('stories', __name__)
@@ -17,7 +17,7 @@ def view_story(emergency_id):
 		story_data = story_for_emergency
 		emergency_name = db.session.query(Story, Emergency).join(Emergency, Emergency.id == emergency_id).first()
 		members_supporting = db.session.query(Assignment, User, Story).join(User, User.id == Assignment.user_id).join(Story, Story.emergency_id == Assignment.emergency_id).filter(Assignment.emergency_id == emergency_id, Assignment.assignment_status == 'Active').count()
-		member_days = db.engine.execute("SELECT id, JULIANDAY(end_date) - JULIANDAY(start_date) as day_count, emergency_id FROM assignment WHERE emergency_id = :id AND assignment.assignment_status = 'Active'", {'id': emergency_id})
+		member_days = db.engine.execute(text("SELECT id, extract(day from 'end_date'::timestamp - 'start_date'::timestamp) as day_count, emergency_id FROM assignment WHERE emergency_id = :id AND assignment.assignment_status = 'Active'"), {'id': emergency_id})
 		sum_days = 0
 		for day in member_days:
 			sum_days += day[1]

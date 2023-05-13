@@ -49,9 +49,9 @@ def get_slack_id():
 
 @main.route('/badges')
 def badges():
-	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = 0 GROUP BY name")
+	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition")
 	all_badges = db.session.query(Badge).all()
-	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == 1).all()
+	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == True).all()
 	count_active_members = db.session.query(User).filter(User.status == 'Active').count()
 	
 	list_assigned_badges = []
@@ -70,19 +70,19 @@ def badges():
 @login_required
 def create_badge():
 	form = NewBadgeUploadForm()
-	if current_user.is_admin == 1 and form.validate_on_submit() and form.file.data:
+	if current_user.is_admin is True and form.validate_on_submit() and form.file.data:
 		file = save_new_badge(form.file.data, form.name.data)
 		if form.limited_edition.data == True:
-			is_limited_edition = 1
+			is_limited_edition = True
 		else:
-			is_limited_edition = 0
+			is_limited_edition = False
 		badge = Badge(name = form.name.data, badge_url = file, limited_edition = is_limited_edition, description = form.description.data)
 		db.session.execute(badge)
 		db.session.commit()
 		flash('New badge successfully created!', 'success')
 		return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @main.route('/admin_landing', methods=['GET', 'POST'])
@@ -96,13 +96,13 @@ def admin_landing():
 		open_reviews = db.session.query(Review, Emergency).join(Emergency, Emergency.id == Review.emergency_id).filter(Review.status == 'Open').all()
 		pending_users = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.status=='Pending').all()
 		all_users = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.status == 'Active').order_by(User.firstname).all()
-		assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = 'Active' GROUP BY u.id ORDER BY u.firstname")
+		assigned_badges = db.engine.execute('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname')
 		all_skills = db.session.query(Skill.name, Skill.category).order_by(Skill.category, Skill.name).all()
-		all_assigned_profiles = db.engine.execute("SELECT user_id, firstname || ' ' || lastname as user_name, profile_id, max(tier) as max_tier, user_id || profile_id as unique_code, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN user ON user.id = user_profile.user_id WHERE user.status = 'Active' GROUP BY user_id, profile_id ORDER BY user_name")
+		all_assigned_profiles = db.engine.execute('SELECT user_id, firstname || \' \' || lastname as user_name, profile_id, max(tier) as max_tier, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN "user" ON "user".id = user_profile.user_id WHERE "user".status = \'Active\' GROUP BY user_id, profile_id, firstname, lastname, name ORDER BY user_name')
 		return render_template('admin_landing.html', pending_users=pending_users, all_users=all_users, badge_form=badge_form, assigned_badges=assigned_badges, skill_form=skill_form, all_skills=all_skills, badge_upload_form=badge_upload_form, open_reviews=open_reviews, profile_form=profile_form,all_assigned_profiles=all_assigned_profiles)
 	
 	# assign badge
-	elif request.method == 'POST' and badge_form.submit_badge.data and current_user.is_admin == 1: 
+	elif request.method == 'POST' and badge_form.submit_badge.data and current_user.is_admin == True:
 		if badge_form.validate_on_submit():
 			user_id = badge_form.user_name.data.id
 			badge_id = badge_form.badge_name.data.id
@@ -112,7 +112,7 @@ def admin_landing():
 			return redirect(url_for('main.admin_landing'))
 
 		# get list of assigned badges, create column that concats user_id and badge_id to create unique identifier
-		badge_ids = db.engine.execute("SELECT user_id || badge_id as unique_code FROM user_badge WHERE user_id = {}".format(user_id))
+		badge_ids = db.engine.execute("SELECT CAST(user_id AS text) || CAST(badge_id AS text) as unique_code FROM user_badge WHERE user_id = {}".format(user_id))
 
 		list_to_check = []
 		for id in badge_ids:
@@ -253,7 +253,7 @@ def badge_assignment_sims_co(dis_id):
 	
 	event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 	
-	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, GROUP_CONCAT(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
+	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
 	
 	assigned_members = db.session.query(Emergency, Assignment, User).join(Assignment, Assignment.emergency_id == Emergency.id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id).all()
 	
@@ -367,7 +367,7 @@ def dashboard():
 @main.route('/role_profile/<type>')
 def view_role_profile(type):
 	capitalized_type = type.capitalize()
-	users_with_profile = db.engine.execute("SELECT user.id, firstname, lastname, max(tier) as tier, image_file FROM user JOIN user_profile ON user.id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = '{}' GROUP BY user.id".format(capitalized_type))
+	users_with_profile = db.engine.execute('SELECT "user".id, firstname, lastname, max(tier) as tier, image_file FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\' GROUP BY "user".id'.format(capitalized_type))
 	
 	users_with_profile_tier_1 = []
 	users_with_profile_tier_2 = []
@@ -383,7 +383,7 @@ def view_role_profile(type):
 		elif user.tier == 4:
 			users_with_profile_tier_4.append(user)
 	
-	count_users_with_profile = db.engine.execute("SELECT count(distinct(user.id)) as count FROM user JOIN user_profile ON user.id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = '{}'".format(capitalized_type))
+	count_users_with_profile = db.engine.execute('SELECT count(distinct("user".id)) as count FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\''.format(capitalized_type))
 	unpacked_count = [x.count for x in count_users_with_profile][0]
 	
 	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)

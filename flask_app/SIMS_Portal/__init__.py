@@ -141,5 +141,7 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
+	with app.app_context():
+		db.create_all()
 	
 	return app
