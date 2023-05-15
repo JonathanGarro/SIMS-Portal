@@ -17,7 +17,7 @@ def view_story(emergency_id):
 		story_data = story_for_emergency
 		emergency_name = db.session.query(Story, Emergency).join(Emergency, Emergency.id == emergency_id).first()
 		members_supporting = db.session.query(Assignment, User, Story).join(User, User.id == Assignment.user_id).join(Story, Story.emergency_id == Assignment.emergency_id).filter(Assignment.emergency_id == emergency_id, Assignment.assignment_status == 'Active').count()
-		member_days = db.engine.execute(text("SELECT id, extract(day from 'end_date'::timestamp - 'start_date'::timestamp) as day_count, emergency_id FROM assignment WHERE emergency_id = :id AND assignment.assignment_status = 'Active'"), {'id': emergency_id})
+		member_days = db.engine.execute(text("SELECT id, (end_date-start_date) as day_count, emergency_id FROM assignment WHERE emergency_id = :id AND assignment.assignment_status = 'Active'"), {'id': emergency_id})
 		sum_days = 0
 		for day in member_days:
 			sum_days += day[1]
