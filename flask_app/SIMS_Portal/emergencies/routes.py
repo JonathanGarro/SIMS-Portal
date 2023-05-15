@@ -21,7 +21,8 @@ def view_all_emergencies():
 	# original query using raw sql - allows for group by with assignment count
 	emergencies_raw = db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, e.created_at, a.end_date, COUNT(a.id) as count_assignments, n.country_name, t.emergency_type_name FROM emergency e LEFT JOIN assignment a ON a.emergency_id = e.id LEFT JOIN nationalsociety n ON e.emergency_location_id = n.ns_go_id LEFT JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_status <> 'Removed' GROUP BY e.emergency_name")
 	# upgraded query using sqlalchemy - drops the group by
-	emergencies = db.session.query(Emergency, Assignment, NationalSociety, EmergencyType).join(Assignment, Assignment.id == Emergency.id, isouter=True).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id, isouter=True).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id, isouter=True).filter(Emergency.emergency_status != "Removed")
+	emergencies = db.session.query(Emergency, Assignment, NationalSociety, EmergencyType).join(Assignment, Assignment.id == Emergency.id, isouter=True).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id, isouter=True).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id, isouter=True).filter(Emergency.emergency_status != "Removed").all()
+	# emergencies = db.session.query(Emergency).all()
 	
 	return render_template('emergencies_all.html', emergencies=emergencies)
 
