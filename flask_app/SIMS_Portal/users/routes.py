@@ -7,6 +7,7 @@ from SIMS_Portal.portfolios.utils import get_full_portfolio
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, Integer
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.sql import text
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_mail import Message
 from datetime import datetime, date
@@ -24,7 +25,7 @@ def members():
 @users.route('/members/all') 
 @login_required
 def members_all(): 
-	members = db.engine.execute("SELECT u.id, u.firstname, u.lastname, u.status, u.email, u.job_title, u.slack_id, u.ns_id, u.image_file, ns.ns_name, GROUP_CONCAT(DISTINCT l.name) as languages, GROUP_CONCAT(DISTINCT s.name) as skills, GROUP_CONCAT(DISTINCT p.name) as profiles, COUNT(DISTINCT a.id) as assignment_count FROM user u JOIN nationalsociety ns ON ns.ns_go_id = u.ns_id  LEFT JOIN user_language ul ON ul.user_id = u.id LEFT JOIN language l ON l.id = ul.language_id LEFT JOIN assignment a ON a.user_id = u.id  LEFT JOIN user_profile up ON up.user_id = u.id LEFT JOIN profile p ON p.id = up.profile_id LEFT JOIN user_skill us ON us.user_id = u.id LEFT JOIN skill s ON s.id = us.skill_id WHERE u.status = 'Active' and assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname")
+	members = db.engine.execute('SELECT u.id, u.firstname, u.lastname, u.status, u.email, u.job_title, u.slack_id, u.ns_id, u.image_file, ns.ns_name, string_agg(DISTINCT l.name, \',\') as languages, string_agg(DISTINCT s.name, \',\') as skills, string_agg(DISTINCT p.name, \',\') as profiles, COUNT(DISTINCT a.id) as assignment_count FROM "user" u JOIN nationalsociety ns ON ns.ns_go_id = u.ns_id  LEFT JOIN user_language ul ON ul.user_id = u.id LEFT JOIN language l ON l.id = ul.language_id LEFT JOIN assignment a ON a.user_id = u.id  LEFT JOIN user_profile up ON up.user_id = u.id LEFT JOIN profile p ON p.id = up.profile_id LEFT JOIN user_skill us ON us.user_id = u.id LEFT JOIN skill s ON s.id = us.skill_id WHERE u.status = \'Active\' and assignment_status = \'Active\' GROUP BY u.id, ns.ns_name ORDER BY u.firstname')
 	return render_template('members_all.html', members=members)
 
 @users.route('/register', methods=['GET', 'POST'])
@@ -114,17 +115,19 @@ def profile():
 	
 	user_products = db.session.query(User, Portfolio).join(Portfolio, Portfolio.creator_id==User.id).where(or_(User.id==current_user.id, Portfolio.collaborator_ids.like(str(user_info.id)))).filter(Portfolio.product_status != 'Removed').all()
 	
-	skills_list = db.engine.execute("SELECT * FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE user.id=:current_user", {'current_user': current_user.id})
+	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
-	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(current_user.id))
+	qualifying_profile_list = db.engine.execute(text('SELECT profile.image, profile.name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
+		'SELECT p.name AS name, MAX(up.tier) AS tier FROM user_profile up JOIN profile p ON p.id = up.profile_id WHERE up.user_id = :user_id GROUP BY p.name'
+	') highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier WHERE user_profile.user_id = :user_id'), {'user_id': current_user.id})
 	
-	languages_list = db.engine.execute("SELECT * FROM user JOIN user_language ON user.id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE user.id=:current_user", {'current_user': current_user.id})
+	languages_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
 	profile_picture = '/uploads/' + current_user.image_file
 	
 	badges = db.engine.execute('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id))
 	
-	count_badges = db.engine.execute("SELECT count(user_id) as count FROM user_badge WHERE user_id = {}".format(current_user.id)).scalar()
+	count_badges = db.engine.execute(text("SELECT count(user_id) as count FROM user_badge WHERE user_id = :user_id"), {'user_id': current_user.id}).scalar()
 	
 	# highlight assignments for which end date has not passed (i.e. is active assignment)
 	def convert_date_to_int(date):
@@ -162,17 +165,19 @@ def view_profile(id):
 	
 	user_portfolio_size = len(user_portfolio)
 	
-	skills_list = db.engine.execute("SELECT * FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE user.id=:member_id", {'member_id': id})
+	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id = :member_id'), {'member_id': id})
 	
-	languages_list = db.engine.execute("SELECT * FROM user JOIN user_language ON user.id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE user.id=:member_id", {'member_id': id})
+	languages_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:member_id'), {'member_id': id})
 	
-	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(id))
+	qualifying_profile_list = db.engine.execute(text('SELECT profile.image, profile.name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
+		'SELECT p.name AS name, MAX(up.tier) AS tier FROM user_profile up JOIN profile p ON p.id = up.profile_id WHERE up.user_id = :user_id GROUP BY p.name'
+	') highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier WHERE user_profile.user_id = :user_id'), {'user_id': id})
 	
 	profile_picture = '/uploads/' + user_info.image_file
 	
-	count_badges = db.engine.execute("SELECT count(*) as count FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name", {'member_id': id}).scalar()
+	count_badges = db.engine.execute(text('SELECT count(*) as count FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id'), {'member_id': id}).scalar()
 	
-	badges = db.engine.execute("SELECT * FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge ON badge.id = user_badge.badge_id WHERE user.id=:member_id ORDER BY name LIMIT 4", {'member_id': id})
+	badges = db.engine.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id ORDER BY name LIMIT 4'), {'member_id': id})
 	
 	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges, qualifying_profile_list=qualifying_profile_list)
 
@@ -195,7 +200,7 @@ def assign_profiles(user_id, profile_id, tier):
 def view_all_user_badges(user_id):
 	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
-	all_user_badges = db.engine.execute("SELECT firstname, lastname, assigner_justify, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM user JOIN user_badge ON user_badge.user_id = user.id JOIN badge b ON b.id = user_badge.badge_id WHERE user.id=:user_id ORDER BY name", {'user_id': user_id})
+	all_user_badges = db.engine.execute(text('SELECT firstname, lastname, assigner_justify, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge b ON b.id = user_badge.badge_id WHERE "user".id=:user_id ORDER BY name'), {'user_id': user_id})
 	
 	list_badges = []
 	for badge in all_user_badges:
@@ -215,7 +220,9 @@ def view_all_user_badges(user_id):
 def view_all_user_profiles(user_id):
 	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
-	qualifying_profile_list = db.engine.execute("SELECT user_id, profile_id, image, name, max(tier) as tier, user_id || profile_id || tier as unique_code FROM user_profile JOIN profile ON profile.id = user_profile.profile_id WHERE user_id = {} GROUP BY name".format(user_id))
+	qualifying_profile_list = db.engine.execute(text('SELECT profile.image, user_profile.tier FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
+		'SELECT p.name AS name, MAX(up.tier) AS tier FROM user_profile up JOIN profile p ON p.id = up.profile_id WHERE up.user_id = :user_id GROUP BY p.name'
+	') highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier WHERE user_profile.user_id = :user_id'), {'user_id': user_id})
 	
 	list_profiles = []
 	for profile in qualifying_profile_list:
