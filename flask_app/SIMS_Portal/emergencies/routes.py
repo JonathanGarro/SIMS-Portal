@@ -19,7 +19,7 @@ emergencies = Blueprint('emergencies', __name__)
 @login_required
 def view_all_emergencies():
 	# original query using raw sql - allows for group by with assignment count
-	# emergencies_raw = db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, e.created_at, a.end_date, COUNT(a.id) as count_assignments, n.country_name, t.emergency_type_name FROM emergency e LEFT JOIN assignment a ON a.emergency_id = e.id LEFT JOIN nationalsociety n ON e.emergency_location_id = n.ns_go_id LEFT JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_status <> 'Removed' GROUP BY e.emergency_name")
+	emergencies_raw = db.engine.execute("SELECT e.id, e.emergency_name, e.emergency_status, e.emergency_glide, e.created_at, a.end_date, COUNT(a.id) as count_assignments, n.country_name, t.emergency_type_name FROM emergency e LEFT JOIN assignment a ON a.emergency_id = e.id LEFT JOIN nationalsociety n ON e.emergency_location_id = n.ns_go_id LEFT JOIN emergencytype t ON t.emergency_type_go_id = e.emergency_type_id WHERE e.emergency_status <> 'Removed' GROUP BY e.emergency_name")
 	# upgraded query using sqlalchemy - drops the group by
 	emergencies = db.session.query(Emergency, Assignment, NationalSociety, EmergencyType).join(Assignment, Assignment.id == Emergency.id, isouter=True).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id, isouter=True).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id, isouter=True).filter(Emergency.emergency_status != "Removed").all()
 	# emergencies = db.session.query(Emergency).all()
@@ -80,7 +80,7 @@ def view_emergency(id):
 
 	learning_count = db.session.query(Learning, Assignment, Emergency).join(Assignment, Assignment.id == Learning.assignment_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id).count()
 
-	learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}'.format(id))
+	learning_data = db.engine.execute("SELECT AVG(overall_score) as 'Overall', AVG(got_support) as 'Support', AVG(internal_resource) as 'Internal Resources', AVG(external_resource) as 'External Resources', AVG(clear_tasks) as 'Task Clarity', AVG(field_communication) as 'Field Communication', AVG(clear_deadlines) as 'Deadlines', AVG(coordination_tools) as 'Coordination Tools' FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}".format(id))
 	
 	data_dict_learnings = [x._asdict() for x in learning_data]
 	learning_keys = []
@@ -89,7 +89,7 @@ def view_emergency(id):
 		learning_keys.append(k)
 		learning_values.append(v)
 	
-	avg_learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning')
+	avg_learning_data = db.engine.execute("SELECT AVG(overall_score) as 'Overall', AVG(got_support) as 'Support', AVG(internal_resource) as 'Internal Resources', AVG(external_resource) as 'External Resources', AVG(clear_tasks) as 'Task Clarity', AVG(field_communication) as 'Field Communication', AVG(clear_deadlines) as 'Deadlines', AVG(coordination_tools) as 'Coordination Tools' FROM learning")
 	
 	data_dict_avg_learnings = [x._asdict() for x in avg_learning_data]
 	avg_learning_keys = []
