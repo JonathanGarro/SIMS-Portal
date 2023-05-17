@@ -76,7 +76,7 @@ def view_emergency(id):
 
 	learning_count = db.session.query(Learning, Assignment, Emergency).join(Assignment, Assignment.id == Learning.assignment_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id).count()
 
-	learning_data = db.engine.execute("SELECT AVG(overall_score) as 'Overall', AVG(got_support) as 'Support', AVG(internal_resource) as 'Internal Resources', AVG(external_resource) as 'External Resources', AVG(clear_tasks) as 'Task Clarity', AVG(field_communication) as 'Field Communication', AVG(clear_deadlines) as 'Deadlines', AVG(coordination_tools) as 'Coordination Tools' FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}".format(id))
+	learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}'.format(id))
 	
 	data_dict_learnings = [x._asdict() for x in learning_data]
 	learning_keys = []
@@ -85,7 +85,7 @@ def view_emergency(id):
 		learning_keys.append(k)
 		learning_values.append(v)
 	
-	avg_learning_data = db.engine.execute("SELECT AVG(overall_score) as 'Overall', AVG(got_support) as 'Support', AVG(internal_resource) as 'Internal Resources', AVG(external_resource) as 'External Resources', AVG(clear_tasks) as 'Task Clarity', AVG(field_communication) as 'Field Communication', AVG(clear_deadlines) as 'Deadlines', AVG(coordination_tools) as 'Coordination Tools' FROM learning")
+	avg_learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning')
 	
 	data_dict_avg_learnings = [x._asdict() for x in avg_learning_data]
 	avg_learning_keys = []
