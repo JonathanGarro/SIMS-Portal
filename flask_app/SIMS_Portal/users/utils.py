@@ -16,6 +16,8 @@ import logging
 def save_picture(form_picture):
 	random_hex = secrets.token_hex(8)
 	filename, file_ext = os.path.splitext(form_picture.filename)
+	if file_ext.lower() == '.jpeg':
+		file_ext = '.jpg'
 	picture_filename = random_hex + file_ext
 	picture_path = f"pictures/{picture_filename}"
 
