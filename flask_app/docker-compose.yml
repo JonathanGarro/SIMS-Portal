@@ -7,3 +7,17 @@ services:
     ports:
       - "5001:5000"
     env_file: ./.env
+    
+  postgresdb:
+    image: postgres:13.5-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=simsportal
+      - POSTGRES_PASSWORD=simsportal
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
