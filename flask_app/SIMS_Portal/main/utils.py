@@ -6,6 +6,7 @@ from slack_sdk.errors import SlackApiError
 from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge
 from SIMS_Portal import db
 from flask_login import current_user
+import boto3
 
 def fetch_slack_channels():
 	token = current_app.config['SIMS_PORTAL_SLACK_BOT']
@@ -76,14 +77,14 @@ def check_sims_co(emergency_id):
 
 def save_new_badge(file, name):
 	filename, file_ext = os.path.splitext(file.filename)
-
 	filename = name.title().replace(' ','-')
 	file_merged = filename + file_ext
-	file_path = os.path.join(current_app.root_path, 'static/assets/img/badges', file_merged)
-	file_path_extension = '/static/assets/img/badges/' + file_merged
-	file.save(file_path)
-	
-	return file_path_extension
+	file_path = f"badges/{file_merged}"	
+
+	s3 = boto3.client("s3")
+	s3.upload_fileobj(file, current_app.config["UPLOAD_BUCKET"], file_path)
+
+	return file_path
 
 def auto_badge_assigner_maiden_voyage():
 	"""
