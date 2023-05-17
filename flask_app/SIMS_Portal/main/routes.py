@@ -49,7 +49,7 @@ def get_slack_id():
 
 @main.route('/badges')
 def badges():
-	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition")
+	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name")
 	all_badges = db.session.query(Badge).all()
 	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == True).all()
 	count_active_members = db.session.query(User).filter(User.status == 'Active').count()
