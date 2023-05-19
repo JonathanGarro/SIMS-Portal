@@ -19,7 +19,7 @@ users = Blueprint('users', __name__)
 @users.route('/members')
 def members():
 	
-	members = db.session.query(User).filter(User.status == 'Active').all()
+	members = db.session.query(User).filter(User.status == 'Active').order_by(User.id).all()
 	return render_template('members.html', members=members)
 
 @users.route('/members/all') 
