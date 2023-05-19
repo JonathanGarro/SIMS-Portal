@@ -37,7 +37,7 @@
 					<a href="/portfolio/view/{{product.Portfolio.id}}">
 					<div class="card" id="portfolio-card" style="width: 18rem;">
 						{% if product.Portfolio.image_file|length > 10 %}
-						<img src="/static/assets/portfolio/{{product.Portfolio.image_file}}" class="card-img-top">
+						<img src="/uploads/{{product.Portfolio.image_file}}" class="card-img-top">
 						{% else %}
 						<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top">
 						{% endif %}
