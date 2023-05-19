@@ -4,6 +4,7 @@ from flask import abort, request, render_template, url_for, flash, redirect, jso
 from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 from SIMS_Portal.main.forms import MemberSearchForm, EmergencySearchForm, ProductSearchForm, BadgeAssignmentForm, SkillCreatorForm, BadgeAssignmentViaSIMSCoForm, NewBadgeUploadForm
@@ -432,8 +433,19 @@ def staging():
 		# trello_board_url = 'https://trello.com/b/RbfET4cp/simst%C3%BCrkiye-syria-earthquake2023'
 		# x = get_trello_tasks(trello_board_url)
 		# print(x)
-		refresh_surge_alerts_latest()
-		return render_template('visualization.html')
+		test = db.session.query(
+			User.id.label('user_id'),
+			User.firstname,
+			User.lastname,
+			func.count(Assignment.id).label('count_assignments')
+		).join(
+			Assignment, Assignment.user_id == User.id
+		).filter(
+			Assignment.assignment_status != 'Removed'
+		).group_by(
+			User.id
+		).all()
+		return render_template('visualization.html', test=test)
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
