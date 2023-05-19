@@ -32,7 +32,7 @@
   		<tbody>
 	  		{% for emergency in emergencies %}
 	  		<tr>
-				<td class="align-middle fw-bold"><a href="" class="link-danger"><h5>{{emergency.Emergency.emergency_name}}</h5></a></td>
+				<td class="align-middle fw-bold"><a href="/emergency/{{emergency.Emergency.id}}" class="link-danger"><h5>{{emergency.Emergency.emergency_name}}</h5></a></td>
 				<td class="align-middle"><h5>{{emergency.Emergency.emergency_status}}</h5></td>
 				<td class="align-middle"><h5>{{emergency.EmergencyType.emergency_type_name}}</h5></td>  
 				<td class="align-middle"><h5>{{emergency.NationalSociety.country_name}}</h5></td> 
