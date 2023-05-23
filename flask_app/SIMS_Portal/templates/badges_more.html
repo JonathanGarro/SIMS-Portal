@@ -8,7 +8,7 @@
 			<div class="row row-cols-4 row-cols-md-4 g-4 mt-2">
 			{% for badge in list_badges %}
 				<div class="col d-flex align-items-stretch">
-					  <a href='/badges#{{badge.badge_id}}'><img src="{{badge.badge_url}}" class="img-fluid" data-toggle="tooltip" data-placement="top" title="{{badge.assigner_justify}}"></a>
+					  <a href='/badges#{{badge.badge_id}}'><img src="/uploads/{{badge.badge_url}}" class="img-fluid" data-toggle="tooltip" data-placement="top" title="{{badge.assigner_justify}}"></a>
 				  </div>
 			{% endfor %}
 			</div>
