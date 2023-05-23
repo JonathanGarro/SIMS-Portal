@@ -3,7 +3,7 @@ import logging
 import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge, user_skill, user_language, user_profile, Skill, Language, Profile
+from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge, user_skill, user_language, user_profile, Skill, Language, Profile, Portfolio
 from SIMS_Portal import db
 from flask_login import current_user
 import boto3
@@ -252,9 +252,14 @@ def auto_badge_assigner_jack_of_all_trades():
 	"""
 	current_app.logger.info('Jack of All Trades Auto-Assign Ran')
 	try:
-		users_with_profiles = db.session.query(func.concat(User.firstname, ' ', User.lastname).label('name'), User.id.label('user_id'), func.string_agg(Profile.name, ', ').label('profiles')).join(user_profile, User.id == user_profile.c.user_id).join(Profile, Profile.id == user_profile.c.profile_id).group_by(User.id, 'name').all()
+		users_with_profiles = db.session.query(
+			func.concat(User.firstname, ' ', User.lastname).label('name'),
+			User.id.label('user_id'),
+			func.string_agg(Profile.name, ', ').label('profiles')
+		).join(user_profile, User.id == user_profile.c.user_id).join(
+			Profile, Profile.id == user_profile.c.profile_id
+		).group_by(User.id, func.concat(User.firstname, ' ', User.lastname)).all()
 		
-		# users_with_profiles = db.engine.execute("SELECT firstname || ' ' || lastname as name, user.id AS user_id, GROUP_CONCAT(DISTINCT profile.id) AS profiles FROM user JOIN user_profile ON user_profile.user_id = user.id JOIN profile ON profile.id = user_profile.profile_id GROUP BY user.id")
 		existing_jack_of_all_trades_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 22")
 		
 		list_users_with_profiles = []
@@ -287,7 +292,7 @@ def auto_badge_assigner_edward_tufte():
 	"""
 	try:
 		current_app.logger.info('Edward Tufte Auto-Assign Ran')
-		existing_edward_tufte_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 26")
+		existing_edward_tufte_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 31")
 		
 		list_user_ids_with_edward_tufte = []
 		for user in existing_edward_tufte_badges:
@@ -300,7 +305,7 @@ def auto_badge_assigner_edward_tufte():
 		list_users_eligible_for_edward_tufte = []
 		for user in users_eligible_for_edward_tufte:
 			if user.id not in list_user_ids_with_edward_tufte:
-				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 26, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 31, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
 				db.session.execute(new_badge)
 		db.session.commit()
 	except Exception as e:
@@ -342,7 +347,7 @@ def auto_badge_assigner_old_salt():
 		for user in existing_old_salt_badges:
 			list_user_ids_with_old_salt.append(user.user_id)
 		
-		users_eligible_for_old_salt = db.session.query(Assignment.id, User.id, User.firstname, User.lastname, func.count().label('count')).join(User, User.id == Assignment.user_id).filter(User.role == 'SIMS Remote Coordinator').group_by(Assignment.id, User.id, User.firstname, User.lastname).having(func.count() > 2).all()
+		users_eligible_for_old_salt = db.session.query(Assignment.id, User.id, User.firstname, User.lastname, func.count().label('count')).join(User, User.id == Assignment.user_id).filter(Assignment.role == 'SIMS Remote Coordinator').group_by(Assignment.id, User.id, User.firstname, User.lastname).having(func.count() > 2).all()
 		
 		# users_eligible_for_old_salt = db.engine.execute("SELECT assignment.id, user.id, firstname, lastname, count(*) as count FROM assignment JOIN user ON user.id = assignment.user_id WHERE role = 'SIMS Remote Coordinator' GROUP BY user.id HAVING count > 2")
 		

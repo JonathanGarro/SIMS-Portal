@@ -50,7 +50,7 @@ def get_slack_id():
 
 @main.route('/badges')
 def badges():
-	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name")
+	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, badge_url, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name")
 	all_badges = db.session.query(Badge).all()
 	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == True).all()
 	count_active_members = db.session.query(User).filter(User.status == 'Active').count()
@@ -60,10 +60,13 @@ def badges():
 		temp_dict = {}
 		temp_dict['name'] = badge.name
 		temp_dict['id'] = badge.id
+		temp_dict['badge_url'] = badge.badge_url
 		temp_dict['count'] = badge.count
 		temp_dict['description'] = badge.description
 		temp_dict['limited_edition'] = badge.limited_edition
 		list_assigned_badges.append(temp_dict)
+	
+	print(list_assigned_badges)
 	
 	return render_template('badges.html', count_active_members=count_active_members, all_badges=all_badges, list_assigned_badges=list_assigned_badges, all_limited_edition_badges=all_limited_edition_badges)
 
@@ -177,7 +180,7 @@ def admin_landing():
 			return redirect(url_for('main.admin_landing'))
 		
 		# get the user's existing profiles and tiers, generate unique code that concats all three elements
-		users_existing_profiles = db.engine.execute("SELECT user_id, profile_id, tier, user_id || profile_id || tier as unique_code FROM user_profile WHERE user_id = {}".format(user_id))
+		users_existing_profiles = db.engine.execute("SELECT user_id, profile_id, tier, CONCAT(user_id, profile_id, tier) AS unique_code FROM user_profile WHERE user_id = {}".format(user_id))
 		
 		# iterate over SQL object to extract unique_code
 		list_to_check = []
@@ -254,7 +257,7 @@ def badge_assignment_sims_co(dis_id):
 	
 	event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 	
-	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
+	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM public.user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
 	
 	assigned_members = db.session.query(Emergency, Assignment, User).join(Assignment, Assignment.emergency_id == Emergency.id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id).all()
 	
@@ -274,7 +277,7 @@ def badge_assignment_sims_co(dis_id):
 		session['assigner_justify'] = badge_form.assigner_justify.data
 		
 		# get all badges assigned to the user which sims co is trying to assign
-		users_badges = db.engine.execute('SELECT user.id, user_badge.user_id, user_badge.badge_id FROM user JOIN user_badge ON user_badge.user_id = user.id WHERE user.id = {}'.format(user_id))
+		users_badges = db.engine.execute('SELECT u.id, user_badge.user_id, user_badge.badge_id FROM public.user u JOIN user_badge ON user_badge.user_id = u.id WHERE u.id = {}'.format(user_id))
 		users_badges_ids = []
 		for badge in users_badges:
 			users_badges_ids.append(badge.badge_id)
