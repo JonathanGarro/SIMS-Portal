@@ -23,8 +23,8 @@ class Config:
 	DROPBOX_REFRESH_TOKEN = os.environ.get('DROPBOX_REFRESH_TOKEN')
 	SCHEDULER_TIMEZONE = "America/New_York"
 	LANGUAGES = ['en', 'es']
-	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif', '.jpeg']
-	PORTFOLIO_TYPES = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
+	UPLOAD_EXTENSIONS = ['.jpg', '.png', '.gif', '.jpeg', '.shp', '.py', '.doc', '.docx', '.xls', '.csv', '.dif', '.pdf', '.ppt', '.pptx', '.potx', '.zip', '.txt', '.ai', '.indd']
+	PORTFOLIO_TYPES = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Code Snippet', 'Other']
 	LOGTAIL_SOURCE_TOKEN = os.environ.get('LOGTAIL_SOURCE_TOKEN')
 	POSITION_STACK_TOKEN = os.environ.get('POSITION_STACK_TOKEN')
 	GOOGLE_MAPS_TOKEN = os.environ.get('GOOGLE_MAPS_TOKEN')
