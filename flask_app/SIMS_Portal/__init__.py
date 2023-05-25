@@ -97,13 +97,12 @@ def create_app(config_class=Config):
 	@scheduler.task('cron', id='run_auto_badge_assigners', hour='17')
 	def run_auto_badge_assigners():
 		with scheduler.app.app_context():
-			from SIMS_Portal.main.utils import auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_badge_assigner_world_traveler, auto_badge_assigner_edward_tufte, auto_badge_assigner_old_salt
+			from SIMS_Portal.main.utils import auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_world_traveler, auto_badge_assigner_edward_tufte, auto_badge_assigner_old_salt
 			auto_badge_assigner_maiden_voyage()
 			auto_badge_assigner_big_wig()
 			auto_badge_assigner_self_promoter()
 			auto_badge_assigner_polyglot()
 			auto_badge_assigner_autobiographer()
-			auto_badge_assigner_jack_of_all_trades()
 			auto_badge_assigner_edward_tufte()
 			auto_badge_assigner_world_traveler()
 			auto_badge_assigner_old_salt()
