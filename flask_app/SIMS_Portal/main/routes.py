@@ -421,34 +421,8 @@ def manual_refresh(func):
 @main.route('/staging') 
 def staging(): 
 	if current_user.is_admin == 1:
-		# refresh_surge_alerts()
-		# auto_badge_assigner_big_wig()
-		# auto_badge_assigner_maiden_voyage()
-		# auto_badge_assigner_self_promoter()
-		# auto_badge_assigner_polyglot()
-		# auto_badge_assigner_autobiographer()
-		# auto_badge_assigner_jack_of_all_trades()
-		# update_member_locations()
-		# auto_assigner_edward_tufte()
-		# auto_badge_assigner_world_traveler()
-		# auto_badge_assigner_old_salt()
-		# update_response_locations()
-		# trello_board_url = 'https://trello.com/b/RbfET4cp/simst%C3%BCrkiye-syria-earthquake2023'
-		# x = get_trello_tasks(trello_board_url)
-		# print(x)
-		test = db.session.query(
-			User.id.label('user_id'),
-			User.firstname,
-			User.lastname,
-			func.count(Assignment.id).label('count_assignments')
-		).join(
-			Assignment, Assignment.user_id == User.id
-		).filter(
-			Assignment.assignment_status != 'Removed'
-		).group_by(
-			User.id
-		).all()
-		return render_template('visualization.html', test=test)
+		# place debug code here
+		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
