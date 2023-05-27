@@ -401,8 +401,8 @@ def reset_request():
 			send_reset_slack(user)
 			try:
 				current_app.logger.info('User-{} requested a password reset.'.format(current_user.id))
-			except: 
-				pass
+			except Exception as e: 
+				current_app.logger.error('User-{} requested a password reset but got an error: {}'.format(current_user.id, e))
 			flash('A Slack message has been sent with instructions to reset your password.', 'info')
 			return redirect(url_for('users.login'))
 		else:
