@@ -47,7 +47,7 @@
 		{% for badge in all_limited_edition_badges %}
 		<div class="row mt-5" id={{badge.id}}>
 			<div class="col-md-2">
-				<img src='/static/assets/img/badges/{{badge.name | replace(" ","-")}}.png' class='img-fluid'>
+				<img src='/uploads/{{ badge.badge_url }}' class='img-fluid'>
 			</div>
 			<div class="col ps-4">
 				<h3 class='text-danger Montserrat mb-2'>{{badge.name}}</h3>
