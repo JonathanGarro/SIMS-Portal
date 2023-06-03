@@ -1,5 +1,4 @@
-<img width="1705" alt="SIMS Portal Landing Page" src="https://user-images.githubusercontent.com/8890661/213471972-66d5bad9-7c6b-41fd-843a-f79e1934f433.png">
-
+![Screen Shot 2023-06-02 at 08 26 33 PM](https://github.com/JonathanGarro/SIMS-Portal/assets/8890661/8259016f-59fe-4279-831f-ad492e808bbb)
 
 # SIMS-Portal
 
