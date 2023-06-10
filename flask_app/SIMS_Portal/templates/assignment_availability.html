@@ -14,42 +14,6 @@
 		{% endwith %}
 	</div>
 	<div class="row my-5">
-		<div class="col col-lg-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light rounded rounded-4">
-			<a href='/profile/view/{{assignment_info.User.id}}'><h2 class="text-danger mb-4 Montserrat">{{assignment_info.User.firstname}} {{assignment_info.User.lastname}}</h2></a>
-			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}} </h5></a>
-			
-				{% if days_left_int < 1 %}
-				<div class="progress" style="height: 25px;">
-					  <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Assignment Over
-					</div>
-				</div>
-				
-				{% else %}
-				
-				
-				<div class="progress" style="height: 25px;">
-					  <div class="progress-bar bg-secondary progress-bar-striped" role="progressbar" style="width: {{((assignment_length_int - days_left_int)/assignment_length_int)*100}}%" aria-valuenow="{{((assignment_length_int - days_left_int)/assignment_length_int)*100}}" aria-valuemin="0" aria-valuemax="{{assignment_length_int}}">{{days_left_int}} Days Left
-					</div>
-				</div>
-				
-				{% endif %}
-				
-				<table class="table table-sm table-borderless mt-1">
-				  <tbody>
-					<tr>
-					  <td scope="row" id='date-label'>{{formatted_start_date}}</td>
-					  <td class="float-end" id='date-label'>{{formatted_end_date}}</td>
-					</tr>
-				  </tbody>
-				</table>
-
-				<br>
-
-
-
-			</div>
-		</div>
 
 		<div class="col mx-4">
 				<h4 class="text-danger Montserrat">Report Your Availability</h4>
