@@ -37,3 +37,16 @@ def aggregate_availability(dis_id):
 		labels.append(x['day_of_week'])
 		
 	return values, labels
+
+def get_dates_current_and_next_week():
+	"""Returns all days greater than today in the current and upcoming week"""
+	today = datetime.now().date()
+	current_week_start = today - timedelta(days=today.weekday())
+	next_week_start = current_week_start + timedelta(days=7)
+
+	dates = []
+	for i in range(14):
+		current_date = current_week_start + timedelta(days=i)
+		dates.append(current_date)
+
+	return dates

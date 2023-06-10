@@ -257,3 +257,17 @@ def assignment_availability_result():
 	except:
 		pass
 	return redirect(url_for('assignments.view_assignment', id=assignment_id))
+	
+@assignments.route('/availability/report/<int:disaster_id>', methods=['GET', 'POST'])
+@login_required
+def report_availability(disaster_id):
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
