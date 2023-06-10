@@ -399,15 +399,16 @@ def reset_request():
 		user = User.query.filter(User.slack_id == form.slack_id.data).first()
 		if form.slack_id.data in list_slack_ids:
 			send_reset_slack(user)
+			# log if user is resetting password, pass if using the forgot password route
 			try:
 				current_app.logger.info('User-{} requested a password reset.'.format(current_user.id))
-			except Exception as e: 
-				current_app.logger.error('User-{} requested a password reset but got an error: {}'.format(current_user.id, e))
+			except: 
+				pass
 			flash('A Slack message has been sent with instructions to reset your password.', 'info')
 			return redirect(url_for('users.login'))
 		else:
 			flash("That Slack ID does not match any existing users. Contact a Portal administrator if you continue having issues locating your ID.", 'danger')
-			current_app.logger.warning('User-{} requested a password reset, but the system could not find the requested Slack ID.'.format(current_user.id))
+			current_app.logger.warning('Password reset was requested but the system could not find the requested Slack ID.')
 			return redirect('/reset_password')
 	elif request.method == 'GET':
 		if current_user.is_authenticated:
