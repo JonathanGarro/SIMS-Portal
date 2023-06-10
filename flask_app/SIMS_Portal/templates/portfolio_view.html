@@ -51,6 +51,14 @@
 					<h5 class="text-secondary Montserrat mt-4">Description</h5>
 					<p class='text-secondary'>{{ product.Portfolio.description}}</p>
 				</div>
+				
+				{% if product.Portfolio.km_article_id %}
+				<div class="row">
+					<h5 class="text-secondary Montserrat mt-4">Walkthrough</h5>
+					<p><a href='https://learn-sims.org/docs/?p={{ product.Portfolio.km_article_id}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">View Article</a></p>
+				</div>
+				{% endif %}
+				
 				{% if product.Portfolio.dropbox_file and current_user.is_authenticated %}
 				<div class="row">
 					<h5 class="text-secondary Montserrat mt-4">Source Files</h5>
