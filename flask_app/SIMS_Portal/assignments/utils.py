@@ -1,7 +1,7 @@
 from SIMS_Portal import db
 from SIMS_Portal.models import Assignment, Emergency
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 def aggregate_availability(dis_id):
@@ -39,14 +39,20 @@ def aggregate_availability(dis_id):
 	return values, labels
 
 def get_dates_current_and_next_week():
-	"""Returns all days greater than today in the current and upcoming week"""
 	today = datetime.now().date()
 	current_week_start = today - timedelta(days=today.weekday())
 	next_week_start = current_week_start + timedelta(days=7)
-
+	
 	dates = []
 	for i in range(14):
 		current_date = current_week_start + timedelta(days=i)
-		dates.append(current_date)
-
-	return dates
+		if current_date >= today:
+			dates.append(current_date)
+	
+	readable_dates = []
+	for date in dates:
+		readable_dates.append(f"{date.strftime('%A')}, {date.strftime('%B')} {date.day}")
+		
+	zip_dates = zip(dates,readable_dates)
+	
+	return zip_dates

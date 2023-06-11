@@ -1,6 +1,7 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
 from SIMS_Portal.models import Assignment, User, Emergency, Portfolio
 from SIMS_Portal.users.utils import send_slack_dm
+from SIMS_Portal.assignments.utils import get_dates_current_and_next_week
 from SIMS_Portal import db, login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, current_user, logout_user, login_required
@@ -261,7 +262,12 @@ def assignment_availability_result():
 @assignments.route('/availability/report/<int:disaster_id>', methods=['GET', 'POST'])
 @login_required
 def report_availability(disaster_id):
+	disaster_info = db.session.query(Emergency).filter(Emergency.id == disaster_id).first()
 	
+	date_list = get_dates_current_and_next_week()
+	dates, readable_dates = zip(*date_list)
+	
+	return render_template('/assignment_availability.html', readable_dates=readable_dates, disaster_info=disaster_info)
 	
 	
 	
