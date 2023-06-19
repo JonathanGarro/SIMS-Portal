@@ -436,7 +436,8 @@ def download_file(name):
     s3_object = s3.Object(current_app.config['UPLOAD_BUCKET'], name)
     try:
         s3_object.download_fileobj(file_stream)
-    except botocore.exceptions.ClientError:
+    except botocore.exceptions.ClientError as e:
+        current_app.logger.error(e)
         abort(404)
     file_stream.seek(0)
     return send_file(file_stream, mimetype=s3_object.content_type)

@@ -4,6 +4,7 @@ services:
     volumes: 
       - ./db:/app/db
       - ./assets:/app/SIMS_Portal/static/assets
+      - ./migrations:/app/migrations
     ports:
       - "5001:5000"
     env_file: ./.env

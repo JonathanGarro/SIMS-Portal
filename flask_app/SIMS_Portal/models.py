@@ -364,3 +364,11 @@ class Alert(db.Model):
 	
 	def __repr__(self):
 		return f"Alert('{self.event_name}','{self.event_go_id}','{self.event_date}','{self.role_profile}','{self.alert_date}','{self.alert_id}','{self.alert_status}','{self.location}')"
+		
+class Availability(db.Model):
+	__tablename__ = 'availability'
+	id = db.Column(db.Integer, primary_key=True)
+	dates = db.Column(db.String)
+	
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'), default=0)

@@ -20,6 +20,7 @@ import os
 
 load_dotenv()
 db = SQLAlchemy()
+migrate = Migrate()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'users.login' 
@@ -59,8 +60,10 @@ def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(Config)
 	app.config['MAX_CONTENT_LENGTH'] = 50 * 1000 * 1000
-	
+
 	db.init_app(app)
+	migrate.init_app(app, db)
+	
 	bcrypt.init_app(app)
 	login_manager.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')

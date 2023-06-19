@@ -14,14 +14,18 @@
 		{% endwith %}
 	</div>
 	<div class="row my-5">
-
+		<div class="col col-md-4">
+			<div class="card border-3 p-4 bg-light rounded rounded-4">
+				<h5 class="text-secondary py-1 Montserrat">Report Your Availability For</h5>
+				<h1 class="text-danger mb-5 emergency-title"">{{disaster_info.emergency_name}}</h1>
+				<p>This list includes the remaining days this week and all days next week. Select the ones where you are <span class='fw-bold'>volunteering to be available to take on tasks</span> within your qualifying support profiles.</p>
+			</div>
+		</div>
 		<div class="col mx-4">
-				<h4 class="text-danger Montserrat">Report Your Availability</h4>
-				<p>By default, you are listed as available for all days in your assignment. Uncheck any days for which you are unavailable.</p>
 				<form method="POST" action='/assignment/availability/result'>
 						<input type='hidden' name='assignment_id' value='{{assignment_id}}'><br>
-					{% for date in date_list %}
-							<input type='checkbox' class='mb-3' name='available' value='{{date}}' checked>&nbsp <span class='fw-bold'>{{date[5:10]}}</span><br>
+					{% for date in readable_dates %}
+							<input type='checkbox' class='mb-3' name='available' value='{{date}}' >&nbsp <span class='fw-bold'>{{date}}</span><br>
 					{% endfor %}
 					<input type="Submit" class="btn btn-outline-danger mt-3">
 				</form>
