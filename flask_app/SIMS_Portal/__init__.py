@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, request, render_template
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, inspect
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
@@ -11,6 +11,8 @@ from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
 from flask_babel import Babel
+import flask_migrate
+import sqlalchemy as sa
 import babel
 import logging
 from logging.handlers import RotatingFileHandler
@@ -143,7 +145,13 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
+	
 	with app.app_context():
-		db.create_all()
+		inspector = inspect(db.engine)
+		if not inspector.has_table("alembic_version") and inspector.has_table("user"):
+			# For DBs created pre-migrations, skip initial migration
+			# This can be removed later once run on all environments
+			flask_migrate.stamp(revision="17e65488bd11")
+		flask_migrate.upgrade()
 	
 	return app
