@@ -271,7 +271,7 @@ def report_availability(disaster_id):
 	
 	
 	
-	
+print("test 2345")
 	
 	
 	
