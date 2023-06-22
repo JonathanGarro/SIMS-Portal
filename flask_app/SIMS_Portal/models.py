@@ -367,7 +367,9 @@ class Alert(db.Model):
 		
 class Availability(db.Model):
 	__tablename__ = 'availability'
+	
 	id = db.Column(db.Integer, primary_key=True)
+	timeframe = db.Column(db.String)
 	dates = db.Column(db.String)
 	
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

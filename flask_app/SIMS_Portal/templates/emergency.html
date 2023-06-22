@@ -47,11 +47,20 @@
 			<br>
 			<!-- Main sidebar buttons -->
 			<div class="card p-4 bg-light border border-3">
-				<h5 class="text-secondary py-2 Montserrat">Available Actions</h5>
+				<h5 class="text-secondary pb-2 Montserrat">Coverage Planning</h5>
 				<ul class="list-group border-0">
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report Availability</a>
+					</li>
+				</ul>
+				<br>
+					{% if user_is_sims_co or current_user.is_admin == 1 %}
+					<h5 class="text-secondary pt-3 pb-2 Montserrat">Coordinator Actions</h5>
+					<ul class="list-group border-0">
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/assignment/new/{{emergency_info.Emergency.id}}" class="text-secondary">Log New Assignment</a>
 					</li>
+					{% endif %}
 					{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/portfolio/review/{{emergency_info.Emergency.id}}" class="text-secondary">Review Products</a>
@@ -75,14 +84,14 @@
 						<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
 					</li>
 					{% endif %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
-					</li>
 				</ul>
 				<br>
 				<ul class='list-group border-0'>
 					{% if current_user.is_admin == 1 or user_is_sims_co %}
 					<h5 class="text-secondary pt-3 pb-2 Montserrat">Record Management</h5>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
+						</li>
 						{% if check_for_story %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="/story/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Response Story</a>

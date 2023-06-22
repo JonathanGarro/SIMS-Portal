@@ -122,6 +122,7 @@ def create_app(config_class=Config):
 	from SIMS_Portal.reviews.routes import reviews
 	from SIMS_Portal.alerts.routes import alerts
 	from SIMS_Portal.errors.handlers import errors
+	from SIMS_Portal.availability.routes import availability
 	
 	app.register_blueprint(main)
 	app.register_blueprint(assignments)
@@ -133,8 +134,9 @@ def create_app(config_class=Config):
 	app.register_blueprint(reviews)
 	app.register_blueprint(alerts)
 	app.register_blueprint(errors)
+	app.register_blueprint(availability)
 	
-	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge
+	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge, Availability
 	admin.add_view(AdminView(User, db.session))
 	admin.add_view(AdminView(Assignment, db.session))
 	admin.add_view(AdminView(Emergency, db.session))
@@ -145,6 +147,7 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
+	# admin.add_view(AdminView(Availability, db.session))
 	
 	with app.app_context():
 		inspector = inspect(db.engine)
