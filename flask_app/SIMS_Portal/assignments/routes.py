@@ -172,13 +172,3 @@ def assignment_availability_result():
 	except:
 		pass
 	return redirect(url_for('assignments.view_assignment', id=assignment_id))
-	
-# @assignments.route('/availability/report/<int:disaster_id>', methods=['GET', 'POST'])
-# @login_required
-# def report_availability(disaster_id):
-# 	disaster_info = db.session.query(Emergency).filter(Emergency.id == disaster_id).first()
-# 	
-# 	date_list = get_dates_current_and_next_week()
-# 	dates, readable_dates = zip(*date_list)
-# 	
-# 	return render_template('/assignment_availability.html', readable_dates=readable_dates, disaster_info=disaster_info)
