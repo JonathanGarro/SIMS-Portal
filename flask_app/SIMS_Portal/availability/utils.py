@@ -37,3 +37,14 @@ def get_dates_current_week():
         readable_dates.append(f"{date.strftime('%A')}, {date.strftime('%B')} {date.day}")
         
     return readable_dates
+
+def get_dates_next_week():
+    today = datetime.date.today()
+    next_week = today + datetime.timedelta(days=7)
+    dates_next_week = []
+    
+    for i in range(7):
+        date = next_week + datetime.timedelta(days=i)
+        dates_next_week.append(date)
+    
+    return dates_next_week

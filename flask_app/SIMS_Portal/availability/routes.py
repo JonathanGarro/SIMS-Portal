@@ -1,6 +1,6 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
 from flask_login import login_required, current_user
-from SIMS_Portal.availability.utils import get_dates_current_and_next_week, get_dates_current_week
+from SIMS_Portal.availability.utils import get_dates_current_and_next_week, get_dates_current_week, get_dates_next_week
 from SIMS_Portal import db
 from SIMS_Portal.models import Availability, Emergency, User
 from flask_sqlalchemy import SQLAlchemy
