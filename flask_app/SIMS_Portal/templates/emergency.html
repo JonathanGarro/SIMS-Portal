@@ -47,12 +47,26 @@
 			<br>
 			<!-- Main sidebar buttons -->
 			<div class="card p-4 bg-light border border-3">
-				<h5 class="text-secondary pb-2 Montserrat">Coverage Planning</h5>
+				<h5 class="text-secondary pb-2 Montserrat">Availability Planning</h5>
+				
+				
 				<ul class="list-group border-0">
+					{% if availability_results %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report Availability</a>
+						<a href="/availability/view/{{user_info.id}}/{{emergency_info.Emergency.id}}" class="text-secondary">View Your Existing Reports</a>
 					</li>
+					{% endif %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Current Week</a>
+						<span class="badge bg-secondary rounded-pill"><a href="https://learn-sims.org/docs/sims-portal-documentation/availability-tracking" class='text-light'>?</a></span>
+					</li>
+					{% if current_weekday > 2 %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/availability/report/next_week/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Next Week</a>
+					</li>
+					{% endif %}
 				</ul>
+				
 				<br>
 					{% if user_is_sims_co or current_user.is_admin == 1 %}
 					<h5 class="text-secondary pt-3 pb-2 Montserrat">Coordinator Actions</h5>
@@ -70,13 +84,13 @@
 					{% if user_is_sims_co %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/badge_assignment_simsco/{{emergency_info.Emergency.id}}" class="text-secondary">Assign Badges</a>
-						<span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#badges" class='text-light'>?</a></span>
+						<span class="badge bg-secondary rounded-pill"><a href="https://learn-sims.org/docs/sims-portal-documentation/badge-overview" class='text-light'>?</a></span>
 					</li>
 					{% endif %}
 					{% if user_is_sims_co %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/operation_review/new/{{emergency_info.Emergency.id}}" class="text-secondary">Review Operation</a>
-						<span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#op-learning" class='text-light'>?</a></span>
+						<span class="badge bg-secondary rounded-pill"><a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview" class='text-light'>?</a></span>
 					</li>
 					{% endif %}
 					{% if check_for_story %}
@@ -106,7 +120,7 @@
 					</li>
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
-						<span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#close-out" class='text-light'>?</a></span>
+						<span class="badge bg-secondary rounded-pill"><a href="https://learn-sims.org/docs/sims-portal-documentation/emergency-page-overview" class='text-light'>?</a></span>
 					</li>
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="#" class="text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Emergency</a>
@@ -250,7 +264,6 @@
 							<th>Member</th>
 							<th>National Society</th>
 							<th>Assignment</th>
-							<th>Start Date</th>
 					  
 						  </tr>
 						</thead>
@@ -260,7 +273,6 @@
 							  <td class="fw-bold"><a href="/profile/view/{{deployment.Assignment.user_id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
 							  <td>{{deployment.NationalSociety.ns_name}}</td>
 							  <td><a href='/assignment/{{deployment.Assignment.id}}'>{{deployment.Assignment.role}}</a></td>
-							  <td>{{deployment.Assignment.start_date}}</td>  
 							</tr>
 							{% endfor %}
 						</tbody>

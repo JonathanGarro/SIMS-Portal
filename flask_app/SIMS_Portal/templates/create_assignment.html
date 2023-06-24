@@ -38,7 +38,7 @@
 <div class="container">
 	<div class="row mb-5">
 		<div class="col-md-4">
-			<div class="card border-0 p-4 ">
+			<div class="card border-0 p-4">
 				<h3 class="text-danger pb-2">Assignment Process</h3>
 				<ul class="timeline">
 					<li>
@@ -96,39 +96,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group pb-4">
-							{{ form.start_date.label(class="form-control-label pb-2 text-danger") }}
-							
-							{% if form.start_date.errors %}
-								{{ form.start_date(class="form-control form-control-lg is-invalid") }}
-									<div class="invalid-feedback">
-										{% for error in form.start_date.errors %}
-											<span>{{ error }}</span>
-										{% endfor %}
-									</div>
-							{% else %}
-								{{ form.start_date(class="form-control form-control-lg datepicker", type="date") }}
-							{% endif %}
-						</div>
-					</div>
-					<div class="col">
-							{{ form.end_date.label(class="form-control-label pb-2 text-danger") }}
-						
-							{% if form.end_date.errors %}
-								{{ form.end_date(class="form-control form-control-lg is-invalid") }}
-									<div class="invalid-feedback">
-										{% for error in form.end_date.errors %}
-										<span>{{ error }}</span>
-										{% endfor %}
-										</div>
-							{% else %}
-								{{ form.end_date(class="form-control form-control-lg datepicker", type="date") }}
-							{% endif %}
-					</div>
-					
-				</div>
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group pb-4">
@@ -160,12 +127,6 @@
 								{% else %}
 									{{ form.assignment_details(class="form-control form-control-lg") }}
 								{% endif %}
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-6 mb-4">
-								{{ form.remote(class="form-check-input") }}
-								{{ form.remote.label(class="form-check-label text-danger") }}
 							</div>
 						</div>
 						</div>

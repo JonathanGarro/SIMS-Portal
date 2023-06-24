@@ -20,24 +20,35 @@
 				<h1 class="text-danger mb-5 emergency-title"">{{disaster_info.emergency_name}}</h1>
 				
 				<h5 class="text-secondary py-1 Montserrat">How Availability Reporting Works</h5>
-				<p class="text-dark">The date ranges you see on this form change depending on the day of the week when you fill it out. If you are filling this form out early in the week (Monday through Thursday), then you will only see the remaining dates for the current week, ending on Sunday. If you are filling this out later in the week (Friday through Sunday), then you will see the remaining dates for this current week <span class="fw-bold">and all of next week</span>.</p> 
-				
-				<p class="text-dark">When you check a day, that means you are committing to volunteering to support on tasks that match your technical profile.</p>
+				<p class="text-dark">When you check a day, that means you are committing to volunteering to support on tasks that match your technical profile(s). You cannot edit these reports, but if you need to change a previous report, simply resubmit a new one and it will overwrite your previous dates.</p>
 			</div>
 		</div>
 		<div class="col mx-4">
+				{% if report_type == 'current_week' %}
 				<form method="POST" action='/availability/result/{{disaster_info.id}}'>
-						<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
+					<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
 					{% for date in readable_dates %}
-						<!-- <input type='checkbox' class='mb-3' name='available' value='{{date}}' >&nbsp <span class='fw-bold'><h3>{{ date }}</h3></span><br> -->
-						<label>
-						  <input type="checkbox" class="mb-3 form-check-input bg-secondary" name="available" value="{{date}}">
-						  <span class="fw-bold"><h3>{{ date }}</h3></span>
-						</label>
-						<br>
+					<label>
+					  <input type="checkbox" class="mb-3 form-check-input bg-secondary" name="available" value="{{date}}" id="current_week">
+					  <span class="fw-bold"><h3>{{ date }}</h3></span>
+					</label>
+					<br>
 					{% endfor %}
 					<input type="Submit" class="btn btn-outline-danger mt-3">
 				</form>
+				{% else %}
+				<form method="POST" action='/availability/result/next_week/{{disaster_info.id}}'>
+					<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
+					{% for date in readable_dates %}
+					<label>
+					  <input type="checkbox" class="mb-3 form-check-input bg-secondary" name="available" value="{{date}}" id="next_week">
+					  <span class="fw-bold"><h3>{{ date }}</h3></span>
+					</label>
+					<br>
+					{% endfor %}
+					<input type="Submit" class="btn btn-outline-danger mt-3">
+				</form>
+				{% endif %}
 		</div>
 	</div>
 </div>

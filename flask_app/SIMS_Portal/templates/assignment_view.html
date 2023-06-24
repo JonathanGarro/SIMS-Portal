@@ -17,39 +17,13 @@
 		<div class="col col-md-4 rounded rounded-3">
 			<div class="card border-3 p-4 bg-light rounded rounded-4">
 			<a href='/profile/view/{{assignment_info.User.id}}'><h1 class="text-danger mb-1 emergency-title">{{assignment_info.User.firstname}} {{assignment_info.User.lastname}}</h1></a>
-			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}} </h5></a>
-			
-				{% if days_left_int < 1 %}
-				<div class="progress" style="height: 25px;">
-					  <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Assignment Over
-					</div>
-				</div>
-				
-				{% else %}
-				
-				
-				<div class="progress" style="height: 25px;">
-					  <div class="progress-bar bg-secondary progress-bar-striped" role="progressbar" style="width: {{((assignment_length_int - days_left_int)/assignment_length_int)*100}}%" aria-valuenow="{{((assignment_length_int - days_left_int)/assignment_length_int)*100}}" aria-valuemin="0" aria-valuemax="{{assignment_length_int}}">{{days_left_int}} Days Left
-					</div>
-				</div>
-				
-				{% endif %}
-				
-				<table class="table table-sm table-borderless mt-1">
-				  <tbody>
-					<tr>
-					  <td scope="row" id='date-label'>{{formatted_start_date}}</td>
-					  <td class="float-end" id='date-label'>{{formatted_end_date}}</td>
-					</tr>
-				  </tbody>
-				</table>
+			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}} </h5>
 
 				<br>
 
 				<div class="list-group mt-4 border-0">
 					{% if current_user.is_admin == 1 or current_user.id == assignment_info.Assignment.user_id %}
 						{% if assignment_info.Assignment.role == 'Remote IM Support' %}
-						<a href='/assignment/availability/{{assignment_info.Assignment.id}}/{{assignment_info.Assignment.start_date}}/{{assignment_info.Assignment.end_date}}' class='list-group-item list-group-item-action text-secondary'>Report Availability</a>
 						<a href="/portfolio/new_from_assignment/{{assignment_info.Assignment.id}}/{{assignment_info.User.id}}/{{assignment_info.Emergency.id}}" class="list-group-item list-group-item-action text-secondary">Upload Product</a>
 						<a href="/learning/assignment/new/{{assignment_info.Assignment.user_id}}/{{assignment_info.Assignment.id}}" class="list-group-item list-group-item-action text-secondary">Create Learning Review</a>
 						{% endif %}

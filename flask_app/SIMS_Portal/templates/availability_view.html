@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                   {% for category, message in messages %}
+                       <div class="mt-4 alert alert-{{ category }}">
+                           {{ message }} 
+                       </div>
+                   {% endfor %}
+               {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row my-5">
+    <div class="col-md-4">
+        <h4 class="text-secondary mb-1 Montserrat">Your Reported Availability for</h4>
+        <h2 class="text-danger Montserrat mb-4">{{emergency_info.emergency_name}}</h2>
+            <p id="sidebar-guidance">This calendar displays the dates from the most recent report that you submitted. If you need to change these dates, submit a new report for the week.</p>
+    
+    </div>
+    <div class="col">
+        {% if available_dates %}
+            <div id='calendar'></div>
+            <script>
+                let calendarEl = document.getElementById('calendar');
+                
+                let calendar = new FullCalendar.Calendar(calendarEl, {
+                    events : [
+                        {% for date in available_dates %}
+                        {
+                            title : 'Available',
+                            start : '{{date}}',
+                        },
+                        {% endfor %}
+                        ]
+                    });
+                
+                calendar.render();
+                
+                
+            </script>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock content %}
