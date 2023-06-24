@@ -87,7 +87,7 @@ def view_assignment(id):
 @login_required
 def edit_assignment(id):
 	assignment_info = db.session.query(Assignment, User, Emergency).join(User).join(Emergency).filter(Assignment.id == id).first()
-	form = UpdateAssignmentForm(role=assignment_info.Assignment.role, start_date=assignment_info.Assignment.start_date, end_date=assignment_info.Assignment.end_date, assignment_details=assignment_info.Assignment.assignment_details)
+	form = UpdateAssignmentForm(role=assignment_info.Assignment.role, start_date=assignment_info.Assignment.start_date, end_date=assignment_info.Assignment.end_date, assignment_details=assignment_info.Assignment.assignment_details, hours=assignment_info.Assignment.hours)
 	# get basic info about this assignment
 	this_assignment = db.session.query(Assignment).filter(Assignment.id==id).first()
 	if form.validate_on_submit():
@@ -95,6 +95,7 @@ def edit_assignment(id):
 		this_assignment.start_date = form.start_date.data
 		this_assignment.end_date = form.end_date.data
 		this_assignment.assignment_details = form.assignment_details.data
+		this_assignment.hours = form.hours.data
 		db.session.commit()
 		flash('Assignment record updated!', 'success')
 		return redirect(url_for('assignments.view_assignment', id=this_assignment.id))

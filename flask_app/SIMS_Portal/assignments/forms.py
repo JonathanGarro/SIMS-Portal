@@ -23,4 +23,5 @@ class UpdateAssignmentForm(FlaskForm):
 	end_date = DateTimeField('End Date', format='%Y-%m-%d')
 	remote = BooleanField('Remote?')
 	assignment_details = TextAreaField('Assignment Description')
+	hours = IntegerField('Hours Worked')
 	submit = SubmitField('Update Assignment')
