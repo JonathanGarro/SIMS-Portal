@@ -61,7 +61,7 @@ class AdminView(ModelView):
 def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(Config)
-	app.config['MAX_CONTENT_LENGTH'] = 50 * 1000 * 1000
+	app.config['MAX_CONTENT_LENGTH'] = 75 * 1000 * 1000
 
 	db.init_app(app)
 	migrate.init_app(app, db)
@@ -152,8 +152,7 @@ def create_app(config_class=Config):
 	with app.app_context():
 		inspector = inspect(db.engine)
 		if not inspector.has_table("alembic_version") and inspector.has_table("user"):
-			# For DBs created pre-migrations, skip initial migration
-			# This can be removed later once run on all environments
+			# for DBs created pre-migrations, skip initial migration
 			flask_migrate.stamp(revision="17e65488bd11")
 		flask_migrate.upgrade()
 	
