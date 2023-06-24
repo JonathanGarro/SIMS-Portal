@@ -1,12 +1,13 @@
 from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
 from SIMS_Portal import db
 from SIMS_Portal.config import Config
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Alert, Portfolio, Story, Learning, Review
+from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Alert, Portfolio, Story, Learning, Review, Availability
 from SIMS_Portal.emergencies.forms import NewEmergencyForm, UpdateEmergencyForm
 from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, get_trello_tasks
 from SIMS_Portal.assignments.utils import aggregate_availability
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+from sqlalchemy.orm import sessionmaker
 from flask_login import login_user, logout_user, current_user, login_required
 from collections import Counter
 from datetime import datetime
@@ -45,6 +46,8 @@ def new_emergency():
 @emergencies.route('/emergency/<int:id>', methods=['GET', 'POST'])
 @login_required
 def view_emergency(id):
+	user_info = db.session.query(User).filter(User.id == current_user.id).first()
+	
 	# aggregate reported availability if data exists, otherwise return hide chart variable for jinja filtering
 	try:
 		func_call = aggregate_availability(id)
@@ -55,6 +58,7 @@ def view_emergency(id):
 		values = []
 		labels = []
 		kill_chart = True
+		
 	# get IDs of all this emergency's sims remote coordinators
 	sims_co_ids = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id, Assignment.role == 'SIMS Remote Coordinator').all()
 
@@ -66,6 +70,33 @@ def view_emergency(id):
 		user_is_sims_co = True
 	else:
 		user_is_sims_co = False
+	
+	emergency_id = id
+	user_id = current_user.id
+	today = datetime.today().year
+	week_number = datetime.today().isocalendar()[1]
+	timeframe = f"{today}-{week_number}"
+	
+	availability_subquery = db.session.query(func.max(Availability.created_at)).filter(
+		Availability.emergency_id == emergency_id,
+		Availability.user_id == user_id,
+		Availability.timeframe == timeframe 
+	).scalar_subquery()
+	
+	availability_query = db.session.query(
+		Availability.id, 
+		Availability.emergency_id,
+		Availability.created_at,
+		Availability.dates
+	).filter(
+		Availability.emergency_id == emergency_id,
+		Availability.user_id == user_id,
+		Availability.timeframe == timeframe,
+		Availability.created_at == availability_subquery
+	)
+	
+	availability_results = availability_query.first()
+	
 	
 	pending_products = db.session.query(Portfolio).filter(Portfolio.emergency_id == id, Portfolio.product_status == 'Pending Approval').all()
 	
@@ -110,8 +141,37 @@ def view_emergency(id):
 		to_do_trello = None
 		count_cards = 0
 	
-	return render_template('emergency.html', title='Emergency View', 
-	emergency_info=emergency_info, deployments=deployments, emergency_portfolio=emergency_portfolio, check_for_story=check_for_story, learning_data=learning_data, learning_keys=learning_keys, learning_values=learning_values, learning_count=learning_count, avg_learning_keys=avg_learning_keys, avg_learning_values=avg_learning_values, deployment_history_count=deployment_history_count, user_is_sims_co=user_is_sims_co, pending_products=pending_products, emergency_portfolio_size=emergency_portfolio_size, values=values, labels=labels, kill_chart=kill_chart, existing_reviews=existing_reviews, to_do_trello=to_do_trello, count_cards=count_cards)
+	# filter for availability button
+	today = datetime.today()
+	current_weekday = today.weekday()
+	
+	return render_template(
+		'emergency.html', 
+		title='Emergency View', 
+		emergency_info=emergency_info, 
+		deployments=deployments, 
+		emergency_portfolio=emergency_portfolio, 
+		check_for_story=check_for_story, 
+		learning_data=learning_data, 
+		learning_keys=learning_keys, 
+		learning_values=learning_values, 
+		learning_count=learning_count, 
+		avg_learning_keys=avg_learning_keys, 
+		avg_learning_values=avg_learning_values, 
+		deployment_history_count=deployment_history_count, 
+		user_is_sims_co=user_is_sims_co, 
+		pending_products=pending_products, 
+		emergency_portfolio_size=emergency_portfolio_size, 
+		values=values, 
+		labels=labels, 
+		kill_chart=kill_chart, 
+		existing_reviews=existing_reviews, 
+		to_do_trello=to_do_trello, 
+		count_cards=count_cards, 
+		current_weekday=current_weekday, 
+		availability_results=availability_results,
+		user_info=user_info
+	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
 def edit_emergency(id):
