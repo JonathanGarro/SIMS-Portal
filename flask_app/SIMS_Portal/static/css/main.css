@@ -299,11 +299,19 @@ p {
 }
 
 .mt-6 {
-	margin-top: 4rem; // or the value you want
+	margin-top: 4rem; 
 }
 
 .mb-6 {
-	margin-bottom: 4rem; // or the value you want
+	margin-bottom: 4rem; 
+}
+
+.navbar-brand {
+	font-size: 16px;
+}
+
+.nav-item {
+	font-size: 16px;
 }
 
 .nav-item-bottom {
@@ -519,4 +527,30 @@ a.page-link:hover {
 
 #small-trello {
 	font-size: 5px;
+}
+
+label {
+  display: inline-flex;
+  align-items: center;
+  align-self: center; /* Adjust this value as needed */
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px; /* Adjust this value as needed */
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: green!important;
+}
+
+.custom-checkbox .custom-control-input:checked:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 255, 0, 0.25)
+}
+.custom-checkbox .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25)
+}
+.custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
+  background-color: #C8FFC8; 
 }

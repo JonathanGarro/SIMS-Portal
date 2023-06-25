@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, request, render_template
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, inspect
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
@@ -10,16 +10,21 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
+from apscheduler.triggers.cron import CronTrigger
 from flask_babel import Babel
+import flask_migrate
+import sqlalchemy as sa
 import babel
 import logging
 from logging.handlers import RotatingFileHandler
 from logging.config import dictConfig
 from logtail import LogtailHandler
 import os
+from uuid import uuid4
 
 load_dotenv()
 db = SQLAlchemy()
+migrate = Migrate()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'users.login' 
@@ -58,9 +63,11 @@ class AdminView(ModelView):
 def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(Config)
-	app.config['MAX_CONTENT_LENGTH'] = 50 * 1000 * 1000
-	
+	app.config['MAX_CONTENT_LENGTH'] = 75 * 1000 * 1000
+
 	db.init_app(app)
+	migrate.init_app(app, db)
+	
 	bcrypt.init_app(app)
 	login_manager.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
@@ -92,12 +99,15 @@ def create_app(config_class=Config):
 	def run_surge_alert_refresh():
 		with scheduler.app.app_context():
 			from SIMS_Portal.alerts.utils import refresh_surge_alerts_latest
+			from SIMS_Portal.main.utils import heartbeats
 			refresh_surge_alerts_latest()
-	
+			heartbeats('run_surge_alert_refresh', 'https://uptime.betterstack.com/api/v1/heartbeat/7DQYkNR4cM96cKsY69xQah4k')
+			
 	@scheduler.task('cron', id='run_auto_badge_assigners', hour='17')
 	def run_auto_badge_assigners():
 		with scheduler.app.app_context():
 			from SIMS_Portal.main.utils import auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_world_traveler, auto_badge_assigner_edward_tufte, auto_badge_assigner_old_salt
+			from SIMS_Portal.main.utils import heartbeats
 			auto_badge_assigner_maiden_voyage()
 			auto_badge_assigner_big_wig()
 			auto_badge_assigner_self_promoter()
@@ -106,6 +116,15 @@ def create_app(config_class=Config):
 			auto_badge_assigner_edward_tufte()
 			auto_badge_assigner_world_traveler()
 			auto_badge_assigner_old_salt()
+			heartbeats('run_auto_badge_assigners', 'https://uptime.betterstack.com/api/v1/heartbeat/QWvz7BCEoLnpKeCFMFbK3d2a')
+	
+	@scheduler.task('cron', id='request_availability', week='*', day_of_week='mon', hour=8)
+	def run_request_availability():
+		with scheduler.app.app_context():
+			from SIMS_Portal.availability.utils import request_availability_updates
+			from SIMS_Portal.main.utils import heartbeats
+			request_availability_updates()
+			heartbeats('request_availability', 'https://uptime.betterstack.com/api/v1/heartbeat/5WUSoe7kqnkKxQVLr1iKTFuq')
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
@@ -117,6 +136,7 @@ def create_app(config_class=Config):
 	from SIMS_Portal.reviews.routes import reviews
 	from SIMS_Portal.alerts.routes import alerts
 	from SIMS_Portal.errors.handlers import errors
+	from SIMS_Portal.availability.routes import availability
 	
 	app.register_blueprint(main)
 	app.register_blueprint(assignments)
@@ -128,8 +148,9 @@ def create_app(config_class=Config):
 	app.register_blueprint(reviews)
 	app.register_blueprint(alerts)
 	app.register_blueprint(errors)
+	app.register_blueprint(availability)
 	
-	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge
+	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge, Availability
 	admin.add_view(AdminView(User, db.session))
 	admin.add_view(AdminView(Assignment, db.session))
 	admin.add_view(AdminView(Emergency, db.session))
@@ -140,7 +161,13 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
+	# admin.add_view(AdminView(Availability, db.session))
+	
 	with app.app_context():
-		db.create_all()
+		inspector = inspect(db.engine)
+		if not inspector.has_table("alembic_version") and inspector.has_table("user"):
+			# for DBs created pre-migrations, skip initial migration
+			flask_migrate.stamp(revision="17e65488bd11")
+		flask_migrate.upgrade()
 	
 	return app

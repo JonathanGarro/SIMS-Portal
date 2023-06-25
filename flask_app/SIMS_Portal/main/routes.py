@@ -16,6 +16,7 @@ from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new
 from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
 from SIMS_Portal.alerts.utils import refresh_surge_alerts, refresh_surge_alerts_latest
 from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations, get_trello_tasks
+from SIMS_Portal.availability.utils import send_slack_availability_request, request_availability_updates
 import io
 import os
 import re
@@ -308,7 +309,6 @@ def privacy_policy():
 	return render_template('privacy_policy.html')
 
 @main.route('/resources')
-@login_required
 def resources():
 	return render_template('resources/resources.html')
 
@@ -421,7 +421,7 @@ def manual_refresh(func):
 @main.route('/staging') 
 def staging(): 
 	if current_user.is_admin == 1:
-		# place debug code here
+		# put code to debug here
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
@@ -436,7 +436,8 @@ def download_file(name):
     s3_object = s3.Object(current_app.config['UPLOAD_BUCKET'], name)
     try:
         s3_object.download_fileobj(file_stream)
-    except botocore.exceptions.ClientError:
+    except botocore.exceptions.ClientError as e:
+        current_app.logger.error(e)
         abort(404)
     file_stream.seek(0)
     return send_file(file_stream, mimetype=s3_object.content_type)

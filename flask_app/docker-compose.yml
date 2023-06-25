@@ -2,12 +2,15 @@ services:
   web:
     build: .
     volumes: 
+      - ./SIMS_Portal:/app/SIMS_Portal
       - ./db:/app/db
-      - ./assets:/app/SIMS_Portal/static/assets
+      - ./migrations:/app/migrations
     ports:
       - "5001:5000"
     env_file: ./.env
-    
+    depends_on:
+      - postgresdb
+
   postgresdb:
     image: postgres:13.5-alpine
     restart: always

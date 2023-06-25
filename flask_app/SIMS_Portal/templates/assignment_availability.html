@@ -14,53 +14,41 @@
 		{% endwith %}
 	</div>
 	<div class="row my-5">
-		<div class="col col-lg-4 rounded rounded-3">
-			<div class="card border-0 p-4 bg-light rounded rounded-4">
-			<a href='/profile/view/{{assignment_info.User.id}}'><h2 class="text-danger mb-4 Montserrat">{{assignment_info.User.firstname}} {{assignment_info.User.lastname}}</h2></a>
-			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}} </h5></a>
-			
-				{% if days_left_int < 1 %}
-				<div class="progress" style="height: 25px;">
-					  <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Assignment Over
-					</div>
-				</div>
+		<div class="col col-md-4">
+			<div class="card border-3 p-4 bg-light rounded rounded-4">
+				<h5 class="text-secondary py-1 Montserrat">Report Your Availability For</h5>
+				<h1 class="text-danger mb-5 emergency-title"">{{disaster_info.emergency_name}}</h1>
 				
-				{% else %}
-				
-				
-				<div class="progress" style="height: 25px;">
-					  <div class="progress-bar bg-secondary progress-bar-striped" role="progressbar" style="width: {{((assignment_length_int - days_left_int)/assignment_length_int)*100}}%" aria-valuenow="{{((assignment_length_int - days_left_int)/assignment_length_int)*100}}" aria-valuemin="0" aria-valuemax="{{assignment_length_int}}">{{days_left_int}} Days Left
-					</div>
-				</div>
-				
-				{% endif %}
-				
-				<table class="table table-sm table-borderless mt-1">
-				  <tbody>
-					<tr>
-					  <td scope="row" id='date-label'>{{formatted_start_date}}</td>
-					  <td class="float-end" id='date-label'>{{formatted_end_date}}</td>
-					</tr>
-				  </tbody>
-				</table>
-
-				<br>
-
-
-
+				<h5 class="text-secondary py-1 Montserrat">How Availability Reporting Works</h5>
+				<p class="text-dark">When you check a day, that means you are committing to volunteering to support on tasks that match your technical profile(s). You cannot edit these reports, but if you need to change a previous report, simply resubmit a new one and it will overwrite your previous dates.</p>
 			</div>
 		</div>
-
 		<div class="col mx-4">
-				<h4 class="text-danger Montserrat">Report Your Availability</h4>
-				<p>By default, you are listed as available for all days in your assignment. Uncheck any days for which you are unavailable.</p>
-				<form method="POST" action='/assignment/availability/result'>
-						<input type='hidden' name='assignment_id' value='{{assignment_id}}'><br>
-					{% for date in date_list %}
-							<input type='checkbox' class='mb-3' name='available' value='{{date}}' checked>&nbsp <span class='fw-bold'>{{date[5:10]}}</span><br>
+				{% if report_type == 'current_week' %}
+				<form method="POST" action='/availability/result/{{disaster_info.id}}'>
+					<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
+					{% for date in readable_dates %}
+					<label>
+					  <input type="checkbox" class="mb-3 form-check-input bg-secondary" name="available" value="{{date}}" id="current_week">
+					  <span class="fw-bold"><h3>{{ date }}</h3></span>
+					</label>
+					<br>
 					{% endfor %}
 					<input type="Submit" class="btn btn-outline-danger mt-3">
 				</form>
+				{% else %}
+				<form method="POST" action='/availability/result/next_week/{{disaster_info.id}}'>
+					<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
+					{% for date in readable_dates %}
+					<label>
+					  <input type="checkbox" class="mb-3 form-check-input bg-secondary" name="available" value="{{date}}" id="next_week">
+					  <span class="fw-bold"><h3>{{ date }}</h3></span>
+					</label>
+					<br>
+					{% endfor %}
+					<input type="Submit" class="btn btn-outline-danger mt-3">
+				</form>
+				{% endif %}
 		</div>
 	</div>
 </div>

@@ -16,7 +16,7 @@ class Config:
 	DATA_FOLDER = os.environ.get('DATA_FOLDER', '/SIMS_Portal/static/data/')
 	SLACK_BOT_TOKEN_NEW_USER = os.environ.get('SLACK_BOT_TOKEN_NEW_USER')
 	SIMS_PORTAL_SLACK_BOT = os.environ.get('SIMS_PORTAL_SLACK_BOT')
-	ROOT_URL = 'http://d3s70q3c7pqvju.cloudfront.net'
+	ROOT_URL = 'http://rcrcsims.org'
 	DROPBOX_BOT = os.environ.get('DROPBOX_BOT')
 	DROPBOX_APP_KEY = os.environ.get('DROPBOX_APP_KEY')
 	DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')

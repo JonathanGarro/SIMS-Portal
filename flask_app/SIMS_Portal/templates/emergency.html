@@ -20,14 +20,14 @@
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
 
-				{% if  emergency_info.Emergency.emergency_status == 'Active' %}
+				{% if emergency_info.Emergency.emergency_status == 'Active' %}
 				
 				<div class="d-flex flex-row align-items-center justify-content-start">
 					<div class=""><img class='img img-fluid' src='/static/assets/img/active-emergency.png' alt="Response Status Icon Active"></div>
 					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Active Response</span></div>
 				</div>
 				
-				{% elif  emergency_info.Emergency.emergency_status == 'Removed' %}
+				{% elif emergency_info.Emergency.emergency_status == 'Removed' %}
 				
 				<div class="d-flex flex-row align-items-center justify-content-start">
 					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png' alt="Response Status Icon Inactive"></div>
@@ -42,16 +42,38 @@
 				</div>
 				
 				{% endif %}
-				
 			</div>
 			<br>
 			<!-- Main sidebar buttons -->
+			
 			<div class="card p-4 bg-light border border-3">
-				<h5 class="text-secondary py-2 Montserrat">Available Actions</h5>
+				
+			{% if emergency_info.Emergency.emergency_status == 'Active' %}
+			<div class="pb-3">
+				<h5 class="text-secondary pb-2 Montserrat">Availability Planning</h5>
 				<ul class="list-group border-0">
+					{% if availability_results %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/availability/view/{{user_info.id}}/{{emergency_info.Emergency.id}}" class="text-secondary">View Your Existing Reports</a>
+					</li>
+					{% endif %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Current Week</a>
+						<a href="https://learn-sims.org/docs/sims-portal-documentation/availability-tracking" target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+					</li>
+					{% if current_weekday > 2 %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/availability/report/next_week/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Next Week</a>
+					</li>
+					{% endif %}
+				</ul>
+					{% if user_is_sims_co or current_user.is_admin == 1 %}
+					<h5 class="text-secondary pt-3 pb-2 Montserrat">Coordinator Actions</h5>
+					<ul class="list-group border-0">
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/assignment/new/{{emergency_info.Emergency.id}}" class="text-secondary">Log New Assignment</a>
 					</li>
+					{% endif %}
 					{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/portfolio/review/{{emergency_info.Emergency.id}}" class="text-secondary">Review Products</a>
@@ -61,90 +83,116 @@
 					{% if user_is_sims_co %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/badge_assignment_simsco/{{emergency_info.Emergency.id}}" class="text-secondary">Assign Badges</a>
-						<span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#badges" class='text-light'>?</a></span>
+						<a href="https://learn-sims.org/docs/sims-portal-documentation/badge-overview" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 					</li>
 					{% endif %}
 					{% if user_is_sims_co %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/operation_review/new/{{emergency_info.Emergency.id}}" class="text-secondary">Review Operation</a>
-						<span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#op-learning" class='text-light'>?</a></span>
+						<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview" class='text-dark'><span class="badge bg-light rounded-pill text-dark">?</span></a>
 					</li>
 					{% endif %}
+				</ul>
+			</div>
+			{% endif %}
+			
+			{% if current_user.is_admin == 1 or user_is_sims_co %}
+			<div class="pb-3">
+				<h5 class="text-secondary pb-2 Montserrat">Record Management</h5>
+				<ul class='list-group border-0'>
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
+					</li>
 					{% if check_for_story %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
 					</li>
 					{% endif %}
+					{% if check_for_story %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
+						<a href="/story/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Response Story</a>
 					</li>
-				</ul>
-				<br>
-				<ul class='list-group border-0'>
-					{% if current_user.is_admin == 1 or user_is_sims_co %}
-					<h5 class="text-secondary pt-3 pb-2 Montserrat">Record Management</h5>
-						{% if check_for_story %}
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<a href="/story/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Response Story</a>
-						</li>
-						{% else %}
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<a href="/story/create/{{emergency_info.Emergency.id}}" class="text-secondary">Create Response Story</a>
-						</li>
-						{% endif %}
+					{% else %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="/story/create/{{emergency_info.Emergency.id}}" class="text-secondary">Create Response Story</a>
+					</li>
+					{% endif %}
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="/emergency/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Emergency</a>
 					</li>
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
-						<span class="badge bg-secondary rounded-pill"><a href="/resources/sims_portal#close-out" class='text-light'>?</a></span>
+						<a href="https://learn-sims.org/docs/sims-portal-documentation/emergency-page-overview" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 					</li>
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<a href="#" class="text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Emergency</a>
 					</li>
-					{% endif %}
 				</ul>
-		<!-- Modal for Closeout -->
-		<div class="modal fade" id="confirm-closeout" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-			  <div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-				  <div class="modal-header">
-					<h5 class="modal-title" id="closeoutModal">Closeout this Emergency</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					  <span aria-hidden="true">&times;</span>
-					</button>
-				  </div>
-				  <div class="modal-body">
-					<span class=''>Closing out an emergency in the portal means that SIMS has completed the response phase, all support has ended, and no further assignments will occur. Contributions to learning processes will still be available.</span>
-				  </div>
-				  <div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
-					<a href="/emergency/closeout/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Closeout</button></a>
-				  </div>
-				</div>
-			  </div>
-			</div>
-		<!-- Modal for Delete -->
-		<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+							
+			<!-- Modal for Closeout -->
+			<div class="modal fade" id="confirm-closeout" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered" role="document">
-				  <div class="modal-content">
-					<div class="modal-header">
-					  <h5 class="modal-title" id="deleteModal">Delete the Emergency?</h5>
-					  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					  </button>
-					</div>
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="closeoutModal">Closeout this Emergency</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+						</div>
 					<div class="modal-body">
-					  <span>Deleting an emergency marks it as "Removed". Records that link to it will remain, as will data associated with this emergency, but it will not appear in the portfolio. Only delete emergencies that we don't want to see in our operational history.</span>
+						<span class=''>Closing out an emergency in the portal means that SIMS has completed the response phase, all support has ended, and no further assignments will occur. Contributions to learning processes will still be available.</span>
 					</div>
 					<div class="modal-footer">
-					  <button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
-					  <a href="/emergency/delete/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+						<a href="/emergency/closeout/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Closeout</button></a>
 					</div>
-				  </div>
+					</div>
 				</div>
-			  </div>
 			</div>
+			
+			<!-- Modal for Delete -->
+			<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="deleteModal">Delete the Emergency?</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+						</div>
+						<div class="modal-body">
+							<span>Deleting an emergency marks it as "Removed". Records that link to it will remain, as will data associated with this emergency, but it will not appear in the portfolio. Only delete emergencies that we don't want to see in our operational history.</span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+							<a href="/emergency/delete/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+			
+			{% endif %}
+			
+			{% if current_user.is_admin == 0 and user_is_sims_co == 0 %}
+			<div class="pb-3">
+				<h5 class="text-secondary pb-2 Montserrat">Record Management</h5>
+				<ul class='list-group border-0'>
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
+					</li>
+					{% if check_for_story %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
+					</li>
+					{% endif %}
+				</ul>
+			</div>
+			
+			{% endif %}
+			
+			</div>
+			
 			<!-- End main sidebar buttons -->
 			<br>
 			<div class="card p-4 bg-light border border-3">
@@ -241,7 +289,6 @@
 							<th>Member</th>
 							<th>National Society</th>
 							<th>Assignment</th>
-							<th>Start Date</th>
 					  
 						  </tr>
 						</thead>
@@ -251,7 +298,6 @@
 							  <td class="fw-bold"><a href="/profile/view/{{deployment.Assignment.user_id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
 							  <td>{{deployment.NationalSociety.ns_name}}</td>
 							  <td><a href='/assignment/{{deployment.Assignment.id}}'>{{deployment.Assignment.role}}</a></td>
-							  <td>{{deployment.Assignment.start_date}}</td>  
 							</tr>
 							{% endfor %}
 						</tbody>
