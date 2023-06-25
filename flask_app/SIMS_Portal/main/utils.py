@@ -8,6 +8,20 @@ from SIMS_Portal import db
 from flask_login import current_user
 import boto3
 from sqlalchemy import func, String
+import requests
+
+def heartbeats(name, url):
+	"""
+	fires off GET requests to betterstack/logtail to serve as heartbeats for cron job monitoring
+	"""
+	response = requests.get(url)
+	
+	if response.status_code == 200:
+		current_app.logger.info("heartbeat GET request successfully ran for {}".format(name))
+		return "Request successful"
+	else:
+		current_app.logger.error("heartbeat GET request failed for {}".format(name))
+		return "Request failed"
 
 def fetch_slack_channels():
 	token = current_app.config['SIMS_PORTAL_SLACK_BOT']
