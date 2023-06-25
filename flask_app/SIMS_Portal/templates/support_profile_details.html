@@ -7,7 +7,7 @@
 			<div class="row row-cols-4 row-cols-md-4 g-4 mt-2">
 			{% for profile in list_profiles %}
 				<div class="col d-flex align-items-stretch">
-					  <a href='/role_profile/{{profile.image}}'><img src="/static/assets/img/Profile-Badge-{{profile.image}}-{{profile.tier}}.png" class="img-fluid"></a>
+					  <a href='/role_profile/{{profile.image|lower}}'><img src="/static/assets/img/Profile-Badge-{{profile.image}}-{{profile.tier}}.png" class="img-fluid"></a>
 				  </div>
 			{% endfor %}
 			</div>
