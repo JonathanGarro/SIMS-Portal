@@ -128,19 +128,6 @@ def profile():
 	badges = db.engine.execute('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id))
 	
 	count_badges = db.engine.execute(text("SELECT count(user_id) as count FROM user_badge WHERE user_id = :user_id"), {'user_id': current_user.id}).scalar()
-	
-	# highlight assignments for which end date has not passed (i.e. is active assignment)
-	def convert_date_to_int(date):
-		return 10000*date.year + 100*date.month + date.day
-	today = date.today()
-	today_int = convert_date_to_int(today)
-	all_end_dates = []
-	for end_date in assignment_history:
-		all_end_dates.append(convert_date_to_int(end_date.Assignment.end_date))
-	try:
-		max_end = max(all_end_dates)
-	except:
-		pass
 
 	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list)
 	
