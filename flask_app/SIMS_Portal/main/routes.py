@@ -309,7 +309,6 @@ def privacy_policy():
 	return render_template('privacy_policy.html')
 
 @main.route('/resources')
-@login_required
 def resources():
 	return render_template('resources/resources.html')
 
