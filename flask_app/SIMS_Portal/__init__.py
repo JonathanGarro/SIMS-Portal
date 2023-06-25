@@ -10,6 +10,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
+from apscheduler.triggers.cron import CronTrigger
 from flask_babel import Babel
 import flask_migrate
 import sqlalchemy as sa
@@ -19,6 +20,7 @@ from logging.handlers import RotatingFileHandler
 from logging.config import dictConfig
 from logtail import LogtailHandler
 import os
+from uuid import uuid4
 
 load_dotenv()
 db = SQLAlchemy()
@@ -111,6 +113,12 @@ def create_app(config_class=Config):
 			auto_badge_assigner_edward_tufte()
 			auto_badge_assigner_world_traveler()
 			auto_badge_assigner_old_salt()
+	
+	@scheduler.task('cron', id='request_availability', week='*', day_of_week='mon', hour=8)
+	def run_request_availability():
+		with scheduler.app.app_context():
+			from SIMS_Portal.availability.utils import request_availability_updates
+			request_availability_updates()
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
