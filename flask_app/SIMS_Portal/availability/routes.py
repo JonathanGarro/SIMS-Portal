@@ -94,7 +94,7 @@ def availability_result(disaster_id):
     except:
         pass
     
-    return redirect(url_for('emergencies.view_emergency', id=disaster_id))
+    return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))
     
 @availability.route('/availability/result/next_week/<int:disaster_id>', methods=['GET', 'POST'])
 @login_required
@@ -129,4 +129,4 @@ def availability_result_next_week(disaster_id):
     except:
         pass
     
-    return redirect(url_for('emergencies.view_emergency', id=disaster_id))
+    return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))
