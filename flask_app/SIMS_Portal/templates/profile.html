@@ -147,16 +147,13 @@
 					<tr>
 				  	<th>Event</th>
 				  	<th>Assignment</th>
-				  	<th>Start Date</th>
-				
 					</tr>
 			  	</thead>
 			  	<tbody>
 				  	{% for assignment in assignment_history %}
 				  	<tr>
 						<td class="fw-bold"><a href="/emergency/{{assignment.Emergency.id}}" class="link-danger">{{assignment.Emergency.emergency_name}}</a></td>
-						<td><a href='/assignment/{{assignment.Assignment.id}}'>{{assignment.Assignment.role}}</a></td>
-						<td>{{assignment.Assignment.start_date}}</td>  
+						<td><a href='/assignment/{{assignment.Assignment.id}}'>{{assignment.Assignment.role}}</a></td> 
 				  	{% endfor %}
 			  	</tbody>
 				</table>
