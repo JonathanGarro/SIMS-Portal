@@ -1,4 +1,5 @@
 from flask import current_app
+from SIMS_Portal.models import Emergency
 from SIMS_Portal import db
 from datetime import datetime, timedelta
 from slack_sdk import WebClient
@@ -52,15 +53,14 @@ def get_dates_current_week():
     return readable_dates
 
 def get_dates_next_week():
-    # Get today's date
     today = datetime.today()
     
-    # Find the next Monday
+    # find the next Monday
     current_day = today.weekday()
-    days_ahead = 0 if current_day == 6 else (7 - current_day)
+    days_ahead = 1 if current_day == 6 else (7 - current_day)
     next_monday = today + timedelta(days=days_ahead)
     
-    # Generate the list of next week's days starting from Monday
+    # create list of next week's days starting from Monday
     next_week = [next_monday + timedelta(days=i) for i in range(7)]
     
     readable_dates = []
@@ -68,3 +68,15 @@ def get_dates_next_week():
         readable_dates.append(f"{date.strftime('%A')}, {date.strftime('%B')} {date.day}")
     
     return readable_dates
+    
+def request_availability_updates():
+    active_disasters = db.session.query(Emergency).filter(Emergency.emergency_status == 'Active').all()
+    
+    for disaster in active_disasters:
+        try:
+            send_slack_availability_request(disaster.id, disaster.slack_channel)
+            current_app.logger.info("request_availability_updates function ran successfully for {}".format(disaster.emergency_name))
+        except Exception as e: 
+            current_app.logger.error('Badge Assignment via SIMS Remote Coordinator Failed: {}'.format(e))
+   
+    return active_disasters
