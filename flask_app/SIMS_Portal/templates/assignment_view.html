@@ -19,9 +19,8 @@
 			<a href='/profile/view/{{assignment_info.User.id}}'><h1 class="text-danger mb-1 emergency-title">{{assignment_info.User.firstname}} {{assignment_info.User.lastname}}</h1></a>
 			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}} </h5>
 
-				<br>
-
-				<div class="list-group mt-4 border-0">
+				<h5 class="text-secondary Montserrat mt-2">Available Actions</h5>
+				<div class="list-group mt-2 border-0">
 					{% if current_user.is_admin == 1 or current_user.id == assignment_info.Assignment.user_id %}
 						{% if assignment_info.Assignment.role == 'Remote IM Support' %}
 						<a href="/portfolio/new_from_assignment/{{assignment_info.Assignment.id}}/{{assignment_info.User.id}}/{{assignment_info.Emergency.id}}" class="list-group-item list-group-item-action text-secondary">Upload Product</a>
