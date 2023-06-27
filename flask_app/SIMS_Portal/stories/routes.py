@@ -7,8 +7,20 @@ from flask_sqlalchemy import SQLAlchemy
 from SIMS_Portal.stories.utils import save_header, check_sims_co
 from sqlalchemy.sql import func, text
 from flask_login import login_user, logout_user, current_user, login_required
+import markdown
+from markdown.extensions import Extension
 
 stories = Blueprint('stories', __name__)
+
+class HeadingClassExtension(Extension):
+	def extendMarkdown(self, md):
+		md.treeprocessors.register(HeadingClassProcessor(md), 'heading_class', 1)
+
+class HeadingClassProcessor(markdown.treeprocessors.Treeprocessor):
+	def run(self, root):
+		for elem in root.iter():
+			if elem.tag.startswith('h') and len(elem.tag) == 2:
+				elem.set('class', 'story_h2')
 
 @stories.route('/story/<int:emergency_id>')
 def view_story(emergency_id): 
@@ -18,13 +30,18 @@ def view_story(emergency_id):
 		emergency_name = db.session.query(Story, Emergency).join(Emergency, Emergency.id == emergency_id).first()
 		members_supporting = db.session.query(Assignment, User, Story).join(User, User.id == Assignment.user_id).join(Story, Story.emergency_id == Assignment.emergency_id).filter(Assignment.emergency_id == emergency_id, Assignment.assignment_status == 'Active').count()
 		member_days = db.engine.execute(text("SELECT id, (end_date-start_date) as day_count, emergency_id FROM assignment WHERE emergency_id = :id AND assignment.assignment_status = 'Active'"), {'id': emergency_id})
-		sum_days = 0
-		for day in member_days:
-			sum_days += day[1]
-		sum_days = int(sum_days)
+		try:
+			sum_days = 0
+			for day in member_days:
+				sum_days += day[1]
+			sum_days = int(sum_days)
+		except:
+			sum_days = 0
 		products_created = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == emergency_id, Portfolio.product_status == 'Approved').count()
-
-		return render_template('story.html', story_data=story_data, emergency_name=emergency_name, members_supporting=members_supporting, sum_days=sum_days, products_created=products_created)
+		
+		story_data_html = markdown.markdown(story_data.entry, extensions=[HeadingClassExtension()])
+		
+		return render_template('story.html', story_data_html=story_data_html, story_data=story_data, emergency_name=emergency_name, members_supporting=members_supporting, sum_days=sum_days, products_created=products_created)
 	else:
 		return render_template('errors/404.html'), 404
 

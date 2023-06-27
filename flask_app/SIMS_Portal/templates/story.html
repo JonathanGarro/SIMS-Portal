@@ -25,7 +25,7 @@
 	<figcaption class="figure-caption">{{story_data.header_caption}}</figcaption>
 	<div class='row my-5'>
 		<div class='col'>
-			{{story_data.entry|markdown}}
+			{{ story_data_html|safe }}
 		</div>
 		<div class='col-md-3 ps-5 pe-4'>
 			{% if current_user.is_admin == 1 %}
@@ -36,11 +36,6 @@
 				<img class='w-50' src="/static/assets/img/members.png"  class="mb-5" alt="Members Icon">
 				<h5 class='text-danger Montserrat'>{{members_supporting}} Members</h5>
 				<p class='lead'>provided support to the response</p>
-		  	</div>
-		  	<div class="row mb-4">
-				<img class='w-50' src="/static/assets/img/calendar.png" class="" alt="Calendar Icon">
-				<h5 class='text-danger Montserrat'>{{sum_days}} Days</h5>
-				<p class='lead'>of remote and deployed support time</p>
 		  	</div>
 		  	<div class="row mb-4">
 			  	<img class='w-50' src="/static/assets/img/products.png" class="mb-5" alt="Products Icon">

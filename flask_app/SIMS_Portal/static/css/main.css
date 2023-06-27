@@ -395,6 +395,11 @@ p {
   background: rgb(45, 108, 23);
 }
 
+.story_h2 {
+	font-family: 'Montserrat';
+	padding-bottom: 20px;
+}
+
 .table > :not(:first-child) {
 	border-top: 0;
 }
