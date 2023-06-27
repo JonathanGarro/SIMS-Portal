@@ -30,3 +30,4 @@ class Config:
 	GOOGLE_MAPS_TOKEN = os.environ.get('GOOGLE_MAPS_TOKEN')
 	WERKZEUG_DEBUG_PIN = '443-431-665'
 	UPLOAD_BUCKET = 'sims-portal-uploads'
+	CACHE_TYPE = 'simple'

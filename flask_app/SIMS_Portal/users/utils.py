@@ -2,7 +2,7 @@ import boto3
 from flask import url_for, current_app, flash, redirect
 from PIL import Image
 from flask_mail import Message
-from SIMS_Portal import db
+from SIMS_Portal import db, cache
 from SIMS_Portal.models import User, Assignment, Emergency
 from slack_sdk import WebClient
 import os
@@ -77,8 +77,9 @@ def send_slack_dm(message, user):
 		requests.post(url='https://slack.com/api/chat.postMessage', data=data)
 	except Exception as e:
 		current_app.logger.error('send_slack_dm failed: {}'.format(e))
-	
-def check_valid_slack_ids(id):
+
+@cache.cached(timeout=120)
+def get_valid_slack_ids():
 	client = WebClient(token=current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	
 	users_store = []
@@ -91,7 +92,12 @@ def check_valid_slack_ids(id):
 		result = client.users_list()
 		save_users_ids(result["members"])
 	except Exception as e:
-		current_app.logger.error('check_valid_slack_ids failed: {}'.format(e))	
+		current_app.logger.error('check_valid_slack_ids failed: {}'.format(e))
+	
+	return users_store
+
+def check_valid_slack_ids(id):
+	users_store = get_valid_slack_ids()
 		
 	if id in users_store:
 		return True

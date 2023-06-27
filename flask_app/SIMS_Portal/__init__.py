@@ -20,7 +20,7 @@ from logging.handlers import RotatingFileHandler
 from logging.config import dictConfig
 from logtail import LogtailHandler
 import os
-from uuid import uuid4
+from flask_caching import Cache
 
 load_dotenv()
 db = SQLAlchemy()
@@ -29,6 +29,7 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'users.login' 
 login_manager.login_message_category = 'danger'
+cache = Cache()
 
 dictConfig({
 	'version': 1,
@@ -73,7 +74,9 @@ def create_app(config_class=Config):
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
 	babel = Babel(app)
 	Markdown(app)
-
+	cache.init_app(app)
+	
+	
 	# @babel.localeselector
 	# def get_locale():
 	# 	user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
