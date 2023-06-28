@@ -1,26 +1,26 @@
-from flask import Flask, redirect, url_for, request, render_template
-from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy, inspect
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, current_user
-from flask_migrate import Migrate
+from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime	
-from SIMS_Portal.config import Config
+from dotenv import load_dotenv
+from flask import Flask, redirect, url_for, request, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flaskext.markdown import Markdown
 from flask_apscheduler import APScheduler
-from apscheduler.triggers.cron import CronTrigger
 from flask_babel import Babel
-import flask_migrate
-import sqlalchemy as sa
-import babel
-import logging
-from logging.handlers import RotatingFileHandler
-from logging.config import dictConfig
-from logtail import LogtailHandler
-import os
+from flask_bcrypt import Bcrypt
 from flask_caching import Cache
+from flask_login import LoginManager, current_user
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy, inspect
+from flaskext.markdown import Markdown
+from logging.config import dictConfig
+from logging.handlers import RotatingFileHandler
+from logtail import LogtailHandler
+from SIMS_Portal.config import Config
+import babel
+import flask_migrate
+import logging
+import os
+import sqlalchemy as sa
 
 load_dotenv()
 db = SQLAlchemy()
