@@ -3,7 +3,7 @@ from flask import url_for, current_app, flash, redirect
 from PIL import Image
 from flask_mail import Message
 from SIMS_Portal import db, cache
-from SIMS_Portal.models import User, Assignment, Emergency
+from SIMS_Portal.models import User, NationalSociety, user_language, Language, Assignment, user_profile, Profile, user_skill, Skill, Emergency
 from slack_sdk import WebClient
 import os
 import secrets
