@@ -2,7 +2,7 @@ import boto3
 import botocore
 from flask import abort, request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session, send_file
 from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
-from SIMS_Portal import db
+from SIMS_Portal import db, cache
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask_login import login_user, current_user, logout_user, login_required
@@ -422,12 +422,12 @@ def manual_refresh(func):
 def staging(): 
 	if current_user.is_admin == 1:
 		# put code to debug here
+
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
-
 
 @main.route("/uploads/<path:name>")
 def download_file(name):
