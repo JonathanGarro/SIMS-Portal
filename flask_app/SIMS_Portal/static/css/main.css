@@ -294,6 +294,11 @@ p {
 	background-color: #f8f9fa
 }
 
+.map {
+	width: 800px;
+	height: 500px;
+}
+
 .Montserrat {
 	font-family: 'Montserrat';
 }
