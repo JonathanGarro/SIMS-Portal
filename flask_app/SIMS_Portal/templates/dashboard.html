@@ -20,7 +20,7 @@
 			{% if pending_user_check|length == 1 and current_user.is_admin == 1 %}
 			<div class="alert alert-warning alert-dismissible fade show" role="alert">
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			  There is one new user account pending approval. Go to the <a href='/admin_landing'>Admin Portal</a> to approve or reject the request.
+			  There are new accounts pending approval. Go to the <a href='/admin_landing'>Admin Portal</a> to approve or reject the requests.
 			</div>
 			{% endif %}
 			{% if pending_user_check|length > 1 and current_user.is_admin == 1 %}
