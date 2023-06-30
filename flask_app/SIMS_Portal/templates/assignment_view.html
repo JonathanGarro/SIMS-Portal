@@ -90,28 +90,6 @@
 		{% endfor %}
 		</div>
 		{% endif %}
-		{% if available_dates %}
-			<h3 class="mt-5 mb-3 emergency-title">Reported Availability</h3>
-			<div id='calendar'></div>
-			<script>
-				let calendarEl = document.getElementById('calendar');
-				
-				let calendar = new FullCalendar.Calendar(calendarEl, {
-					events : [
-						{% for date in available_dates %}
-						{
-							title : 'Available',
-							start : '{{date}}',
-						},
-						{% endfor %}
-						]
-					});
-				
-				calendar.render();
-				
-				
-			</script>
-		{% endif %}
 				
 		</div>
 	</div>

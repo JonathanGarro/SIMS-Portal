@@ -54,21 +54,6 @@ def new_assignment_from_disaster(dis_id):
 @login_required
 def view_assignment(id):
 	assignment_info = db.session.query(Assignment, User, Emergency).join(User).join(Emergency).filter(Assignment.id == id).first()
-	dict_assignment = assignment_info.Assignment.__dict__
-	dict_start_date = str(dict_assignment['start_date'])
-	dict_end_date = str(dict_assignment['end_date'])
-	
-	formatted_start_date = datetime.strptime(dict_start_date, '%Y-%m-%d').strftime('%d %b %Y')
-	formatted_end_date = datetime.strptime(dict_end_date, '%Y-%m-%d').strftime('%d %b %Y')
-	
-	start = pd.to_datetime(dict_start_date)
-	end = pd.to_datetime(dict_end_date)
-	diff = end - start
-	assignment_length_int = diff.days
-	
-	today = datetime.today()
-	days_left_int = end - today
-	days_left_int = days_left_int.days
 	
 	assignment_portfolio = db.session.query(Portfolio).filter(Portfolio.assignment_id==id, Portfolio.product_status != 'Removed').all()
 	count_assignment_portfolio = len(assignment_portfolio)
@@ -81,7 +66,7 @@ def view_assignment(id):
 	else:
 		available_dates = []
 		
-	return render_template('assignment_view.html', assignment_info=assignment_info, formatted_start_date=formatted_start_date, formatted_end_date=formatted_end_date, days_left_int=days_left_int, assignment_length_int=assignment_length_int, assignment_portfolio=assignment_portfolio, available_dates=available_dates, count_assignment_portfolio=count_assignment_portfolio)
+	return render_template('assignment_view.html', assignment_info=assignment_info, assignment_portfolio=assignment_portfolio, count_assignment_portfolio=count_assignment_portfolio)
 
 @assignments.route('/assignment/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
