@@ -124,7 +124,11 @@
 			  
 			  <div class="tab-pane fade" id="pending-members" role="tabpanel" aria-labelledby="pending-members-tab">
 					<br>
+					
 					{% if pending_users|length > 0 %}
+					<h5 class='Montserrat text-dark mt-2'>Member Approval Process</h5>
+					<p class='text-secondary'>Before approving a new user's registration, <span class='fw-bold'>use the "Check Slack" link to verify that they have associated the correct Slack ID</span>. This verification is important for ensuring that messages sent to them will be received, and that they did not accidentally (or purposefully) enter someone else's ID during the sign up prcoess.</p>
+					
 					<table class='table'>
 						<thead>
 							<tr>
@@ -132,7 +136,7 @@
 								<th>Status</th>
 								<th>National Society</th>
 								<th>Email</th>
-					
+								<th>Slack</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -143,6 +147,7 @@
 									<td>{{user.User.status}}</td>
 									<td>{{user.NationalSociety.ns_name}}</td>
 									<td>{{user.User.email}}</td>
+									<td><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{user.User.slack_id}}'>Check Slack</a></td>
 									<td class='text-end'><a href='/user/approve/{{user.User.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/user/delete/{{user.User.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
 								</tr>
 							{% endfor %}
