@@ -9,103 +9,107 @@
 					<p class="lead mt-4">{{ _('Surge Information Management Support (SIMS) is a global network of Information Management specialists who support IFRC emergency response operations by providing a variety of services and products. Key areas of technical support include geospatial analysis, web-based and static data visualization, mobile data collection, scenario planning, and much more.') }}</p>
 					<p class="lead mt-4">SIMS remote coordinators work directly with teams in-country to translate operational needs into discrete tasks, which are then assigned to specialists with the skills and experience to complete them.</p>
 					<br>
-					<a href="/about" class="btn btn-danger btn-lg my-3" id="override-link-color">Learn More</a>
+					<a href="/about" class="btn btn-danger btn-lg mt-3 mb-4" id="override-link-color">Learn More</a>
 					
 				</div>
 			</div>
 			<div class='col'>
 				<div class='mt-6 d-none d-lg-block'>
-					<svg viewBox="100 0 650 650" preserveAspectRatio="none"></svg>
-					<script src="https://d3js.org/d3.v4.min.js"></script>
-					<script src="https://d3js.org/topojson.v1.min.js"></script>
-					<script>
-						const width = 750;
-						const height = 750;
-				  		const config = {
-				  		speed: 0.01,
-				  		verticalTilt: -12,
-				  		horizontalTilt: 0
-						}
-						let locations = [];
-						const svg = d3.select('svg').attr('width', width).attr('height', height);
-						const markerGroup = svg.append('g');
-						const projection = d3.geoOrthographic();
-						const initialScale = projection.scale();
-						const path = d3.geoPath().projection(projection);
-						const center = [width/2, height/2];
-					
-						drawGlobe();    
-						drawGraticule();
-						enableRotation();    
-					
-						function drawGlobe() {  
-							d3.queue()
-								.defer(d3.json, '/static/data/world-110m.json')          
-								.defer(d3.json, '/static/data/locations.json')
-								.await((error, worldData, locationData) => {
-									svg.selectAll(".segment")
-										.data(topojson.feature(worldData, worldData.objects.countries).features)
-										.enter().append("path")
-										.attr("class", "segment")
-										.attr("d", path)
-										.style("stroke", "#888")
-										.style("stroke-width", "1px")
-										.style("fill", (d, i) => '#e5e5e5')
-										.style("opacity", ".6");
-										locations = locationData;
-										drawMarkers();                   
-								});
-						}
-					
-						function drawGraticule() {
-							const graticule = d3.geoGraticule()
-								.step([10, 10]);
-					
-							svg.append("path")
-								.datum(graticule)
-								.attr("class", "graticule")
-								.attr("d", path)
-								.style("fill", "#fff")
-								.style("stroke", "#ccc");
-						}
-					
-						function enableRotation() {
-							d3.timer(function (elapsed) {
-								projection.rotate([config.speed * elapsed - 10, config.verticalTilt, config.horizontalTilt]);
-								svg.selectAll("path").attr("d", path);
-								drawMarkers();
-							});
-						}        
-					
-						function drawMarkers() {
-							const markers = markerGroup.selectAll('circle')
-								.data(locations);
-							markers
-								.enter()
-								.append('circle')
-								.merge(markers)
-								.attr('cx', d => projection([d.longitude, d.latitude])[0])
-								.attr('cy', d => projection([d.longitude, d.latitude])[1])
-								.attr('fill', d => {
-									const coordinate = [d.longitude, d.latitude];
-									gdistance = d3.geoDistance(coordinate, projection.invert(center));
-									return gdistance > 1.5 ? 'none' : 'red';
-								})
-								.attr('stroke', d => {
-									const coordinate = [d.longitude, d.latitude];
-									gdistance = d3.geoDistance(coordinate, projection.invert(center));
-									return gdistance > 1.5 ? 'none' : 'white';
-								})
-								.attr('r', 4);
-					
-							markerGroup.each(function () {
-								this.parentNode.appendChild(this);
-							});
-						}
-						svg.append("circle").attr("cx",600).attr("cy",500).attr("r", 6).style("fill", "red")
-						svg.append("text").attr("x", 620).attr("y", 500).text("SIMS Member").style("font-size", "12px").attr("alignment-baseline","middle")
-					</script>
+				  <svg viewBox="0 120 650 650" preserveAspectRatio="none"></svg>
+				  <script src="https://d3js.org/d3.v4.min.js"></script>
+				  <script src="https://d3js.org/topojson.v1.min.js"></script>
+				  <script>
+					const width = 750;
+					const height = 750;
+					const config = {
+					  speed: 0.01,
+					  verticalTilt: -12,
+					  horizontalTilt: 0
+					};
+					let locations = [];
+					const svg = d3.select('svg').attr('width', width).attr('height', height);
+					const markerGroup = svg.append('g');
+					const projection = d3.geoOrthographic().translate([width / 2, height / 2]);
+					const initialScale = projection.scale();
+					const path = d3.geoPath().projection(projection);
+					const center = [width / 2, height / 2];
+				  
+					drawGlobe();
+					drawGraticule();
+					enableRotation();
+				  
+					function drawGlobe() {
+					  d3.queue()
+					  .defer(d3.json, '/static/data/world-110m.json')          
+					  .defer(d3.json, '/static/data/locations.json')
+						.await((error, worldData, locationData) => {
+						  svg.selectAll('.segment')
+							.data(topojson.feature(worldData, worldData.objects.countries).features)
+							.enter().append('path')
+							.attr('class', 'segment')
+							.attr('d', path)
+							.style('stroke', '#888')
+							.style('stroke-width', '1px')
+							.style('fill', (d, i) => '#e5e5e5')
+							.style('opacity', '.6');
+						  locations = locationData;
+						  drawMarkers();
+						});
+					}
+				  
+					function drawGraticule() {
+					  const graticule = d3.geoGraticule()
+						.step([10, 10]);
+				  
+					  svg.append('path')
+						.datum(graticule)
+						.attr('class', 'graticule')
+						.attr('d', path)
+						.style('fill', '#fff')
+						.style('stroke', '#ccc');
+					}
+				  
+					function enableRotation() {
+					  d3.timer(function (elapsed) {
+						projection.rotate([config.speed * elapsed - 10, config.verticalTilt, config.horizontalTilt]);
+						svg.selectAll('path').attr('d', path);
+						drawMarkers();
+					  });
+					}
+				  
+					function drawMarkers() {
+					  const markers = markerGroup.selectAll('circle')
+						.data(locations);
+				  
+					  markers.enter()
+						.append('circle')
+						.merge(markers)
+						.attr('cx', d => projection([d.longitude, d.latitude])[0])
+						  .attr('cy', d => projection([d.longitude, d.latitude])[1])
+						.attr('fill', d => {
+						  const coordinate = [d.longitude, d.latitude];
+						  const gdistance = d3.geoDistance(coordinate, projection.invert(center));
+						  return gdistance > 1.5 ? 'none' : 'red';
+						})
+						.attr('stroke', d => {
+						  const coordinate = [d.longitude, d.latitude];
+						  const gdistance = d3.geoDistance(coordinate, projection.invert(center));
+						  return gdistance > 1.5 ? 'none' : 'white';
+						})
+						.attr('r', 4);
+				  
+					  markerGroup.each(function () {
+						this.parentNode.appendChild(this);
+					  });
+					}
+				  
+					svg.append('circle').attr('cx', 535).attr('cy', 600).attr('r', 6).style('fill', 'red');
+					svg.append('text').attr('x', 545).attr('y', 600).text('SIMS Member').style('font-size', '11px').attr('alignment-baseline', 'middle');
+				  </script>
+
 				</div>
+
+
 				<!-- <img src='/static/assets/img/top-banner.png' class='img-fluid mt-5' usemap="#image-map"> -->
 			</div>
 		</div>
