@@ -1,10 +1,7 @@
+// fade flash alerts after 5 seconds
 window.setTimeout(function() {
 	$("#alert").fadeTo(500, 0) 
 }, 6000);
-
-// var scrollSpy = new bootstrap.ScrollSpy(document.body, {
-//   target: '#navbar-example'
-// })
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -200,6 +197,26 @@ $(document).ready(function() {
 		order: [[0, 'asc']],
 		"bLengthChange": false,
 		"searching": false,
+	} );
+} );
+
+$(document).ready(function() {
+	$('#datatable-active-simscos').DataTable( {
+		order: [[0, 'asc']],
+		"bLengthChange": false,
+		"searching": false,
+		"bInfo": false,
+		paging: false
+	} );
+} );
+
+$(document).ready(function() {
+	$('#datatable-deployed-im').DataTable( {
+		order: [[0, 'asc']],
+		"bLengthChange": false,
+		"searching": false,
+		"bInfo": false,
+		paging: false
 	} );
 } );
 
