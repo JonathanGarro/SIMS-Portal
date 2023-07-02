@@ -246,7 +246,7 @@
 			</div>
 		</div>
 	
-		<div class="col mx-4">
+		<div class="col ms-4">
 			{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
 			<div class="alert alert-warning alert-dismissible fade show mb-5" role="alert">
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -276,30 +276,85 @@
 			  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
 			  {% if emergency_info.Emergency.activation_details|length == 0 %}
 			  
-				  {% else %}
-					  <h3 class="text-dark mt-4 emergency-title">Activation Details</h3>
-					  <p class="pb-3">{{emergency_info.Emergency.activation_details}}</p>
-				  {% endif %}
+			  {% else %}
+				  <h3 class="text-dark mt-4 emergency-title">Activation Details</h3>
+				  <p class="mb-5">{{emergency_info.Emergency.activation_details}}</p>
+			  {% endif %}
+		
+				<div class='mb-5'>
+				<h3 class="mb-3 text-dark emergency-title">Operational Support</h3>
+				<div class="d-flex justify-content-between">
+				  <h5 class="mb-3 text-danger emergency-title">Remote Coordinators</h5>
+				  <div class="d-flex justify-content-end align-items-center">
+					<a href='/emergency/gantt/{{emergency_info.Emergency.id}}' class="me-1"><button class='btn btn-sm btn-outline-danger'>SIMS Co Gantt</button></a>
+				  	<button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#deployedMembers" aria-expanded="false" aria-controls="deployedMembers" id="deployedMemberListToggle">Field Deployments</button>
+				  </div>
+				</div>
+				  <table class="table" id="datatable-active-simscos">
+					  <thead class="">
+						<tr>
+						  <th>Member</th>
+						  <th>National Society</th>
+						  <th>Start</th>
+						</tr>
+					  </thead>
+					  <tbody>
+						  {% for sims_co in sims_cos %}
+						  <tr>
+							<td class="fw-bold"><a href="/assignment/{{sims_co.Assignment.id}}" class="link-danger">{{sims_co.User.firstname}} {{sims_co.User.lastname}}</a></td>
+							<td>{{sims_co.NationalSociety.ns_name}}</td>
+							<td>{{sims_co.Assignment.start_date}}</td>
+						  </tr>
+						  {% endfor %}
+					  </tbody>
+					</table>
+				  
+				  </div>
+				  
+				  <div class="collapse mb-5" id="deployedMembers">
+					  <h5 class="mb-3 text-danger emergency-title">Field Deployments</h5>
+					  <table class="table" id="datatable-deployed-im">
+						<thead class="">
+						  <tr>
+							<th>Member</th>
+							<th>National Society</th>
+							<th>Role</th>
+							<th>Start</th>
+						  </tr>
+						</thead>
+						<tbody>
+							{% for deployment in deployed_im %}
+							<tr>
+							  <td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
+							  <td>{{deployment.NationalSociety.ns_name}}</td>
+							  <td>{{deployment.Assignment.role}}</td>
+							  <td>{{deployment.Assignment.start_date}}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					  </table>
+					  
+				  </div>
+				  
 				  <div class='mb-5'>
 					  {% if deployment_history_count == 0 %}
-					  <h3 class="mb-3 text-dark emergency-title">Member Support: <span class='text-danger'>{{ deployment_history_count }}</span></h3>
+					  <h5 class="mb-3 text-danger emergency-title">Remote Supporters: <span class='text-dark'>{{ deployment_history_count }}</span></h5>
 					  {% else %}
-					  <h3 class="text-dark emergency-title mb-3">Member Support: <span class='text-danger'>{{ deployment_history_count }}</span></h3>
+					  <h5 class="text-danger emergency-title mb-3">Remote Supporters: <span class='text-dark'>{{ deployment_history_count }}</span></h5>
 					  <table class="table" id="datatable-active-assignments">
 						<thead class="">
 						  <tr>
 							<th>Member</th>
 							<th>National Society</th>
-							<th>Assignment</th>
-					  
+					  	  	<th>Start</th>
 						  </tr>
 						</thead>
 						<tbody>
 							{% for deployment in deployments %}
 							<tr>
-							  <td class="fw-bold"><a href="/profile/view/{{deployment.Assignment.user_id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
+							  <td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
 							  <td>{{deployment.NationalSociety.ns_name}}</td>
-							  <td><a href='/assignment/{{deployment.Assignment.id}}'>{{deployment.Assignment.role}}</a></td>
+							  <td>{{ deployment.Assignment.start_date }}
 							</tr>
 							{% endfor %}
 						</tbody>

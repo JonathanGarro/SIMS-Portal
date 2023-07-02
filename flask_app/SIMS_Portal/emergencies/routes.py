@@ -6,6 +6,7 @@ from SIMS_Portal.emergencies.forms import NewEmergencyForm, UpdateEmergencyForm
 from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, get_trello_tasks
 from SIMS_Portal.assignments.utils import aggregate_availability
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from sqlalchemy.sql import func
 from sqlalchemy.orm import sessionmaker
 from flask_login import login_user, logout_user, current_user, login_required
@@ -99,7 +100,27 @@ def view_emergency(id):
 	
 	pending_products = db.session.query(Portfolio).filter(Portfolio.emergency_id == id, Portfolio.product_status == 'Pending Approval').all()
 	
-	deployments = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active').order_by(User.firstname).all()
+	# get sims cos
+	sims_cos = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active', Assignment.role=='SIMS Remote Coordinator').order_by(User.firstname).all()
+	
+	# get deployed IM roles
+	deployed_im = db.session.query(Assignment, Emergency, User, NationalSociety).\
+	join(Emergency, Emergency.id == Assignment.emergency_id).\
+	join(User, User.id == Assignment.user_id).\
+	join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).\
+	filter(
+		Emergency.id == id,
+		Assignment.assignment_status == 'Active',
+		or_(
+			Assignment.role == 'Information Management Coordinator',
+			Assignment.role == 'Information Analyst',
+			Assignment.role == 'Primary Data Collection Officer',
+			Assignment.role == 'Mapping and Visualization Officer'
+		)
+	).order_by(User.firstname).all()
+	
+	# get remote supporters
+	deployments = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active', Assignment.role=='Remote IM Support').order_by(User.firstname).all()
 	
 	emergency_info = db.session.query(Emergency, EmergencyType, NationalSociety).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id).filter(Emergency.id == id).first()
 	
@@ -131,7 +152,7 @@ def view_emergency(id):
 
 	existing_reviews = db.session.query(Review).filter(Review.emergency_id == id).all()
 	
-	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active').scalar()
+	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
 	
 	try:
 		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)
@@ -169,7 +190,9 @@ def view_emergency(id):
 		count_cards=count_cards, 
 		current_weekday=current_weekday, 
 		availability_results=availability_results,
-		user_info=user_info
+		user_info=user_info, 
+		sims_cos=sims_cos,
+		deployed_im=deployed_im
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
@@ -209,22 +232,27 @@ def edit_emergency(id):
 		form.trello_url.data = emergency_info.trello_url
 	return render_template('emergency_edit.html', form=form, emergency_info=emergency_info)
 
-@emergencies.route('/emergency/gantt/<int:id>', methods=['GET', 'POST'])
+@emergencies.route('/emergency/gantt/<int:id>')
 @login_required
 def emergency_gantt(id):
 	emergency_info = db.session.query(Emergency).filter(Emergency.id == id).first()
-	assignments = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == id, Assignment.assignment_status == 'Active').with_entities(Assignment.start_date, Assignment.end_date, User.fullname).order_by(Assignment.start_date.asc()).all()
+	
+	assignments = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == id, Assignment.assignment_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').with_entities(Assignment.start_date, Assignment.end_date, User.fullname, Assignment.role).order_by(Assignment.start_date.asc()).all()
+	
 	start_end_dates = []
 	for dates in assignments:
 		start_end_dates.append([dates.start_date.strftime('%Y-%m-%d'), dates.end_date.strftime('%Y-%m-%d')])
+	
 	member_labels = []
 	for member in assignments:
 		member_labels.append(member.fullname)
+	
 	if start_end_dates:
 		min_date = min(start_end_dates)
 		min_date = min_date[0]
 	else: 
 		min_date = '2000-01-01'
+	
 	return render_template('emergency_gantt.html', start_end_dates=start_end_dates, member_labels=member_labels, min_date=min_date, emergency_info=emergency_info)
 
 @emergencies.route('/emergency/closeout/<int:id>')
