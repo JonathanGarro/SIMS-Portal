@@ -1,7 +1,8 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
+from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, redirect
+from SIMS_Portal.assignments.utils import get_dates_current_and_next_week
+from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.models import Assignment, User, Emergency, Portfolio
 from SIMS_Portal.users.utils import send_slack_dm
-from SIMS_Portal.assignments.utils import get_dates_current_and_next_week
 from SIMS_Portal import db, login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, current_user, logout_user, login_required
@@ -29,26 +30,48 @@ def new_assignment():
 @assignments.route('/assignment/new/<int:dis_id>', methods=['GET', 'POST'])
 @login_required
 def new_assignment_from_disaster(dis_id):
-	form = NewAssignmentForm()
-	emergency_info = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
-	if form.validate_on_submit():
-		assignment = Assignment(user_id=form.user_id.data.id, emergency_id=dis_id, start_date=form.start_date.data, end_date=form.end_date.data, role=form.role.data, assignment_details=form.assignment_details.data, remote=form.remote.data)
-		db.session.add(assignment)
-		db.session.commit()
-		current_app.logger.info('New assignment created for User-{}.'.format(form.user_id.data.id))
+	existing_supporters = db.session.query(Emergency, Assignment).join(Assignment, Assignment.emergency_id == Emergency.id).filter(Emergency.id == dis_id, Assignment.role == 'Remote IM Support').all()
+	
+	existing_supporters_ids = [assignment.user_id for _, assignment in existing_supporters]
+	
+	if check_sims_co(dis_id) or current_user.is_admin == True:
+		form = NewAssignmentForm()
+		emergency_info = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 		
-		# attempt to send slack message to user after successful assignment creation
-		try:
-			this_user = db.session.query(User).filter(User.id == form.user_id.data.id).first()
-			message = 'Hi {}, you have been assigned to the {} response operation in the SIMS Portal. Be sure to use the <{}/assignment/{}|Report Availability feature on your assignment> to help the SIMS Remote Coordinator better plan for coverage of important tasks! '.format(this_user.firstname, emergency_info.emergency_name, current_app.config['ROOT_URL'], str(assignment.id))
-			send_slack_dm(message, this_user.slack_id)
+		# if form.validate_on_submit():
+		if request.method == 'POST':
+			assignment = Assignment(
+				user_id=form.user_id.data.id, 
+				emergency_id=dis_id, 
+				start_date=form.start_date.data, 
+				end_date=form.end_date.data, 
+				role=form.role.data, 
+				assignment_details=form.assignment_details.data, 
+				remote=form.remote.data)
 			
-		# skip slack message if slack is down or user doesn't have slack ID filled in
-		except Exception as e:
-			current_app.logger.error('Slack message to user #{}: {}'.format(form.user_id.data.id, e))
-		flash('New assignment successfully created.', 'success')
-		return redirect(url_for('main.dashboard'))
-	return render_template('create_assignment_from_disaster.html', title='New Assignment', form=form, emergency_info=emergency_info)
+			if form.role.data == "Remote IM Support" and form.user_id.data.id in existing_supporters_ids:
+				flash("That member is already assigned as a remote supporter", "danger")
+				return redirect(url_for('assignments.new_assignment_from_disaster', dis_id=dis_id))
+			
+			db.session.add(assignment)
+			db.session.commit()
+			current_app.logger.info('New assignment created for User-{}.'.format(form.user_id.data.id))
+			
+			# attempt to send slack message to user after successful assignment creation
+			try:
+				this_user = db.session.query(User).filter(User.id == form.user_id.data.id).first()
+				message = 'Hi {}, you have been assigned to the {} response operation in the SIMS Portal. Be sure to use the <{}/assignment/{}|Report Availability feature on your assignment> to help the SIMS Remote Coordinator better plan for coverage of important tasks! '.format(this_user.firstname, emergency_info.emergency_name, current_app.config['ROOT_URL'], str(assignment.id))
+				send_slack_dm(message, this_user.slack_id)
+				
+			# skip slack message if slack is down or user doesn't have slack ID filled in
+			except Exception as e:
+				current_app.logger.error('Slack message to user #{}: {}'.format(form.user_id.data.id, e))
+			flash('New assignment successfully created.', 'success')
+			return redirect(url_for('emergencies.view_emergency', id=dis_id))
+		return render_template('create_assignment_from_disaster.html', title='New Assignment', form=form, emergency_info=emergency_info)
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @assignments.route('/assignment/<int:id>')
 @login_required

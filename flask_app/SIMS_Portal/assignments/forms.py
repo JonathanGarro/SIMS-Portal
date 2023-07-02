@@ -8,9 +8,9 @@ from SIMS_Portal.models import User, Emergency, Assignment
 class NewAssignmentForm(FlaskForm):
 	user_id = QuerySelectField('SIMS Member', query_factory=lambda:User.query.filter_by(status='Active').order_by('firstname'), get_label='fullname', allow_blank=True)
 	emergency_id = QuerySelectField('Emergency', query_factory=lambda:Emergency.query.all(), get_label='emergency_name', allow_blank=True)
-	role = SelectField("Role Type", choices=['', 'SIMS Remote Coordinator', 'Information Management Coordinator', 'Information Analyst', 'Primary Data Collection Officer', 'Mapping and Visualization Officer', 'Remote IM Support'])
-	start_date = DateTimeField('Start Date', format='%Y-%m-%d')
-	end_date = DateTimeField('End Date', format='%Y-%m-%d')
+	role = SelectField("Role Type", choices=['', 'Remote IM Support', 'SIMS Remote Coordinator', 'Information Management Coordinator', 'Information Analyst', 'Primary Data Collection Officer', 'Mapping and Visualization Officer'])
+	start_date = DateTimeField('Start Date', format='%Y-%m-%d', validators=[])
+	end_date = DateTimeField('End Date', format='%Y-%m-%d', validators=[])
 	remote = BooleanField('Remote?')
 	assignment_details = TextAreaField('Assignment Description')
 	submit = SubmitField('Create Assignment')

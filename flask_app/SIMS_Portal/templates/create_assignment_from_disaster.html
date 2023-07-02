@@ -1,6 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
+	<div id="hideMe">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="mt-2 alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
+		{% endwith %}
+	</div>
 	<div class="row my-5">
 		<div class="col-md-4">
 			<h4 class="text-secondary mb-1 Montserrat">Create New</h4>
@@ -47,33 +58,67 @@
 										{% endfor %}
 									</div>
 							{% else %}
-								{{ form.role(class="form-control form-control-lg") }}
+								{{ form.role(class="form-control form-control-lg", id="role-select") }}
 							{% endif %}
 						</div>
 					</div>
 				</div>
+				
+				<div class="row" id="assignment-dates" style="display: none;">
 					<div class="row">
-
-						<div class="col">
+						<div class="col-6">
 							<div class="form-group pb-4">
-								{{ form.assignment_details.label(class="form-control-label pb-2 text-secondary") }}
-								
-								{% if form.assignment_details.errors %}
-									{{ form.assignment_details(class="form-control form-control-lg is-invalid") }}
-										<div class="invalid-feedback">
-											{% for error in form.assignment_details.errors %}
-												<span>{{ error }}</span>
-											{% endfor %}
-										</div>
-								{% else %}
-									{{ form.assignment_details(class="form-control form-control-lg") }}
-								{% endif %}
+								{{ form.start_date.label(class="form-control-label pb-2 text-secondary") }}
+								{{ form.start_date(class="form-control form-control-lg", type="date") }}
 							</div>
 						</div>
+						<div class="col-6">
+							<div class="form-group pb-4">
+								{{ form.end_date.label(class="form-control-label pb-2 text-secondary") }}
+								{{ form.end_date(class="form-control form-control-lg", type="date") }}
+							</div>
 						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.assignment_details.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.assignment_details.errors %}
+								{{ form.assignment_details(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.assignment_details.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.assignment_details(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
 				{{ form.submit(class="btn btn-outline-danger") }}
 			</form>
 		</div>
 	</div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+	var roleSelect = document.getElementById("role-select");
+	var assignmentDatesDiv = document.getElementById("assignment-dates");
+
+	roleSelect.addEventListener("change", function() {
+	  var selectedValue = roleSelect.value;
+	  if (selectedValue !== 'Remote IM Support') {
+		assignmentDatesDiv.style.display = "block";
+	  } else {
+		assignmentDatesDiv.style.display = "none";
+	  }
+	});
+  });
+</script>
+
 {% endblock content %}
