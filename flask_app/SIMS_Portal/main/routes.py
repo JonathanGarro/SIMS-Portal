@@ -416,11 +416,14 @@ def manual_refresh(func):
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-
 @main.route('/staging') 
 def staging(): 
 	if current_user.is_admin == 1:
 		# put code to debug here
+		
+		
+
+
 
 		return render_template('visualization.html')
 	else:
