@@ -12,6 +12,7 @@ flask_app/SIMS_Portal/static/assets/portfolio/
 flask_app/SIMS_Portal/static/data/backups
 flask_app/SIMS_Portal/vector.toml
 flask_app/SIMS_Portal/templates/visualization.html
+flask_app/SIMS_Portal/templates/_temp.html
 flask_app/vector.toml
 flask_app/assets/portfolio
 flask_app/assets/img/avatars
