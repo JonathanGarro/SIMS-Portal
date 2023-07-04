@@ -42,8 +42,11 @@ def view_availability(user_id, emergency_id):
         datetime_obj = datetime.strptime(date, '%A, %B %d')
         formatted_date = datetime_obj.strftime('{}-%m-%d').format(today)
         available_dates.append(formatted_date)
-        
-    return render_template('availability_view.html', user_info=user_info, emergency_info=emergency_info, available_dates=available_dates)
+    
+    # conditional to change views - true means viewer is looking at their own record
+    this_user = current_user.id == user_id
+    
+    return render_template('availability_view.html', user_info=user_info, emergency_info=emergency_info, available_dates=available_dates, this_user=this_user)
 
 
 @availability.route('/availability/report/<int:disaster_id>', methods=['GET', 'POST'])
