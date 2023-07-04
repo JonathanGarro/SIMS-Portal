@@ -155,15 +155,26 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
-	$('#datatable-full-portfolio').DataTable( {
-		order: [[8, 'desc']],
-		"autoWidth": false,
+	$('#datatable-assigned-profiles').DataTable( {
+		order: [[0, 'asc']],
 		columnDefs: [
 		{
-			target: 8,
+			target: 0,
 			visible: false,
 			searchable: true,
 		}],
+		rowGroup: {
+			dataSrc: 0
+		},
+ 
+	} );
+} );
+
+$(document).ready(function() {
+	$('#datatable-trello').DataTable( {
+		"autoWidth": false,
+		"bLengthChange": false,
+		"searching": false,
 	} );
 } );
 
