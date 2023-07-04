@@ -1,13 +1,17 @@
+from collections import Counter
+from datetime import datetime, timedelta, date
 from flask import url_for, current_app, flash, redirect
 from SIMS_Portal import db
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety
 from slack_sdk import WebClient
-import requests
-import pandas as pd
-import json
-import os
+import ast
 import csv
 import logging
+import json
+import os
+import pandas as pd
+import re
+import requests
 
 def update_response_locations():
 	"""
@@ -115,4 +119,37 @@ def get_trello_tasks(trello_board_url):
 		card_info_list.append(temp_dict)
 	
 	return card_info_list
-		
+
+
+	
+def emergency_availability_chart_data(dis_id):
+	current_year = datetime.now().year
+	current_week = datetime.today().isocalendar()[1]
+	year_week = f"{current_year}-{current_week}"
+	
+	data = db.engine.execute("SELECT u.id, STRING_AGG(DISTINCT p.name, ', ') AS profile_names, STRING_AGG(DISTINCT a.dates, '; ') AS associated_dates FROM public.user u JOIN public.user_profile up ON up.user_id = u.id JOIN public.profile p ON up.profile_id = p.id JOIN public.availability a ON a.user_id = u.id WHERE a.timeframe = '{}' AND a.emergency_id = {} GROUP BY u.id, a.timeframe".format(str(year_week), dis_id))
+	
+	current_date = datetime.now().date()
+	start_of_week = current_date - timedelta(days=current_date.weekday())
+	week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
+	
+	current_year = datetime.now().year
+	
+	date_list = []
+	for row in data:
+		item = row.associated_dates
+		extracted_values = re.findall(r'[A-Za-z]+\s+\d+', item)
+		for value in extracted_values:
+			date_string = value.strip()
+			date_object = datetime.strptime(date_string, "%B %d").date().replace(year=current_year)
+			date_list.append(date_object)
+	
+	frequency_count = [date_list.count(week_date) for week_date in week_dates]
+	
+	formatted_week_dates = [week_date.strftime("%Y-%m-%d") for week_date in week_dates]
+	
+	print(frequency_count)
+	print(formatted_week_dates)
+	
+	return formatted_week_dates, frequency_count
+

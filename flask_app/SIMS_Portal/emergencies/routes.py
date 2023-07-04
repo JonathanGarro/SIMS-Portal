@@ -3,7 +3,7 @@ from SIMS_Portal import db
 from SIMS_Portal.config import Config
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Alert, Portfolio, Story, Learning, Review, Availability
 from SIMS_Portal.emergencies.forms import NewEmergencyForm, UpdateEmergencyForm
-from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, get_trello_tasks
+from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, get_trello_tasks, emergency_availability_chart_data
 from SIMS_Portal.assignments.utils import aggregate_availability
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -12,6 +12,7 @@ from sqlalchemy.orm import sessionmaker
 from flask_login import login_user, logout_user, current_user, login_required
 from collections import Counter
 from datetime import datetime
+import ast
 import json
 import logging
 
@@ -48,18 +49,9 @@ def new_emergency():
 @login_required
 def view_emergency(id):
 	user_info = db.session.query(User).filter(User.id == current_user.id).first()
+
+	week_dates, frequency_count = emergency_availability_chart_data(id)
 	
-	# aggregate reported availability if data exists, otherwise return hide chart variable for jinja filtering
-	try:
-		func_call = aggregate_availability(id)
-		values = func_call[0]
-		labels = func_call[1]
-		kill_chart = False
-	except:
-		values = []
-		labels = []
-		kill_chart = True
-		
 	# get IDs of all this emergency's sims remote coordinators
 	sims_co_ids = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id, Assignment.role == 'SIMS Remote Coordinator').all()
 
@@ -78,12 +70,12 @@ def view_emergency(id):
 	week_number = datetime.today().isocalendar()[1]
 	timeframe = f"{today}-{week_number}"
 	
+	# build availability query
 	availability_subquery = db.session.query(func.max(Availability.created_at)).filter(
 		Availability.emergency_id == emergency_id,
 		Availability.user_id == user_id,
 		Availability.timeframe == timeframe 
 	).scalar_subquery()
-	
 	availability_query = db.session.query(
 		Availability.id, 
 		Availability.emergency_id,
@@ -95,12 +87,11 @@ def view_emergency(id):
 		Availability.timeframe == timeframe,
 		Availability.created_at == availability_subquery
 	)
-	
 	availability_results = availability_query.first()
 	
 	pending_products = db.session.query(Portfolio).filter(Portfolio.emergency_id == id, Portfolio.product_status == 'Pending Approval').all()
 	
-	# get sims cos
+	# get simscos
 	sims_cos = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active', Assignment.role=='SIMS Remote Coordinator').order_by(User.firstname).all()
 	
 	# get deployed IM roles
@@ -181,10 +172,7 @@ def view_emergency(id):
 		deployment_history_count=deployment_history_count, 
 		user_is_sims_co=user_is_sims_co, 
 		pending_products=pending_products, 
-		emergency_portfolio_size=emergency_portfolio_size, 
-		values=values, 
-		labels=labels, 
-		kill_chart=kill_chart, 
+		emergency_portfolio_size=emergency_portfolio_size,  
 		existing_reviews=existing_reviews, 
 		to_do_trello=to_do_trello, 
 		count_cards=count_cards, 
@@ -192,7 +180,9 @@ def view_emergency(id):
 		availability_results=availability_results,
 		user_info=user_info, 
 		sims_cos=sims_cos,
-		deployed_im=deployed_im
+		deployed_im=deployed_im,
+		week_dates=week_dates, 
+		frequency_count=frequency_count
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
