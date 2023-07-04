@@ -155,22 +155,6 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
-	$('#datatable-assigned-profiles').DataTable( {
-		order: [[0, 'asc']],
-		columnDefs: [
-		{
-			target: 0,
-			visible: false,
-			searchable: true,
-		}],
-		rowGroup: {
-			dataSrc: 0
-		},
- 
-	} );
-} );
-
-$(document).ready(function() {
 	$('#datatable-trello').DataTable( {
 		"autoWidth": false,
 		"bLengthChange": false,
