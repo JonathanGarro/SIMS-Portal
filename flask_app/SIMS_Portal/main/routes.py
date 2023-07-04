@@ -1,29 +1,59 @@
-import boto3
-import botocore
-from flask import abort, request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session, send_file
-from SIMS_Portal.models import Assignment, User, Emergency, Alert, user_skill, user_language, user_badge, Skill, Language, NationalSociety, Badge, Story, EmergencyType, Review, user_profile, Profile
-from SIMS_Portal import db, cache
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
-from flask_login import login_user, current_user, logout_user, login_required
-from datetime import datetime
-from SIMS_Portal.main.forms import MemberSearchForm, EmergencySearchForm, ProductSearchForm, BadgeAssignmentForm, SkillCreatorForm, BadgeAssignmentViaSIMSCoForm, NewBadgeUploadForm
-from SIMS_Portal.users.forms import AssignProfileTypesForm
-from collections import defaultdict, Counter
-from datetime import date, timedelta
-from SIMS_Portal.config import Config
-from SIMS_Portal.main.utils import fetch_slack_channels, check_sims_co, save_new_badge, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades, auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler, auto_badge_assigner_old_salt
-from SIMS_Portal.users.utils import send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
-from SIMS_Portal.alerts.utils import refresh_surge_alerts, refresh_surge_alerts_latest
-from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, update_response_locations, get_trello_tasks
-from SIMS_Portal.availability.utils import send_slack_availability_request, request_availability_updates
+import csv
 import io
+import json
+import logging
 import os
 import re
-import csv
-import json
+from datetime import datetime
+
 import pandas as pd
-import logging
+from flask import (
+	abort, request, render_template, url_for, flash, redirect,
+	jsonify, Blueprint, current_app, session, send_file
+)
+from flask_login import (
+	login_user, current_user, logout_user, login_required
+)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+import boto3
+import botocore
+
+from SIMS_Portal import db, cache
+from SIMS_Portal.config import Config
+from SIMS_Portal.models import (
+	Assignment, User, Emergency, Alert, user_skill, user_language,
+	user_badge, Skill, Language, NationalSociety, Badge, Story,
+	EmergencyType, Review, user_profile, Profile
+)
+from SIMS_Portal.main.forms import (
+	MemberSearchForm, EmergencySearchForm, ProductSearchForm,
+	BadgeAssignmentForm, SkillCreatorForm, BadgeAssignmentViaSIMSCoForm,
+	NewBadgeUploadForm
+)
+from SIMS_Portal.main.utils import (
+	fetch_slack_channels, check_sims_co, save_new_badge,
+	auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage,
+	auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot,
+	auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades,
+	auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler,
+	auto_badge_assigner_old_salt
+)
+from SIMS_Portal.users.forms import AssignProfileTypesForm
+from SIMS_Portal.users.utils import (
+	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
+)
+from SIMS_Portal.alerts.utils import (
+	refresh_surge_alerts, refresh_surge_alerts_latest
+)
+from SIMS_Portal.emergencies.utils import (
+	update_response_locations, update_active_response_locations,
+	get_trello_tasks
+)
+from SIMS_Portal.availability.utils import (
+	send_slack_availability_request, request_availability_updates
+)
+
 
 main = Blueprint('main', __name__)
 
