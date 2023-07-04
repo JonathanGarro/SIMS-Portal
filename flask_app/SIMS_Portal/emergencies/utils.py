@@ -120,8 +120,6 @@ def get_trello_tasks(trello_board_url):
 	
 	return card_info_list
 
-
-	
 def emergency_availability_chart_data(dis_id):
 	current_year = datetime.now().year
 	current_week = datetime.today().isocalendar()[1]

@@ -262,7 +262,7 @@
 				<li class="nav-item" role="presentation">
 				<button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
 				</li>
-				{% if frequency_count|length > 0 %}
+				{% if not kill_chart %}
 				<li class="nav-item" role="presentation">
 				<button class="nav-link" id="availability-tab" data-bs-toggle="pill" data-bs-target="#availability" type="button" role="tab" aria-controls="availability" aria-selected="false">Availability</button>
 				</li>
@@ -283,6 +283,7 @@
 			  {% else %}
 				  <h3 class="text-dark mt-4 emergency-title">Activation Details</h3>
 				  <p class="mb-5">{{emergency_info.Emergency.activation_details}}</p>
+				  
 			  {% endif %}
 		
 				<div class='mb-5'>
@@ -445,9 +446,6 @@
 					const ctx = document.getElementById('availabilityChart').getContext('2d');
 					new Chart(ctx, chartConfig);
 				  </script>
-
-				  
-				  
 				  
 			  </div>
 			  

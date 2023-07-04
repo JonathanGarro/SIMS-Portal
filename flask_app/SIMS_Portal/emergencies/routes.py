@@ -52,6 +52,11 @@ def view_emergency(id):
 
 	week_dates, frequency_count = emergency_availability_chart_data(id)
 	
+	if frequency_count == [0, 0, 0, 0, 0, 0, 0]:
+		kill_chart = True
+	else:
+		kill_chart = False
+	
 	# get IDs of all this emergency's sims remote coordinators
 	sims_co_ids = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id, Assignment.role == 'SIMS Remote Coordinator').all()
 
@@ -182,7 +187,8 @@ def view_emergency(id):
 		sims_cos=sims_cos,
 		deployed_im=deployed_im,
 		week_dates=week_dates, 
-		frequency_count=frequency_count
+		frequency_count=frequency_count,
+		kill_chart=kill_chart
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
