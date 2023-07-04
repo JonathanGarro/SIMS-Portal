@@ -1,13 +1,21 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
+from flask import (
+	request, render_template, url_for, flash, redirect,
+	jsonify, Blueprint, current_app
+)
+from flask_login import (
+	login_user, logout_user, current_user, login_required
+)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+
 from SIMS_Portal import db
 from SIMS_Portal.config import Config
 from SIMS_Portal.models import Review, Emergency, User
-from SIMS_Portal.reviews.forms import NewEmergencyReviewForm, ProcessEmergencyReviewForm
+from SIMS_Portal.reviews.forms import (
+	NewEmergencyReviewForm, ProcessEmergencyReviewForm
+)
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal.main.utils import check_sims_co
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
-from flask_login import login_user, logout_user, current_user, login_required
 
 reviews = Blueprint('reviews', __name__)
 

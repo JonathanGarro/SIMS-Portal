@@ -1,17 +1,25 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, redirect
+import logging
+from datetime import datetime, date, timedelta
+
+import pandas as pd
+from flask import (
+	request, render_template, url_for, flash, redirect,
+	jsonify, Blueprint, current_app, redirect
+)
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import (
+	login_user, current_user, logout_user, login_required
+)
+from sqlalchemy import func, text
+
 from SIMS_Portal.assignments.utils import get_dates_current_and_next_week
 from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.models import Assignment, User, Emergency, Portfolio
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal import db, login_manager
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_user, current_user, logout_user, login_required
-from sqlalchemy import func, text
-from SIMS_Portal.assignments.forms import NewAssignmentForm, UpdateAssignmentForm
-from datetime import datetime
-from datetime import date, timedelta
-import pandas as pd
-import logging
+from SIMS_Portal.assignments.forms import (
+	NewAssignmentForm, UpdateAssignmentForm
+)
 
 assignments = Blueprint('assignments', __name__)
 

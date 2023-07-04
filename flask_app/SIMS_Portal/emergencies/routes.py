@@ -1,20 +1,36 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app
-from SIMS_Portal import db
-from SIMS_Portal.config import Config
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Alert, Portfolio, Story, Learning, Review, Availability
-from SIMS_Portal.emergencies.forms import NewEmergencyForm, UpdateEmergencyForm
-from SIMS_Portal.emergencies.utils import update_response_locations, update_active_response_locations, get_trello_tasks, emergency_availability_chart_data
-from SIMS_Portal.assignments.utils import aggregate_availability
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
-from sqlalchemy.sql import func
-from sqlalchemy.orm import sessionmaker
-from flask_login import login_user, logout_user, current_user, login_required
-from collections import Counter
-from datetime import datetime
 import ast
 import json
 import logging
+from collections import Counter
+from datetime import datetime
+
+from flask import (
+	request, render_template, url_for, flash, redirect,
+	jsonify, Blueprint, current_app
+)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, func
+from sqlalchemy.orm import sessionmaker
+from flask_login import (
+	login_user, logout_user, current_user, login_required
+)
+
+from SIMS_Portal import db
+from SIMS_Portal.config import Config
+from SIMS_Portal.models import (
+	User, Assignment, Emergency, NationalSociety,
+	EmergencyType, Alert, Portfolio, Story,
+	Learning, Review, Availability
+)
+from SIMS_Portal.emergencies.forms import (
+	NewEmergencyForm, UpdateEmergencyForm
+)
+from SIMS_Portal.emergencies.utils import (
+	update_response_locations, update_active_response_locations,
+	get_trello_tasks, emergency_availability_chart_data
+)
+from SIMS_Portal.assignments.utils import aggregate_availability
+
 
 emergencies = Blueprint('emergencies', __name__)
 

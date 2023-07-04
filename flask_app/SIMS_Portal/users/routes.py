@@ -1,18 +1,36 @@
-from flask import request, render_template, url_for, flash, redirect, jsonify, Blueprint, current_app, session
-from SIMS_Portal import db, bcrypt
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, Portfolio, EmergencyType, Skill, Language, user_skill, user_language, Badge, Alert, user_badge, Profile, user_profile
-from SIMS_Portal.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, AssignProfileTypesForm, UserLocationForm
-from SIMS_Portal.users.utils import save_picture, new_user_slack_alert, send_slack_dm, check_valid_slack_ids, send_reset_slack, search_location, update_member_locations
-from SIMS_Portal.portfolios.utils import get_full_portfolio
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, Integer
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.sql import text
-from flask_login import login_user, logout_user, current_user, login_required
-from flask_mail import Message
-from datetime import datetime, date
-import pytz
 import logging
+from datetime import datetime, date
+
+import pytz
+from flask import (
+	request, render_template, url_for, flash, redirect,
+	jsonify, Blueprint, current_app, session
+)
+from flask_login import (
+	login_user, logout_user, current_user, login_required
+)
+from flask_mail import Message
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, Integer, text
+from sqlalchemy.dialects.postgresql import ARRAY
+
+from SIMS_Portal import db, bcrypt
+from SIMS_Portal.models import (
+	User, Assignment, Emergency, NationalSociety, Portfolio,
+	EmergencyType, Skill, Language, user_skill, user_language,
+	Badge, Alert, user_badge, Profile, user_profile
+)
+from SIMS_Portal.users.forms import (
+	RegistrationForm, LoginForm, UpdateAccountForm,
+	RequestResetForm, ResetPasswordForm, AssignProfileTypesForm,
+	UserLocationForm
+)
+from SIMS_Portal.users.utils import (
+	save_picture, new_user_slack_alert, send_slack_dm,
+	check_valid_slack_ids, send_reset_slack, search_location,
+	update_member_locations
+)
+from SIMS_Portal.portfolios.utils import get_full_portfolio
 
 users = Blueprint('users', __name__)
 
