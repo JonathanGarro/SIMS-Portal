@@ -1,21 +1,18 @@
-<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.2/dist/chartjs-adapter-moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
-
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
 	<div id="hideMe">
 		{% with messages = get_flashed_messages(with_categories=true) %}
-			   {% if messages %}
-				   {% for category, message in messages %}
-					   <div class="mt-2 alert alert-{{ category }}">
-						   {{ message }} 
-					   </div>
-				   {% endfor %}
-			   {% endif %}
+		{% if messages %}
+		{% for category, message in messages %}
+		<div class="mt-2 alert alert-{{ category }}">
+			{{ message }} 
+		</div>
+		{% endfor %}
+		{% endif %}
 		{% endwith %}
 	</div>
 	<div class="row my-5">
@@ -23,182 +20,165 @@
 			<div class="card p-4 card-bg-red">
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
-				
 				{% if emergency_info.Emergency.emergency_status == 'Active' %}
-				
 				<div class="d-flex flex-row align-items-center justify-content-start">
 					<div class=""><img class='img img-fluid' src='/static/assets/img/active-emergency.png' alt="Response Status Icon Active"></div>
 					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Active Response</span></div>
 				</div>
-				
 				{% elif emergency_info.Emergency.emergency_status == 'Removed' %}
-				
 				<div class="d-flex flex-row align-items-center justify-content-start">
 					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png' alt="Response Status Icon Inactive"></div>
 					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Deleted Record</span></div>
 				</div>
-				
 				{% else %}
-
 				<div class="d-flex flex-row align-items-center justify-content-start">
 					<div class=""><img class='img img-fluid' src='/static/assets/img/closed-emergency.png' alt="Response Status Icon Inactive"></div>
 					<div class="ps-4 "><span class='text-light lead emergency-status-label'>Closed Response</span></div>
 				</div>
-				
 				{% endif %}
 			</div>
 			<br>
 			<!-- Main sidebar buttons -->
-			
 			<div class="card p-4 bg-light border border-3">
-				
-			{% if emergency_info.Emergency.emergency_status == 'Active' %}
-			<div class="pb-3">
-				<h5 class="text-secondary pb-2 Montserrat">Availability Planning</h5>
-				<ul class="list-group border-0">
-					{% if availability_results %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/availability/view/{{user_info.id}}/{{emergency_info.Emergency.id}}" class="text-secondary">View Your Existing Reports</a>
-					</li>
-					{% endif %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Current Week</a>
-						<a href="https://learn-sims.org/docs/sims-portal-documentation/availability-tracking" target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
-					</li>
-					{% if current_weekday > 2 %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/availability/report/next_week/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Next Week</a>
-					</li>
-					{% endif %}
-				</ul>
-			</div>
-			<div class="pb-3">
+				{% if emergency_info.Emergency.emergency_status == 'Active' %}
+				<div class="pb-3">
+					<h5 class="text-secondary pb-2 Montserrat">Availability Planning</h5>
+					<ul class="list-group border-0">
+						{% if availability_results %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/availability/view/{{user_info.id}}/{{emergency_info.Emergency.id}}" class="text-secondary">View Your Existing Reports</a>
+						</li>
+						{% endif %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Current Week</a>
+							<a href="https://learn-sims.org/docs/sims-portal-documentation/availability-tracking" target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+						</li>
+						{% if current_weekday > 2 %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/availability/report/next_week/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Next Week</a>
+						</li>
+						{% endif %}
+					</ul>
+				</div>
+				<div class="pb-3">
 					{% if user_is_sims_co or current_user.is_admin == 1 %}
 					<h5 class="text-secondary pt-3 pb-2 Montserrat">Coordinator Actions</h5>
 					<ul class="list-group border-0">
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/assignment/new/{{emergency_info.Emergency.id}}" class="text-secondary">Log New Assignment</a>
-					</li>
-					{% endif %}
-					{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/portfolio/review/{{emergency_info.Emergency.id}}" class="text-secondary">Review Products</a>
-						<span class="badge bg-danger rounded-pill"><a href="#" class='text-light'>{{pending_products|length}}</a></span>
-					</li>
-					{% endif %}
-					{% if user_is_sims_co %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/badge_assignment_simsco/{{emergency_info.Emergency.id}}" class="text-secondary">Assign Badges</a>
-						<a href="https://learn-sims.org/docs/sims-portal-documentation/badge-overview" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
-					</li>
-					{% endif %}
-					{% if user_is_sims_co %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/operation_review/new/{{emergency_info.Emergency.id}}" class="text-secondary">Review Operation</a>
-						<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview" class='text-dark'><span class="badge bg-light rounded-pill text-dark">?</span></a>
-					</li>
-					{% endif %}
-				</ul>
-			</div>
-			{% endif %}
-			
-			{% if current_user.is_admin == 1 or user_is_sims_co %}
-			<div class="pb-3">
-				<h5 class="text-secondary pt-3 pb-2 Montserrat">Record Management</h5>
-				<ul class='list-group border-0'>
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
-					</li>
-					{% if check_for_story %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
-					</li>
-					{% endif %}
-					{% if check_for_story %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/story/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Response Story</a>
-					</li>
-					{% else %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/story/create/{{emergency_info.Emergency.id}}" class="text-secondary">Create Response Story</a>
-					</li>
-					{% endif %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="/emergency/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Emergency</a>
-					</li>
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
-						<a href="https://learn-sims.org/docs/sims-portal-documentation/emergency-page-overview" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
-					</li>
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="#" class="text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Emergency</a>
-					</li>
-				</ul>
-							
-			<!-- Modal for Closeout -->
-			<div class="modal fade" id="confirm-closeout" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="closeoutModal">Closeout this Emergency</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/assignment/new/{{emergency_info.Emergency.id}}" class="text-secondary">Log New Assignment</a>
+						</li>
+						{% endif %}
+						{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/portfolio/review/{{emergency_info.Emergency.id}}" class="text-secondary">Review Products</a>
+							<span class="badge bg-danger rounded-pill"><a href="#" class='text-light'>{{pending_products|length}}</a></span>
+						</li>
+						{% endif %}
+						{% if user_is_sims_co %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/badge_assignment_simsco/{{emergency_info.Emergency.id}}" class="text-secondary">Assign Badges</a>
+							<a href="https://learn-sims.org/docs/sims-portal-documentation/badge-overview" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+						</li>
+						{% endif %}
+						{% if user_is_sims_co %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/operation_review/new/{{emergency_info.Emergency.id}}" class="text-secondary">Review Operation</a>
+							<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview" class='text-dark'><span class="badge bg-light rounded-pill text-dark">?</span></a>
+						</li>
+						{% endif %}
+					</ul>
+				</div>
+				{% endif %}
+				{% if current_user.is_admin == 1 or user_is_sims_co %}
+				<div class="pb-3">
+					<h5 class="text-secondary pt-3 pb-2 Montserrat">Record Management</h5>
+					<ul class='list-group border-0'>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
+						</li>
+						{% if check_for_story %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
+						</li>
+						{% endif %}
+						{% if check_for_story %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/story/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Response Story</a>
+						</li>
+						{% else %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/story/create/{{emergency_info.Emergency.id}}" class="text-secondary">Create Response Story</a>
+						</li>
+						{% endif %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/emergency/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Emergency</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
+							<a href="https://learn-sims.org/docs/sims-portal-documentation/emergency-page-overview" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Emergency</a>
+						</li>
+					</ul>
+					<!-- Modal for Closeout -->
+					<div class="modal fade" id="confirm-closeout" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="closeoutModal">Closeout this Emergency</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
-								</button>
+									</button>
+								</div>
+								<div class="modal-body">
+									<span class=''>Closing out an emergency in the portal means that SIMS has completed the response phase, all support has ended, and no further assignments will occur. Contributions to learning processes will still be available.</span>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+									<a href="/emergency/closeout/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Closeout</button></a>
+								</div>
+							</div>
 						</div>
-					<div class="modal-body">
-						<span class=''>Closing out an emergency in the portal means that SIMS has completed the response phase, all support has ended, and no further assignments will occur. Contributions to learning processes will still be available.</span>
 					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-						<a href="/emergency/closeout/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Closeout</button></a>
-					</div>
+					<!-- Modal for Delete -->
+					<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="deleteModal">Delete the Emergency?</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<span>Deleting an emergency marks it as "Removed". Records that link to it will remain, as will data associated with this emergency, but it will not appear in the portfolio. Only delete emergencies that we don't want to see in our operational history.</span>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+									<a href="/emergency/delete/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			
-			<!-- Modal for Delete -->
-			<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="deleteModal">Delete the Emergency?</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-						</div>
-						<div class="modal-body">
-							<span>Deleting an emergency marks it as "Removed". Records that link to it will remain, as will data associated with this emergency, but it will not appear in the portfolio. Only delete emergencies that we don't want to see in our operational history.</span>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-							<a href="/emergency/delete/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
-						</div>
-					</div>
+				{% endif %}
+				{% if current_user.is_admin == 0 and user_is_sims_co == 0 %}
+				<div class="pb-3">
+					<h5 class="text-secondary pb-2 Montserrat">Record Management</h5>
+					<ul class='list-group border-0'>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
+						</li>
+						{% if check_for_story %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
+						</li>
+						{% endif %}
+					</ul>
 				</div>
+				{% endif %}
 			</div>
-			</div>
-			
-			{% endif %}
-			
-			{% if current_user.is_admin == 0 and user_is_sims_co == 0 %}
-			<div class="pb-3">
-				<h5 class="text-secondary pb-2 Montserrat">Record Management</h5>
-				<ul class='list-group border-0'>
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href="https://go.ifrc.org/emergencies/{{ emergency_info.Emergency.emergency_go_id }}" class="text-secondary">View Emergency on GO</a>
-					</li>
-					{% if check_for_story %}
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						<a href='/story/{{emergency_info.Emergency.id}}' class="text-secondary">View Response Story</a>
-					</li>
-					{% endif %}
-				</ul>
-			</div>
-			
-			{% endif %}
-			
-			</div>
-			
 			<!-- End main sidebar buttons -->
 			<br>
 			<div class="card p-4 bg-light border border-3">
@@ -209,13 +189,11 @@
 					{% else %}
 					<div class="col" align="center"><a href='https://slack.com/app_redirect?channel={{emergency_info.Emergency.slack_channel}}'><img src="/static/assets/img/icons/slack-selected.png" height="50px" alt='Tool Icon Slack Linked'></a></div>
 					{% endif %}
-					
 					{% if emergency_info.Emergency.dropbox_url == None or emergency_info.Emergency.dropbox_url == '' %}
 					<div class="col" align="center"><img src="/static/assets/img/icons/dropbox.png" height="50px" alt='Tool Icon Dropbox Not Linked'></div>
 					{% else %}
 					<div class="col" align="center"><a href='{{emergency_info.Emergency.dropbox_url}}'><img src="/static/assets/img/icons/dropbox-selected.png" height="50px" alt='Tool Icon Dropbox Linked'></a></div>
 					{% endif %}
-					
 					{% if emergency_info.Emergency.trello_url == None or emergency_info.Emergency.trello_url == '' %}
 					<div class="col" align="center"><img src="/static/assets/img/icons/trello.png" height="50px" alt='Tool Icon Trello Not Linked'></div>
 					{% else %}
@@ -234,7 +212,6 @@
 			<br>
 			<div class="card p-4 bg-light border border-3">
 				<h5 class='text-secondary mb-3 Montserrat'>{{emergency_info.NationalSociety.country_name}}</h5>
-
 				<img id='flag-image' src='https://flagcdn.com/h240/{{emergency_info.NationalSociety.iso2|lower}}.png' class='img-fluid mb-3'>
 				<ul class="list-group border-0">
 					<li class="list-group-item d-flex justify-content-between align-items-center">
@@ -249,322 +226,311 @@
 				</ul>
 			</div>
 		</div>
-	
 		<div class="col ms-4">
 			{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
 			<div class="alert alert-warning alert-dismissible fade show mb-5" role="alert">
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			  There are {{pending_products|length}} products pending approval. <a href="/portfolio/review/{{emergency_info.Emergency.id}}" class="text-danger fw-bold">Review the products here</a>.
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				There are {{pending_products|length}} products pending approval. <a href="/portfolio/review/{{emergency_info.Emergency.id}}" class="text-danger fw-bold">Review the products here</a>.
 			</div>
 			{% endif %}
-			
 			<ul class="nav nav-pills mb-5" id="emergencyNav" role="tablist">
 				<li class="nav-item" role="presentation">
-				<button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+					<button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
 				</li>
 				{% if not kill_chart %}
 				<li class="nav-item" role="presentation">
-				<button class="nav-link" id="availability-tab" data-bs-toggle="pill" data-bs-target="#availability" type="button" role="tab" aria-controls="availability" aria-selected="false">Availability</button>
+					<button class="nav-link" id="availability-tab" data-bs-toggle="pill" data-bs-target="#availability" type="button" role="tab" aria-controls="availability" aria-selected="false">Availability</button>
 				</li>
 				{% endif %}
 				<li class="nav-item" role="presentation">
-				<button class="nav-link" id="learning-tab" data-bs-toggle="pill" data-bs-target="#learning" type="button" role="tab" aria-controls="learning" aria-selected="false">Learning</button>
+					<button class="nav-link" id="learning-tab" data-bs-toggle="pill" data-bs-target="#learning" type="button" role="tab" aria-controls="learning" aria-selected="false">Learning</button>
 				</li>
 				{% if to_do_trello %}
 				<li class="nav-item" role="presentation">
-				<button class="nav-link" id="trello-tab" data-bs-toggle="pill" data-bs-target="#trello" type="button" role="tab" aria-controls="trello" aria-selected="false"><span class="badge rounded-pill bg-secondary" style="font-size:1rem;">{{count_cards}}</span> Trello Tasks</button>
+					<button class="nav-link" id="trello-tab" data-bs-toggle="pill" data-bs-target="#trello" type="button" role="tab" aria-controls="trello" aria-selected="false"><span class="badge rounded-pill bg-secondary" style="font-size:1rem;">{{count_cards}}</span> Trello Tasks</button>
 				</li>
 				{% endif %}
 			</ul>
 			<div class="tab-content" id="emergencyContent">
-			  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-			  {% if emergency_info.Emergency.activation_details|length == 0 %}
-			  
-			  {% else %}
-				  <h3 class="text-dark mt-4 emergency-title">Activation Details</h3>
-				  <p class="mb-5">{{emergency_info.Emergency.activation_details}}</p>
-				  
-			  {% endif %}
-		
-				<div class='mb-5'>
-				<h3 class="mb-3 text-dark emergency-title">Operational Support</h3>
-				<div class="d-flex justify-content-between">
-				  <h5 class="mb-3 text-danger emergency-title">Remote Coordinators</h5>
-				  <div class="d-flex justify-content-end align-items-center">
-					<a href='/emergency/gantt/{{emergency_info.Emergency.id}}' class="me-1"><button class='btn btn-sm btn-outline-danger'>SIMS Co Gantt</button></a>
-				  	<button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#deployedMembers" aria-expanded="false" aria-controls="deployedMembers" id="deployedMemberListToggle">Field Deployments</button>
-				  </div>
+				<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+					{% if emergency_info.Emergency.activation_details|length == 0 %}
+					{% else %}
+					<h3 class="text-dark mt-4 emergency-title">Activation Details</h3>
+					<p class="mb-5">{{emergency_info.Emergency.activation_details}}</p>
+					{% endif %}
+					<div class='mb-5'>
+						<h3 class="mb-3 text-dark emergency-title">Operational Support</h3>
+						<div class="d-flex justify-content-between">
+							<h5 class="mb-3 text-danger emergency-title">Remote Coordinators</h5>
+							<div class="d-flex justify-content-end align-items-center">
+								<a href='/emergency/gantt/{{emergency_info.Emergency.id}}' class="me-1"><button class='btn btn-sm btn-outline-danger'>SIMS Co Gantt</button></a>
+								<button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#deployedMembers" aria-expanded="false" aria-controls="deployedMembers" id="deployedMemberListToggle">Field Deployments</button>
+							</div>
+						</div>
+						<table class="table" id="datatable-active-simscos">
+							<thead class="">
+								<tr>
+									<th>Member</th>
+									<th>National Society</th>
+									<th>Start</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for sims_co in sims_cos %}
+								<tr>
+									<td class="fw-bold"><a href="/assignment/{{sims_co.Assignment.id}}" class="link-danger">{{sims_co.User.firstname}} {{sims_co.User.lastname}}</a></td>
+									<td>{{sims_co.NationalSociety.ns_name}}</td>
+									<td>{{sims_co.Assignment.start_date}}</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class="collapse mb-5" id="deployedMembers">
+						<h5 class="mb-3 text-danger emergency-title">Field Deployments</h5>
+						<table class="table" id="datatable-deployed-im">
+							<thead class="">
+								<tr>
+									<th>Member</th>
+									<th>National Society</th>
+									<th>Role</th>
+									<th>Start</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for deployment in deployed_im %}
+								<tr>
+									<td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
+									<td>{{deployment.NationalSociety.ns_name}}</td>
+									<td>{{deployment.Assignment.role}}</td>
+									<td>{{deployment.Assignment.start_date}}</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class='mb-5'>
+						{% if deployment_history_count == 0 %}
+						<h5 class="mb-3 text-danger emergency-title">Remote Supporters: <span class='text-dark'>{{ deployment_history_count }}</span></h5>
+						{% else %}
+						<h5 class="text-danger emergency-title mb-3">Remote Supporters: <span class='text-dark'>{{ deployment_history_count }}</span></h5>
+						<table class="table" id="datatable-active-assignments">
+							<thead class="">
+								<tr>
+									<th>Member</th>
+									<th>National Society</th>
+									<th>Start</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for deployment in deployments %}
+								<tr>
+									<td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
+									<td>{{deployment.NationalSociety.ns_name}}</td>
+									<td>{{ deployment.Assignment.start_date }}
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+						{% endif %}
+					</div>
+					<h3 class="mb-1 text-dark mb-4 emergency-title">Response Products: <span class='text-danger'>{{ emergency_portfolio_size }}</span></h3>
+					<div class="row row-cols-3 row-cols-md-3 g-4 mb-4">
+						{% for product in emergency_portfolio %}
+						<div class="col d-flex align-items-stretch">
+							<a href="/portfolio/view/{{product.Portfolio.id}}">
+								<div class="card" id='portfolio-card' style="width: 18rem;">
+									{% if 'user' in product.Portfolio.image_file %}
+									<img src="/uploads/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
+									{% else %}
+									<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
+									{% endif %}
+									<div class="card-body d-flex flex-column">
+										<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
+										<h5 class="card-title mt-auto text-danger">{{product.Portfolio.title}}</h5>
+							</a>
+							</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+					{% if emergency_portfolio_size > 3 %}
+					<div class='mb-5'>
+						<a href='/portfolio/emergency_more/{{emergency_info.Emergency.id}}'><button type="button" class="btn btn-secondary">View All Products Posted for this Operation</button></a>
+					</div>
+					{% endif %}
 				</div>
-				  <table class="table" id="datatable-active-simscos">
-					  <thead class="">
-						<tr>
-						  <th>Member</th>
-						  <th>National Society</th>
-						  <th>Start</th>
-						</tr>
-					  </thead>
-					  <tbody>
-						  {% for sims_co in sims_cos %}
-						  <tr>
-							<td class="fw-bold"><a href="/assignment/{{sims_co.Assignment.id}}" class="link-danger">{{sims_co.User.firstname}} {{sims_co.User.lastname}}</a></td>
-							<td>{{sims_co.NationalSociety.ns_name}}</td>
-							<td>{{sims_co.Assignment.start_date}}</td>
-						  </tr>
-						  {% endfor %}
-					  </tbody>
-					</table>
-				  
-				  </div>
-				  
-				  <div class="collapse mb-5" id="deployedMembers">
-					  <h5 class="mb-3 text-danger emergency-title">Field Deployments</h5>
-					  <table class="table" id="datatable-deployed-im">
-						<thead class="">
-						  <tr>
-							<th>Member</th>
-							<th>National Society</th>
-							<th>Role</th>
-							<th>Start</th>
-						  </tr>
-						</thead>
-						<tbody>
-							{% for deployment in deployed_im %}
-							<tr>
-							  <td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
-							  <td>{{deployment.NationalSociety.ns_name}}</td>
-							  <td>{{deployment.Assignment.role}}</td>
-							  <td>{{deployment.Assignment.start_date}}</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					  </table>
-					  
-				  </div>
-				  
-				  <div class='mb-5'>
-					  {% if deployment_history_count == 0 %}
-					  <h5 class="mb-3 text-danger emergency-title">Remote Supporters: <span class='text-dark'>{{ deployment_history_count }}</span></h5>
-					  {% else %}
-					  <h5 class="text-danger emergency-title mb-3">Remote Supporters: <span class='text-dark'>{{ deployment_history_count }}</span></h5>
-					  <table class="table" id="datatable-active-assignments">
-						<thead class="">
-						  <tr>
-							<th>Member</th>
-							<th>National Society</th>
-					  	  	<th>Start</th>
-						  </tr>
-						</thead>
-						<tbody>
-							{% for deployment in deployments %}
-							<tr>
-							  <td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
-							  <td>{{deployment.NationalSociety.ns_name}}</td>
-							  <td>{{ deployment.Assignment.start_date }}
-							</tr>
-							{% endfor %}
-						</tbody>
-					  </table>
-					  {% endif %}
-				  </div>
-				  <h3 class="mb-1 text-dark mb-4 emergency-title">Response Products: <span class='text-danger'>{{ emergency_portfolio_size }}</span></h3>
-				  <div class="row row-cols-3 row-cols-md-3 g-4 mb-4">
-				  {% for product in emergency_portfolio %}
-					  <div class="col d-flex align-items-stretch">
-						  <a href="/portfolio/view/{{product.Portfolio.id}}">
-						  <div class="card" id='portfolio-card' style="width: 18rem;">
-							  {% if 'user' in product.Portfolio.image_file %}
-							  <img src="/uploads/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Image">
-							  {% else %}
-							  <img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
-							  {% endif %}
-							  <div class="card-body d-flex flex-column">
-									<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
-									<h5 class="card-title mt-auto text-danger">{{product.Portfolio.title}}</h5>
-						  </a>
-					  </div>
-				  </div>
-			  </div>
-				  {% endfor %}
-			  </div>
-				  {% if emergency_portfolio_size > 3 %}
-				  <div class='mb-5'>
-					  <a href='/portfolio/emergency_more/{{emergency_info.Emergency.id}}'><button type="button" class="btn btn-secondary">View All Products Posted for this Operation</button></a>
-				  </div>
-				  {% endif %}
-			  </div>
-
-			  <div class="tab-pane fade" id="availability" role="tabpanel" aria-labelledby="availability-tab">
-			  
-				  <canvas id="availabilityChart" width="600" height="400"></canvas>
-				  <script>
-					// Retrieve the data from the Flask variables
-					const week_dates = {{ week_dates | tojson }};
-					const frequency_count = {{ frequency_count | tojson }};
-				  
-					// Convert dates to JS date objects
-					const formattedDates = week_dates.map(date => moment(date).format('dddd, MMMM DD'));
-				  
-					// Configure the chart
-					const chartConfig = {
-					  type: 'bar',
-					  data: {
-						labels: formattedDates,
-						datasets: [
-						  {
-							label: 'Daily Count of Available Remote Supporters',
-							data: frequency_count,
-							backgroundColor: '#be3846',
-							borderColor: '#962934',
-							borderWidth: 1,
+				<div class="tab-pane fade" id="availability" role="tabpanel" aria-labelledby="availability-tab">
+					<div id="chartContainer" style="width: 100%; height: 400px;">
+						<canvas id="availabilityChart"></canvas>
+						<script>
+							// set consts to incoming data
+							const week_dates = {{ week_dates | tojson }};
+							const frequency_count = {{ frequency_count | tojson }};
+								
+							// convert to date objects
+							const formattedDates = week_dates.map(date => moment(date).format('dddd, MMMM DD'));
+								
+							// config
+							const chartConfig = {
+								 type: 'bar',
+								 data: {
+								labels: formattedDates,
+								datasets: [
+								  {
+									label: 'Daily Count of Available Remote Supporters',
+									data: frequency_count,
+									backgroundColor: '#be3846',
+									borderColor: '#962934',
+									borderWidth: 1,
+								  },
+								],
+								 },
+								 options: {
+								responsive: true,
+								maintainAspectRatio: true,
+								scales: {
+								  x: {
+									type: 'category',
+									ticks: {
+									  maxRotation: 0,
+									},
+								  },
+								  y: {
+									beginAtZero: true,
+									ticks: {
+									  callback: function (value, index, values) {
+										if (Number.isInteger(value)) {
+										  return value;
+										}
+									  },
+									},
+								  },
+								},
+								 },
+							};
+								
+							// build chart
+							const ctx = document.getElementById('availabilityChart').getContext('2d');
+							new Chart(ctx, chartConfig);
+								
+						</script>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
+					<h3 class="text-dark mt-4 emergency-title">Assignment Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#individual-learning'>What's This?</a></span></h3>
+					{% if learning_count == 0 %}
+					<p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
+					{% elif learning_count > 2 %}
+					<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data. </p>
+					<canvas id='barChartLearningAssignment' width='600' height='500'></canvas>
+					<script>
+						var ctx = document.getElementById('barChartLearningAssignment').getContext('2d');
+						var lineChart = new Chart(ctx, {
+						 type: 'bar',
+						 data: {
+						  labels: {{ learning_keys | safe }},
+						  datasets: [{
+						   label: "Average Scores for this Emergency",
+						   data: {{ learning_values | safe }},
+						   fill: true,
+						   backgroundColor: "#dc3545"
 						  },
-						],
-					  },
-					  options: {
-						responsive: true,
-						scales: {
-						  x: {
-							type: 'category',
-							ticks: {
-							  maxRotation: 0,
-							},
+						 {
+						 label: "Average Score for All Emergencies",
+						 data: {{ avg_learning_values | safe }},
+						 fill: true,
+						 backgroundColor: "#ABABAB"
+						}]
+						 },
+						 options: {
+						  plugins: {
+						   legend: true,
 						  },
-						  y: {
-							beginAtZero: true,
-							ticks: {
-							  callback: function (value, index, values) {
-								if (Number.isInteger(value)) {
-								  return value;
-								}
-							  },
-							},
-						  },
-						},
-					  },
-					};
-				  
-					// Create the chart
-					const ctx = document.getElementById('availabilityChart').getContext('2d');
-					new Chart(ctx, chartConfig);
-				  </script>
-				  
-			  </div>
-			  
-			  <div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
-				 <h3 class="text-dark mt-4 emergency-title">Assignment Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#individual-learning'>What's This?</a></span></h3>
-				 {% if learning_count == 0 %}
-				 <p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
-				 {% elif learning_count > 2 %}
-				 
-				 <p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data. </p>
-				 <canvas id='barChartLearningAssignment' width='600' height='500'></canvas>
-				   <script>
-					   var ctx = document.getElementById('barChartLearningAssignment').getContext('2d');
-					   var lineChart = new Chart(ctx, {
-						   type: 'bar',
-						   data: {
-							   labels: {{ learning_keys | safe }},
-							   datasets: [{
-								   label: "Average Scores for this Emergency",
-								   data: {{ learning_values | safe }},
-								   fill: true,
-								   backgroundColor: "#dc3545"
+						  responsive: true,
+						  indexAxis: 'y',
+						  scales: {
+						   y: {
+							   ticks: {
+								   stepSize: 1
 							   },
-						   {
-								 label: "Average Score for All Emergencies",
-								 data: {{ avg_learning_values | safe }},
-								 fill: true,
-								 backgroundColor: "#ABABAB"
-							 }]
+							   grid: {
+								   display: false
+							   }
+							   
 						   },
-						   options: {
-							   plugins: {
-								   legend: true,
-							   },
-							   responsive: true,
-							   indexAxis: 'y',
-							   scales: {
-								   y: {
-									   ticks: {
-										   stepSize: 1
-									   },
-									   grid: {
-										   display: false
-									   }
-									   
-								   },
-								   x: {
-									   ticks: {
-											 stepSize: 1
-										 },
-									 suggestedMax: 5,
-									 grid: {
-										 display: true
-									   }
-								   }
-								   
+						   x: {
+							   ticks: {
+									 stepSize: 1
+								 },
+							 suggestedMax: 5,
+							 grid: {
+								 display: true
 							   }
 						   }
-					   })
-				   </script>
-				 {% else %}  
-				 <p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
-				 {% endif %}
-				 <h3 class="text-dark mt-5 emergency-title">Operational Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#op-learning'>What's This?</a></span></h3>
-				   {% if existing_reviews %}
-				   <table class='table mt-4' id='datatable-op-reviews'>
-					   <thead>
-						   <tr>
-							   <th>Title</th>
-							   <th>Category</th>
-							   <th>Type</th>
-							   <th>Status</th>
-						   </tr>
-					   </thead>
-					   <tbody>
-						   {% for review in existing_reviews %}
-							   <tr>
-								   <td><a href='/operation_review/view/{{review.id}}'>{{review.title}}</a></td>
-								   <td>{{review.category}}</td>
-								   <td>{{review.type}}</td>
-								   <td>{{review.status}}</td>
-							   </tr>
-						   {% endfor %}
-					   </tbody>
-				   </table>
-				   {% else %}
-				   <p>There are no operational reviews completed yet for this emergency. The SIMS Remote Coordinator(s) for this operation are the only users that can complete them - reach out to them if you'd like to add to the learning for this response!</p>
-				   {% endif %}
-			  </div>
-			  
-			  <div class="tab-pane fade" id="trello" role="tabpanel" aria-labelledby="trello-tab">
-			   {% if to_do_trello %}
-			   <h3 class="text-dark mt-4 emergency-title">Open Trello Tasks</h3>
-			   <p>The following cards represent Trello tasks that are still listed in the "To Do" column. Click on the task name to see the card on Trello.</p>
-			   <table class='dataTable'>
-				   <table class='table table-striped table-hover' id='datatable-trello'>
-					   <thead>
-						   <tr>
-							   <th>Task</th>
-							   <th>Description</th>
-						   </tr>
-					   </thead>
-					   <tbody>
-						   {% for card in to_do_trello %}
-						   <tr>
-							   <td class='align-middle h5 Montserrat text-danger'><a href="{{card['url']}}">{{card['card_name']}}</a></td>
-							   {% if card['desc']|length > 0 %}
-							   <td class='align-middle'>{{card['desc']|markdown|truncate(200, True)}}</td>
-							   {% else %}
-							   <td class='align-middle'>No Description</td>
-							   {% endif %}
-						   </tr>
-						   {% endfor %}
-					   </tbody>
-				   </table>
+						   
+						  }
+						 }
+						})
+					</script>
+					{% else %}  
+					<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
+					{% endif %}
+					<h3 class="text-dark mt-5 emergency-title">Operational Reviews &nbsp<span style='font-size: .9rem'><a href='/resources/sims_portal#op-learning'>What's This?</a></span></h3>
+					{% if existing_reviews %}
+					<table class='table mt-4' id='datatable-op-reviews'>
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Category</th>
+								<th>Type</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for review in existing_reviews %}
+							<tr>
+								<td><a href='/operation_review/view/{{review.id}}'>{{review.title}}</a></td>
+								<td>{{review.category}}</td>
+								<td>{{review.type}}</td>
+								<td>{{review.status}}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% else %}
+					<p>There are no operational reviews completed yet for this emergency. The SIMS Remote Coordinator(s) for this operation are the only users that can complete them - reach out to them if you'd like to add to the learning for this response!</p>
+					{% endif %}
+				</div>
+				<div class="tab-pane fade" id="trello" role="tabpanel" aria-labelledby="trello-tab">
+					{% if to_do_trello %}
+					<h3 class="text-dark mt-4 emergency-title">Open Trello Tasks</h3>
+					<p>The following cards represent Trello tasks that are still listed in the "To Do" column. Click on the task name to see the card on Trello.</p>
+					<table class='dataTable'>
+					<table class='table table-striped table-hover' id='datatable-trello'>
+						<thead>
+							<tr>
+								<th>Task</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for card in to_do_trello %}
+							<tr>
+								<td class='align-middle h5 Montserrat text-danger'><a href="{{card['url']}}">{{card['card_name']}}</a></td>
+								{% if card['desc']|length > 0 %}
+								<td class='align-middle'>{{card['desc']|markdown|truncate(200, True)}}</td>
+								{% else %}
+								<td class='align-middle'>No Description</td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				{% endif %}
 			</div>
-			{% endif %}
 		</div>
-	</div>
 	</div>
 </div>
 </div>
