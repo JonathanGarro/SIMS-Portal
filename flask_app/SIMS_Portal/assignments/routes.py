@@ -38,7 +38,6 @@ def new_assignment_from_disaster(dis_id):
 		form = NewAssignmentForm()
 		emergency_info = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 		
-		# if form.validate_on_submit():
 		if request.method == 'POST':
 			assignment = Assignment(
 				user_id=form.user_id.data.id, 
@@ -49,8 +48,14 @@ def new_assignment_from_disaster(dis_id):
 				assignment_details=form.assignment_details.data, 
 				remote=form.remote.data)
 			
+			# check that remote IM supporter not already assigned
 			if form.role.data == "Remote IM Support" and form.user_id.data.id in existing_supporters_ids:
 				flash("That member is already assigned as a remote supporter", "danger")
+				return redirect(url_for('assignments.new_assignment_from_disaster', dis_id=dis_id))
+			
+			# enforce dates on all other types of assignments
+			if form.role.data != "Remote IM Support" and not form.end_date.data:
+				flash("This assignment role requires start and end dates", "danger")
 				return redirect(url_for('assignments.new_assignment_from_disaster', dis_id=dis_id))
 			
 			db.session.add(assignment)
