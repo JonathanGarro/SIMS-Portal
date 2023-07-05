@@ -5,5 +5,4 @@ COPY ./requirements.txt /app
 RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 5000
-# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "-w", "3", "run:app"]
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "-w", "3", "--workers", "3", "--max-requests", "1000", "--max-requests-jitter", "100", "--timeout", "120", "--memory", "1G", "run:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "-w", "3", "--max-requests", "1000", "--max-requests-jitter", "100", "--timeout", "120", "--memory", "1G", "run:app"]
