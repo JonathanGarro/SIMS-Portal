@@ -146,8 +146,5 @@ def emergency_availability_chart_data(dis_id):
 	
 	formatted_week_dates = [week_date.strftime("%Y-%m-%d") for week_date in week_dates]
 	
-	print(frequency_count)
-	print(formatted_week_dates)
-	
 	return formatted_week_dates, frequency_count
 
