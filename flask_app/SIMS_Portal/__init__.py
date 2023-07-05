@@ -31,19 +31,22 @@ login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'danger'
 cache = Cache()
 
-dictConfig({
-	'version': 1,
-	'handlers': {
-		"console": {
-			"class": "logging.StreamHandler",
-		},
-		"logtail": {
-			"class": "logtail.LogtailHandler",
-			"source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN')
-		},
-	},
-	"root": {"level": "INFO", "handlers": ["logtail", "console"]},
-})
+def init_logging():
+    dictConfig({
+            'version': 1,
+            'handlers': {
+                    "console": {
+                            "class": "logging.StreamHandler",
+                    },
+                    "logtail": {
+                            "class": "logtail.LogtailHandler",
+                            "source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN')
+                    },
+            },
+            "root": {"level": "INFO", "handlers": ["logtail", "console"]},
+    })
+
+init_logging()
 
 from SIMS_Portal import models
 
@@ -174,5 +177,8 @@ def create_app(config_class=Config):
 			# for DBs created pre-migrations, skip initial migration
 			flask_migrate.stamp(revision="17e65488bd11")
 		flask_migrate.upgrade()
+	
+	# Required to reinit logging after flask_migrate
+	init_logging()
 	
 	return app
