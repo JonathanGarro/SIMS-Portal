@@ -9,11 +9,11 @@
   - You'll need to request account access from Jonathan.
   - To pull the .env file from dotenv you'll need to install [Node.js](https://nodejs.org/). Suggested to use [asdf](https://asdf-vm.com/) or [nvm](https://github.com/nvm-sh/nvm#readme) - both of which allow you to easily manage and use different versions of Node.js for different projects.
   - When you install Node.js it will also install npm (a command line client for developers to install and publish packages of code), letting you use the [`npx`](https://docs.npmjs.com/cli/v9/commands/npx) command  in the next step to run a command from a package fetched remotely.
-  - Follow the dotenv docs to pull the `.env` file. https://www.dotenv.org/docs/dotenv-vault/pull.html
-```
-cd flask_app
-npx dotenv-vault@latest pull
-```
+  - Follow the [dotenv docs](https://www.dotenv.org/docs/dotenv-vault/pull.html) to pull the `.env` file. It should create a `.env` file inside of the `flask_app` directory.
+    ```
+    cd flask_app
+    npx dotenv-vault@latest pull
+    ```
 - Using a virtual environment will keep your Python packages for this project isolated from the packages you might be using elsewhere on your computer for different projects. The full docs are at: https://docs.python.org/3/library/venv.html
   - You want to `cd` into the top of the repo (when you `ls` you should see just the readme and flask_app directory).
   - Then run `python -m venv venv` (the second `venv` is just whatever you want to call the directory locally, but since our `.gitignore` is configured to exclude the folder with that name from the repository you'll want to use `venv`). If you're on macOS and get a "command not found" error, you might need to run `python3 -m venv venv` instead.
