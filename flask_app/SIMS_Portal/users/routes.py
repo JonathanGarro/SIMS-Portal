@@ -287,7 +287,10 @@ def update_profile():
 		form.messaging_number_country_code.data = current_user.messaging_number_country_code
 		form.messaging_number.data = current_user.messaging_number
 	profile_picture = '/uploads/' + current_user.image_file
-	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association)
+	
+	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
+	
+	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, skills_list=skills_list)
 
 @users.route('/profile_edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -337,6 +340,18 @@ def update_specified_profile(id):
 			form.slack_id.data = this_user.slack_id
 		profile_picture = '/uploads/' + this_user.image_file
 		return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, current_user=this_user)
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+@users.route('/delete_skill/<int:user_id>/<int:skill_id>', methods=['GET', 'POST'])
+@login_required
+def delete_skill(user_id, skill_id):
+	if current_user.id == user_id:
+		db.session.query(user_skill).filter(user_skill.c.user_id == user_id, user_skill.c.skill_id == skill_id).delete()
+		db.session.commit()
+		flash('Successfully removed skill.', 'success')
+		return redirect(url_for('users.update_profile'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
