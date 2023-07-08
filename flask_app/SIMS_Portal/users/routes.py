@@ -36,7 +36,10 @@ users = Blueprint('users', __name__)
 
 @users.route('/members')
 def members():
-	members = db.session.query(User).filter(User.status == 'Active').order_by(User.id).all()
+	page = request.args.get('page', 1, type = int)
+	per_page = 24
+	members_query = db.session.query(User).filter(User.status == 'Active').order_by(User.id)
+	members = members_query.paginate(page = page, per_page = per_page)
 	return render_template('members.html', members=members)
 
 @users.route('/members/all') 
