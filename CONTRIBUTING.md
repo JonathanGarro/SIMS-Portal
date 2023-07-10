@@ -22,3 +22,9 @@
 - Install PostgreSQL. You can follow this guide: https://www.timescale.com/blog/how-to-install-psql-on-mac-ubuntu-debian-windows/
 - When you’re ready to run the SIMS Portal, use `docker-compose up --build` (it can take several minutes to complete the first time you run the command but should be much faster subsequent times).
 - If you want to access the real data in the production database, let Jonathan know. As long as you’re only doing SELECTs and no updates/deletes, it may be useful to test your queries. Access to the database is locked down to specific IP addresses. The process for granting access is [documented here](https://learn-sims.org/docs/sims-portal-documentation/administrator-backend-controls-461/#direct-database-access).
+
+## Managing Docker
+
+- When you make changes and want to view them, you'll need to stop the Docker container and rebuild it. 
+- When you rebuild a container, the old one stays on your system and takes up disk space. You will want to periodically purge these from Docker to avoid system bloat. To do so, open your terminal and run `docker system prune`, then `y` to confirm.
+
