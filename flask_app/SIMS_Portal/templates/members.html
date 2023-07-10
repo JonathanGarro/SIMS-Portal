@@ -18,7 +18,7 @@
 		{% endfor %}
 	</div>
 
-	<div class="row mt-3">
+	<div class="row mt-4">
 		<div class="d-flex align-items-start">
 			{% if members.has_prev %}
 				<a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-secondary me-1">Previous</button></a>
