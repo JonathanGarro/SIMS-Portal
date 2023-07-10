@@ -39,6 +39,13 @@
 			</div>
 			<br>
 			<!-- Main sidebar buttons -->
+			{% if quick_action %}
+			<div class="card p-4 bg-dark">
+			  <h5 class="text-light pb-2 Montserrat">Active Remote Assignment</h5>
+			  <small class="text-light">Jump to <a href="/assignment/{{quick_action_id.id}}">your assignment</a> for this emergency to upload products or submit a learning review.</small>
+			</div>
+			<br>
+			{% endif %}
 			<div class="card p-4 bg-light border border-3">
 				{% if emergency_info.Emergency.emergency_status == 'Active' %}
 				<div class="pb-3">

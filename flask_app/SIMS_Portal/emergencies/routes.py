@@ -9,7 +9,7 @@ from flask import (
 	jsonify, Blueprint, current_app
 )
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, and_
 from sqlalchemy.orm import sessionmaker
 from flask_login import (
 	login_user, logout_user, current_user, login_required
@@ -134,6 +134,21 @@ def view_emergency(id):
 	# get remote supporters
 	deployments = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active', Assignment.role=='Remote IM Support').order_by(User.firstname).all()
 	
+	# trigger quick action box if user has active remote assignment
+	user_ids = [user.id for assignment, emergency, user, national_society in deployments]
+	quick_action = current_user.id in user_ids
+	if quick_action:
+		quick_action_id = db.session.query(Assignment).filter(
+			and_(
+				Assignment.emergency_id == emergency_id,
+				Assignment.assignment_status == 'Active',
+				Assignment.user_id == current_user.id,
+				Assignment.role == 'Remote IM Support'
+			)
+		).first()
+	else:
+		quick_action_id = 0
+	
 	emergency_info = db.session.query(Emergency, EmergencyType, NationalSociety).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id).filter(Emergency.id == id).first()
 	
 	emergency_portfolio_size = len(db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == id, Portfolio.product_status == 'Approved').all())
@@ -204,7 +219,9 @@ def view_emergency(id):
 		deployed_im=deployed_im,
 		week_dates=week_dates, 
 		frequency_count=frequency_count,
-		kill_chart=kill_chart
+		kill_chart=kill_chart,
+		quick_action=quick_action,
+		quick_action_id=quick_action_id
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
