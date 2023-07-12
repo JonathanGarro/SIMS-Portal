@@ -288,7 +288,7 @@
 								<tr>
 									<td class="fw-bold"><a href="/assignment/{{sims_co.Assignment.id}}" class="link-danger">{{sims_co.User.firstname}} {{sims_co.User.lastname}}</a></td>
 									<td>{{sims_co.NationalSociety.ns_name}}</td>
-									<td>{{sims_co.Assignment.start_date}}</td>
+									<td>{{sims_co.Assignment.start_date.strftime('%B %d, %Y')}}</td>
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -311,7 +311,7 @@
 									<td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
 									<td>{{deployment.NationalSociety.ns_name}}</td>
 									<td>{{deployment.Assignment.role}}</td>
-									<td>{{deployment.Assignment.start_date}}</td>
+									<td>{{deployment.Assignment.start_date.strftime('%B %d, %Y')}}</td>
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -335,7 +335,7 @@
 								<tr>
 									<td class="fw-bold"><a href="/assignment/{{deployment.Assignment.id}}" class="link-danger">{{deployment.User.firstname}} {{deployment.User.lastname}}</a></td>
 									<td>{{deployment.NationalSociety.ns_name}}</td>
-									<td>{{ deployment.Assignment.start_date }}
+									<td>{{ deployment.Assignment.start_date.strftime('%B %d, %Y') }}
 								</tr>
 								{% endfor %}
 							</tbody>
