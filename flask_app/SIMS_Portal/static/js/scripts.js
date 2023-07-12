@@ -230,6 +230,13 @@ $(document).ready(function() {
 	} );
 } );
 
+$(document).ready(function () {
+	$('#datatable-full-portfolio').DataTable({
+		language: { search: "Search:  " },
+		"bLengthChange" : false,
+	});
+});
+
 $(function(){
 	$(".typed").typed({
 		strings: ["infographics.", "mobile data collection.", "basemaps."],
