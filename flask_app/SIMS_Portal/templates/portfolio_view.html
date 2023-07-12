@@ -33,9 +33,9 @@
 				{% if current_user.is_authenticated %}
 				<br>
 				<div class="btn-group" role="group" aria-label="Basic example">
-					<a href="/portfolio/add_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-secondary">Add to Profile</button></a>&nbsp;
+					<a href="/portfolio/add_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-success">Add to Profile</button></a>&nbsp;
 					<a href="/portfolio/remove_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-danger">Remove from Profile</button></a>&nbsp;
-					<a href="/resources/sims_portal#shared-products"><button type="button" class="btn btn-sm btn-secondary">?</button></a>
+					<a href="https://learn-sims.org/docs/sims-portal-documentation/portfolio-overview/#sharing-ownership"><button type="button" class="btn btn-sm btn-secondary">?</button></a>
 				</div>
 				{% endif %}
 				<div class="row">
