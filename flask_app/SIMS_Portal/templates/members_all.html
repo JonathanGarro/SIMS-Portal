@@ -21,7 +21,6 @@
           <th><h4>Name</h4></th>
           <th><h4>National Society</h4></th>
           <th><h4>Role</h4></th>
-          <th><h4>Assignments</h4></th>
           <th><h4>Slack</h4></th>
           <th><h4>Languages</h4></th>
           <th><h4>Profiles</h4></th>
@@ -39,7 +38,6 @@
             {% else %}
               <td class="align-middle"></td>
             {% endif %}
-            <td class="align-middle"><h5>{{member.assignment_count}}</h5></td>
             {% if member.slack_id %}
               <td class="align-middle"><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{member.slack_id}}'><h5><img src='/static/assets/img/slack-icon.png' height='30px'></h5></a></td>
             {% else %}
