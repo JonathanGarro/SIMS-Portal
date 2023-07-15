@@ -144,7 +144,7 @@ def create_app(config_class=Config):
 	from SIMS_Portal.alerts.routes import alerts
 	from SIMS_Portal.errors.handlers import errors
 	from SIMS_Portal.availability.routes import availability
-	
+
 	app.register_blueprint(main)
 	app.register_blueprint(assignments)
 	app.register_blueprint(emergencies)
