@@ -84,22 +84,23 @@ $(document).ready(function () {
 		buttons: [
 			'copy', 'csv'
 		],
-		columnDefs: [{
-			target: 6,
-			visible: false,
-			searchable: true,
-		},
-		{
-			target: 7, 
-			visible: false,
-			searchable: true,
-		},
-		{
-			target: 8, 
-			visible: false,
-			searchable: true,
-		}
-	],
+		columnDefs: [
+			{
+				target: 5,
+				visible: false,
+				searchable: true,
+			},
+			{
+				target: 6,
+				visible: false,
+				searchable: true,
+			},
+			{
+				target: 7,
+				visible: false,
+				searchable: true,
+			}
+		],
 	});
 });
 
