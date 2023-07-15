@@ -72,6 +72,10 @@ h2.header {
 	width: 75%;
 }
 
+hr.solid {
+	border-top: 3px solid #bbb;
+}
+
 li {
 	font-size: 18px;
 }
@@ -401,8 +405,21 @@ p {
 }
 
 .story_h2 {
-	font-family: 'Montserrat';
-	padding-bottom: 20px;
+  font-family: 'Montserrat';
+  padding-top: 15px;
+  padding-bottom: 30px;
+}
+
+.story_h2 + .story_h3 {
+  padding-top: 0px;
+}
+
+.story_h3 {
+  font-family: 'Montserrat';
+  padding-top: 20px;
+  padding-bottom: 10px;
+  font-size: 25px;
+  color: #424242;
 }
 
 .table > :not(:first-child) {
@@ -463,6 +480,14 @@ div.dataTables_wrapper div.dataTables_info {
 	padding-top: 0.85em;
 	font-family: 'Montserrat';
 	color: #6c757d
+}
+
+table.dataTable tbody>tr:nth-child(even) {
+	background-color: #f8f9fa;
+}
+
+table.dataTable tbody>tr:nth-child(odd) {
+	background-color: #ffffff;
 }
 
 a.page-link:hover {

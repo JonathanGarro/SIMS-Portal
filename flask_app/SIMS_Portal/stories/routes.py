@@ -28,10 +28,12 @@ class HeadingClassExtension(Extension):
 		md.treeprocessors.register(HeadingClassProcessor(md), 'heading_class', 1)
 
 class HeadingClassProcessor(markdown.treeprocessors.Treeprocessor):
-	def run(self, root):
-		for elem in root.iter():
-			if elem.tag.startswith('h') and len(elem.tag) == 2:
-				elem.set('class', 'story_h2')
+		def run(self, root):
+			for elem in root.iter():
+				if elem.tag.startswith('h2') and len(elem.tag) == 2:
+					elem.set('class', 'story_h2')
+				elif elem.tag.startswith('h3') and len(elem.tag) == 2:
+					elem.set('class', 'story_h3')
 
 @stories.route('/story/<int:emergency_id>')
 def view_story(emergency_id): 
