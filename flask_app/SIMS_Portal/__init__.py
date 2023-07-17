@@ -42,6 +42,7 @@ def init_logging():
                             "class": "logtail.LogtailHandler",
                             "source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN'),
 							"flush_interval": 60,
+							"buffer_capacity": 1000
                     },
             },
             "root": {"level": "INFO", "handlers": ["logtail", "console"]},
