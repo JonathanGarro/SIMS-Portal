@@ -26,5 +26,5 @@
 ## Managing Docker
 
 - When you make changes and want to view them, you'll need to stop the Docker container and rebuild it. 
-- When you rebuild a container, the old one stays on your system and takes up disk space. You will want to periodically purge these from Docker to avoid system bloat. To do so, open your terminal and run `docker system prune`, then `y` to confirm.
+- When you rebuild a container, the old one stays on your system and takes up disk space. You will want to periodically purge these from Docker to avoid system bloat. To do so, open your terminal and run `docker system prune`, then `y` to confirm (be careful if you are using docker for other projects as this can impact those).
 
