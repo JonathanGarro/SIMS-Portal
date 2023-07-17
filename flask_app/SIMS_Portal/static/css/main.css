@@ -401,8 +401,21 @@ p {
 }
 
 .story_h2 {
-	font-family: 'Montserrat';
-	padding-bottom: 20px;
+  font-family: 'Montserrat';
+  padding-top: 15px;
+  padding-bottom: 30px;
+}
+
+.story_h2 + .story_h3 {
+  padding-top: 0px;
+}
+
+.story_h3 {
+  font-family: 'Montserrat';
+  padding-top: 20px;
+  padding-bottom: 10px;
+  font-size: 25px;
+  color: #424242;
 }
 
 .table > :not(:first-child) {
