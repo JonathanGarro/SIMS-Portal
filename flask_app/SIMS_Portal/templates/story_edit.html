@@ -28,7 +28,7 @@
 				{{ form.hidden_tag() }}
 				<div class="row">
 					<h4 class="text-danger pb-3 Montserrat">Edit Response Story for {{emergency_name[0]}}</h4>
-						<img src='/static/assets/img/stories/{{story.header_image}}' class='img-fluid mb-4'>
+						<img src='/uploads/{{story.header_image}}' class='img-fluid mb-4'>
 							<div class="form-group pb-4">
 								{{ form.header_image.label(class="form-control-label pb-2 text-danger") }}
 								{% if form.header_image.errors %}
