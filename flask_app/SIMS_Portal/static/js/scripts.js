@@ -142,6 +142,7 @@ $(document).ready(function () {
 $(document).ready(function() {
 	$('#datatable-assigned-profiles').DataTable( {
 		order: [[0, 'asc']],
+		lengthChange: false,
 		columnDefs: [
 		{
 			target: 0,
@@ -151,9 +152,8 @@ $(document).ready(function() {
 		rowGroup: {
 			dataSrc: 0
 		},
- 
-	} );
-} );
+	});
+});
 
 $(document).ready(function() {
 	$('#datatable-trello').DataTable( {
