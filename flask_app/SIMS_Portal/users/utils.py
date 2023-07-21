@@ -151,3 +151,36 @@ def update_member_locations():
 		os.remove(json_file_path)
 	with open(json_file_path, "w") as outfile:
 		outfile.write(json_output)
+		
+def download_profile_photo(slack_id, access_token):
+	url = f'https://slack.com/api/users.profile.get'
+
+	headers = {
+		'Authorization': f'Bearer {access_token}'
+	}
+
+	params = {
+		'user': slack_id
+	}
+
+	response = requests.get(url, headers=headers, params=params)
+
+	if response.status_code == 200:
+		data = response.json()
+
+		if 'profile' in data and 'image_original' in data['profile']:
+			profile_photo_url = data['profile']['image_original']
+
+			photo_response = requests.get(profile_photo_url)
+			if photo_response.status_code == 200:
+				
+				file_name = f'{slack_id}_profile_photo.jpg'
+				with open(file_name, 'wb') as f:
+					f.write(photo_response.content)
+				current_app.logger.info(f"Profile photo saved as '{file_name}' successfully.")
+			else:
+				current_app.logger.error("Failed to download profile photo for user with Slack ID {}.".format(slack_id))
+		else:
+			current_app.logger.error("Profile photo not found for user with Slack ID {}".format(slack_id))
+	else:
+		current_app.logger.error("Slack API call failed on download_profile_photo function. Check access token and user ID.")
