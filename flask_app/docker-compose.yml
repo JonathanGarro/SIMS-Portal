@@ -10,7 +10,7 @@ services:
     env_file: ./.env
     depends_on:
       - postgresdb
-    command: gunicorn --bind 0.0.0.0:5000 -w 3 --preload run:app
+    # command: gunicorn --bind 0.0.0.0:5000 -w 3 --preload run:app
       
   postgresdb:
     image: postgres:13.5-alpine

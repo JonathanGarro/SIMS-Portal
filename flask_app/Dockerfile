@@ -5,7 +5,7 @@ COPY ./requirements.txt /app
 RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 5000
-# ENV FLASK_APP=run.py
-# ENV FLASK_DEBUG=1
-# CMD ["flask", "run", "--host", "0.0.0.0"]
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "-w", "3", "--preload", "run:app"]
+ENV FLASK_APP=run.py
+ENV FLASK_DEBUG=1
+CMD ["flask", "run", "--host", "0.0.0.0"]
+# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "-w", "3", "--preload", "run:app"]
