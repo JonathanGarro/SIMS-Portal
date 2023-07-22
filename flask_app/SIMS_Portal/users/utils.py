@@ -12,6 +12,7 @@ import requests
 import http.client, urllib.parse
 import json
 import logging
+from io import BytesIO
 
 def save_picture(form_picture):
 	random_hex = secrets.token_hex(8)
@@ -37,7 +38,6 @@ def send_reset_slack(user):
 	msg = "Looks like you requested a password reset. *If you did not request this, simply ignore this message.* Otherwise, follow the directions on the page <{}|linked here>.".format(reset_link)
 	send_slack_dm(msg, user.slack_id)
 
-# send slack alert when new user signs up
 def new_user_slack_alert(message):
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
@@ -48,7 +48,6 @@ def new_user_slack_alert(message):
 	except:
 		pass
 
-# send slack alert when new surge alert is released and saved to the database
 def new_surge_alert(message):
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
@@ -59,12 +58,10 @@ def new_surge_alert(message):
 	except:
 		pass
 
-# search for remote coordinators currently active
 def rem_cos_search():
 	with app.app_context():
 		active_SIMS_cos = db.session.query(Assignment, User, Emergency).join(User, User.id == Assignment.user_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.emergency_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').all()
 
-# general purpose DM messaging bot
 def send_slack_dm(message, user):
 	slack_token = current_app.config['SIMS_PORTAL_SLACK_BOT']
 	data = {
@@ -152,9 +149,11 @@ def update_member_locations():
 	with open(json_file_path, "w") as outfile:
 		outfile.write(json_output)
 		
-def download_profile_photo(slack_id, access_token):
-	url = f'https://slack.com/api/users.profile.get'
-
+def download_profile_photo(slack_id):
+	url = 'https://slack.com/api/users.profile.get'
+	
+	access_token = current_app.config['SIMS_PORTAL_SLACK_BOT']
+	
 	headers = {
 		'Authorization': f'Bearer {access_token}'
 	}
@@ -173,14 +172,37 @@ def download_profile_photo(slack_id, access_token):
 
 			photo_response = requests.get(profile_photo_url)
 			if photo_response.status_code == 200:
+				picture_path = save_picture_from_slack(photo_response.content)
+				db.session.query(User).filter(User.slack_id == slack_id).update({'image_file':picture_path})
+				db.session.commit()
 				
-				file_name = f'{slack_id}_profile_photo.jpg'
-				with open(file_name, 'wb') as f:
-					f.write(photo_response.content)
-				current_app.logger.info(f"Profile photo saved as '{file_name}' successfully.")
+				current_app.logger.info(f"Slack profile photo saved as '{picture_path}' successfully.")
+				return picture_path
 			else:
 				current_app.logger.error("Failed to download profile photo for user with Slack ID {}.".format(slack_id))
 		else:
 			current_app.logger.error("Profile photo not found for user with Slack ID {}".format(slack_id))
 	else:
 		current_app.logger.error("Slack API call failed on download_profile_photo function. Check access token and user ID.")
+		
+def save_picture_from_slack(picture):
+	random_hex = secrets.token_hex(8)
+	picture_path = f"pictures/{random_hex}.jpg"
+	
+	output_size = (400, 400)
+	
+	try:
+		image = Image.open(BytesIO(picture))
+	except Exception as e:
+		current_app.logger.error("Error opening image: {}".format(e))
+		return None
+	
+	image.thumbnail(output_size)
+	
+	s3 = boto3.client("s3")
+	with BytesIO() as image_stream:
+		image.save(image_stream, format='JPEG')
+		image_stream.seek(0)
+		s3.upload_fileobj(image_stream, current_app.config["UPLOAD_BUCKET"], picture_path)
+	
+	return picture_path

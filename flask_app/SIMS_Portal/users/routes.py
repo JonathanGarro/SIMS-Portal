@@ -31,6 +31,7 @@ from SIMS_Portal.users.utils import (
 	update_member_locations
 )
 from SIMS_Portal.portfolios.utils import get_full_portfolio
+from SIMS_Portal.users.utils import download_profile_photo
 
 users = Blueprint('users', __name__)
 
@@ -512,6 +513,23 @@ def delete_user(id):
 		except:
 			flash("Error deleting user. Check that the user ID exists.")
 		return redirect(url_for('main.admin_landing'))
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+@users.route('/user/save_slack_photo/<int:user_id>')
+@login_required
+def save_slack_photo_to_profile(user_id):
+	if current_user.id == user_id or current_user.is_admin == 1:
+		try:
+			user_info = db.session.query(User).filter(User.id == user_id).first()
+			download_profile_photo(user_info.slack_id)
+			flash('Your profile has been updated with your Slack photo!', 'success')
+			return redirect(url_for("users.profile"))
+		except Exception as e:
+			current_app.logger.error("User {} tried to save download their Slack photo and failed: {}".format(user_info.id, e))
+			flash('There was an error trying to download your photo. Please try again later or contact an administrator.', 'danger')
+			return redirect(url_for("users.profile"))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
