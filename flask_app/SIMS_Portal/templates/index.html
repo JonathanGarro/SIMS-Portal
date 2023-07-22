@@ -209,7 +209,7 @@
 		<div class="carousel-inner">
 			{% for story in latest_stories %}
 			<div class="carousel-item drk {% if loop.index == 1 %} active{% endif %}">
-				<img class="d-block w-100 rounded rounded-5" src="/static/assets/img/stories/{{story.Story.header_image}}" alt="{{story.Emergency.emergency_name}}">
+				<img class="d-block w-100 rounded rounded-5" src="/uploads/{{story.Story.header_image}}" alt="{{story.Emergency.emergency_name}}">
 				<div class="carousel-caption d-none d-md-block">
 					<h3 class='carousel-title'><a href='/story/{{story.Story.emergency_id}}'>{{story.Emergency.emergency_name}}</a></h3>
 				</div>
