@@ -136,7 +136,7 @@ def delete_assignment(id):
 			flash("Error deleting assignment. Check that the assignment ID exists.")
 		return redirect(url_for('main.dashboard'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 	
 @assignments.route('/assignment/availability/<int:assignment_id>/<start>/<end>', methods=['GET', 'POST'])

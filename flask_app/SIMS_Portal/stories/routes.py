@@ -67,7 +67,7 @@ def create_story(emergency_id):
 		flash('A story already exists for this emergency', 'danger')
 		return redirect(url_for('emergencies.view_emergency', id=emergency_id))
 	if current_user.is_admin == 0:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 	if request.method == 'POST' and current_user.is_admin == 1:
 		if form.validate_on_submit():
@@ -92,7 +92,7 @@ def edit_story(emergency_id):
 	form = UpdateStoryForm()
 	story = db.session.query(Story).filter(Story.emergency_id == emergency_id).first()
 	if user_is_sims_co == False and current_user.is_admin == 0:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 	elif request.method == 'POST' and (user_is_sims_co == True or current_user.id == 1):
 		if form.header_image.data:
@@ -124,5 +124,5 @@ def delete_story(emergency_id):
 			flash("Error deleting emergency. Check that the emergency ID exists.", 'danger')
 		return redirect(url_for('emergencies.view_emergency', id = emergency_id))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403

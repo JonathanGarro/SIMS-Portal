@@ -56,5 +56,5 @@ def create_new_assignment_learning(user_id, assignment_id):
 			return redirect(redirect_url)
 		return render_template('learning_assignment.html', form=form, user_info=user_info, emergency_info=emergency_info)
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403

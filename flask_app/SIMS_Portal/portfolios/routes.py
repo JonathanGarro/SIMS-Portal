@@ -133,7 +133,7 @@ def delete_portfolio(id):
 			flash("Error deleting product. Check that the product ID exists.")
 		return redirect(url_for('main.dashboard'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 		
 @portfolios.route('/portfolio/review/<int:dis_id>', methods=['GET', 'POST'])
@@ -153,7 +153,7 @@ def review_portfolio(dis_id):
 		pass
 	else:
 		event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins, disaster_coordinator_query=disaster_coordinator_query, event_name=event_name), 403
 	# get pending products for this emergency	
 	pending_list = db.session.query(Portfolio, Emergency, User).join(Emergency, Emergency.id == Portfolio.emergency_id).join(User, User.id == Portfolio.creator_id).filter(Portfolio.emergency_id == dis_id, Portfolio.product_status == 'Pending Approval').all()
@@ -190,7 +190,7 @@ def approve_portfolio(prod_id, dis_id):
 		return redirect(redirect_url)
 	else:
 		event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins, disaster_coordinator_query=disaster_coordinator_query, event_name=event_name), 403
 
 @portfolios.route('/portfolio/reject/<int:prod_id>/<int:dis_id>', methods=['GET', 'POST'])
@@ -223,7 +223,7 @@ def reject_portfolio(prod_id, dis_id):
 		return redirect(redirect_url)
 	else:
 		event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins, disaster_coordinator_query=disaster_coordinator_query, event_name=event_name), 403
 
 @portfolios.route('/portfolio/emergency_more/<int:id>')

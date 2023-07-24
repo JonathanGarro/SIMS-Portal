@@ -297,7 +297,7 @@ def closeout_emergency(id):
 			flash("Error closing emergency. Check that the emergency ID exists.")
 		return redirect(url_for('main.dashboard'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @emergencies.route('/emergency/delete/<int:id>')
@@ -313,5 +313,5 @@ def delete_emergency(id):
 			flash("Error deleting emergency. Check that the emergency ID exists.")
 		return redirect(url_for('main.dashboard'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403

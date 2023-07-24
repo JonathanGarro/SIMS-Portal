@@ -223,7 +223,7 @@ def admin_landing():
 		else:
 			return redirect(url_for('users.assign_profiles', user_id=user_id, profile_id=profile_id, tier=tier))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 # route for admin-level users assigning badges
@@ -249,7 +249,7 @@ def badge_assignment(user_id, badge_id):
 		flash('Badge successfully assigned.', 'success')
 		return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 # route for sims remote coordinator users assigning badges
@@ -277,7 +277,7 @@ def badge_assignment_via_SIMSCO(user_id, badge_id, assigner_id, dis_id):
 		flash('Badge successfully assigned.', 'success')
 		return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 	elif user_is_sims_co == False:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @main.route('/badge_assignment_simsco/<int:dis_id>', methods=['GET', 'POST'])
@@ -324,7 +324,7 @@ def badge_assignment_sims_co(dis_id):
 			flash('Please fill out all sections of the form.', 'warning')
 			return redirect(url_for('main.badge_assignment_sims_co', dis_id=dis_id))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		print('User {} tried to assign a badge but was denied and given a 403 error.'.format(current_user.fullname))
 		return render_template('errors/403.html', list_of_admins=list_of_admins, user_is_sims_co=user_is_sims_co, event_name=event_name, sims_co_ids=sims_co_ids), 403
 
@@ -450,10 +450,6 @@ def manual_refresh(func):
 def staging(): 
 	if current_user.is_admin == 1:
 		# put code to debug here
-		
-		
-
-
 
 		return render_template('visualization.html')
 	else:

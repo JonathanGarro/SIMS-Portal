@@ -216,7 +216,7 @@ def assign_profiles(user_id, profile_id, tier):
 		flash('User has been assigned a new profile.', 'success')
 		return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/badges_more/<int:user_id>')
@@ -361,7 +361,7 @@ def update_specified_profile(id):
 		profile_picture = '/uploads/' + this_user.image_file
 		return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, current_user=this_user)
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/delete_skill/<int:user_id>/<int:skill_id>', methods=['GET', 'POST'])
@@ -373,7 +373,7 @@ def delete_skill(user_id, skill_id):
 		flash('Successfully removed skill.', 'success')
 		return redirect(url_for('users.update_profile'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/save_work_location/<int:user_id>', methods=['GET', 'POST'])
@@ -491,7 +491,7 @@ def approve_user(id):
 		flash("User needs to have a Slack ID updated on their profile.","danger")
 		return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/user/delete/<int:id>', methods=['GET', 'POST'])
@@ -514,7 +514,7 @@ def delete_user(id):
 			flash("Error deleting user. Check that the user ID exists.")
 		return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/user/save_slack_photo/<int:user_id>')
@@ -531,5 +531,5 @@ def save_slack_photo_to_profile(user_id):
 			flash('There was an error trying to download your photo. Please try again later or contact an administrator.', 'danger')
 			return redirect(url_for("users.profile"))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403

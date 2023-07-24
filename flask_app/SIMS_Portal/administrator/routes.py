@@ -17,6 +17,6 @@ def admin_page():
 		all_users = db.session.query(User).all()
 		return render_template('admin.html', all_users=all_users, form=form)
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 

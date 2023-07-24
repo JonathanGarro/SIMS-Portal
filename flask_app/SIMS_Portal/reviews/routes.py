@@ -47,7 +47,7 @@ def new_op_review(dis_id):
 		flash('New emergency review record created.', 'success')
 		return redirect(url_for('reviews.new_op_review', dis_id=dis_id))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @reviews.route('/operation_review/view/<int:id>', methods=['GET'])
@@ -56,7 +56,7 @@ def view_op_review(id):
 	record = db.session.query(Review).filter(Review.id == id).first()
 	emergency_info = db.session.query(Emergency, Review).join(Review, Review.emergency_id == Emergency.id).filter(Review.id == id).first()
 	if record is None or emergency_info is None:
-		list_of_admins = db.session.query(User).filter(User.is_admin==1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	return render_template('emergency_review_view.html', record=record, emergency_info=emergency_info)
 
