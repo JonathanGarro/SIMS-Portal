@@ -11,7 +11,7 @@ from flask_login import (
 )
 from flask_mail import Message
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, Integer, text
+from sqlalchemy import or_, and_, Integer, text
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from SIMS_Portal import db, bcrypt
@@ -209,14 +209,30 @@ def view_profile(id):
 @login_required
 def assign_profiles(user_id, profile_id, tier):
 	if current_user.is_admin == 1:
-		new_profile = user_profile.insert().values(user_id=user_id, profile_id=profile_id, tier=tier)
-		db.session.execute(new_profile)
-		db.session.commit()
-		current_app.logger.info('A new profile has been assigned to User-{}'.format(user_id))
-		flash('User has been assigned a new profile.', 'success')
-		return redirect(url_for('main.admin_landing'))
+		try:
+			# delete user's existing profiles at other tiers
+			user_profile_table = db.Table('user_profile', db.metadata, autoload=True, autoload_with=db.engine)
+			delete_condition = db.and_(
+				user_profile_table.c.user_id == user_id,
+				user_profile_table.c.profile_id == profile_id,
+				user_profile_table.c.tier != tier
+			)
+			db.session.execute(user_profile_table.delete().where(delete_condition))
+			db.session.commit()
+		
+			# insert the new profile for the user
+			new_profile = user_profile_table.insert().values(user_id=user_id, profile_id=profile_id, tier=tier)
+			db.session.execute(new_profile)
+			db.session.commit()
+		
+			current_app.logger.info('A new profile has been assigned to User-{}'.format(user_id))
+			flash('User has been assigned a new profile.', 'success')
+			return redirect(url_for('main.admin_landing'))
+		except Exception as e:
+			current_app.logger.error('Error assigning a new profile tier to user: {}'.format(e))
+			return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
+		list_of_admins = User.query.filter_by(is_admin=True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/badges_more/<int:user_id>')
