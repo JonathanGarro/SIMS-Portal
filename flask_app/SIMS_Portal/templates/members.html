@@ -2,7 +2,17 @@
 {% block content %}
 <div class="container mb-5">
 	<h3 class="mt-5 Montserrat sims-blue">Active Members</h3>
-	<p class="lead">Click on a card to view their profile. <a href="/register" class="text-danger">Learn more</a> about SIMS membership.</p>
+	<p><a href="/members/inactive"><button type="button" class="btn btn-secondary btn-sm">View Inactive Members</button></a></p>
+	<div class="row mb-4">
+		<div class="d-flex justify-content-end">
+			{% if members.has_prev %}
+				<a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-danger me-1">Previous</button></a>
+			{% endif %}
+			{% if members.has_next %}
+				<a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-danger me-1">Next</button></a>
+			{% endif %}
+		</div>
+	</div>
 	<div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
 		{% for member in members.items %}
 			  <div class="col d-flex align-items-stretch">
@@ -19,12 +29,12 @@
 	</div>
 
 	<div class="row mt-4">
-		<div class="d-flex align-items-start">
+		<div class="d-flex justify-content-end">
 			{% if members.has_prev %}
-				<a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-secondary me-1">Previous</button></a>
+				<a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-danger me-1">Previous</button></a>
 			{% endif %}
 			{% if members.has_next %}
-				<a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-secondary me-1">Next</button></a>
+				<a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-danger me-1">Next</button></a>
 			{% endif %}
 		</div>
 	</div>

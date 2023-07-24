@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mb-5">
+    <h3 class="mt-5 Montserrat sims-blue">Inactive Members</h3>
+    <p><a href="/members"><button type="button" class="btn btn-secondary btn-sm">View Active Members</button></a></p>
+    <div class="row mb-4">
+        <div class="d-flex justify-content-end">
+            {% if members.has_prev %}
+                <a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-danger me-1">Previous</button></a>
+            {% endif %}
+            {% if members.has_next %}
+                <a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-danger me-1">Next</button></a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
+        {% for member in members.items %}
+              <div class="col d-flex align-items-stretch">
+                  <a href='/profile/view/{{member.id}}' class='text-dark'>
+                <div class="card portfolio-card" >
+                  <img src="/uploads/{{member.image_file}}" class="card-img-top">
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mt-auto mb-2 Montserrat sims-blue">{{member.firstname}} {{member.lastname}}</h5>
+                  </div>
+                    </a>
+                </div>
+              </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-4">
+        <div class="d-flex align-items-start">
+            {% if members.has_prev %}
+                <a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-secondary me-1">Previous</button></a>
+            {% endif %}
+            {% if members.has_next %}
+                <a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-secondary me-1">Next</button></a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

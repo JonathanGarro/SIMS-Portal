@@ -43,6 +43,14 @@ def members():
 	members = members_query.paginate(page = page, per_page = per_page)
 	return render_template('members.html', members=members)
 
+@users.route('/members/inactive')
+def inactive_members():
+	page = request.args.get('page', 1, type = int)
+	per_page = 24
+	members_query = db.session.query(User).filter(User.status == 'Inactive').order_by(User.id)
+	members = members_query.paginate(page = page, per_page = per_page)
+	return render_template('members_inactive.html', members=members)
+
 @users.route('/members/all') 
 @login_required
 def members_all(): 
