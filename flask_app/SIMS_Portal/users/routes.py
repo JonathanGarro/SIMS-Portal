@@ -232,7 +232,7 @@ def assign_profiles(user_id, profile_id, tier):
 			current_app.logger.error('Error assigning a new profile tier to user: {}'.format(e))
 			return redirect(url_for('main.admin_landing'))
 	else:
-		list_of_admins = User.query.filter_by(is_admin=True).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/badges_more/<int:user_id>')
