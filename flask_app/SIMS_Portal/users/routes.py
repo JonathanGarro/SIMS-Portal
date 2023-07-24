@@ -67,7 +67,7 @@ def members_all():
 		LEFT JOIN profile p ON p.id = up.profile_id
 		LEFT JOIN user_skill us ON us.user_id = u.id
 		LEFT JOIN skill s ON s.id = us.skill_id
-		WHERE u.status = 'Active'
+		WHERE u.status = 'Active' OR u.status = 'Inactive'
 		GROUP BY u.id, ns.ns_name
 		ORDER BY u.firstname
 	""")
