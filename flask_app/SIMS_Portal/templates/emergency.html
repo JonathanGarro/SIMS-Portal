@@ -40,10 +40,10 @@
 			<br>
 			<!-- Main sidebar buttons -->
 			{% if quick_action %}
-			<div class="card p-4 bg-danger">
+			<div class="card p-4 card-bg-red">
 			  <h5 class="text-light pb-2 Montserrat">Active Remote Assignment</h5>
 			  <small class="text-white">Your remote support assignment is where you upload products and submit learning reviews.</small>
-			  <a class="fw-bold text-light mt-4" href="/assignment/{{quick_action_id.id}}"><button type="button" class="btn btn-light"><span class="text-danger">View my Assignment</span></button></a>
+			  <a class="fw-bold text-light mt-4" href="/assignment/{{quick_action_id.id}}"><button type="button" class="btn btn-light"><span class="fw-bold">View my Assignment</span></button></a>
 			</div>
 			<br>
 			{% endif %}
