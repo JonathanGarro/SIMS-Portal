@@ -5,321 +5,326 @@
 		<div class="col-lg-8">
 			<h2 class='my-3 Montserrat sims-blue'>Overview</h2>
 			<p>In the aftermath of an emergency, the country's Red Cross or Red Crescent National Society jumps into action to scale up a response that meets the immediate needs of the people affected by the event. When the operational needs exceed the capacity of the National Society, a multilateral response scales up with support from the <a href='https://www.ifrc.org/'>IFRC</a> to mobilize financial, logistical, and human resources from around the world.</p>
-			
+
 			<p class='mb-5'>In order to effectively ramp up and maintain these multilateral operations, decision makers need a clear understanding of the emergency’s impact and the needs of the affected population, and access to systems and tools to collect and manage data about the operation’s response. That’s where the Surge Information Management Support (SIMS) network comes in. As an <a href='https://go.ifrc.org/deployments/catalogue'>IFRC Global Tool</a>, SIMS offers a wide variety of technical support through remote volunteers located across the globe.</p>
-			
+
 			<div class="border rounded d3-map-base border-3">
 				<rect style="fill: none; stroke: #8d8d8d; stroke-width: .25px;">
-				<svg viewBox="-450 -300 950 550" preserveAspectRatio="none"></svg>
+					<svg viewBox="-450 -300 950 550" preserveAspectRatio="none"></svg>
 				</rect>
 			</div>
 
 			<script>
-			// config
-			const color0 = 'rgb(237, 237, 237)'
-			const color1 = 'rgb(252, 197, 197)'
-			const color2 = 'rgb(250, 120, 120)'
-			const color3 = 'rgb(217, 41, 41)'
-			const color4 = 'rgb(161, 2, 2)'
-			
-			
-			var svg = d3.select("svg"),
-			  width = +svg.attr("width"),
-			  height = +svg.attr("height");
-			
-			// Map and projection
-			var path = d3.geoPath();
-			var projection = d3.geoMercator()
-			  .scale(150)
-			  .center([0,20])
-			  .translate([width / 2, height / 2]);
-			
-			
-			// Data and color scale
-			var data = d3.map();
-			var colorScale = d3.scaleThreshold()
-			  .domain([1, 2, 3, 4])
-			  .range([color0, color1, color2, color3, color4]);
-			
-			// Load external data and boot
-			d3.queue()
-			  .defer(d3.json, "/static/data/response-locations-base.json")
-			  .defer(d3.csv, "/static/data/emergencies_viz.csv", function(d) { data.set(d.iso3, +d.count); })
-			  .await(ready);
-			
-			function ready(error, topo) {
-			
-			  // Draw the map
-			  svg.append("g")
-				.selectAll("path")
-				.data(topo.features)
-				.enter()
-				.append("path")
-				  // draw each country
-				  .attr("d", d3.geoPath()
-					.projection(projection)
-				  )
-				  // set the color of each country
-				  .attr("fill", function (d) {
-					d.total = data.get(d.id) || 0;
-					return colorScale(d.total);
-				  })
-				  ;
+				// config
+				const color0 = 'rgb(237, 237, 237)'
+				const color1 = 'rgb(252, 197, 197)'
+				const color2 = 'rgb(250, 120, 120)'
+				const color3 = 'rgb(217, 41, 41)'
+				const color4 = 'rgb(161, 2, 2)'
+
+
+				var svg = d3.select("svg"),
+					width = +svg.attr("width"),
+					height = +svg.attr("height");
+
+				// map and projection
+				var path = d3.geoPath();
+				var projection = d3.geoMercator()
+					.scale(150)
+					.center([0, 20])
+					.translate([width / 2, height / 2]);
+
+
+				// data and color scale
+				var data = d3.map();
+				var colorScale = d3.scaleThreshold()
+					.domain([1, 2, 3, 4])
+					.range([color0, color1, color2, color3, color4]);
+
+				// load external data and boot
+				d3.queue()
+					.defer(d3.json, "/static/data/response-locations-base.json")
+					.defer(d3.csv, "/static/data/emergencies_viz.csv", function(d) {
+						data.set(d.iso3, +d.count);
+					})
+					.await(ready);
+
+				function ready(error, topo) {
+
+					// draw map
+					svg.append("g")
+						.selectAll("path")
+						.data(topo.features)
+						.enter()
+						.append("path")
+						// draw each country
+						.attr("d", d3.geoPath()
+							.projection(projection)
+						)
+						// set the color of each country
+						.attr("fill", function(d) {
+							d.total = data.get(d.id) || 0;
+							return colorScale(d.total);
+						});
 				}
-				
+
 				// manual legend
-				svg.append("text").attr("x", -410).attr("y", 90).text("# SIMS of Activations").style("font-size", "18px").style("fill", "#666262").attr("alignment-baseline","middle")
-				
-				svg.append("circle").attr("cx",-390).attr("cy",125).attr("r", 8).style("fill", color1)
-				svg.append("circle").attr("cx",-390).attr("cy",150).attr("r", 8).style("fill", color2)
-				svg.append("circle").attr("cx",-390).attr("cy",175).attr("r", 8).style("fill", color3)
-				svg.append("circle").attr("cx",-390).attr("cy",200).attr("r", 8).style("fill", color4)
+				svg.append("text").attr("x", -410).attr("y", 90).text("# SIMS of Activations").style("font-size", "18px").style("fill", "#666262").attr("alignment-baseline", "middle")
 
-				svg.append("text").attr("x", -370).attr("y", 125).text("1").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
-				svg.append("text").attr("x", -370).attr("y", 150).text("2").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
-				svg.append("text").attr("x", -370).attr("y", 175).text("3").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
-				svg.append("text").attr("x", -370).attr("y", 200).text("4 or more").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline","middle")
-				
+				svg.append("circle").attr("cx", -390).attr("cy", 125).attr("r", 8).style("fill", color1)
+				svg.append("circle").attr("cx", -390).attr("cy", 150).attr("r", 8).style("fill", color2)
+				svg.append("circle").attr("cx", -390).attr("cy", 175).attr("r", 8).style("fill", color3)
+				svg.append("circle").attr("cx", -390).attr("cy", 200).attr("r", 8).style("fill", color4)
 
+				svg.append("text").attr("x", -370).attr("y", 125).text("1").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline", "middle")
+				svg.append("text").attr("x", -370).attr("y", 150).text("2").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline", "middle")
+				svg.append("text").attr("x", -370).attr("y", 175).text("3").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline", "middle")
+				svg.append("text").attr("x", -370).attr("y", 200).text("4 or more").style("font-size", "17px").style("fill", "#666262").attr("alignment-baseline", "middle")
 			</script>
-			
+
 			<div class="accordion mt-3 my-5" id="accordionExample">
-			  <div class="accordion-item">
-				<h2 class="accordion-header" id="responsesTable">
-				  <button class="accordion-button bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-					View Table of Responses
-				  </button>
-				</h2>
-				<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="responsesTable" data-bs-parent="#accordionExample">
-				  <div class="accordion-body">
-					<table class='table table-striped table-hover w-100' id='datatable'>
-						<thead>
-							<tr>
-								<th><h5 class='Montserrat'>Emergency</h5></th>
-								<th><h5 class='Montserrat'>Status</h5></th>
-								<th><h5 class='Montserrat'>Glide No.</h5></th>
-							</tr>
-							<tbody>
-							{% for emergency in all_activations %}
-							<tr>
-								<td class="fw-bold text-dangeralign-middle">{{emergency.emergency_name}}</td>
-								<td class="text-dangeralign-middle">{{emergency.emergency_status}}</td>
-								<td class="text-dangeralign-middle">{{emergency.emergency_glide}}</td>
-							</tr>
-							{% endfor %}
-							</tbody>
-						</thead>
-					</table>
-				  </div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="responsesTable">
+						<button class="accordion-button bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+							View Table of Responses
+						</button>
+					</h2>
+					<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="responsesTable" data-bs-parent="#accordionExample">
+						<div class="accordion-body">
+							<table class='table table-striped table-hover w-100' id='datatable'>
+								<thead>
+									<tr>
+										<th>
+											<h5 class='Montserrat'>Emergency</h5>
+										</th>
+										<th>
+											<h5 class='Montserrat'>Status</h5>
+										</th>
+										<th>
+											<h5 class='Montserrat'>Glide No.</h5>
+										</th>
+									</tr>
+								<tbody>
+									{% for emergency in all_activations %}
+									<tr>
+										<td class="fw-bold text-dangeralign-middle">{{emergency.emergency_name}}</td>
+										<td class="text-dangeralign-middle">{{emergency.emergency_status}}</td>
+										<td class="text-dangeralign-middle">{{emergency.emergency_glide}}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+								</thead>
+							</table>
+						</div>
+					</div>
 				</div>
-			  </div>
 			</div>
-			
+
 			<h2 class="mb-3 mt-5 Montserrat sims-blue">Profiles</h2>
-			
+
 			<p class='mb-5'>SIMS members have a diverse range of technical skills. We generally organize remote supporters by the following specific profiles. <span class='fw-bold'>Click on a card to learn more</span> about the role and relevant competencies.</p>
-			
+
 			<section class="pb-2 pb-md-4 pb-lg-5">
-			  <div class="row row-cols-1 row-cols-md-2">
-			
-				<!-- Item -->
-				<div class="col py-4 my-2 my-sm-3">
-				  <a href="/role_profile/simsco" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-					<div class="card-body pt-3">
-					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-						<img src="static/assets/img/profiles-simsco.png" class="d-block m-1" width="40" alt="Icon">
-					  </div>
-					  <h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
-						SIMS Remote Coordination
-						<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-					  </h2>
-					  <p class="fs-sm text-body mb-0">SIMS Remote Coordinators translate the operation's needs into discrete tasks, and manage the on-going process of assigning those tasks to the SIMS member with the appropriate set of skills.</p>
+				<div class="row row-cols-1 row-cols-md-2">
+
+					<!-- Item -->
+					<div class="col py-4 my-2 my-sm-3">
+						<a href="/role_profile/simsco" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
+							<div class="card-body pt-3">
+								<div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+									<img src="static/assets/img/profiles-simsco.png" class="d-block m-1" width="40" alt="Icon">
+								</div>
+								<h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
+									SIMS Remote Coordination
+									<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
+								</h2>
+								<p class="fs-sm text-body mb-0">SIMS Remote Coordinators translate the operation's needs into discrete tasks, and manage the on-going process of assigning those tasks to the SIMS member with the appropriate set of skills.</p>
+							</div>
+						</a>
 					</div>
-				  </a>
-				</div>
-				
-				<!-- Item -->
-				<div class="col py-4 my-2 my-sm-3">
-				  <a href="/role_profile/geo" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
-					<div class="card-body pt-3">
-					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-						<img src="static/assets/img/profiles-gis.png" class="d-block m-1" width="40" alt="Icon">
-					  </div>
-					  <h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
-						Geospatial
-						<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-					  </h2>
-					  <p class="fs-sm text-body mb-0">Geospatial specialists create a variety of static and interactive map types, including basemaps, damage and impact maps, 3W's, and more.</p>
+
+					<!-- Item -->
+					<div class="col py-4 my-2 my-sm-3">
+						<a href="/role_profile/geo" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+							<div class="card-body pt-3">
+								<div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+									<img src="static/assets/img/profiles-gis.png" class="d-block m-1" width="40" alt="Icon">
+								</div>
+								<h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
+									Geospatial
+									<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
+								</h2>
+								<p class="fs-sm text-body mb-0">Geospatial specialists create a variety of static and interactive map types, including basemaps, damage and impact maps, 3W's, and more.</p>
+							</div>
+						</a>
 					</div>
-				  </a>
-				</div>
-			
-				<!-- Item -->
-				<div class="col py-4 my-2 my-sm-3">
-				  <a href="/role_profile/webviz" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-					<div class="card-body pt-3">
-					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-						<img src="static/assets/img/profiles-webviz.png" class="d-block m-1" width="40" alt="Icon">
-					  </div>
-					  <h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
-						Web Visualization
-						<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-					  </h2>
-					  <p class="fs-sm text-body mb-0">Web Visualization specialists build and connect to data pipelines to create dashboards and other products that help operations make sense of data.</p>
+
+					<!-- Item -->
+					<div class="col py-4 my-2 my-sm-3">
+						<a href="/role_profile/webviz" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
+							<div class="card-body pt-3">
+								<div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+									<img src="static/assets/img/profiles-webviz.png" class="d-block m-1" width="40" alt="Icon">
+								</div>
+								<h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
+									Web Visualization
+									<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
+								</h2>
+								<p class="fs-sm text-body mb-0">Web Visualization specialists build and connect to data pipelines to create dashboards and other products that help operations make sense of data.</p>
+							</div>
+						</a>
 					</div>
-				  </a>
-				</div>
-			
-				<!-- Item -->
-				<div class="col py-4 my-2 my-sm-3">
-				  <a href="/role_profile/infodes" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-					<div class="card-body pt-3">
-					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-						<img src="static/assets/img/profiles-infodes.png" class="d-block m-1" width="40" alt="Icon">
-					  </div>
-					  <h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
-						Information Design
-						<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-					  </h2>
-					  <p class="fs-sm text-body mb-0">Information Design specialists help operations organize and analyze information in order to develop scenario plans and support strategic-level decision-making.</p>
+
+					<!-- Item -->
+					<div class="col py-4 my-2 my-sm-3">
+						<a href="/role_profile/infodes" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
+							<div class="card-body pt-3">
+								<div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+									<img src="static/assets/img/profiles-infodes.png" class="d-block m-1" width="40" alt="Icon">
+								</div>
+								<h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
+									Information Design
+									<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
+								</h2>
+								<p class="fs-sm text-body mb-0">Information Design specialists help operations organize and analyze information in order to develop scenario plans and support strategic-level decision-making.</p>
+							</div>
+						</a>
 					</div>
-				  </a>
-				</div>
-			
-				<!-- Item -->
-				<div class="col py-4 my-2 my-sm-3">
-				  <a href="/role_profile/datatrans" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-					<div class="card-body pt-3">
-					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-						<img src="static/assets/img/profiles-datatrans.png" class="d-block m-1" width="40" alt="Icon">
-					  </div>
-					  <h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
-						Data Transformation & Analysis
-						<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-					  </h2>
-					  <p class="fs-sm text-body mb-0">Data Transformation and Analysis specialists wrangle datasets to make them compatible with multiple analytical processes.</p>
+
+					<!-- Item -->
+					<div class="col py-4 my-2 my-sm-3">
+						<a href="/role_profile/datatrans" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
+							<div class="card-body pt-3">
+								<div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+									<img src="static/assets/img/profiles-datatrans.png" class="d-block m-1" width="40" alt="Icon">
+								</div>
+								<h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
+									Data Transformation & Analysis
+									<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
+								</h2>
+								<p class="fs-sm text-body mb-0">Data Transformation and Analysis specialists wrangle datasets to make them compatible with multiple analytical processes.</p>
+							</div>
+						</a>
 					</div>
-				  </a>
-				</div>
-			
-				<!-- Item -->
-				<div class="col py-4 my-2 my-sm-3">
-				  <a href="/role_profile/mobdata" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
-					<div class="card-body pt-3">
-					  <div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
-						<img src="static/assets/img/profiles-mobdata.png" class="d-block m-1" width="40" alt="Icon">
-					  </div>
-					  <h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
-						Data Collection & Survey Design
-						<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
-					  </h2>
-					  <p class="fs-sm text-body mb-0">Data Collection specialists design and build systems for large-scale mobile surveys that help operations establish a more accurate profile of the needs of those affected by the emergency.</p>
+
+					<!-- Item -->
+					<div class="col py-4 my-2 my-sm-3">
+						<a href="/role_profile/mobdata" class="card bg-light card-hover h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 ms-xl-2">
+							<div class="card-body pt-3">
+								<div class="d-inline-block bg-danger shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+									<img src="static/assets/img/profiles-mobdata.png" class="d-block m-1" width="40" alt="Icon">
+								</div>
+								<h2 class="h4 d-inline-flex align-items-center sims-blue Montserrat">
+									Data Collection & Survey Design
+									<i class="bx bx-right-arrow-circle text-primary fs-3 ms-2"></i>
+								</h2>
+								<p class="fs-sm text-body mb-0">Data Collection specialists design and build systems for large-scale mobile surveys that help operations establish a more accurate profile of the needs of those affected by the emergency.</p>
+							</div>
+						</a>
 					</div>
-				  </a>
+
 				</div>
-			
-			  </div>
 			</section>
-			
+
 			<h2 class="mb-3 Montserrat sims-blue">Process</h2>
-			
+
 			<p>After SIMS is activated, a SIMS Remote Coordinator is assigned to liaise directly with the field and translate their needs into discrete tasks which are then assigned to remote supporters. Services can be delivered for several months after an activation begins, then SIMS supports the transition of its functions to longer-term delegate roles.</p>
-				
+
 			<p>Thanks to the global distribution of the staff and volunteers that support SIMS, products and services can be developed around the clock and meet deadlines that keep up with fast paced operations. SIMS members have a diverse and highly-relevant set of skills. We are constantly developing new ones to stay up-to-date on the latest technology.</p>
-			
+
 			<p>Learning from our collective experience is a fundamental part of how SIMS operates. As an activation wraps up, we follow a rigorous knowledge management process that includes evaluating the products and services delivered to identify best practices to enhance future operations. We frequently draft public stories about the response in order to share knowledge with the broader humanitarian sector. </p>
-			
+
 		</div>
 		<div class='col ps-5'>
-			
-				<div class='col'>
-				  <div class="card border border-3 bg-light p-4 mb-3">
+
+			<div class='col'>
+				<div class="card border border-3 bg-light p-4 mb-3">
 
 					<h3 class='sims-blue Montserrat mb-2'>{{count_activations}} Activations</h3>
 					<p class='lead'>SIMS has been activated {{count_activations}} times since its inception in 2013, most recently in response to the <span class='fw-bold'>{{latest_activation.emergency_name}}</span>.</p>
-				  </div>
-				  <div class="card border border-3 bg-light p-4 mb-3">
+				</div>
+				<div class="card border border-3 bg-light p-4 mb-3">
 
 					<h3 class='sims-blue Montserrat'>{{count_members}} Members</h3>
-					<p class='lead'>There are {{count_members}} <a href='/members' >active members</a> of the SIMS network ready to provide support across a variety of technical areas.</p>
-				  </div>
+					<p class='lead'>There are {{count_members}} <a href='/members'>active members</a> of the SIMS network ready to provide support across a variety of technical areas.</p>
 				</div>
-			
-			
+			</div>
+
+
 			<div class="card border border-3 p-4 bg-light">
 				<h3 class='mb-5 Montserrat sims-blue'>Activation Process</h3>
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
-					<img src='/static/assets/img/disaster-strikes.png' width="50" height="50" class="">
+						<img src='/static/assets/img/disaster-strikes.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h5 class='Montserrat'>Disaster Strikes</h5>
+						<h5 class='Montserrat'>Disaster Strikes</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
 					<p class="lead">A sudden onset disaster occurs or a slow onset disaster reaches a certain threshold.</p>
 				</div>
-				
+
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
-					<img src='/static/assets/img/alert-released.png' width="50" height="50" class="">
+						<img src='/static/assets/img/alert-released.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h5 class='Montserrat'>Request for SIMS</h5>
+						<h5 class='Montserrat'>Request for SIMS</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
 					<p class="lead">Request for SIMS activation sent to IFRC Surge Desk.</p>
 				</div>
-				
+
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
-					<img src='/static/assets/img/sims-activate.png' width="50" height="50" class="">
+						<img src='/static/assets/img/sims-activate.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h5 class='Montserrat'>SIMS Activated</h5>
+						<h5 class='Montserrat'>SIMS Activated</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
 					<p class="lead">The Surge Desk contacts the SIMS focal point and the network's members are alerted.</p>
 				</div>
-				
+
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
-					<img src='/static/assets/img/remote-coordinator.png' width="50" height="50" class="">
+						<img src='/static/assets/img/remote-coordinator.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h5 class='Montserrat'>Coordinator Assigned</h5>
+						<h5 class='Montserrat'>Coordinator Assigned</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
 					<p class="lead">SIMS assigns a remote coordinator as the focal point that manages tasks and assigns to other remote members.</p>
 				</div>
-				
+
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
-					<img src='/static/assets/img/produce.png' width="50" height="50" class="">
+						<img src='/static/assets/img/produce.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h5 class='Montserrat'>Services Delivered</h5>
+						<h5 class='Montserrat'>Services Delivered</h5>
 					</div>
 				</div>
 				<div class='row pb-5'>
 					<p class="lead">The operation is supported with the production of tools and products for up to three months.</p>
 				</div>
-				
+
 				<div class='row align-items-center pb-3'>
 					<div class='col-2'>
-					<img src='/static/assets/img/transition.png' width="50" height="50" class="">
+						<img src='/static/assets/img/transition.png' width="50" height="50" class="">
 					</div>
 					<div class='col'>
-					<h5 class='Montserrat'>Phase Out</h5>
+						<h5 class='Montserrat'>Phase Out</h5>
 					</div>
 				</div>
 				<div class='row pb-2'>
 					<p class="lead">IM support transitions to medium- or long-term delegate roles, remote support continues through separate funding, or surge support phases out completely.</p>
 				</div>
-				
+
 			</div>
 		</div>
 	</div>

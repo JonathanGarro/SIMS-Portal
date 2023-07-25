@@ -10,102 +10,102 @@
 					<p class="lead mt-4">SIMS remote coordinators work directly with teams in-country to translate operational needs into discrete tasks, which are then assigned to specialists with the skills and experience to complete them.</p>
 					<br>
 					<a href="/about" class="btn btn-danger btn-lg mt-3 mb-4" id="override-link-color">Learn More</a>
-					
+
 				</div>
 			</div>
 			<div class='col'>
 				<div class='mt-6 d-none d-lg-block'>
-				  <svg viewBox="0 120 650 650" preserveAspectRatio="none"></svg>
-				  <script src="https://d3js.org/d3.v4.min.js"></script>
-				  <script src="https://d3js.org/topojson.v1.min.js"></script>
-				  <script>
-					const width = 750;
-					const height = 750;
-					const config = {
-					  speed: 0.01,
-					  verticalTilt: -12,
-					  horizontalTilt: 0
-					};
-					let locations = [];
-					const svg = d3.select('svg').attr('width', width).attr('height', height);
-					const markerGroup = svg.append('g');
-					const projection = d3.geoOrthographic().translate([width / 2, height / 2]);
-					const initialScale = projection.scale();
-					const path = d3.geoPath().projection(projection);
-					const center = [width / 2, height / 2];
-				  
-					drawGlobe();
-					drawGraticule();
-					enableRotation();
-				  
-					function drawGlobe() {
-					  d3.queue()
-					  .defer(d3.json, '/static/data/world-110m.json')          
-					  .defer(d3.json, '/static/data/locations.json')
-						.await((error, worldData, locationData) => {
-						  svg.selectAll('.segment')
-							.data(topojson.feature(worldData, worldData.objects.countries).features)
-							.enter().append('path')
-							.attr('class', 'segment')
-							.attr('d', path)
-							.style('stroke', '#888')
-							.style('stroke-width', '1px')
-							.style('fill', (d, i) => '#e5e5e5')
-							.style('opacity', '.6');
-						  locations = locationData;
-						  drawMarkers();
-						});
-					}
-				  
-					function drawGraticule() {
-					  const graticule = d3.geoGraticule()
-						.step([10, 10]);
-				  
-					  svg.append('path')
-						.datum(graticule)
-						.attr('class', 'graticule')
-						.attr('d', path)
-						.style('fill', '#fff')
-						.style('stroke', '#ccc');
-					}
-				  
-					function enableRotation() {
-					  d3.timer(function (elapsed) {
-						projection.rotate([config.speed * elapsed - 10, config.verticalTilt, config.horizontalTilt]);
-						svg.selectAll('path').attr('d', path);
-						drawMarkers();
-					  });
-					}
-				  
-					function drawMarkers() {
-					  const markers = markerGroup.selectAll('circle')
-						.data(locations);
-				  
-					  markers.enter()
-						.append('circle')
-						.merge(markers)
-						.attr('cx', d => projection([d.longitude, d.latitude])[0])
-						  .attr('cy', d => projection([d.longitude, d.latitude])[1])
-						.attr('fill', d => {
-						  const coordinate = [d.longitude, d.latitude];
-						  const gdistance = d3.geoDistance(coordinate, projection.invert(center));
-						  return gdistance > 1.5 ? 'none' : 'red';
-						})
-						.attr('stroke', d => {
-						  const coordinate = [d.longitude, d.latitude];
-						  const gdistance = d3.geoDistance(coordinate, projection.invert(center));
-						  return gdistance > 1.5 ? 'none' : 'white';
-						})
-						.attr('r', 4);
-				  
-					  markerGroup.each(function () {
-						this.parentNode.appendChild(this);
-					  });
-					}
-				  
-					svg.append('circle').attr('cx', 535).attr('cy', 600).attr('r', 6).style('fill', 'red');
-					svg.append('text').attr('x', 545).attr('y', 600).text('SIMS Member').style('font-size', '11px').attr('alignment-baseline', 'middle');
-				  </script>
+					<svg viewBox="0 120 650 650" preserveAspectRatio="none"></svg>
+					<script src="https://d3js.org/d3.v4.min.js"></script>
+					<script src="https://d3js.org/topojson.v1.min.js"></script>
+					<script>
+						const width = 750;
+						const height = 750;
+						const config = {
+							speed: 0.01,
+							verticalTilt: -12,
+							horizontalTilt: 0
+						};
+						let locations = [];
+						const svg = d3.select('svg').attr('width', width).attr('height', height);
+						const markerGroup = svg.append('g');
+						const projection = d3.geoOrthographic().translate([width / 2, height / 2]);
+						const initialScale = projection.scale();
+						const path = d3.geoPath().projection(projection);
+						const center = [width / 2, height / 2];
+
+						drawGlobe();
+						drawGraticule();
+						enableRotation();
+
+						function drawGlobe() {
+							d3.queue()
+								.defer(d3.json, '/static/data/world-110m.json')
+								.defer(d3.json, '/static/data/locations.json')
+								.await((error, worldData, locationData) => {
+									svg.selectAll('.segment')
+										.data(topojson.feature(worldData, worldData.objects.countries).features)
+										.enter().append('path')
+										.attr('class', 'segment')
+										.attr('d', path)
+										.style('stroke', '#888')
+										.style('stroke-width', '1px')
+										.style('fill', (d, i) => '#e5e5e5')
+										.style('opacity', '.6');
+									locations = locationData;
+									drawMarkers();
+								});
+						}
+
+						function drawGraticule() {
+							const graticule = d3.geoGraticule()
+								.step([10, 10]);
+
+							svg.append('path')
+								.datum(graticule)
+								.attr('class', 'graticule')
+								.attr('d', path)
+								.style('fill', '#fff')
+								.style('stroke', '#ccc');
+						}
+
+						function enableRotation() {
+							d3.timer(function(elapsed) {
+								projection.rotate([config.speed * elapsed - 10, config.verticalTilt, config.horizontalTilt]);
+								svg.selectAll('path').attr('d', path);
+								drawMarkers();
+							});
+						}
+
+						function drawMarkers() {
+							const markers = markerGroup.selectAll('circle')
+								.data(locations);
+
+							markers.enter()
+								.append('circle')
+								.merge(markers)
+								.attr('cx', d => projection([d.longitude, d.latitude])[0])
+								.attr('cy', d => projection([d.longitude, d.latitude])[1])
+								.attr('fill', d => {
+									const coordinate = [d.longitude, d.latitude];
+									const gdistance = d3.geoDistance(coordinate, projection.invert(center));
+									return gdistance > 1.5 ? 'none' : 'red';
+								})
+								.attr('stroke', d => {
+									const coordinate = [d.longitude, d.latitude];
+									const gdistance = d3.geoDistance(coordinate, projection.invert(center));
+									return gdistance > 1.5 ? 'none' : 'white';
+								})
+								.attr('r', 4);
+
+							markerGroup.each(function() {
+								this.parentNode.appendChild(this);
+							});
+						}
+
+						svg.append('circle').attr('cx', 535).attr('cy', 600).attr('r', 6).style('fill', 'red');
+						svg.append('text').attr('x', 545).attr('y', 600).text('SIMS Member').style('font-size', '11px').attr('alignment-baseline', 'middle');
+					</script>
 
 				</div>
 			</div>
@@ -113,90 +113,90 @@
 	</div>
 </section>
 <div class="container-fluid" style='background-color: #404040'>
-<section class="container pt-4 pb-5 py-lg-5">
-	<h3 class="h3 Montserrat text-light pt-1 pt-md-3 pt-lg-4 pb-3 pb-md-4 mb-0 mb-lg-3">The SIMS Advantage</h3>
-	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-2 g-lg-3 g-xl-4 pb-md-3 pb-lg-5">
+	<section class="container pt-4 pb-5 py-lg-5">
+		<h3 class="h3 Montserrat text-light pt-1 pt-md-3 pt-lg-4 pb-3 pb-md-4 mb-0 mb-lg-3">The SIMS Advantage</h3>
+		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-2 g-lg-3 g-xl-4 pb-md-3 pb-lg-5">
 
-	  <!-- Item -->
-	  <div class="col">
-		<div class="card h-100 bg-transparent border-0">
-		  <div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
-			<img src='/static/assets/img/features-remote-work.png' width="50px">
-		  </div>
-		  <div class="card-body">
-			<h3 class="h6 text-light Montserrat">Remote First</h3>
-			<p class="fs-sm mb-0 text-light">SIMS has operated as a fully remote surge tool since its inception. We've adopted and mastered tools and processes that help us provide top tier support.</p>
-		  </div>
+			<!-- Item -->
+			<div class="col">
+				<div class="card h-100 bg-transparent border-0">
+					<div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
+						<img src='/static/assets/img/features-remote-work.png' width="50px">
+					</div>
+					<div class="card-body">
+						<h3 class="h6 text-light Montserrat">Remote First</h3>
+						<p class="fs-sm mb-0 text-light">SIMS has operated as a fully remote surge tool since its inception. We've adopted and mastered tools and processes that help us provide top tier support.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="col">
+				<div class="card h-100 bg-transparent border-0">
+					<div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
+						<img src='/static/assets/img/features-global.png' width="50px">
+					</div>
+					<div class="card-body">
+						<h3 class="h6 text-light Montserrat">Global Network</h3>
+						<p class="fs-sm mb-0 text-light">SIMS members live and work in all corners of the globe. That means products and services can be developed 24/7.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="col">
+				<div class="card h-100 bg-transparent border-0">
+					<div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
+						<img src='/static/assets/img/features-skills.png' width="50px">
+					</div>
+					<div class="card-body">
+						<h3 class="h6 text-light Montserrat">Diverse Skill Sets</h3>
+						<p class="fs-sm mb-0 text-light">We maintain a roster of specialists with a range of valuable technical skills. If an operation has an Information Management gap, SIMS can fill it.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="col">
+				<div class="card h-100 bg-transparent border-0">
+					<div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
+						<img src='/static/assets/img/features-tech.png' width="50px">
+					</div>
+					<div class="card-body">
+						<h3 class="h6 text-light Montserrat">Latest Technology</h3>
+						<p class="fs-sm mb-0 text-light">SIMS members are constantly learning and adapting new tools to help us continue offering cutting edge support to operations.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="col">
+				<div class="card h-100 bg-transparent border-0">
+					<div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
+						<img src='/static/assets/img/features-scalable.png' width="50px">
+					</div>
+					<div class="card-body">
+						<h3 class="h6 text-light Montserrat">Highly Scalable</h3>
+						<p class="fs-sm mb-0 text-light">Thanks to the depth of the roster that SIMS maintains, the Network is able to quickly scale up to meet flucuating Information Management needs. </p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="col">
+				<div class="card h-100 bg-transparent border-0">
+					<div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
+						<img src='/static/assets/img/features-cost.png' width="50px">
+					</div>
+					<div class="card-body">
+						<h3 class="h6 text-light Montserrat">Low Cost</h3>
+						<p class="fs-sm mb-0 text-light">Thanks to the remote-first operating model, SIMS can save operations money by avoiding costly deployments whose functions can be filled from afar.</p>
+					</div>
+				</div>
+			</div>
+
 		</div>
-	  </div>
-
-	  <!-- Item -->
-	  <div class="col">
-		<div class="card h-100 bg-transparent border-0">
-		  <div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
-		 	<img src='/static/assets/img/features-global.png' width="50px">
-		  </div>
-		  <div class="card-body">
-			<h3 class="h6 text-light Montserrat">Global Network</h3>
-			<p class="fs-sm mb-0 text-light">SIMS members live and work in all corners of the globe. That means products and services can be developed 24/7.</p>
-		  </div>
-		</div>
-	  </div>
-
-	  <!-- Item -->
-	  <div class="col">
-		<div class="card h-100 bg-transparent border-0">
-		  <div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
-		   <img src='/static/assets/img/features-skills.png' width="50px">
-		  </div>
-		  <div class="card-body">
-			<h3 class="h6 text-light Montserrat">Diverse Skill Sets</h3>
-			<p class="fs-sm mb-0 text-light">We maintain a roster of specialists with a range of valuable technical skills. If an operation has an Information Management gap, SIMS can fill it.</p>
-		  </div>
-		</div>
-	  </div>
-
-	  <!-- Item -->
-	  <div class="col">
-		<div class="card h-100 bg-transparent border-0">
-		  <div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
-			 <img src='/static/assets/img/features-tech.png' width="50px">
-		  </div>
-		  <div class="card-body">
-			<h3 class="h6 text-light Montserrat">Latest Technology</h3>
-			<p class="fs-sm mb-0 text-light">SIMS members are constantly learning and adapting new tools to help us continue offering cutting edge support to operations.</p>
-		  </div>
-		</div>
-	  </div>
-
-	  <!-- Item -->
-	  <div class="col">
-		<div class="card h-100 bg-transparent border-0">
-		  <div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
-			 <img src='/static/assets/img/features-scalable.png' width="50px">
-		  </div>
-		  <div class="card-body">
-			<h3 class="h6 text-light Montserrat">Highly Scalable</h3>
-			<p class="fs-sm mb-0 text-light">Thanks to the depth of the roster that SIMS maintains, the Network is able to quickly scale up to meet flucuating Information Management needs. </p>
-		  </div>
-		</div>
-	  </div>
-
-	  <!-- Item -->
-	  <div class="col">
-		<div class="card h-100 bg-transparent border-0">
-		  <div class="bg-danger rounded-3 w-auto lh-1 p-2 mt-4 ms-4 me-auto">
-			 <img src='/static/assets/img/features-cost.png' width="50px">
-		  </div>
-		  <div class="card-body">
-			<h3 class="h6 text-light Montserrat">Low Cost</h3>
-			<p class="fs-sm mb-0 text-light">Thanks to the remote-first operating model, SIMS can save operations money by avoiding costly deployments whose functions can be filled from afar.</p>
-		  </div>
-		</div>
-	  </div>
-
-	</div>
-  </section>
+	</section>
 </div>
 <div class="container mt-5">
 	<h3 class="text-dark mt-2 Montserrat">Latest Response Stories</h3>
@@ -217,10 +217,10 @@
 			{% endfor %}
 		</div>
 		<a class="carousel-control-prev" href="#carouselStories" role="button" data-slide="prev">
-		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 		</a>
 		<a class="carousel-control-next" href="#carouselStories" role="button" data-slide="next">
-		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
 		</a>
 	</div>
 	<div class='row mb-6'>

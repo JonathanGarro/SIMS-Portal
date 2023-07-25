@@ -9,7 +9,7 @@
 		{% if messages %}
 		{% for category, message in messages %}
 		<div class="mt-2 alert alert-{{ category }}">
-			{{ message }} 
+			{{ message }}
 		</div>
 		{% endfor %}
 		{% endif %}
@@ -41,9 +41,9 @@
 			<!-- Main sidebar buttons -->
 			{% if quick_action %}
 			<div class="card p-4 card-bg-red">
-			  <h5 class="text-light pb-2 Montserrat">Active Remote Assignment</h5>
-			  <small class="text-white">Your remote support assignment is where you upload products and submit learning reviews.</small>
-			  <a class="fw-bold text-light mt-4" href="/assignment/{{quick_action_id.id}}"><button type="button" class="btn btn-light"><span class="fw-bold">View my Assignment</span></button></a>
+				<h5 class="text-light pb-2 Montserrat">Active Remote Assignment</h5>
+				<small class="text-white">Your remote support assignment is where you upload products and submit learning reviews.</small>
+				<a class="fw-bold text-light mt-4" href="/assignment/{{quick_action_id.id}}"><button type="button" class="btn btn-light"><span class="fw-bold">View my Assignment</span></button></a>
 			</div>
 			<br>
 			{% endif %}
@@ -136,7 +136,7 @@
 								<div class="modal-header">
 									<h5 class="modal-title" id="closeoutModal">Closeout this Emergency</h5>
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
+										<span aria-hidden="true">&times;</span>
 									</button>
 								</div>
 								<div class="modal-body">
@@ -156,7 +156,7 @@
 								<div class="modal-header">
 									<h5 class="modal-title" id="deleteModal">Delete the Emergency?</h5>
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
+										<span aria-hidden="true">&times;</span>
 									</button>
 								</div>
 								<div class="modal-body">
@@ -357,203 +357,221 @@
 										<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
 										<h5 class="card-title mt-auto text-danger">{{product.Portfolio.title}}</h5>
 							</a>
-							</div>
-							</div>
 						</div>
-						{% endfor %}
 					</div>
-					{% if emergency_portfolio_size > 3 %}
-					<div class='mb-5'>
-						<a href='/portfolio/emergency_more/{{emergency_info.Emergency.id}}'><button type="button" class="btn btn-secondary">View All Products Posted for this Operation</button></a>
-					</div>
-					{% endif %}
 				</div>
-				<div class="tab-pane fade" id="availability" role="tabpanel" aria-labelledby="availability-tab">
-					<div id="chartContainer" style="width: 100%; height: 400px;">
-						<canvas id="availabilityChart"></canvas>
-						<script>
-							// set consts to incoming data
-							const week_dates = {{ week_dates | tojson }};
-							const frequency_count = {{ frequency_count | tojson }};
-								
-							// convert to date objects
-							const formattedDates = week_dates.map(date => moment(date).format('dddd, MMMM DD'));
-								
-							// config
-							const chartConfig = {
-								 type: 'bar',
-								 data: {
-								labels: formattedDates,
-								datasets: [
-								  {
-									label: 'Daily Count of Available Remote Supporters',
-									data: frequency_count,
-									backgroundColor: '#be3846',
-									borderColor: '#962934',
-									borderWidth: 1,
-								  },
-								],
-								 },
-								 options: {
-								responsive: true,
-								maintainAspectRatio: true,
-								scales: {
-								  x: {
+				{% endfor %}
+			</div>
+			{% if emergency_portfolio_size > 3 %}
+			<div class='mb-5'>
+				<a href='/portfolio/emergency_more/{{emergency_info.Emergency.id}}'><button type="button" class="btn btn-secondary">View All Products Posted for this Operation</button></a>
+			</div>
+			{% endif %}
+		</div>
+		<div class="tab-pane fade" id="availability" role="tabpanel" aria-labelledby="availability-tab">
+			<div id="chartContainer" style="width: 100%; height: 400px;">
+				<canvas id="availabilityChart"></canvas>
+				<script>
+					// set consts to incoming data
+					const week_dates = {
+						{
+							week_dates | tojson
+						}
+					};
+					const frequency_count = {
+						{
+							frequency_count | tojson
+						}
+					};
+
+					// convert to date objects
+					const formattedDates = week_dates.map(date => moment(date).format('dddd, MMMM DD'));
+
+					// config
+					const chartConfig = {
+						type: 'bar',
+						data: {
+							labels: formattedDates,
+							datasets: [{
+								label: 'Daily Count of Available Remote Supporters',
+								data: frequency_count,
+								backgroundColor: '#be3846',
+								borderColor: '#962934',
+								borderWidth: 1,
+							}, ],
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: true,
+							scales: {
+								x: {
 									type: 'category',
 									ticks: {
-									  maxRotation: 0,
+										maxRotation: 0,
 									},
-								  },
-								  y: {
+								},
+								y: {
 									beginAtZero: true,
 									ticks: {
-									  callback: function (value, index, values) {
-										if (Number.isInteger(value)) {
-										  return value;
-										}
-									  },
+										callback: function(value, index, values) {
+											if (Number.isInteger(value)) {
+												return value;
+											}
+										},
 									},
-								  },
 								},
-								 },
-							};
-								
-							// build chart
-							const ctx = document.getElementById('availabilityChart').getContext('2d');
-							new Chart(ctx, chartConfig);
-								
-						</script>
-					</div>
-				</div>
-				<div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
-					<div class="d-flex align-items-start">
-						<div>
-							<h3 class="text-dark emergency-title">Assignment Reviews</h3>
-						</div>
-						<div class="ml-auto">
-							<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview-269/#remote-supporter-learning-reviews" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
-						</div>
-					</div>
-					{% if learning_count == 0 %}
-					<p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
-					{% elif learning_count > 2 %}
-					<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data. </p>
-					<canvas id='barChartLearningAssignment' width='600' height='500'></canvas>
-					<script>
-						var ctx = document.getElementById('barChartLearningAssignment').getContext('2d');
-						var lineChart = new Chart(ctx, {
-						 type: 'bar',
-						 data: {
-						  labels: {{ learning_keys | safe }},
-						  datasets: [{
-						   label: "Average Scores for this Emergency",
-						   data: {{ learning_values | safe }},
-						   fill: true,
-						   backgroundColor: "#dc3545"
-						  },
-						 {
-						 label: "Average Score for All Emergencies",
-						 data: {{ avg_learning_values | safe }},
-						 fill: true,
-						 backgroundColor: "#ABABAB"
-						}]
-						 },
-						 options: {
-						  plugins: {
-						   legend: true,
-						  },
-						  responsive: true,
-						  indexAxis: 'y',
-						  scales: {
-						   y: {
-							   ticks: {
-								   stepSize: 1
-							   },
-							   grid: {
-								   display: false
-							   }
-							   
-						   },
-						   x: {
-							   ticks: {
-									 stepSize: 1
-								 },
-							 suggestedMax: 5,
-							 grid: {
-								 display: true
-							   }
-						   }
-						   
-						  }
-						 }
-						})
-					</script>
-					{% else %}  
-					<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
-					{% endif %}
-					<div class="d-flex align-items-start mt-4">
-						<div>
-							<h3 class="text-dark emergency-title">Operational Reviews</h3>
-						</div>
-						<div class="ml-auto">
-							<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview-269/#sims-remote-coordinator-operation-reviews" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
-						</div>
-					</div>
-					{% if existing_reviews %}
-					<table class='table mt-4' id='datatable-op-reviews'>
-						<thead>
-							<tr>
-								<th>Title</th>
-								<th>Category</th>
-								<th>Type</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for review in existing_reviews %}
-							<tr>
-								<td><a href='/operation_review/view/{{review.id}}'>{{review.title}}</a></td>
-								<td>{{review.category}}</td>
-								<td>{{review.type}}</td>
-								<td>{{review.status}}</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-					{% else %}
-					<p>There are no operational reviews completed yet for this emergency. The SIMS Remote Coordinator(s) for this operation are the only users that can complete them - reach out to them if you'd like to add to the learning for this response!</p>
-					{% endif %}
-				</div>
-				<div class="tab-pane fade" id="trello" role="tabpanel" aria-labelledby="trello-tab">
-					{% if to_do_trello %}
-					<h3 class="text-dark mt-4 emergency-title">Open Trello Tasks</h3>
-					<p>The following cards represent Trello tasks that are still listed in the "To Do" column. Click on the task name to see the card on Trello.</p>
-					<table class='dataTable'>
-					<table class='table table-striped table-hover' id='datatable-trello'>
-						<thead>
-							<tr>
-								<th>Task</th>
-								<th>Description</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for card in to_do_trello %}
-							<tr>
-								<td class='align-middle h5 Montserrat text-danger'><a href="{{card['url']}}">{{card['card_name']}}</a></td>
-								{% if card['desc']|length > 0 %}
-								<td class='align-middle'>{{card['desc']|markdown|truncate(200, True)}}</td>
-								{% else %}
-								<td class='align-middle'>No Description</td>
-								{% endif %}
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-				{% endif %}
+							},
+						},
+					};
+
+					// build chart
+					const ctx = document.getElementById('availabilityChart').getContext('2d');
+					new Chart(ctx, chartConfig);
+				</script>
 			</div>
 		</div>
+		<div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
+			<div class="d-flex align-items-start">
+				<div>
+					<h3 class="text-dark emergency-title">Assignment Reviews</h3>
+				</div>
+				<div class="ml-auto">
+					<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview-269/#remote-supporter-learning-reviews" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+				</div>
+			</div>
+			{% if learning_count == 0 %}
+			<p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
+			{% elif learning_count > 2 %}
+			<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data. </p>
+			<canvas id='barChartLearningAssignment' width='600' height='500'></canvas>
+			<script>
+				var ctx = document.getElementById('barChartLearningAssignment').getContext('2d');
+				var lineChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						labels: {
+							{
+								learning_keys | safe
+							}
+						},
+						datasets: [{
+								label: "Average Scores for this Emergency",
+								data: {
+									{
+										learning_values | safe
+									}
+								},
+								fill: true,
+								backgroundColor: "#dc3545"
+							},
+							{
+								label: "Average Score for All Emergencies",
+								data: {
+									{
+										avg_learning_values | safe
+									}
+								},
+								fill: true,
+								backgroundColor: "#ABABAB"
+							}
+						]
+					},
+					options: {
+						plugins: {
+							legend: true,
+						},
+						responsive: true,
+						indexAxis: 'y',
+						scales: {
+							y: {
+								ticks: {
+									stepSize: 1
+								},
+								grid: {
+									display: false
+								}
+
+							},
+							x: {
+								ticks: {
+									stepSize: 1
+								},
+								suggestedMax: 5,
+								grid: {
+									display: true
+								}
+							}
+
+						}
+					}
+				})
+			</script>
+			{% else %}
+			<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
+			{% endif %}
+			<div class="d-flex align-items-start mt-4">
+				<div>
+					<h3 class="text-dark emergency-title">Operational Reviews</h3>
+				</div>
+				<div class="ml-auto">
+					<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview-269/#sims-remote-coordinator-operation-reviews" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+				</div>
+			</div>
+			{% if existing_reviews %}
+			<table class='table mt-4' id='datatable-op-reviews'>
+				<thead>
+					<tr>
+						<th>Title</th>
+						<th>Category</th>
+						<th>Type</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for review in existing_reviews %}
+					<tr>
+						<td><a href='/operation_review/view/{{review.id}}'>{{review.title}}</a></td>
+						<td>{{review.category}}</td>
+						<td>{{review.type}}</td>
+						<td>{{review.status}}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			{% else %}
+			<p>There are no operational reviews completed yet for this emergency. The SIMS Remote Coordinator(s) for this operation are the only users that can complete them - reach out to them if you'd like to add to the learning for this response!</p>
+			{% endif %}
+		</div>
+		<div class="tab-pane fade" id="trello" role="tabpanel" aria-labelledby="trello-tab">
+			{% if to_do_trello %}
+			<h3 class="text-dark mt-4 emergency-title">Open Trello Tasks</h3>
+			<p>The following cards represent Trello tasks that are still listed in the "To Do" column. Click on the task name to see the card on Trello.</p>
+			<table class='dataTable'>
+				<table class='table table-striped table-hover' id='datatable-trello'>
+					<thead>
+						<tr>
+							<th>Task</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for card in to_do_trello %}
+						<tr>
+							<td class='align-middle h5 Montserrat text-danger'><a href="{{card['url']}}">{{card['card_name']}}</a></td>
+							{% if card['desc']|length > 0 %}
+							<td class='align-middle'>{{card['desc']|markdown|truncate(200, True)}}</td>
+							{% else %}
+							<td class='align-middle'>No Description</td>
+							{% endif %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+		</div>
+		{% endif %}
 	</div>
+</div>
+</div>
 </div>
 </div>
 {% endblock content %}
