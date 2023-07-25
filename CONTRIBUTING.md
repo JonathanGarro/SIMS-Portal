@@ -13,7 +13,7 @@
 
 ## Fetching sensitive environment variables
 
-_Note that this process will likely change as the number of contributers grows and the platform matures._
+_Note that this process will likely change as the number of contributors grows and the platform matures._
 
 - Sensitive environment variables are stored using [dotenv](https://www.dotenv.org/) and not committed to GitHub.
 - If we have seats on our free Dotenv account, you'll request access from Jonathan and follow the rest of the steps. Otherwise, Jonathan will need to privately transfer the contents to you. Then you can create a `.env` file inside the `./flask_app/` folder and skip the rest of this section.
