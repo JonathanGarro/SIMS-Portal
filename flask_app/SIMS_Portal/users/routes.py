@@ -557,3 +557,24 @@ def save_slack_photo_to_profile(user_id):
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+		
+@users.route('/api/users', methods=['GET'])
+def api_get_users():
+	users = db.session.query(User).all()
+	result = [
+		{
+			'id': user.id, 
+			'first_name': user.firstname, 
+			'last_name': user.lastname, 
+			'email': user.email, 
+			'title': user.job_title, 
+			'slack': user.slack_id, 
+			'ns_id': user.ns_id, 
+			'location': user.place_label, 
+			'time_zone': user.time_zone, 
+			'admin': user.is_admin, 
+			'status': user.status} 
+		for user in users
+	]
+	
+	return jsonify(result)
