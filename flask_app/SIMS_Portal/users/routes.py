@@ -560,7 +560,13 @@ def save_slack_photo_to_profile(user_id):
 		
 @users.route('/api/users', methods=['GET'])
 def api_get_users():
-	users = db.session.query(User).all()
+	status_param = request.args.get('status')  
+	
+	if status_param:
+		users = db.session.query(User).filter_by(status=status_param).order_by(User.id).all()
+	else:
+		users = db.session.query(User).order_by(User.id).all()
+	
 	result = [
 		{
 			'id': user.id, 
