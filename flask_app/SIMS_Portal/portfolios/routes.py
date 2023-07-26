@@ -316,3 +316,48 @@ def remove_supporter_from_product(product_id):
 	else:
 		flash('This product has no collaborators listed that can be removed.', 'danger')
 		return redirect(url_for('portfolios.view_portfolio', id=product_id))
+		
+@portfolios.route('/api/portfolio', methods=['GET'])
+def api_get_products():
+	"""
+	Get approved products for a specific disaster
+	
+	This endpoint retrieves a list of approved products related to a specific
+	disaster identified by the 'emergency_id' parameter.
+	
+	URL: /api/portfolio?emergency_id=<go_emergency_id>
+	
+	Method: GET
+	
+	Parameters:
+		emergency_id (str): The ID of the emergency or disaster to retrieve products for.
+	
+	Returns:
+		list: A list of dictionaries containing product information.
+		Each dictionary contains the following fields:
+			- title (str): The title of the product.
+			- type (str): The category of the product.
+			- description (str): The description provided by the person that posted it.
+			- image_file (str): The s3 URL of the image.
+	
+	Raises:
+		KeyError: If the 'emergency_id' parameter is missing in the request.
+	"""
+	emergency_param = request.args.get('emergency_id')
+	
+	if emergency_param:
+		products = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Portfolio.product_status == "Approved", Emergency.emergency_go_id == emergency_param).order_by(Portfolio.created_at).all()
+	else:
+		error_message = {'error': 'No emergency_id provided'}
+		return jsonify(error_message), 400
+	
+	result = [
+		{
+			'title': product.Portfolio.title, 
+			'type': product.Portfolio.type,
+			'description': product.Portfolio.description,
+			'image_file': product.Portfolio.image_file
+		}
+		for product in products
+	]
+	return jsonify(result)
