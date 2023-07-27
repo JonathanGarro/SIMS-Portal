@@ -328,11 +328,6 @@ def badge_assignment_sims_co(dis_id):
 		print('User {} tried to assign a badge but was denied and given a 403 error.'.format(current_user.fullname))
 		return render_template('errors/403.html', list_of_admins=list_of_admins, user_is_sims_co=user_is_sims_co, event_name=event_name, sims_co_ids=sims_co_ids), 403
 
-@main.route('/learning')
-@login_required
-def learning():
-	return render_template('learning.html')
-
 @main.route('/privacy')
 def privacy_policy():
 	return render_template('privacy_policy.html')
@@ -341,31 +336,11 @@ def privacy_policy():
 def resources():
 	return render_template('resources/resources.html')
 
-@main.route('/resources/colors')
-@login_required
-def resources_colors():
-	return render_template('/resources/colors.html')
-
-@main.route('/resources/communication_collaboration')
-@login_required
-def communication_and_collaboration():
-	return render_template('/resources/communication_collaboration.html')
-
-@main.route('/resources/slack')
-@login_required
-def resources_slack():
-	return render_template('/resources/slack.html')
-
 @main.route('/resources/slack/channels')
 @login_required
 def resources_slack_channels():
 	output = fetch_slack_channels()
 	return render_template('resources/slack_channels.html', output=output)
-	
-@main.route('/resources/sims_portal')
-@login_required
-def resources_sims_portal():
-	return render_template('/resources/sims_portal.html')
 
 @main.route('/dashboard')
 @login_required
