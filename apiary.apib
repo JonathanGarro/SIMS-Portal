@@ -5,24 +5,47 @@ HOST: https://rcrcsims.org/api
 
 Surge Information Management Support (SIMS) is a global network of Information Management specialists who support IFRC emergency response operations by providing a variety of services and products. Key areas of technical support include geospatial analysis, web-based and static data visualization, mobile data collection, scenario planning, and much more.
 
-## Users [/users]
+## Users [/users{?status}]
 
 ### Get All Users [GET]
 
-+ Response 200 (application/json)
++ Parameters
+    + status (string, optional) - Set to `Active` or `Inactive`
 
-        [
-          {
-            "admin": true,
-            "email": "jonathan.garro@redcross.org",
-            "first_name": "Jonathan",
-            "id": 1,
-            "last_name": "Garro",
-            "location": "Washington, DC, USA",
-            "ns_id": 4,
-            "slack": "UDU4ZRLGY",
-            "status": "Active",
-            "time_zone": "America/New_York",
-            "title": "Data Engineering Lead"
-          }
-         ]
++ Response 200 (application/json)
+    ```
+    [
+      {
+        "admin": true,
+        "email": "jonathan.garro@redcross.org",
+        "first_name": "Jonathan",
+        "id": 1,
+        "last_name": "Garro",
+        "location": "Washington, DC, USA",
+        "ns_id": 4,
+        "slack": "UDU4ZRLGY",
+        "status": "Active",
+        "time_zone": "America/New_York",
+        "title": "Data Engineering Lead"
+      }
+    ]
+    ```
+    
+## Portfolio [/portfolio{?emergency_id}]
+
+### Get Approved Products by Emergency [GET]
+
++ Parameters
+    + emergency_id (integer, required) - The GO Platform emergency ID
+    
++ Response 200 (application/json)
+    ```
+    [
+        {
+            "description": "A map showing the direction of refugees and returnees fleeing the Sudan Crisis. The field needed a representation of the overall trend of movement across the border, as well as where people were congregating. This was produced as part of a suite of PMER outputs for usage in the Operational Strategy, Emergency Appeal, and more.",
+            "image_file": "portfolio_cover_images/Map-user17-cb80965e096f0bec.png",
+            "title": "Chad Displacement Map",
+            "type": "Map"
+        }
+    ]
+    ```
