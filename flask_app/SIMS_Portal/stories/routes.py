@@ -23,17 +23,18 @@ from SIMS_Portal.stories.utils import save_header, check_sims_co
 
 stories = Blueprint('stories', __name__)
 
+# classes to handle custom styling based on markdown syntax
 class HeadingClassExtension(Extension):
 	def extendMarkdown(self, md):
 		md.treeprocessors.register(HeadingClassProcessor(md), 'heading_class', 1)
 
 class HeadingClassProcessor(markdown.treeprocessors.Treeprocessor):
-		def run(self, root):
-			for elem in root.iter():
-				if elem.tag.startswith('h2') and len(elem.tag) == 2:
-					elem.set('class', 'story_h2')
-				elif elem.tag.startswith('h3') and len(elem.tag) == 2:
-					elem.set('class', 'story_h3')
+	def run(self, root):
+		for elem in root.iter():
+			if elem.tag.startswith('h2') and len(elem.tag) == 2:
+				elem.set('class', 'story_h2')
+			elif elem.tag.startswith('h3') and len(elem.tag) == 2:
+				elem.set('class', 'story_h3')
 
 @stories.route('/story/<int:emergency_id>')
 def view_story(emergency_id): 
@@ -41,20 +42,17 @@ def view_story(emergency_id):
 	if story_for_emergency:
 		story_data = story_for_emergency
 		emergency_name = db.session.query(Story, Emergency).join(Emergency, Emergency.id == emergency_id).first()
-		members_supporting = db.session.query(Assignment, User, Story).join(User, User.id == Assignment.user_id).join(Story, Story.emergency_id == Assignment.emergency_id).filter(Assignment.emergency_id == emergency_id, Assignment.assignment_status == 'Active').count()
-		member_days = db.engine.execute(text("SELECT id, (end_date-start_date) as day_count, emergency_id FROM assignment WHERE emergency_id = :id AND assignment.assignment_status = 'Active'"), {'id': emergency_id})
-		try:
-			sum_days = 0
-			for day in member_days:
-				sum_days += day[1]
-			sum_days = int(sum_days)
-		except:
-			sum_days = 0
+		
+		# alias distinct user id's as 'distinct_users'
+		distinct_users = func.distinct(User.id).label('distinct_users')
+		
+		members_supporting = db.session.query(func.count(distinct_users)).select_from(Assignment).join(User, User.id == Assignment.user_id).join(Story, Story.emergency_id == Assignment.emergency_id).filter(Assignment.emergency_id == emergency_id, Assignment.assignment_status == 'Active').scalar()
+		
 		products_created = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == emergency_id, Portfolio.product_status == 'Approved').count()
 		
 		story_data_html = markdown.markdown(story_data.entry, extensions=[HeadingClassExtension()])
 		
-		return render_template('story.html', story_data_html=story_data_html, story_data=story_data, emergency_name=emergency_name, members_supporting=members_supporting, sum_days=sum_days, products_created=products_created)
+		return render_template('story.html', story_data_html=story_data_html, story_data=story_data, emergency_name=emergency_name, members_supporting=members_supporting, products_created=products_created)
 	else:
 		return render_template('errors/404.html'), 404
 
