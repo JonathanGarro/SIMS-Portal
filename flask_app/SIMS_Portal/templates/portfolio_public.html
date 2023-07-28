@@ -1,45 +1,57 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div class="container">
-		<h3 class="mt-5 Montserrat sims-blue">SIMS Public Portfolio</h3>
-		<p class='lead'>Filter by product type, and click on a card to see more information about the product.</p>
-		<div class="col mt-3">
-			{% for type in type_list %}
-				{% if type == type_search %}
-				<a href='/portfolio/filter/{{type}}'><button class='btn btn-danger btn-sm m-1'>{{type}}</button></a>
-				{% else %}
-				<a href='/portfolio/filter/{{type}}'><button class='btn btn-secondary btn-sm m-1'>{{type}}</button></a>
-				{% endif %}
-			{% endfor %}
-			
-			{% if type_search %}
-				<a href='/portfolio'><button class='btn btn-dark btn-sm m-1'>&otimes; Clear Filter</button></a>
-			{% endif %}
+<div class="container">
+	<h3 class="mt-5 Montserrat sims-blue">SIMS Public Portfolio</h3>
+	<p class='lead'>Filter by product type, and click on a card to see more information about the product.</p>
+	<div class="col mt-3">
+		{% for type in type_list %}
+		{% if type == type_search %}
+		<a href='/portfolio/filter/{{type}}'><button class='btn btn-danger btn-sm m-1'>{{type}}</button></a>
+		{% else %}
+		<a href='/portfolio/filter/{{type}}'><button class='btn btn-secondary btn-sm m-1'>{{type}}</button></a>
+		{% endif %}
+		{% endfor %}
+
+		{% if type_search %}
+		<a href='/portfolio'><button class='btn btn-dark btn-sm m-1'>&otimes; Clear Filter</button></a>
+		{% endif %}
 		<div class='row mb-5'>
 			<div class='col-md-12'>
 				<div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
-					{% for product in public_portfolio %}
-	  					<div class="col d-flex align-items-stretch">
-							<a href='/portfolio/view/{{product.id}}' class='text-danger'>
+					{% for product in public_portfolio.items %}
+					<div class="col d-flex align-items-stretch">
+						<a href='/portfolio/view/{{product.id}}' class='text-danger'>
 							<div class="card portfolio-card">
-		  					  	{% if 'user' in product.image_file %}
+								{% if 'user' in product.image_file %}
 								<img src="/uploads/{{product.image_file}}" class="card-img-top" alt="Product Image">
 								{% else %}
 								<img src="/static/assets/img/portfolio_placeholders/{{product.image_file}}" class="card-img-top" alt="Product Placeholder Icon">
 								{% endif %}
-		  					<div class="card-body d-flex flex-column">
-								<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
-								<h5 class="card-title mt-auto Montserrat mb-2" id='invert-card-text'>{{product.title}}</h5>
-							  </a>
-		  					</div>
-							</div>
-	  					</div>
-					{% endfor %}
+								<div class="card-body d-flex flex-column">
+									<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.type}}</button></div>
+									<h5 class="card-title mt-auto Montserrat mb-2" id='invert-card-text'>{{product.title}}</h5>
+						</a>
+					</div>
 				</div>
 			</div>
-
-				
+			{% endfor %}
+		</div>
+		
+		<div class="row mt-4">
+			<div class="d-flex justify-content-end">
+				{% if public_portfolio.has_prev %}
+				<a href="{{ url_for('portfolios.portfolio', page=public_portfolio.prev_num) }}"><button type="button" class="btn btn-danger me-1">Previous</button></a>
+				{% endif %}
+				{% if public_portfolio.has_next %}
+				<a href="{{ url_for('portfolios.portfolio', page=public_portfolio.next_num) }}"><button type="button" class="btn btn-danger me-1">Next</button></a>
+				{% endif %}
 			</div>
 		</div>
+		
 	</div>
+
+
+</div>
+</div>
+</div>
 {% endblock content %}

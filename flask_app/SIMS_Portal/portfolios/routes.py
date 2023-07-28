@@ -27,17 +27,26 @@ portfolios = Blueprint('portfolios', __name__)
 
 @portfolios.route('/portfolio')
 def portfolio():
+	page = request.args.get('page', 1, type = int)
+	per_page = 18
+	
 	type_search = ''
-	# type_list = ['Map', 'Infographic', 'Dashboard', 'Mobile Data Collection', 'Assessment', 'Internal Analysis', 'External Report', 'Other']
 	type_list = current_app.config['PORTFOLIO_TYPES']
-	public_portfolio = db.session.query(Portfolio).filter(Portfolio.external==True, Portfolio.product_status=='Approved').all()
+	public_portfolio_query = db.session.query(Portfolio).filter(Portfolio.external==True, Portfolio.product_status=='Approved')
+	public_portfolio = public_portfolio_query.paginate(page = page, per_page = per_page)
+	
 	return render_template('portfolio_public.html', title="SIMS Products", public_portfolio=public_portfolio, type_list=type_list, type_search=type_search)
 	
 @portfolios.route('/portfolio/filter/<type>', methods=['GET', 'POST'])
 def filter_portfolio(type):
-	type_list = current_app.config['PORTFOLIO_TYPES']
+	page = request.args.get('page', 1, type = int)
+	per_page = 18
+	
 	type_search = "{}".format(type)
-	public_portfolio = db.session.query(Portfolio).filter(Portfolio.external==True, Portfolio.product_status=='Approved', Portfolio.type == type_search).all()
+	type_list = current_app.config['PORTFOLIO_TYPES']
+	public_portfolio_query = db.session.query(Portfolio).filter(Portfolio.external==True, Portfolio.product_status=='Approved', Portfolio.type == type_search)
+	public_portfolio = public_portfolio_query.paginate(page = page, per_page = per_page)
+	
 	return render_template('portfolio_public.html', title="SIMS Products", public_portfolio=public_portfolio, type_search=type_search, type_list=type_list)
 	
 @portfolios.route('/all_products')
