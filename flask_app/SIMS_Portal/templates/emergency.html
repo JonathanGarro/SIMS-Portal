@@ -1,6 +1,7 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.2/dist/chartjs-adapter-moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
@@ -373,16 +374,8 @@
 				<canvas id="availabilityChart"></canvas>
 				<script>
 					// set consts to incoming data
-					const week_dates = {
-						{
-							week_dates | tojson
-						}
-					};
-					const frequency_count = {
-						{
-							frequency_count | tojson
-						}
-					};
+					const week_dates = {{week_dates | tojson}};
+					const frequency_count = {{frequency_count | tojson}};
 
 					// convert to date objects
 					const formattedDates = week_dates.map(date => moment(date).format('dddd, MMMM DD'));
