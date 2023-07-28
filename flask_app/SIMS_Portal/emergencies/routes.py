@@ -49,12 +49,17 @@ def new_emergency():
 		emergency = Emergency(emergency_name=form.emergency_name.data, emergency_location_id=form.emergency_location_id.data.ns_go_id, emergency_type_id=form.emergency_type_id.data.emergency_type_go_id, emergency_glide=form.emergency_glide.data, emergency_go_id=form.emergency_go_id.data, activation_details=form.activation_details.data, slack_channel=form.slack_channel.data, dropbox_url=form.dropbox_url.data, trello_url=form.trello_url.data)
 		db.session.add(emergency)
 		db.session.commit()
+		
+		# run updates to csvs that hold data for visualizations
 		update_response_locations()
 		update_active_response_locations()
+		
 		current_app.logger.info('A new emergency record has been created for {} by User-{}'.format(form.emergency_name.data, current_user.id))
 		flash('New emergency successfully created.', 'success')
+		
 		return redirect(url_for('main.dashboard'))
 	try:
+		# try to get the latest emergencies from the GO API
 		latest_emergencies = Emergency.get_latest_go_emergencies()
 	except:
 		latest_emergencies = [{'dis_id': 0, 'dis_name': 'GO API CALL FAILED'}]
@@ -110,6 +115,7 @@ def view_emergency(id):
 	)
 	availability_results = availability_query.first()
 	
+	# check for products that need to be approved
 	pending_products = db.session.query(Portfolio).filter(Portfolio.emergency_id == id, Portfolio.product_status == 'Pending Approval').all()
 	
 	# get simscos
@@ -170,6 +176,7 @@ def view_emergency(id):
 	
 	avg_learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning')
 	
+	# convert avg learnings data to dict and parse into keys and values
 	data_dict_avg_learnings = [x._asdict() for x in avg_learning_data]
 	avg_learning_keys = []
 	avg_learning_values = []
@@ -182,6 +189,7 @@ def view_emergency(id):
 	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
 	
 	try:
+		# check for trello tasks
 		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)
 		count_cards = len(to_do_trello)
 	except:
