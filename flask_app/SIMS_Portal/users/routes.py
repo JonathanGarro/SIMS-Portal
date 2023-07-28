@@ -152,8 +152,8 @@ def profile():
 		assignment_history = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id==User.id).join(Emergency, Emergency.id==Assignment.emergency_id).filter(User.id==current_user.id, Emergency.emergency_status != 'Removed', Assignment.assignment_status != 'Removed').all()
 	except:
 		pass
-		
-	deployment_history_count = len(assignment_history)
+	
+	deployment_history_count = len(set(emergency.id for _, _, emergency in assignment_history))	
 	
 	user_portfolio = get_full_portfolio(current_user.id)
 	user_portfolio_size = len(user_portfolio)
@@ -187,7 +187,9 @@ def view_profile(id):
 		assignment_history = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id==User.id).join(Emergency, Emergency.id==Assignment.emergency_id).filter(User.id==id, Emergency.emergency_status != 'Removed', Assignment.assignment_status != 'Removed').all()
 	except:
 		pass
-	deployment_history_count = len(assignment_history)
+		
+	deployment_history_count = len(set(emergency.id for _, _, emergency in assignment_history))	
+	
 	# show full portfolio if user is logged in
 	if current_user.is_authenticated:
 		user_portfolio = get_full_portfolio(id)
