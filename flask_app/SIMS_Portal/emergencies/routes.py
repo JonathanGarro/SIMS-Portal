@@ -300,6 +300,7 @@ def closeout_emergency(id):
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Closed'})
 			db.session.commit()
 			update_active_response_locations()
+			current_app.logger.info("Emergency-{} has been closed out.".format(id))
 			flash("Emergency closed out.", 'success')
 		except:
 			flash("Error closing emergency. Check that the emergency ID exists.")
@@ -316,6 +317,7 @@ def delete_emergency(id):
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Removed'})
 			db.session.commit()
 			update_active_response_locations()
+			current_app.logger.info("Emergency-{} has been deleted.".format(id))
 			flash("Emergency deleted.", 'success')
 		except:
 			flash("Error deleting emergency. Check that the emergency ID exists.")
@@ -346,10 +348,14 @@ def api_get_emergencies():
 	result = []
 	for emergency, emergency_type, national_society in emergencies:
 		result.append({
+			'emergency_name': emergency.emergency_name,
 			'go_emergency_id': emergency.emergency_go_id,
 			'status': emergency.emergency_status,
 			'emergency_type': emergency_type.emergency_type_name,
-			'iso3': national_society.iso3
+			'iso3': national_society.iso3, 
+			'country_name': national_society.country_name,
+			'slack_channel': emergency.slack_channel,
+			'activation_details': emergency.activation_details
 		})
-	
+
 	return jsonify(result)
