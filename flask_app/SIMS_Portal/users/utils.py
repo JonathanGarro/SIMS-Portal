@@ -45,8 +45,8 @@ def new_user_slack_alert(message):
 			channel = 'C046A8T9ZJB',
 			text = message
 		)
-	except:
-		pass
+	except Exception as e:
+		current_app.logger.error('new_user_slack_alert Slack message failed: {}'.format(e))
 
 def new_surge_alert(message):
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
@@ -55,8 +55,8 @@ def new_surge_alert(message):
 			channel = 'CDUMNN3J8',
 			text = message
 		)
-	except:
-		pass
+	except Exception as e:
+		current_app.logger.error('new_surge_alert Slack message failed: {}'.format(e))
 
 def rem_cos_search():
 	with app.app_context():
