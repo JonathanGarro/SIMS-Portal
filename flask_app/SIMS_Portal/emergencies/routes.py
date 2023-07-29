@@ -323,3 +323,33 @@ def delete_emergency(id):
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+		
+@emergencies.route('/api/emergencies', methods=['GET'])
+def api_get_emergencies():
+	status_param = request.args.get('status')
+	emergency_id_param = request.args.get('emergency_id')
+	iso3_param = request.args.get('iso3')
+	
+	query = db.session.query(Emergency, EmergencyType, NationalSociety).join(EmergencyType, EmergencyType.id == Emergency.emergency_type_id).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id)
+	
+	if status_param:
+		query = query.filter(Emergency.emergency_status == status_param)
+	
+	if emergency_id_param:
+		query = query.filter(Emergency.emergency_go_id == emergency_id_param)
+	
+	if iso3_param:
+		query = query.filter(NationalSociety.iso3 == iso3_param)
+	
+	emergencies = query.all()
+	
+	result = []
+	for emergency, emergency_type, national_society in emergencies:
+		result.append({
+			'go_emergency_id': emergency.emergency_go_id,
+			'status': emergency.emergency_status,
+			'emergency_type': emergency_type.emergency_type_name,
+			'iso3': national_society.iso3
+		})
+	
+	return jsonify(result)
