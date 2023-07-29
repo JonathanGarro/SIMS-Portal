@@ -7,7 +7,7 @@ Surge Information Management Support (SIMS) is a global network of Information M
 
 ## Users [/users{?status}]
 
-### Get All Users [GET]
+### Get Users [GET]
 
 + Parameters
     + status (string, optional) - Set to `Active` or `Inactive`
@@ -15,19 +15,19 @@ Surge Information Management Support (SIMS) is a global network of Information M
 + Response 200 (application/json)
     ```
     [
-      {
-        "admin": true,
-        "email": "jonathan.garro@redcross.org",
-        "first_name": "Jonathan",
-        "id": 1,
-        "last_name": "Garro",
-        "location": "Washington, DC, USA",
-        "ns_id": 4,
-        "slack": "UDU4ZRLGY",
-        "status": "Active",
-        "time_zone": "America/New_York",
-        "title": "Data Engineering Lead"
-      }
+        {
+            "admin": true,
+            "email": "jonathan.garro@redcross.org",
+            "first_name": "Jonathan",
+            "id": 1,
+            "last_name": "Garro",
+            "location": "Washington, DC, USA",
+            "ns_id": 4,
+            "slack": "UDU4ZRLGY",
+            "status": "Active",
+            "time_zone": "America/New_York",
+            "title": "Data Engineering Lead"
+        }
     ]
     ```
     
@@ -46,6 +46,30 @@ Surge Information Management Support (SIMS) is a global network of Information M
             "image_file": "portfolio_cover_images/Map-user17-cb80965e096f0bec.png",
             "title": "Chad Displacement Map",
             "type": "Map"
+        }
+    ]
+    ```
+    
+## Emergencies [/emergencies{?status,emergency_id,iso3}]
+
+### Get Emergencies [GET]
+
++ Parameters
+    + status (string, optional) - Set to `Active` or `Closed`
+    + emergency_id (integer, optional) - The GO Platform emergency ID
+    + iso3 (string, optional) - The three-letter iso3 code of the primary country
+
++ Response 200 (application/json)
+    ```
+    [
+        {
+            "activation_details": "In the early morning of Saturday, 15 April 2023, the sound of gunfire and an initial explosion was heard in Khartoum. This was the first time that the capital city of Sudan, home to 6 million people, was at the epicenter of conflict between the Sudan Armed Forces (SAF) and the Rapid Support Forces (RSF). Clashes also broke out in other areas of the country and as at 2 May, the fighting has claimed at least 550 lives, and injured nearly 5,000 people. Hundreds of thousands of people have either been internally displaced within the country or fled to neighboring countries (Chad, Egypt, Libya, South Sudan, Ethiopia, and Central African Republic). SIMS was activated on May 4 with a first round SIMS Remote Coordinator. Deployments to the field began the following week.",
+            "country_name": "Bangladesh",
+            "emergency_type": "Food Insecurity",
+            "go_emergency_id": 1235,
+            "iso3": "BGD",
+            "slack_channel": "C05DS1VKULW",
+            "status": "Active"
         }
     ]
     ```
