@@ -332,6 +332,7 @@ def api_get_emergencies():
 	emergency_id_param = request.args.get('emergency_id')
 	iso3_param = request.args.get('iso3')
 
+	# subquery establishes custom column for assignment_counter
 	subquery = (
 		db.session.query(
 			Assignment.emergency_id,
@@ -341,7 +342,7 @@ def api_get_emergencies():
 		.subquery()
 	)
 
-	# Define aliases for the joined tables to distinguish between them
+	# set aliases for the joined tables to distinguish
 	emergency_alias = aliased(Emergency)
 	emergency_type_alias = aliased(EmergencyType)
 	national_society_alias = aliased(NationalSociety)
@@ -354,7 +355,7 @@ def api_get_emergencies():
 			national_society_alias.country_name,
 			subquery.c.assignment_count
 		)
-		.outerjoin(subquery, emergency_alias.id == subquery.c.emergency_id)  # Use outerjoin here
+		.outerjoin(subquery, emergency_alias.id == subquery.c.emergency_id)
 		.join(emergency_type_alias, emergency_type_alias.id == emergency_alias.emergency_type_id)
 		.join(national_society_alias, national_society_alias.ns_go_id == emergency_alias.emergency_location_id)
 		.group_by(emergency_alias.id, emergency_type_alias.emergency_type_name, national_society_alias.iso3, national_society_alias.country_name, subquery.c.assignment_count)
@@ -383,7 +384,7 @@ def api_get_emergencies():
 			'slack_channel': emergency.slack_channel,
 			'activation_details': emergency.activation_details,
 			'glide': emergency.emergency_glide,
-			'assignment_count': assignment_count or 0  # Set assignment_count to 0 if it's None
+			'assignment_count': assignment_count or 0  # set count to 0 if none
 		})
 
 	return jsonify(result)
