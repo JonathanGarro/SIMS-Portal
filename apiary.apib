@@ -9,6 +9,18 @@ Surge Information Management Support (SIMS) is a global network of Information M
 
 ### Get Users [GET]
 
+`Active` and `Inactive` (but not `Pending`) member data is returned. Available attributes include: 
+
+- `admin`: Boolean
+- `email`: String
+- `first_name` and `last_name`: String
+- `location`: String
+- `slack`: String
+- `status`: String
+- `ns_id`: Integer
+- `time_zone`: String
+- `title`: String
+
 + Parameters
     + status (string, optional) - Set to `Active` or `Inactive`
 
@@ -30,10 +42,18 @@ Surge Information Management Support (SIMS) is a global network of Information M
         }
     ]
     ```
-    
+
+
 ## Portfolio [/portfolio{?emergency_id}]
 
 ### Get Approved Products by Emergency [GET]
+
+Approved products are those that have been verified for external sharing by a SIMS Remote Coordinator for that emergency. This endpoint requires the `emergency_id`, which corresponds to the relevant emergency page in the [IFRC GO Platform](go.ifrc.org). Available attributes include:
+
+- `title`: String
+- `type`: String
+- `description`: String
+- `image_file`: String
 
 + Parameters
     + emergency_id (integer, required) - The GO Platform emergency ID
@@ -53,6 +73,17 @@ Surge Information Management Support (SIMS) is a global network of Information M
 ## Emergencies [/emergencies{?status,emergency_id,iso3}]
 
 ### Get Emergencies [GET]
+
+SIMS only maintains records of emergencies for which the network has been activated. The endpoint accepts three optional parameters: `status` with **Active** or **Closed**; `emergency_id`, which corresponds to the relevant emergency page in the [IFRC GO Platform](go.ifrc.org); and `iso3`, which accepts a three-letter code of the country primarily affected by the emergency. Available attributes include:
+
+- `emergency_name`: String
+- `country_name`: String
+- `emergency_type`: Strin
+- `iso3`: String
+- `status`: String
+- `activation_details`: String
+- `go_emergency_id`: Integer
+- `slack_channel`: String
 
 + Parameters
     + status (string, optional) - Set to `Active` or `Closed`
