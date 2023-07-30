@@ -10,7 +10,7 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func, and_
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, aliased
 from flask_login import (
 	login_user, logout_user, current_user, login_required
 )
@@ -331,31 +331,59 @@ def api_get_emergencies():
 	status_param = request.args.get('status')
 	emergency_id_param = request.args.get('emergency_id')
 	iso3_param = request.args.get('iso3')
-	
-	query = db.session.query(Emergency, EmergencyType, NationalSociety).join(EmergencyType, EmergencyType.id == Emergency.emergency_type_id).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id)
-	
+
+	subquery = (
+		db.session.query(
+			Assignment.emergency_id,
+			func.count(Assignment.id).label("assignment_count")
+		)
+		.group_by(Assignment.emergency_id)
+		.subquery()
+	)
+
+	# Define aliases for the joined tables to distinguish between them
+	emergency_alias = aliased(Emergency)
+	emergency_type_alias = aliased(EmergencyType)
+	national_society_alias = aliased(NationalSociety)
+
+	query = (
+		db.session.query(
+			emergency_alias,
+			emergency_type_alias.emergency_type_name,
+			national_society_alias.iso3,
+			national_society_alias.country_name,
+			subquery.c.assignment_count
+		)
+		.outerjoin(subquery, emergency_alias.id == subquery.c.emergency_id)  # Use outerjoin here
+		.join(emergency_type_alias, emergency_type_alias.id == emergency_alias.emergency_type_id)
+		.join(national_society_alias, national_society_alias.ns_go_id == emergency_alias.emergency_location_id)
+		.group_by(emergency_alias.id, emergency_type_alias.emergency_type_name, national_society_alias.iso3, national_society_alias.country_name, subquery.c.assignment_count)
+	)
+
 	if status_param:
-		query = query.filter(Emergency.emergency_status == status_param)
-	
+		query = query.filter(emergency_alias.emergency_status == status_param)
+
 	if emergency_id_param:
-		query = query.filter(Emergency.emergency_go_id == emergency_id_param)
-	
+		query = query.filter(emergency_alias.emergency_go_id == emergency_id_param)
+
 	if iso3_param:
-		query = query.filter(NationalSociety.iso3 == iso3_param)
-	
+		query = query.filter(national_society_alias.iso3 == iso3_param)
+
 	emergencies = query.all()
-	
+
 	result = []
-	for emergency, emergency_type, national_society in emergencies:
+	for emergency, emergency_type_name, iso3, country_name, assignment_count in emergencies:
 		result.append({
 			'emergency_name': emergency.emergency_name,
 			'go_emergency_id': emergency.emergency_go_id,
 			'status': emergency.emergency_status,
-			'emergency_type': emergency_type.emergency_type_name,
-			'iso3': national_society.iso3, 
-			'country_name': national_society.country_name,
+			'emergency_type': emergency_type_name,
+			'iso3': iso3,
+			'country_name': country_name,
 			'slack_channel': emergency.slack_channel,
-			'activation_details': emergency.activation_details
+			'activation_details': emergency.activation_details,
+			'glide': emergency.emergency_glide,
+			'assignment_count': assignment_count or 0  # Set assignment_count to 0 if it's None
 		})
 
 	return jsonify(result)
