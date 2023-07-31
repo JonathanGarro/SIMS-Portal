@@ -30,6 +30,7 @@ from SIMS_Portal.emergencies.utils import (
 	get_trello_tasks, emergency_availability_chart_data
 )
 from SIMS_Portal.assignments.utils import aggregate_availability
+from SIMS_Portal.learnings.utils import request_learnings
 
 
 emergencies = Blueprint('emergencies', __name__)
@@ -299,7 +300,13 @@ def closeout_emergency(id):
 		try:
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Closed'})
 			db.session.commit()
+			
+			# update map on dashboard
 			update_active_response_locations()
+			
+			# request learnings from remote supporters
+			request_learnings(id)
+			
 			current_app.logger.info("Emergency-{} has been closed out.".format(id))
 			flash("Emergency closed out.", 'success')
 		except:
@@ -325,7 +332,7 @@ def delete_emergency(id):
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
-		
+
 @emergencies.route('/api/emergencies', methods=['GET'])
 def api_get_emergencies():
 	status_param = request.args.get('status')
