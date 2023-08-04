@@ -1,7 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.2/dist/chartjs-adapter-moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
@@ -17,7 +13,7 @@
 		{% endwith %}
 	</div>
 	<div class="row my-5">
-		<div class="col col-md-4">
+		<div class="col col-lg-4 mb-3">
 			<div class="card p-4 card-bg-red">
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
@@ -373,12 +369,11 @@
 			<div id="chartContainer" style="width: 100%; height: 400px;">
 				<canvas id="availabilityChart"></canvas>
 				<script>
-					// set consts to incoming data
 					const week_dates = {{week_dates | tojson}};
 					const frequency_count = {{frequency_count | tojson}};
 
 					// convert to date objects
-					const formattedDates = week_dates.map(date => moment(date).format('dddd, MMMM DD'));
+					const formattedDates = week_dates.map(date => moment(date).format('ddd, MMM D'));
 
 					// config
 					const chartConfig = {
@@ -400,17 +395,14 @@
 								x: {
 									type: 'category',
 									ticks: {
+										autoSkip: false,
 										maxRotation: 0,
 									},
 								},
 								y: {
 									beginAtZero: true,
 									ticks: {
-										callback: function(value, index, values) {
-											if (Number.isInteger(value)) {
-												return value;
-											}
-										},
+										stepSize: 1
 									},
 								},
 							},
@@ -435,70 +427,84 @@
 			{% if learning_count == 0 %}
 			<p>No assignment reviews have been submitted for this response. See the Learning section of the SIMS Portal for aggregated data related to past operational learning.</p>
 			{% elif learning_count > 2 %}
-			<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data. </p>
-			<canvas id='barChartLearningAssignment' width='600' height='500'></canvas>
+			<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is over the specified threshold to display this data.</p> 
+			<p><span style="background-color: #dc3545; padding: 5px;">Red bars</span> : Responses for this activation</p>
+			<p><span style="background-color: #ABABAB; padding: 5px;">Grey bars</span> : Average responses across all activations.</p>
+			
+			<div id="barChartLearningAssignmentWrapper" style="width: 100%; ">
+				<div id="barChartLearningAssignment"></div>
+			</div>
 			<script>
-				var ctx = document.getElementById('barChartLearningAssignment').getContext('2d');
-				var lineChart = new Chart(ctx, {
-					type: 'bar',
-					data: {
-						labels: {
-							{
-								learning_keys | safe
-							}
-						},
-						datasets: [{
-								label: "Average Scores for this Emergency",
-								data: {
-									{
-										learning_values | safe
-									}
-								},
-								fill: true,
-								backgroundColor: "#dc3545"
-							},
-							{
-								label: "Average Score for All Emergencies",
-								data: {
-									{
-										avg_learning_values | safe
-									}
-								},
-								fill: true,
-								backgroundColor: "#ABABAB"
-							}
-						]
-					},
-					options: {
-						plugins: {
-							legend: true,
-						},
-						responsive: true,
-						indexAxis: 'y',
-						scales: {
-							y: {
-								ticks: {
-									stepSize: 1
-								},
-								grid: {
-									display: false
-								}
-
-							},
-							x: {
-								ticks: {
-									stepSize: 1
-								},
-								suggestedMax: 5,
-								grid: {
-									display: true
-								}
-							}
-
-						}
-					}
-				})
+				function drawChart() {
+					var learning_keys = {{learning_keys | safe}};
+					var learning_values = {{learning_values | safe}};
+					var avg_learning_values = {{avg_learning_values | safe}};
+			
+					var data = learning_keys.map(function(key, i) {
+						return {
+							key: key,
+							value: learning_values[i],
+							avgValue: avg_learning_values[i]
+						};
+					});
+			
+					// clear existing chart before drawing a new one
+					d3.select("#barChartLearningAssignment").select("svg").remove();
+			
+					var container = document.getElementById('barChartLearningAssignmentWrapper');
+					var margin = {top: 20, right: 20, bottom: 30, left: 120},
+						width = container.clientWidth - margin.left - margin.right > 0 ? container.clientWidth - margin.left - margin.right : 500, // default width
+						height = container.clientHeight - margin.top - margin.bottom > 0 ? container.clientHeight - margin.top - margin.bottom : 500; // default height
+			
+					var svg = d3.select("#barChartLearningAssignment").append("svg")
+						.attr("width", width + margin.left + margin.right)
+						.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			
+					var y = d3.scaleBand().range([height, 0]).padding(0.1);
+					var x = d3.scaleLinear().range([0, width]);
+			
+					y.domain(data.map(function(d) { return d.key; }));
+					x.domain([0, d3.max(data, function(d) { return d.value; })]);
+			
+					var ticks = d3.range(0, d3.max(data, function(d) { return d.value; }) + 1, 1);
+			
+					svg.append("g")
+						.attr("transform", "translate(0," + height + ")")
+						.call(d3.axisBottom(x).tickValues(ticks));
+			
+					svg.append("g")
+						.call(d3.axisLeft(y));
+			
+					svg.selectAll(".bar")
+						.data(data)
+						.enter().append("rect")
+						.attr("class", "bar")
+						.attr("width", function(d) { return Math.max(0, x(d.value)); })
+						.attr("y", function(d) { return y(d.key); })
+						.attr("height", y.bandwidth() / 2)
+						.attr("fill", "#dc3545");
+			
+					svg.selectAll(".bar2")
+						.data(data)
+						.enter().append("rect")
+						.attr("class", "bar2")
+						.attr("width", function(d) { return Math.max(0, x(d.avgValue)); })
+						.attr("y", function(d) { return y(d.key) + y.bandwidth() / 2; })
+						.attr("height", y.bandwidth() / 2)
+						.attr("fill", "#ABABAB");
+				}
+			
+				document.addEventListener('DOMContentLoaded', (event) => {
+					drawChart();  // draw the chart after the DOM is fully loaded
+				});
+			
+				window.onresize = drawChart;  // redraw the chart whenever the window is resized
 			</script>
+
+
+
 			{% else %}
 			<p>There have been <span class='text-danger fw-bold'>{{learning_count}}</span> assignment reviews completed, which is under the specified threshold to display this data. This is done to protect the identities of people who have provided their feedback.</p>
 			{% endif %}
