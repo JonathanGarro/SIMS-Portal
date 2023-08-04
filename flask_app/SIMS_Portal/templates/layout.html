@@ -16,6 +16,9 @@
 	<script src="https://d3js.org/d3.v4.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 	<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
 	<title>SIMS</title>
 </head>
 
@@ -29,7 +32,12 @@
   gtag('config', 'G-4YMC00C35S');
 </script>
 
+<!-- Only load the getRandomImage js if viewing the login page -->
+{% if request.path == '/login' %}
 <body class="d-flex flex-column min-vh-100" data-spy="scroll" data-target=".card" data-offset="50" onload="getRandomImage()">
+{% else %}
+<body class="d-flex flex-column min-vh-100" data-spy="scroll" data-target=".card" data-offset="50">
+{% endif %}
 	<header>
 	<nav id="navbar_top" class="navbar navbar-expand-md navbar-dark bg-danger navbar-static-top py-3">
 	 <div class="container">
@@ -207,6 +215,7 @@
 	  <!-- Copyright -->
 	</footer>
 </body>
+{% if request.path == '/' %}
 	<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 	<script>
 		var typed = new Typed(".typed",{
@@ -217,7 +226,9 @@
 		loop: true
 		})
 	</script>
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+{% endif %}
+	<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js" integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/@popperjs/core@2"></script>
