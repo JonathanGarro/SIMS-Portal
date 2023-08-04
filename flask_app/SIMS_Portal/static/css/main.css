@@ -303,6 +303,10 @@ p {
 	height: 500px;
 }
 
+.min-width-custom {
+	min-width: 380px;
+}
+
 .Montserrat {
 	font-family: 'Montserrat';
 }

@@ -3,17 +3,17 @@
 <div class="container">
 	<div id="hideMe">
 		{% with messages = get_flashed_messages(with_categories=true) %}
-		{% if messages %}
-		{% for category, message in messages %}
-		<div class="mt-2 alert alert-{{ category }}">
-			{{ message }}
-		</div>
-		{% endfor %}
-		{% endif %}
+			{% if messages %}
+				{% for category, message in messages %}
+				<div class="mt-2 alert alert-{{ category }}">
+					{{ message }}
+				</div>
+				{% endfor %}
+			{% endif %}
 		{% endwith %}
 	</div>
 	<div class="row my-5">
-		<div class="col col-lg-4 mb-3">
+		<div class="col col-lg-4 mb-3 min-width-custom">
 			<div class="card p-4 card-bg-red">
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
@@ -469,10 +469,11 @@
 					x.domain([0, d3.max(data, function(d) { return d.value; })]);
 			
 					var ticks = d3.range(0, d3.max(data, function(d) { return d.value; }) + 1, 1);
-			
+					
 					svg.append("g")
-						.attr("transform", "translate(0," + height + ")")
-						.call(d3.axisBottom(x).tickValues(ticks));
+					.attr("transform", "translate(0," + height + ")")
+					.call(d3.axisBottom(x).ticks(d3.max(data, function(d) { return d.value; })));
+
 			
 					svg.append("g")
 						.call(d3.axisLeft(y));
