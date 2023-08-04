@@ -174,6 +174,8 @@ def view_emergency(id):
 	for k, v in data_dict_learnings[0].items():
 		learning_keys.append(k)
 		learning_values.append(v)
+		
+	learning_values = [round(float(val), 2) for val in learning_values]
 	
 	avg_learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning')
 	
@@ -184,7 +186,9 @@ def view_emergency(id):
 	for k, v in data_dict_avg_learnings[0].items():
 		avg_learning_keys.append(k)
 		avg_learning_values.append(v)
-
+	
+	avg_learning_values = [round(float(val), 2) for val in avg_learning_values]	
+	
 	existing_reviews = db.session.query(Review).filter(Review.emergency_id == id).all()
 	
 	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
