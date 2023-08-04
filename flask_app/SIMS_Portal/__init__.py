@@ -95,6 +95,9 @@ def create_app(config_class=Config):
 		file_handler.setLevel(logging.INFO)
 		app.logger.addHandler(file_handler)
 		
+		logtail_handler = logging.getLogger().handlers[1]
+		app.logger.addHandler(logtail_handler)
+		
 		app.logger.setLevel(logging.INFO)
 		app.logger.info('SIMS Portal Started Up')
 	
