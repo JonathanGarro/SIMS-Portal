@@ -198,7 +198,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 	$('#datatable-active-simscos').DataTable( {
-		order: [[0, 'asc']],
+		order: [[2, 'asc']],
 		"bLengthChange": false,
 		"searching": false,
 		"bInfo": false,
