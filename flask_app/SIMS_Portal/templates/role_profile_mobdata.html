@@ -1,535 +1,591 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div class="container">
-		<div class="row my-5">
-			<div class='col col-md-4 me-4'>
-				<div class="col py-4 my-2 my-sm-3">
-		  		<div class="card bg-light h-100 border-0 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+<div class="container">
+	<div class="row my-5">
+		<div class='col col-md-4 me-4'>
+			<div class="col py-4 my-2 my-sm-3">
+				<div class="card bg-light h-100 border border-3 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
 					<div class="card-body pt-3">
-			  			<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
-							  <img src="/static/assets/img/Profile-Badge-Mobdata-sm.png" class="d-block m-1" width="100" alt="Icon">
-							</div>
-			  			<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">Data Collection & Survey Design Profile</h2>
-			  			<p class="fs-sm text-secondary">Data Collection specialists design and build systems for large-scale mobile surveys that help operations build a more accurate profile of the needs of those affected by the emergency.</p><br>
+						<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
+							<img src="/static/assets/img/Profile-Badge-Mobdata-sm.png" class="d-block m-1" width="100" alt="Icon">
+						</div>
+						<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">Data Collection & Survey Design Profile</h2>
+						<p class="fs-sm text-secondary">Data Collection specialists design and build systems for large-scale mobile surveys that help operations build a more accurate profile of the needs of those affected by the emergency.</p><br>
 						<h4 class="Montserrat">Qualified Members: <span class='text-danger fw-bold'>{{unpacked_count}}</span></h4>
 						<button class="btn btn-outline-secondary btn-sm mt-1 mb-3" type="button" data-toggle="collapse" data-target="#qualifiedMembers" aria-expanded="false" aria-controls="qualifiedMembers" id="memberListToggle">Toggle List of Members</button>
 						<div class="collapse" id="qualifiedMembers">
 							<p><small>Click on a member's name to view their profile</small></p>
 							<h5 class='text-danger Montserrat'>Tier 4</h5>
 							{% for member in users_with_profile_tier_4%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 3</h5>
 							{% for member in users_with_profile_tier_3%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 2</h5>
 							{% for member in users_with_profile_tier_2%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 1</h5>
 							{% for member in users_with_profile_tier_1%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 						</div><br>
 					</div>
-				  </div>
 				</div>
-			</div>
-			<div class='col'>
-				<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
-				<ul class="nav nav-pills" id="profilesNav" role="tablist">
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					  <button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
-					</li>
-				</ul>
-				<div class="tab-content" id="dashboardContent">
-					
-					<!-- Tier 1 - Foundational -->
-					
-					<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
-					
-						
-	
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Recalls why some data is considered sensitive or requires extra security concerns.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Defines what is meant by "informed consent"</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
-									
-									<td>Differentiates between primary and secondary data collection techniques. Differentiates between quantitative and qualitative data and methods for collecting each. Provides examples of common sectoral and thematic data. Describes when and why a needs assessment should be conducted.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designing a survey</td>
-									
-									<td>Outlines the elements to consider when designing a survey. Summarizes the importance of sex and age disaggregated data (SADD) and names specific use cases for when this data should be collected.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
-									
-									<td>Describes features of multiple mobile data collection software options used in the Movement, both proprietary and open source. Differentiates between XLSForm and XForm and use tools to convert between the two. Explains how to complete and submit survey forms from a mobile device.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Monitoring and evaluation</td>
-									
-									<td>Lists examples of common relief monitoring tools. Recognizes that different types of evaluations/reviews are used for different response operations and phases.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Defines what is meant by "secondary data". Lists examples of common operational datasets (CODs).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Recognizes the steps involved in collecting GPS coordinates. Differentiates between coordinate systems and map projections. Describes place-codes (p-codes). Identifies apps which can be used to collect GPS coordinates.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Recognizes satellite imagery can be procured for emergencies.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Correctly identifies organizational/team data storage solutions. Demonstrates basic proficiency with ODK Central and KoBoToolbox.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Recognizes why data must be backed up and recommended intervals for backing up data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Identifies when security measures should be implemented for local vs. web sharing of data. Describes that a data protection impact assessment (DPIA) is. Describes what a data breach is.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Defines what is meant by "user permissions" versus "user roles".</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Describes the data sharing principles used in the humanitarian sector.  Explains how to comply with the various components of open data policies and data governance guidelines.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-	
-					<!-- Tier 2 - Officer -->
-					
-					<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
-						
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Identifies data that may be considered personally identifiable information (PII), sensitive personal information (SPI), or otherwise needing extra security considerations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Identifies examples of various power imbalances in humanitarian response situations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
-									
-									<td>Describes characteristics, advantages, and risks of common data collection techniques. Identifies and defines what data needs to be collected for a needs assessment and where to obtain it. Identifies/flags when requested primary data may be available as secondary data (that is, when effort of primary data collection may not be necessary).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designing a survey</td>
-									
-									<td>Evaluates a survey for good design (for example, use of constraints, survey logic, etc.) to ensure it supports good data. Describes how good survey design, training, and tools can help mitigate various issues. Demonstrates sensitivity to cultural, socio-economic, and other differences around “acceptable” data and provides examples of how to rephrase questions to make them more contextually- acceptable.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
-									
-									<td>Follows step-by-step guidance to design a simple data collection form. Makes simple adjustments in a pre-existing form (for example, modify question phrasing, change options in a list of choices for a select question). Performs basic functions using data collection software. Uses a variety of resources (for example, informal networks, technical documentation, web forums, etc.) to troubleshoot technical issues with data collection software. Follows a to-do checklist to prepare devices for a field deployments. Loads forms to phones. Identifies ways to extend device battery life during surveying (for example, reduce screen brightness, turn off Wifi and bluetooth, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Monitoring and evaluation</td>
-									
-									<td>Describes when, why and how to implement common relief monitoring tools such as post-distribution monitoring (PDM), on-site observation forms and exit interviews. Provides examples of common types of evaluations/reviews used during response operations and describe when they are relevant (real-time evaluation (RTE), After Action Reviews, joint evaluations, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Provides examples of common sources of secondary data and methods for finding them (for example, census, news reports). Finds and describes how to use common operational datasets (CODs).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Outlines the considerations around the collection and use of GPS coordinates (example, implications of GPS accuracy). Describes the basics of collecting GPS (for example, requires an unobstructed view of the sky, accuracy limitations, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Recognizes the steps involved in producing satellite imagery.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Successfully adheres to guidelines for data entry and storage (for example, for a shared operations Dropbox). Identifies situations where various mobile data collection server options may be appropriate and the features, strengths, and weaknesses of each. Assesses compatibility of different apps with the various server options (for example, ODK Collect versus KoBo Collect). Performs the steps to upload forms to and download forms from the various servers. </td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Successfully adheres to guidelines for backing up data and contingency plans.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Complies with institutional/team data security protocols. Uses data collection and data management solutions structured around the principles of data protection. Identifies potential gaps in technology solutions that may impact data protection. Describes the steps involved in conducting a DPIA.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Successfully adheres to data sharing principles used in the humanitarian sector. Produces examples of data available via the International Aid Transparency Initiative (IATI). Complies with institutional open data policy and data governance guidelines.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 3 - Coordinator -->
-					
-					<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Implements basic file encryption using software features and understanding of the limitations of such methods (for example, password protection on Microsoft Office documents).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Advocates for matching data collected to data needs, that is, collecting only what you need and for which you have an analysis plan.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
-									
-									<td>Designs a data collection plan for a simple assessment. Follows a data collection plan for a complex assessment (for example, a coordinated multi-sectoral needs assessment). Designs and manages data collection flows.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designing a survey</td>
-									
-									<td>Liaises with sector experts to assemble an effective survey. Calculates sample size, and selects appropriate sampling techniques and methodologies. Applies survey methodology best practices (for example, avoiding leading questions). Analyzes how historical, economic, social, cultural, and political context can impact data availability and collection and makes necessary adjustments.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
-									
-									<td>Designs advanced data collection forms using complex survey logic, variety of different question types, etc. Chooses an appropriate license for generated data. Describes different question types and automated metadata. Transforms a basic survey from print to XLSForm. Implements basic survey logic (for example, simple constraints, simple relevance). Manages form version control. Styles text displayed to the user. Manages a fleet of phones. Uses the QR code import/export to transfer ODK Collect settings between mobile devices.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Monitoring and evaluation</td>
-									
-									<td>Follows a data collection plan to support activity monitoring and evaluation plans. Able to collaborate with relevant departments (for example, M&E and PMER) on the development of suitable indicators and accompanying data flows.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Identifies and triangulates different sources for a given data interest (for example, damage estimates for a given area from government, UN, NGOs, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Describes remotely sensed data and spatial and spectral attributes of different types. Describes when to use what type of remotely sensed data based on disaster.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Describes the process of satellite imagery acquisition, processing, and analysis.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Designs the organized storage of files in such a way that other people can use and find them (for example, a logical folder hierarchy for cloud storage). Sets up and uses ODK Central. Implements sharing, user permissions, and authentication requirements for the various mobile data collection servers.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Designs and implements data backup and contingency plans.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Designs and implements data backup and contingency plans.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Describes the methods, formats, and protocols for improved interoperability, sharing, and accessibility both internally and with other humanitarian partners (HXL, metadata, ISO standards, common operational data models, place codes, IATA Standards). Shares and accesses data through several platforms (Humanitarian Data Exchange (HDX), Humanitarian Response Info, Open Street Map (OSM), Relief Web). Develops data sharing and open data guidance/job aids.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 4 - Manager -->
-					
-					<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Applies advanced encryption techniques for online and offline data collection, storage, and transfer.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Designs program/project requirements to follow various legal frameworks (for example, General Data Protection Regulation (GDPR)). Communicates the implications of drone and satellite data imagery collection on privacy, including compliance with the rules and regulations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
-									
-									<td>Designs a data collection plan for a complex assessment (for example, a coordinated, multi-sectoral needs assessment). Tightly integrates data collection flows with data management and analysis processes.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designing a survey</td>
-									
-									<td>Leads the process of developing a survey with scientific rigor.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
-									
-									<td>Transforms a complex survey from print to XLSForm. Implements advanced survey logic (for example, groups, repeats, conditional selects, advanced constraints, advanced relevance). Enables form encryption for data protection. Implements multimedia question prompts. Uses form widgets and knows how to change question appearance. Creates multilingual forms. Evaluates various data server options for mobile data collection and their appropriateness for a given context. Can provide technical support to others who are designing data collection forms. Creates guidance documents and materials to support implementation of primary data collection using data collection software. Manages program or country office accounts. Describes the various options available in “General settings” and “Admin settings” in ODK Collect.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Monitoring and evaluation</td>
-									
-									<td>Designs a data collection plan to support activity monitoring and evaluation plans. Designs consolidated data flows to meet multiple information needs (for example, the needs of PMER, Comms, and various Sectors).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Integrates secondary data, targeted at specific audiences and decision points, into data collection plan. Selects appropriate technology and strategies to collate and store secondary data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Applies different spatial and spectral attributes of remotely sensed data where relevant.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Evaluates the major providers of satellite imagery and identifies different pathways for requesting/procuring imagery.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Demonstrates flexibility to adapt a data management system and associated processes (for example, due to changed demands and context of a red disaster). Installs ODK Central on a cloud server. Installs KoBoToolbox on a cloud server. Sets up https for a cloud-based server.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Creates a data lifecycle plan that covers all stages from planning and collection through to deletion.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Manages implementation of a DPIA. Evaluates possible responses when data breaches occur (that is, minimizing threats, avoiding further compromise of systems, and protocols for communication with those affected). Conducts regular data vulnerability checks. Trains others on data security protocols.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Develops decision trees, threshold guidance, or other tools to guide data protection integration with business processes. Regularly reviews user permissions to ensure accuracy (i.e. removing permissions for former employees).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Owns and monitors compliance with data sharing agreements. Trains others on data sharing best practices and open data. Adapts and contextualizes an open data policy for a specific group or institution.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				
+				<div class="card p-4 bg-light border border-3 mt-3">
+					<h5 class="text-secondary py-2 Montserrat">Learning Resources</h5>
+					<ul class='list-group border-0'>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://learn-sims.org/docs/data-collection-and-survey-design/" class="text-secondary">Mobile Data Guides</a>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
+		<div class='col'>
+			<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
+			<ul class="nav nav-pills" id="profilesNav" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
+				</li>
+			</ul>
+			<div class="tab-content" id="dashboardContent">
+
+				<!-- Tier 1 - Foundational -->
+
+				<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
+
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Recalls why some data is considered sensitive or requires extra security concerns.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Defines what is meant by "informed consent"</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
+
+								<td>Differentiates between primary and secondary data collection techniques. Differentiates between quantitative and qualitative data and methods for collecting each. Provides examples of common sectoral and thematic data. Describes when and why a needs assessment should be conducted.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designing a survey</td>
+
+								<td>Outlines the elements to consider when designing a survey. Summarizes the importance of sex and age disaggregated data (SADD) and names specific use cases for when this data should be collected.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
+
+								<td>Describes features of multiple mobile data collection software options used in the Movement, both proprietary and open source. Differentiates between XLSForm and XForm and use tools to convert between the two. Explains how to complete and submit survey forms from a mobile device.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Monitoring and evaluation</td>
+
+								<td>Lists examples of common relief monitoring tools. Recognizes that different types of evaluations/reviews are used for different response operations and phases.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Defines what is meant by "secondary data". Lists examples of common operational datasets (CODs).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Recognizes the steps involved in collecting GPS coordinates. Differentiates between coordinate systems and map projections. Describes place-codes (p-codes). Identifies apps which can be used to collect GPS coordinates.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Recognizes satellite imagery can be procured for emergencies.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Correctly identifies organizational/team data storage solutions. Demonstrates basic proficiency with ODK Central and KoBoToolbox.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Recognizes why data must be backed up and recommended intervals for backing up data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Identifies when security measures should be implemented for local vs. web sharing of data. Describes that a data protection impact assessment (DPIA) is. Describes what a data breach is.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Defines what is meant by "user permissions" versus "user roles".</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Describes the data sharing principles used in the humanitarian sector. Explains how to comply with the various components of open data policies and data governance guidelines.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 2 - Officer -->
+
+				<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Identifies data that may be considered personally identifiable information (PII), sensitive personal information (SPI), or otherwise needing extra security considerations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Identifies examples of various power imbalances in humanitarian response situations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
+
+								<td>Describes characteristics, advantages, and risks of common data collection techniques. Identifies and defines what data needs to be collected for a needs assessment and where to obtain it. Identifies/flags when requested primary data may be available as secondary data (that is, when effort of primary data collection may not be necessary).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designing a survey</td>
+
+								<td>Evaluates a survey for good design (for example, use of constraints, survey logic, etc.) to ensure it supports good data. Describes how good survey design, training, and tools can help mitigate various issues. Demonstrates sensitivity to cultural, socio-economic, and other differences around “acceptable” data and provides examples of how to rephrase questions to make them more contextually- acceptable.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
+
+								<td>Follows step-by-step guidance to design a simple data collection form. Makes simple adjustments in a pre-existing form (for example, modify question phrasing, change options in a list of choices for a select question). Performs basic functions using data collection software. Uses a variety of resources (for example, informal networks, technical documentation, web forums, etc.) to troubleshoot technical issues with data collection software. Follows a to-do checklist to prepare devices for a field deployments. Loads forms to phones. Identifies ways to extend device battery life during surveying (for example, reduce screen brightness, turn off Wifi and bluetooth, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Monitoring and evaluation</td>
+
+								<td>Describes when, why and how to implement common relief monitoring tools such as post-distribution monitoring (PDM), on-site observation forms and exit interviews. Provides examples of common types of evaluations/reviews used during response operations and describe when they are relevant (real-time evaluation (RTE), After Action Reviews, joint evaluations, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Provides examples of common sources of secondary data and methods for finding them (for example, census, news reports). Finds and describes how to use common operational datasets (CODs).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Outlines the considerations around the collection and use of GPS coordinates (example, implications of GPS accuracy). Describes the basics of collecting GPS (for example, requires an unobstructed view of the sky, accuracy limitations, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Recognizes the steps involved in producing satellite imagery.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Successfully adheres to guidelines for data entry and storage (for example, for a shared operations Dropbox). Identifies situations where various mobile data collection server options may be appropriate and the features, strengths, and weaknesses of each. Assesses compatibility of different apps with the various server options (for example, ODK Collect versus KoBo Collect). Performs the steps to upload forms to and download forms from the various servers. </td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Successfully adheres to guidelines for backing up data and contingency plans.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Complies with institutional/team data security protocols. Uses data collection and data management solutions structured around the principles of data protection. Identifies potential gaps in technology solutions that may impact data protection. Describes the steps involved in conducting a DPIA.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Successfully adheres to data sharing principles used in the humanitarian sector. Produces examples of data available via the International Aid Transparency Initiative (IATI). Complies with institutional open data policy and data governance guidelines.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 3 - Coordinator -->
+
+				<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Implements basic file encryption using software features and understanding of the limitations of such methods (for example, password protection on Microsoft Office documents).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Advocates for matching data collected to data needs, that is, collecting only what you need and for which you have an analysis plan.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
+
+								<td>Designs a data collection plan for a simple assessment. Follows a data collection plan for a complex assessment (for example, a coordinated multi-sectoral needs assessment). Designs and manages data collection flows.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designing a survey</td>
+
+								<td>Liaises with sector experts to assemble an effective survey. Calculates sample size, and selects appropriate sampling techniques and methodologies. Applies survey methodology best practices (for example, avoiding leading questions). Analyzes how historical, economic, social, cultural, and political context can impact data availability and collection and makes necessary adjustments.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
+
+								<td>Designs advanced data collection forms using complex survey logic, variety of different question types, etc. Chooses an appropriate license for generated data. Describes different question types and automated metadata. Transforms a basic survey from print to XLSForm. Implements basic survey logic (for example, simple constraints, simple relevance). Manages form version control. Styles text displayed to the user. Manages a fleet of phones. Uses the QR code import/export to transfer ODK Collect settings between mobile devices.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Monitoring and evaluation</td>
+
+								<td>Follows a data collection plan to support activity monitoring and evaluation plans. Able to collaborate with relevant departments (for example, M&E and PMER) on the development of suitable indicators and accompanying data flows.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Identifies and triangulates different sources for a given data interest (for example, damage estimates for a given area from government, UN, NGOs, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Describes remotely sensed data and spatial and spectral attributes of different types. Describes when to use what type of remotely sensed data based on disaster.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Describes the process of satellite imagery acquisition, processing, and analysis.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Designs the organized storage of files in such a way that other people can use and find them (for example, a logical folder hierarchy for cloud storage). Sets up and uses ODK Central. Implements sharing, user permissions, and authentication requirements for the various mobile data collection servers.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Designs and implements data backup and contingency plans.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Designs and implements data backup and contingency plans.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Describes the methods, formats, and protocols for improved interoperability, sharing, and accessibility both internally and with other humanitarian partners (HXL, metadata, ISO standards, common operational data models, place codes, IATA Standards). Shares and accesses data through several platforms (Humanitarian Data Exchange (HDX), Humanitarian Response Info, Open Street Map (OSM), Relief Web). Develops data sharing and open data guidance/job aids.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 4 - Manager -->
+
+				<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Applies advanced encryption techniques for online and offline data collection, storage, and transfer.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Designs program/project requirements to follow various legal frameworks (for example, General Data Protection Regulation (GDPR)). Communicates the implications of drone and satellite data imagery collection on privacy, including compliance with the rules and regulations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data collection plan for a needs assessment</td>
+
+								<td>Designs a data collection plan for a complex assessment (for example, a coordinated, multi-sectoral needs assessment). Tightly integrates data collection flows with data management and analysis processes.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designing a survey</td>
+
+								<td>Leads the process of developing a survey with scientific rigor.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preparing for and conducting mobile data collection</td>
+
+								<td>Transforms a complex survey from print to XLSForm. Implements advanced survey logic (for example, groups, repeats, conditional selects, advanced constraints, advanced relevance). Enables form encryption for data protection. Implements multimedia question prompts. Uses form widgets and knows how to change question appearance. Creates multilingual forms. Evaluates various data server options for mobile data collection and their appropriateness for a given context. Can provide technical support to others who are designing data collection forms. Creates guidance documents and materials to support implementation of primary data collection using data collection software. Manages program or country office accounts. Describes the various options available in “General settings” and “Admin settings” in ODK Collect.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Monitoring and evaluation</td>
+
+								<td>Designs a data collection plan to support activity monitoring and evaluation plans. Designs consolidated data flows to meet multiple information needs (for example, the needs of PMER, Comms, and various Sectors).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Integrates secondary data, targeted at specific audiences and decision points, into data collection plan. Selects appropriate technology and strategies to collate and store secondary data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Applies different spatial and spectral attributes of remotely sensed data where relevant.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Evaluates the major providers of satellite imagery and identifies different pathways for requesting/procuring imagery.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Demonstrates flexibility to adapt a data management system and associated processes (for example, due to changed demands and context of a red disaster). Installs ODK Central on a cloud server. Installs KoBoToolbox on a cloud server. Sets up https for a cloud-based server.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Creates a data lifecycle plan that covers all stages from planning and collection through to deletion.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Manages implementation of a DPIA. Evaluates possible responses when data breaches occur (that is, minimizing threats, avoiding further compromise of systems, and protocols for communication with those affected). Conducts regular data vulnerability checks. Trains others on data security protocols.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Develops decision trees, threshold guidance, or other tools to guide data protection integration with business processes. Regularly reviews user permissions to ensure accuracy (i.e. removing permissions for former employees).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Owns and monitors compliance with data sharing agreements. Trains others on data sharing best practices and open data. Adapts and contextualizes an open data policy for a specific group or institution.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
 	</div>
+</div>
 </div>
 {% endblock content %}

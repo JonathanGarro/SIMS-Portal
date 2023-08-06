@@ -1,470 +1,526 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div class="container">
-		<div class="row my-5">
-			<div class='col col-md-4 me-4'>
-				<div class="col py-4 my-2 my-sm-3">
-		  		<div class="card bg-light h-100 border-0 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+<div class="container">
+	<div class="row my-5">
+		<div class='col col-md-4 me-4'>
+			<div class="col py-4 my-2 my-sm-3">
+				<div class="card bg-light h-100 border border-3 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
 					<div class="card-body pt-3">
-			  			<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
+						<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
 							<img src="/static/assets/img/Profile-Badge-Simsco-sm.png" class="d-block m-1" width="100" alt="Icon">
-			  			</div>
-			  			<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">SIMS Remote Coordinator Profile</h2>
-			  			<p class="fs-sm text-secondary">SIMS Remote Coordinators translate the operation's needs into discrete tasks, and manage the on-going process of assigning those tasks to the SIMS member with the appropriate set of skills.</p><br>
+						</div>
+						<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">SIMS Remote Coordinator Profile</h2>
+						<p class="fs-sm text-secondary">SIMS Remote Coordinators translate the operation's needs into discrete tasks, and manage the on-going process of assigning those tasks to the SIMS member with the appropriate set of skills.</p><br>
 						<h4 class="Montserrat">Qualified Members: <span class='text-danger fw-bold'>{{unpacked_count}}</span></h4>
 						<button class="btn btn-outline-secondary btn-sm mt-1 mb-3" type="button" data-toggle="collapse" data-target="#qualifiedMembers" aria-expanded="false" aria-controls="qualifiedMembers" id="memberListToggle">Toggle List of Members</button>
 						<div class="collapse" id="qualifiedMembers">
 							<p><small>Click on a member's name to view their profile</small></p>
 							<h5 class='text-danger Montserrat'>Tier 4</h5>
 							{% for member in users_with_profile_tier_4%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 3</h5>
 							{% for member in users_with_profile_tier_3%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 2</h5>
 							{% for member in users_with_profile_tier_2%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 1</h5>
 							{% for member in users_with_profile_tier_1%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 						</div><br>
 					</div>
-				  </div>
 				</div>
-			</div>
-			<div class='col'>
-				<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
-				<ul class="nav nav-pills" id="profilesNav" role="tablist">
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					  <button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
-					</li>
-				</ul>
-				<div class="tab-content" id="dashboardContent">
-					
-					<!-- Tier 1 - Foundational -->
-					
-					<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
-					
-						
-	
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Names common data cleaning steps that need to be performed on a dataset.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Recognizes elements of a structured table versus unstructured dataset. Lists examples of common file formats (csv, xls, etc.).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying design best practices to information product</td>
-									
-									<td>Finds location of information product templates, IFRC branding and style guidelines, and design standards where they are stored.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Incorporating data visualization into information product</td>
-									
-									<td>Identifies data visualization best practices and applies them to simple charts and graphs.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Updating, configuring, and maintaining website</td>
-									
-									<td>Becomes familiar with website editing interface. Recognizes administrative components of website management.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
-									
-									<td>Defines steps in web product design process (wireframing, storyboards,  user stories, prototyping, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing interactive data visualization products for the web</td>
-									
-									<td>Can perform basic functions with data visualization software.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Recognizes ways to identify patterns in data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Describes operational situations in which different information products would be useful. Describes the revision process of an information product.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
-									
-									<td>Describes the steps of the Information Management cycle.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-	
-					<!-- Tier 2 - Officer -->
-					
-					<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
-						
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Conducts basic data cleaning using tools in spreadsheet software.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Designs structured tables in spreadsheet software for the collection of various data. Describes use cases for common file formats (csv, xls, etc). Describes the elements/taxonomy of a data model (i.e. entity types, attributes, relationships, etc.). Sets up a simple logical data model.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying design best practices to information product</td>
-									
-									<td>Utilizes and adheres to information product templates, style guidelines, visual identity, and design standards.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Incorporating data visualization into information product</td>
-									
-									<td>Produces basic visual information products such as key figures using the features of standard office software or entry-level tools, incorporating data visualization best practices.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Updating, configuring, and maintaining website</td>
-									
-									<td>Follows instructions to update a simple web site or web-based dashboard using in-place editor (rich-text/plain text/no-code). Follows instructions to monitor visitor analytics and perform administrative components of website management.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
-									
-									<td>Develops basic web product design plans (for example, wireframing, storyboards, user stories, prototyping, etc.). Identifies the four principles of user interface design (place users in control of the interface, make it comfortable to interact with a product, reduce cognitive load, make user interfaces consistent).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing interactive data visualization products for the web</td>
-									
-									<td>Uses out-of-the-box data visualization software to create basic dashboards.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing web-based geospatial information product</td>
-									
-									<td>Explains resource and skill requirements to implement various web based maps.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Applies appropriate strategies to identify patterns in data. Detects data gaps (what is needed to be able to conduct the analysis and make the products).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Evaluates the operational relevance of an information product. Incorporates constructive feedback into current and future information products.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
-									
-									<td>Actively participates in an information management planning meeting.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 3 - Coordinator -->
-					
-					<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Cleans data using software developed specifically for that purpose according to data standards. Creates guidelines and basic controls to improve data collection quality (for example, written guidance or dropdowns in a spreadsheet template).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Differentiates between relational and non-relational databases. Uses advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Sets up a simple physical data model.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying design best practices to information product</td>
-									
-									<td>Can modify designs based on compatibility, usability and accessibility across channels and devices (for example, the differences in design for a poster versus an image for social media). Tailors language, tone, style, and format to match audiences.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Incorporating data visualization into information product</td>
-									
-									<td>Uses advanced graphic software. Effectively uses visual hierarchy to depict relationships between data. Integrates multiple layers or groups of data into a single coherent information product.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Updating, configuring, and maintaining website</td>
-									
-									<td>Provides basic training for people to update content and maintain a simple website (rich-text/plain text/no-code). Applies simple coding skills to modify website as needed. Implements visitor analytics. Procures and manages domain names. Procures and manages web hosting and cloud servers.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
-									
-									<td>Integrates World Wide Web Consortium (W3C) web standards in product design. Applies design methods and techniques to web projects. Identifies the five principles of user experience design (hierarchy, consistency, confirmation, user control, and accessibility).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing interactive data visualization products for the web</td>
-									
-									<td>Applies some coding skills to customize dashboards or animate charts built with out-of-the-box data visualization software.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing web-based geospatial information product</td>
-									
-									<td>Uses GUI-based web services to create map visualizations. Applies relevant software development skills to produce specialized mapping products (for example, code a dedicated web portal).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Recognizes patterns, trends, outliers and anomalies in datasets.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Interprets audience information requirements and identifies appropriate visualizations (for example, the varying needs of operational decision-makers, advocates, fundraisers, communications, or affected population). Independently applies feedback mechanisms and methods to iteratively improve information products.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
-									
-									<td>Clearly communicates time and resource requirements for information management activities, and assesses information needs in terms of content and timeliness, in order to effectively discuss and manage expectations.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 4 - Manager -->
-					
-					<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Designs quality assurance/ quality control (QA/ QC) procedures. Uses advanced skills with scripting languages for data manipulation.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Applies advanced skills with different database options. Creates advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Utilizes contextually-appropriate data modeling techniques (i.e. hierarchical, object-oriented, network, entity-relationship, relational).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying design best practices to information product</td>
-									
-									<td>Develops design templates and sets style standards for products. Adapts and updates templates and style guidelines as needed.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Incorporating data visualization into information product</td>
-									
-									<td>Builds reusable dashboard visualizations in a spreadsheet software. Automates the update of information products (for example, via scripting from a data source to the information product design file for more user-friendly updates.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Updating, configuring, and maintaining website</td>
-									
-									<td>Sets up, codes, configures, and maintains website that houses information products. Identifies situations where self hosting and internal servers are appropriate and how to manage them. Compares platforms against requirements and advises on suitability (for example, business requirement development).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
-									
-									<td>Applies user-interface and user-experience (UI/UX) principles.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing interactive data visualization products for the web</td>
-									
-									<td>Applies data visualization Javascript libraries (for example, D3.js). Designs and builds API web services.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing web-based geospatial information product</td>
-									
-									<td>Creates a custom web map using various tools and code libraries.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Supports response option analysis (for example, suggesting programmes to respond to identified needs). Identifies response gaps and provides recommendations for further action.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Provides constructive and actionable feedback on information products. Leads a human-centered design process with stakeholders.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
-									
-									<td>Facilitates an information management planning meeting. Develops an information management program, including budget and staffing needs, in coordination with relevant stakeholders (for example, for an emergency plan of action (EPoA) or recovery plan). Facilitates elicitation and requirements gathering as relevant for development of an information system.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				
+				<div class="card p-4 bg-light border border-3 mt-3">
+					<h5 class="text-secondary py-2 Montserrat">Learning Resources</h5>
+					<ul class='list-group border-0'>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://learn-sims.org/docs/sims-remote-coordination/" class="text-secondary">Remote Coordination Guides</a>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
+		<div class='col'>
+			<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
+			<ul class="nav nav-pills" id="profilesNav" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
+				</li>
+			</ul>
+			<div class="tab-content" id="dashboardContent">
+
+				<!-- Tier 1 - Foundational -->
+
+				<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
+
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Names common data cleaning steps that need to be performed on a dataset.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Recognizes elements of a structured table versus unstructured dataset. Lists examples of common file formats (csv, xls, etc.).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying design best practices to information product</td>
+
+								<td>Finds location of information product templates, IFRC branding and style guidelines, and design standards where they are stored.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Incorporating data visualization into information product</td>
+
+								<td>Identifies data visualization best practices and applies them to simple charts and graphs.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Updating, configuring, and maintaining website</td>
+
+								<td>Becomes familiar with website editing interface. Recognizes administrative components of website management.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
+
+								<td>Defines steps in web product design process (wireframing, storyboards, user stories, prototyping, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing interactive data visualization products for the web</td>
+
+								<td>Can perform basic functions with data visualization software.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Recognizes ways to identify patterns in data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Describes operational situations in which different information products would be useful. Describes the revision process of an information product.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
+
+								<td>Describes the steps of the Information Management cycle.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 2 - Officer -->
+
+				<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Conducts basic data cleaning using tools in spreadsheet software.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Designs structured tables in spreadsheet software for the collection of various data. Describes use cases for common file formats (csv, xls, etc). Describes the elements/taxonomy of a data model (i.e. entity types, attributes, relationships, etc.). Sets up a simple logical data model.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying design best practices to information product</td>
+
+								<td>Utilizes and adheres to information product templates, style guidelines, visual identity, and design standards.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Incorporating data visualization into information product</td>
+
+								<td>Produces basic visual information products such as key figures using the features of standard office software or entry-level tools, incorporating data visualization best practices.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Updating, configuring, and maintaining website</td>
+
+								<td>Follows instructions to update a simple web site or web-based dashboard using in-place editor (rich-text/plain text/no-code). Follows instructions to monitor visitor analytics and perform administrative components of website management.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
+
+								<td>Develops basic web product design plans (for example, wireframing, storyboards, user stories, prototyping, etc.). Identifies the four principles of user interface design (place users in control of the interface, make it comfortable to interact with a product, reduce cognitive load, make user interfaces consistent).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing interactive data visualization products for the web</td>
+
+								<td>Uses out-of-the-box data visualization software to create basic dashboards.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing web-based geospatial information product</td>
+
+								<td>Explains resource and skill requirements to implement various web based maps.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Applies appropriate strategies to identify patterns in data. Detects data gaps (what is needed to be able to conduct the analysis and make the products).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Evaluates the operational relevance of an information product. Incorporates constructive feedback into current and future information products.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
+
+								<td>Actively participates in an information management planning meeting.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 3 - Coordinator -->
+
+				<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Cleans data using software developed specifically for that purpose according to data standards. Creates guidelines and basic controls to improve data collection quality (for example, written guidance or dropdowns in a spreadsheet template).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Differentiates between relational and non-relational databases. Uses advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Sets up a simple physical data model.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying design best practices to information product</td>
+
+								<td>Can modify designs based on compatibility, usability and accessibility across channels and devices (for example, the differences in design for a poster versus an image for social media). Tailors language, tone, style, and format to match audiences.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Incorporating data visualization into information product</td>
+
+								<td>Uses advanced graphic software. Effectively uses visual hierarchy to depict relationships between data. Integrates multiple layers or groups of data into a single coherent information product.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Updating, configuring, and maintaining website</td>
+
+								<td>Provides basic training for people to update content and maintain a simple website (rich-text/plain text/no-code). Applies simple coding skills to modify website as needed. Implements visitor analytics. Procures and manages domain names. Procures and manages web hosting and cloud servers.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
+
+								<td>Integrates World Wide Web Consortium (W3C) web standards in product design. Applies design methods and techniques to web projects. Identifies the five principles of user experience design (hierarchy, consistency, confirmation, user control, and accessibility).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing interactive data visualization products for the web</td>
+
+								<td>Applies some coding skills to customize dashboards or animate charts built with out-of-the-box data visualization software.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing web-based geospatial information product</td>
+
+								<td>Uses GUI-based web services to create map visualizations. Applies relevant software development skills to produce specialized mapping products (for example, code a dedicated web portal).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Recognizes patterns, trends, outliers and anomalies in datasets.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Interprets audience information requirements and identifies appropriate visualizations (for example, the varying needs of operational decision-makers, advocates, fundraisers, communications, or affected population). Independently applies feedback mechanisms and methods to iteratively improve information products.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
+
+								<td>Clearly communicates time and resource requirements for information management activities, and assesses information needs in terms of content and timeliness, in order to effectively discuss and manage expectations.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 4 - Manager -->
+
+				<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Designs quality assurance/ quality control (QA/ QC) procedures. Uses advanced skills with scripting languages for data manipulation.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Applies advanced skills with different database options. Creates advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Utilizes contextually-appropriate data modeling techniques (i.e. hierarchical, object-oriented, network, entity-relationship, relational).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying design best practices to information product</td>
+
+								<td>Develops design templates and sets style standards for products. Adapts and updates templates and style guidelines as needed.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Incorporating data visualization into information product</td>
+
+								<td>Builds reusable dashboard visualizations in a spreadsheet software. Automates the update of information products (for example, via scripting from a data source to the information product design file for more user-friendly updates.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Updating, configuring, and maintaining website</td>
+
+								<td>Sets up, codes, configures, and maintains website that houses information products. Identifies situations where self hosting and internal servers are appropriate and how to manage them. Compares platforms against requirements and advises on suitability (for example, business requirement development).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Planning for web product while incorporating UX/UI best practices</td>
+
+								<td>Applies user-interface and user-experience (UI/UX) principles.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing interactive data visualization products for the web</td>
+
+								<td>Applies data visualization Javascript libraries (for example, D3.js). Designs and builds API web services.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing web-based geospatial information product</td>
+
+								<td>Creates a custom web map using various tools and code libraries.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Supports response option analysis (for example, suggesting programmes to respond to identified needs). Identifies response gaps and provides recommendations for further action.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Provides constructive and actionable feedback on information products. Leads a human-centered design process with stakeholders.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Designs or manages an information management project or operational IM activity</td>
+
+								<td>Facilitates an information management planning meeting. Develops an information management program, including budget and staffing needs, in coordination with relevant stakeholders (for example, for an emergency plan of action (EPoA) or recovery plan). Facilitates elicitation and requirements gathering as relevant for development of an information system.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
 	</div>
+</div>
 </div>
 {% endblock content %}

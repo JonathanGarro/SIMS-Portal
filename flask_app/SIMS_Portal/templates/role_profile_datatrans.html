@@ -1,807 +1,895 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div class="container">
-		<div class="row my-5">
-			<div class='col col-md-4 me-4'>
-				<div class="col py-4 my-2 my-sm-3">
-		  		<div class="card bg-light h-100 border-0 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+<div class="container">
+	<div class="row my-5">
+		<div class='col col-md-4 me-4'>
+			<div class="col py-4 my-2 my-sm-3">
+				<div class="card bg-light h-100 border border-3 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
 					<div class="card-body pt-3">
-			  			<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
-							  <img src="/static/assets/img/Profile-Badge-Datatrans-sm.png" class="d-block m-1" width="100" alt="Icon">
-							</div>
-			  			<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">Data Transformation & Analysis Profile</h2>
-			  			<p class="fs-sm text-secondary">Data Transformation and Analysis specialists wrangle datasets to make them compatible with multiple analytical processes.</p><br>
+						<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
+							<img src="/static/assets/img/Profile-Badge-Datatrans-sm.png" class="d-block m-1" width="100" alt="Icon">
+						</div>
+						<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">Data Transformation & Analysis Profile</h2>
+						<p class="fs-sm text-secondary">Data Transformation and Analysis specialists wrangle datasets to make them compatible with multiple analytical processes.</p><br>
 						<h4 class="Montserrat">Qualified Members: <span class='text-danger fw-bold'>{{unpacked_count}}</span></h4>
 						<button class="btn btn-outline-secondary btn-sm mt-1 mb-3" type="button" data-toggle="collapse" data-target="#qualifiedMembers" aria-expanded="false" aria-controls="qualifiedMembers" id="memberListToggle">Toggle List of Members</button>
 						<div class="collapse" id="qualifiedMembers">
 							<p><small>Click on a member's name to view their profile</small></p>
 							<h5 class='text-danger Montserrat'>Tier 4</h5>
 							{% for member in users_with_profile_tier_4%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 3</h5>
 							{% for member in users_with_profile_tier_3%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 2</h5>
 							{% for member in users_with_profile_tier_2%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 1</h5>
 							{% for member in users_with_profile_tier_1%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 						</div><br>
 					</div>
-				  </div>
 				</div>
-			</div>
-			<div class='col'>
-				<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
-				<ul class="nav nav-pills" id="profilesNav" role="tablist">
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					  <button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
-					</li>
-				</ul>
-				<div class="tab-content" id="dashboardContent">
-					
-					<!-- Tier 1 - Foundational -->
-					
-					<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
-					
-						
-	
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Recalls why some data is considered sensitive or requires extra security concerns.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Defines what is meant by "informed consent".</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Defines what is meant by "secondary data". Lists examples of common operational datasets (CODs).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing secondary data sources</td>
-									
-									<td>Recognizes the features of a reliable and credible data source. Outlines basic methods for assessing the reliability and utility of a data source.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Names common data cleaning steps that need to be performed on a dataset.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Recognizes elements of a structured table versus unstructured dataset. Lists examples of common file formats (csv, xls, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Correctly identifies organizational/team data storage solutions. Demonstrates basic proficiency with ODK Central and KoBoToolbox.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Recognizes why data must be backed up and recommended intervals for backing up data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and maintaining a content management system</td>
-									
-									<td>Describes what is meant by "content management system".</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating data into data model using API</td>
-									
-									<td>Defines application programming interface (API) and how it can be leveraged in information management tasks.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Identifies when security measures should be implemented for local vs. web sharing of data. Describes that a data protection impact assessment (DPIA) is. Describes what a data breach is.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Defines what is meant by "user permissions" versus "user roles".</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Differentiates between file storage formats and identifies pros/cons of each - topojson, shapefile, spatialite, JSON, GeoJSON, GeoDB, GeoTIFF.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Describes how attribute matching takes place. Performs basic data transformation/restructuring tasks.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Conducting secondary data analysis</td>
-									
-									<td>Describes how to perform secondary data analysis.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing quantitative data analysis</td>
-									
-									<td>Outlines methods and techniques to describe and explain data (descriptive statistics).  Identifies examples of structured analysis techniques. Recognizes components of the IFRC Analysis Spectrum.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing qualitative data analysis</td>
-									
-									<td>Identifies methods to analyze qualitative data. Sets up qualitative analysis spreadsheet.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
-									
-									<td>Explains what an analytical framework and data taxonomy are and provides reasons to use them.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Defines basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Describes the data sharing principles used in the humanitarian sector. Explains how to comply with the various components of open data policies and data governance guidelines.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Recognizes ways to identify patterns in data.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='fringe-specialties-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
-									
-									<td>Recognizes when modeling is needed and feasible. Explains the representativeness of the data and the type of problem at hand (need of supervised learning models vs unsupervised models). Can outsource machine learning request.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-	
-					<!-- Tier 2 - Officer -->
-					
-					<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
-						
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Identifies data that may be considered personally identifiable information (PII), sensitive personal information (SPI), or otherwise needing extra security considerations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Identifies examples of various power imbalances in humanitarian response situations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Provides examples of common sources of secondary data and methods for finding them (for example, census, news reports). Finds and describes how to use common operational datasets (CODs).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing secondary data sources</td>
-									
-									<td>Assesses and makes a conclusion regarding the reliability and credibility of a data source. Describes advantages and pitfalls of expert opinions. Describes the implications of various licensing for external data sources.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Conducts basic data cleaning using tools in spreadsheet software.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Designs structured tables in spreadsheet software for the collection of various data. Describes use cases for common file formats (csv, xls, etc). Describes the elements/taxonomy of a data model (i.e. entity types, attributes, relationships, etc.). Sets up a simple logical data model.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Successfully adheres to guidelines for data entry and storage (for example, for a shared operations Dropbox). Identifies situations where various mobile data collection server options may be appropriate and the features, strengths, and weaknesses of each. Assesses compatibility of different apps with the various server options (for example, ODK Collect versus KoBo Collect). Performs the steps to upload forms to and download forms from the various servers. </td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Successfully adheres to guidelines for backing up data and contingency plans.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and maintaining a content management system</td>
-									
-									<td>Demonstrates proficiency with using a content management system.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating data into data model using API</td>
-									
-									<td>Follows step-by-step guidance to access data via an API request.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Complies with institutional/team data security protocols. Uses data collection and data management solutions structured around the principles of data protection. Identifies potential gaps in technology solutions that may impact data protection. Describes the steps involved in conducting a DPIA.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Uses a variety of tools for converting geographic file formats (e.g. shapefile to GeoJSON). Prepares files (tables, vector datasets, raster datasets) as tables within geospatial database.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Joins tabular data to spatial data through attribute matching. Joins multiple dataset attributes to one data layer using spatial or tabular attributes.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Conducting secondary data analysis</td>
-									
-									<td>Describes how and when to use secondary data analysis tools.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing quantitative data analysis</td>
-									
-									<td>Prepares data for analysis (for example, transformation or restructuring of data). Describes the IFRC Analysis Spectrum and main structured analysis techniques. Applies basic descriptive statistics  (for example mean, median, mode, average, etc.) and identifies their limitations (that is, levels 1 and 2 of the IFRC Analysis Spectrum). Clearly identifies and explains underlying assumptions in own analysis.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing qualitative data analysis</td>
-									
-									<td>Prepares data for analysis (for example, transformation or restructuring of data). Develops codebooks and applies inductive and/or deductive coding techniques to a qualitative data set. Clearly identifies and explains underlying assumptions in own analysis.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
-									
-									<td>Supports development of a data analysis plan using an analytical framework. Illustrates how to produce a map of stakeholders that demonstrates their interactions with the data cycle (for example, data owners, contributors, and consumers).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Applies basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve). Describes cartographic standards and conventions. Describes coordinate systems and map projections and their impacts on distance, size, area, and shape.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Successfully adheres to data sharing principles used in the humanitarian sector. Produces examples of data available via the International Aid Transparency Initiative (IATI). Complies with institutional open data policy and data governance guidelines.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Applies appropriate strategies to identify patterns in data. Detects data gaps (what is needed to be able to conduct the analysis and make the products).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='fringe-specialties-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
-									
-									<td>Demonstrates proficiency in the classic ML models (such as linear regression, k-means, decision trees, naive bayes, support vector machines), being able to discern which is the most adequate model for a specific task, and when a result is good enough or not. Utilizes Business Intelligence Software or other available ML software, to gain insight from the available data at hand.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 3 - Coordinator -->
-					
-					<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Implements basic file encryption using software features and understanding of the limitations of such methods (for example, password protection on Microsoft Office documents).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Advocates for matching data collected to data needs, that is, collecting only what you need and for which you have an analysis plan.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Identifies and triangulates different sources for a given data interest (for example, damage estimates for a given area from government, UN, NGOs, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing secondary data sources</td>
-									
-									<td>Identifies main sources of errors and ways to mitigate them.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Cleans data using software developed specifically for that purpose according to data standards. Creates guidelines and basic controls to improve data collection quality (for example, written guidance or dropdowns in a spreadsheet template).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Differentiates between relational and non-relational databases. Uses advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Sets up a simple physical data model.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Designs the organized storage of files in such a way that other people can use and find them (for example, a logical folder hierarchy for cloud storage). Sets up and uses ODK Central. Implements sharing, user permissions, and authentication requirements for the various mobile data collection servers.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Designs and implements data backup and contingency plans.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and maintaining a content management system</td>
-									
-									<td>Describes the core functionalities necessary in a content management system.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating data into data model using API</td>
-									
-									<td>Establishes a live connection between a web API and a database or data visualization tool.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Implements mitigation measures to avoid a data breach or minimize its impact. Detects when data breaches occurs and notifies the proper channels. Participates in a DPIA or in the investigation of a data breach.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Indexes spatial datasets in a manner that supports performant queries.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Introduces raster, vector, satellite/aerial image data into data model, as appropriate.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Conducting secondary data analysis</td>
-									
-									<td>Conducts secondary data analysis using appropriate statistical processes.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing quantitative data analysis</td>
-									
-									<td>Identifies and uses appropriate, statistically valid approaches to summarize and interpret available data. (that is, level 3 of the IFRC Analysis Spectrum). Performs structured analysis. Critically assesses an analysis for underlying assumptions that may not be clearly stated. Assesses and clearly communicates the limitations of the conclusions of an analysis. Identifies ways to mitigate the effects of sources of errors (for example, ways of thinking, and structured analytical techniques). Applies appropriate techniques to assess uncertainty and confidence in analysis results.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing qualitative data analysis</td>
-									
-									<td>Applies basic qualitative analysis methods and identifies their limitations (for example, content or thematic analysis). Performs basic functions with a qualitative analysis software. Critically assesses an analysis for underlying assumptions that may not be clearly stated. Assesses and clearly communicates the limitations of the conclusions of an analysis.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
-									
-									<td>Adapts an analytical framework for a specific operational context. Identifies when geospatial attributes are required for analysis or reporting.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Performs geographic/spatial analysis (for example, nearest neighbor, overlay). Conducts raster data analysis (for example, supervised classification, and raster calculations). Writes queries within spatial context.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Describes the methods, formats, and protocols for improved interoperability, sharing, and accessibility both internally and with other humanitarian partners (HXL, metadata, ISO standards, common operational data models, place codes, IATA Standards). Shares and accesses data through several platforms (Humanitarian Data Exchange (HDX), Humanitarian Response Info, Open Street Map (OSM), Relief Web). Develops data sharing and open data guidance/job aids.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Recognizes patterns, trends, outliers and anomalies in datasets.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='fringe-specialties-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
-									
-									<td>Displays familiarity with different data structures such as stacks, queues, arrays, linked lists, graphs, trees, and multi-dimensional arrays. Utilizes advanced data science methods from standard libaries and available code repositories and/or software. Uses cloud computing when necessary. Applies skills in natural language processing, image, audio and video processing. Recognizes the different components in a neural network: dataset, architecture, loss function, optimization method, and performance metrics.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 4 - Manager -->
-					
-					<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Applies advanced encryption techniques for online and offline data collection, storage, and transfer.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
-									
-									<td>Designs program/project requirements to follow various legal frameworks (for example, General Data Protection Regulation (GDPR)). Communicates the implications of drone and satellite data imagery collection on privacy, including compliance with the rules and regulations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating secondary data into data collection plan</td>
-									
-									<td>Integrates secondary data, targeted at specific audiences and decision points, into data collection plan. Selects appropriate technology and strategies to collate and store secondary data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing secondary data sources</td>
-									
-									<td>Comprehensively explains advantages and limitations of secondary data review</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Designs quality assurance/ quality control (QA/ QC) procedures. Uses advanced skills with scripting languages for data manipulation.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Applies advanced skills with different database options. Creates advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Utilizes contextually-appropriate data modeling techniques (i.e. hierarchical, object-oriented, network, entity-relationship, relational).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Storing data according to data governance guidelines</td>
-									
-									<td>Demonstrates flexibility to adapt a data management system and associated processes (for example, due to changed demands and context of a red disaster). Installs ODK Central on a cloud server. Installs KoBoToolbox on a cloud server. Sets up https for a cloud-based server.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Backing up data according to data governance guidelines</td>
-									
-									<td>Creates a data lifecycle plan that covers all stages from planning and collection through to deletion.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and maintaining a content management system</td>
-									
-									<td>Sets up and configures a content management system (for example, Wordpress, Drupal, and Sharepoint). Administers content management systems.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Integrating data into data model using API</td>
-									
-									<td>Integrates data systems with external APIs such as those built into data sharing platforms or mobile data collection servers.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
-									
-									<td>Manages implementation of a DPIA. Evaluates possible responses when data breaches occur (that is, minimizing threats, avoiding further compromise of systems, and protocols for communication with those affected). Conducts regular data vulnerability checks. Trains others on data security protocols.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
-									
-									<td>Develops decision trees, threshold guidance, or other tools to guide data protection integration with business processes. Regularly reviews user permissions to ensure accuracy (i.e. removing permissions for former employees).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Converts datasets to different serialization formats as needed (binary, text, XML, JSON). Identifies appropriate use cases for spatial database management systems and implements accordingly.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Trains others to construct an effective and queryable geographic data model.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Conducting secondary data analysis</td>
-									
-									<td>Structures databases relevant for the Secondary Data Review (SDR) during a natural or protracted crisis (sudden change of situation).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing quantitative data analysis</td>
-									
-									<td>Applies advanced statistical methods/inferential statistics and modeling to identify correlations, variances, path analyses, and to anticipate and prescribe data (that is, forecast and predict the evolution of a situation as described in levels 4 and 5 of the IFRC Analysis Spectrum). Authors and explains an appropriate, clear, and concise analysis report that will benefit and be accepted by the intended audiences and various stakeholders. Identifies and selects appropriate structured analytical techniques to mitigate the impact of biases (for example, processing, group, and selection biases).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing qualitative data analysis</td>
-									
-									<td>Demonstrates familiarity with a variety of qualitative analysis methods and when they are appropriate to use (for example, cross-case analysis, grounded theory, etc.). Applies advanced skills with a qualitative analysis software and is able to teach others to conduct analysis using that software.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
-									
-									<td>Develops an analysis or tabulation plan targeted at specific audiences and decision points. Leads development of a contextualized analytical framework.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Conducts advanced geographic/spatial analysis (for example, voronoi diagram, nearest neighbor, calculating the center point (centroid) of polygons, boolean operations between multiple overlapping shapes (intersect, difference, union)). Applies spatial statistics (for example, spatial autocorrelation). Uses various scripting languages to process and analyze geospatial data. Describes the modifiable aerial unit problem (MAUP) and how to account for it in analysis.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Owns and monitors compliance with data sharing agreements. Trains others on data sharing best practices and open data. Adapts and contextualizes an open data policy for a specific group or institution.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Supports response option analysis (for example, suggesting programs to respond to identified needs). Identifies response gaps and provides recommendations for further action.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='fringe-specialties-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
-									
-									<td>Propose new machine learning models for tackling specific challenges (e.g. use of active learning for data scarcity).  Describes computability and complexity. Applies knowledge of computer architecture such as memory and clusters.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				
+				<div class="card p-4 bg-light border border-3 mt-3">
+					<h5 class="text-secondary py-2 Montserrat">Learning Resources</h5>
+					<ul class='list-group border-0'>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://learn-sims.org/docs/data-transformation-and-analysis/" class="text-secondary">Data Transformation & Analysis Guides</a>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
+		<div class='col'>
+			<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
+			<ul class="nav nav-pills" id="profilesNav" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
+				</li>
+			</ul>
+			<div class="tab-content" id="dashboardContent">
+
+				<!-- Tier 1 - Foundational -->
+
+				<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
+
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Recalls why some data is considered sensitive or requires extra security concerns.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Defines what is meant by "informed consent".</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Defines what is meant by "secondary data". Lists examples of common operational datasets (CODs).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing secondary data sources</td>
+
+								<td>Recognizes the features of a reliable and credible data source. Outlines basic methods for assessing the reliability and utility of a data source.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Names common data cleaning steps that need to be performed on a dataset.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Recognizes elements of a structured table versus unstructured dataset. Lists examples of common file formats (csv, xls, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Correctly identifies organizational/team data storage solutions. Demonstrates basic proficiency with ODK Central and KoBoToolbox.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Recognizes why data must be backed up and recommended intervals for backing up data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and maintaining a content management system</td>
+
+								<td>Describes what is meant by "content management system".</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating data into data model using API</td>
+
+								<td>Defines application programming interface (API) and how it can be leveraged in information management tasks.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Identifies when security measures should be implemented for local vs. web sharing of data. Describes that a data protection impact assessment (DPIA) is. Describes what a data breach is.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Defines what is meant by "user permissions" versus "user roles".</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Differentiates between file storage formats and identifies pros/cons of each - topojson, shapefile, spatialite, JSON, GeoJSON, GeoDB, GeoTIFF.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Describes how attribute matching takes place. Performs basic data transformation/restructuring tasks.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Conducting secondary data analysis</td>
+
+								<td>Describes how to perform secondary data analysis.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing quantitative data analysis</td>
+
+								<td>Outlines methods and techniques to describe and explain data (descriptive statistics). Identifies examples of structured analysis techniques. Recognizes components of the IFRC Analysis Spectrum.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing qualitative data analysis</td>
+
+								<td>Identifies methods to analyze qualitative data. Sets up qualitative analysis spreadsheet.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
+
+								<td>Explains what an analytical framework and data taxonomy are and provides reasons to use them.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Defines basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Describes the data sharing principles used in the humanitarian sector. Explains how to comply with the various components of open data policies and data governance guidelines.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Recognizes ways to identify patterns in data.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='fringe-specialties-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
+
+								<td>Recognizes when modeling is needed and feasible. Explains the representativeness of the data and the type of problem at hand (need of supervised learning models vs unsupervised models). Can outsource machine learning request.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 2 - Officer -->
+
+				<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Identifies data that may be considered personally identifiable information (PII), sensitive personal information (SPI), or otherwise needing extra security considerations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Identifies examples of various power imbalances in humanitarian response situations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Provides examples of common sources of secondary data and methods for finding them (for example, census, news reports). Finds and describes how to use common operational datasets (CODs).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing secondary data sources</td>
+
+								<td>Assesses and makes a conclusion regarding the reliability and credibility of a data source. Describes advantages and pitfalls of expert opinions. Describes the implications of various licensing for external data sources.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Conducts basic data cleaning using tools in spreadsheet software.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Designs structured tables in spreadsheet software for the collection of various data. Describes use cases for common file formats (csv, xls, etc). Describes the elements/taxonomy of a data model (i.e. entity types, attributes, relationships, etc.). Sets up a simple logical data model.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Successfully adheres to guidelines for data entry and storage (for example, for a shared operations Dropbox). Identifies situations where various mobile data collection server options may be appropriate and the features, strengths, and weaknesses of each. Assesses compatibility of different apps with the various server options (for example, ODK Collect versus KoBo Collect). Performs the steps to upload forms to and download forms from the various servers. </td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Successfully adheres to guidelines for backing up data and contingency plans.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and maintaining a content management system</td>
+
+								<td>Demonstrates proficiency with using a content management system.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating data into data model using API</td>
+
+								<td>Follows step-by-step guidance to access data via an API request.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Complies with institutional/team data security protocols. Uses data collection and data management solutions structured around the principles of data protection. Identifies potential gaps in technology solutions that may impact data protection. Describes the steps involved in conducting a DPIA.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Uses a variety of tools for converting geographic file formats (e.g. shapefile to GeoJSON). Prepares files (tables, vector datasets, raster datasets) as tables within geospatial database.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Joins tabular data to spatial data through attribute matching. Joins multiple dataset attributes to one data layer using spatial or tabular attributes.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Conducting secondary data analysis</td>
+
+								<td>Describes how and when to use secondary data analysis tools.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing quantitative data analysis</td>
+
+								<td>Prepares data for analysis (for example, transformation or restructuring of data). Describes the IFRC Analysis Spectrum and main structured analysis techniques. Applies basic descriptive statistics (for example mean, median, mode, average, etc.) and identifies their limitations (that is, levels 1 and 2 of the IFRC Analysis Spectrum). Clearly identifies and explains underlying assumptions in own analysis.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing qualitative data analysis</td>
+
+								<td>Prepares data for analysis (for example, transformation or restructuring of data). Develops codebooks and applies inductive and/or deductive coding techniques to a qualitative data set. Clearly identifies and explains underlying assumptions in own analysis.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
+
+								<td>Supports development of a data analysis plan using an analytical framework. Illustrates how to produce a map of stakeholders that demonstrates their interactions with the data cycle (for example, data owners, contributors, and consumers).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Applies basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve). Describes cartographic standards and conventions. Describes coordinate systems and map projections and their impacts on distance, size, area, and shape.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Successfully adheres to data sharing principles used in the humanitarian sector. Produces examples of data available via the International Aid Transparency Initiative (IATI). Complies with institutional open data policy and data governance guidelines.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Applies appropriate strategies to identify patterns in data. Detects data gaps (what is needed to be able to conduct the analysis and make the products).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='fringe-specialties-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
+
+								<td>Demonstrates proficiency in the classic ML models (such as linear regression, k-means, decision trees, naive bayes, support vector machines), being able to discern which is the most adequate model for a specific task, and when a result is good enough or not. Utilizes Business Intelligence Software or other available ML software, to gain insight from the available data at hand.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 3 - Coordinator -->
+
+				<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Implements basic file encryption using software features and understanding of the limitations of such methods (for example, password protection on Microsoft Office documents).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Advocates for matching data collected to data needs, that is, collecting only what you need and for which you have an analysis plan.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Identifies and triangulates different sources for a given data interest (for example, damage estimates for a given area from government, UN, NGOs, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing secondary data sources</td>
+
+								<td>Identifies main sources of errors and ways to mitigate them.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Cleans data using software developed specifically for that purpose according to data standards. Creates guidelines and basic controls to improve data collection quality (for example, written guidance or dropdowns in a spreadsheet template).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Differentiates between relational and non-relational databases. Uses advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Sets up a simple physical data model.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Designs the organized storage of files in such a way that other people can use and find them (for example, a logical folder hierarchy for cloud storage). Sets up and uses ODK Central. Implements sharing, user permissions, and authentication requirements for the various mobile data collection servers.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Designs and implements data backup and contingency plans.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and maintaining a content management system</td>
+
+								<td>Describes the core functionalities necessary in a content management system.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating data into data model using API</td>
+
+								<td>Establishes a live connection between a web API and a database or data visualization tool.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Implements mitigation measures to avoid a data breach or minimize its impact. Detects when data breaches occurs and notifies the proper channels. Participates in a DPIA or in the investigation of a data breach.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Guides and applies appropriate user permissions for database storage methods (for example, cloud storage and mobile data collection servers).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Indexes spatial datasets in a manner that supports performant queries.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Introduces raster, vector, satellite/aerial image data into data model, as appropriate.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Conducting secondary data analysis</td>
+
+								<td>Conducts secondary data analysis using appropriate statistical processes.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing quantitative data analysis</td>
+
+								<td>Identifies and uses appropriate, statistically valid approaches to summarize and interpret available data. (that is, level 3 of the IFRC Analysis Spectrum). Performs structured analysis. Critically assesses an analysis for underlying assumptions that may not be clearly stated. Assesses and clearly communicates the limitations of the conclusions of an analysis. Identifies ways to mitigate the effects of sources of errors (for example, ways of thinking, and structured analytical techniques). Applies appropriate techniques to assess uncertainty and confidence in analysis results.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing qualitative data analysis</td>
+
+								<td>Applies basic qualitative analysis methods and identifies their limitations (for example, content or thematic analysis). Performs basic functions with a qualitative analysis software. Critically assesses an analysis for underlying assumptions that may not be clearly stated. Assesses and clearly communicates the limitations of the conclusions of an analysis.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
+
+								<td>Adapts an analytical framework for a specific operational context. Identifies when geospatial attributes are required for analysis or reporting.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Performs geographic/spatial analysis (for example, nearest neighbor, overlay). Conducts raster data analysis (for example, supervised classification, and raster calculations). Writes queries within spatial context.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Describes the methods, formats, and protocols for improved interoperability, sharing, and accessibility both internally and with other humanitarian partners (HXL, metadata, ISO standards, common operational data models, place codes, IATA Standards). Shares and accesses data through several platforms (Humanitarian Data Exchange (HDX), Humanitarian Response Info, Open Street Map (OSM), Relief Web). Develops data sharing and open data guidance/job aids.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Recognizes patterns, trends, outliers and anomalies in datasets.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='fringe-specialties-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
+
+								<td>Displays familiarity with different data structures such as stacks, queues, arrays, linked lists, graphs, trees, and multi-dimensional arrays. Utilizes advanced data science methods from standard libaries and available code repositories and/or software. Uses cloud computing when necessary. Applies skills in natural language processing, image, audio and video processing. Recognizes the different components in a neural network: dataset, architecture, loss function, optimization method, and performance metrics.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 4 - Manager -->
+
+				<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Applies advanced encryption techniques for online and offline data collection, storage, and transfer.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Recognizing legal and ethical ramifications of data protection during data collection</td>
+
+								<td>Designs program/project requirements to follow various legal frameworks (for example, General Data Protection Regulation (GDPR)). Communicates the implications of drone and satellite data imagery collection on privacy, including compliance with the rules and regulations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating secondary data into data collection plan</td>
+
+								<td>Integrates secondary data, targeted at specific audiences and decision points, into data collection plan. Selects appropriate technology and strategies to collate and store secondary data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing secondary data sources</td>
+
+								<td>Comprehensively explains advantages and limitations of secondary data review</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Designs quality assurance/ quality control (QA/ QC) procedures. Uses advanced skills with scripting languages for data manipulation.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Applies advanced skills with different database options. Creates advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Utilizes contextually-appropriate data modeling techniques (i.e. hierarchical, object-oriented, network, entity-relationship, relational).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Storing data according to data governance guidelines</td>
+
+								<td>Demonstrates flexibility to adapt a data management system and associated processes (for example, due to changed demands and context of a red disaster). Installs ODK Central on a cloud server. Installs KoBoToolbox on a cloud server. Sets up https for a cloud-based server.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Backing up data according to data governance guidelines</td>
+
+								<td>Creates a data lifecycle plan that covers all stages from planning and collection through to deletion.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and maintaining a content management system</td>
+
+								<td>Sets up and configures a content management system (for example, Wordpress, Drupal, and Sharepoint). Administers content management systems.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Integrating data into data model using API</td>
+
+								<td>Integrates data systems with external APIs such as those built into data sharing platforms or mobile data collection servers.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Preventing and mitigating risks of data breaches according to data governance guidelines</td>
+
+								<td>Manages implementation of a DPIA. Evaluates possible responses when data breaches occur (that is, minimizing threats, avoiding further compromise of systems, and protocols for communication with those affected). Conducts regular data vulnerability checks. Trains others on data security protocols.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing and applying user permissions according to data governance guidelines</td>
+
+								<td>Develops decision trees, threshold guidance, or other tools to guide data protection integration with business processes. Regularly reviews user permissions to ensure accuracy (i.e. removing permissions for former employees).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Converts datasets to different serialization formats as needed (binary, text, XML, JSON). Identifies appropriate use cases for spatial database management systems and implements accordingly.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Trains others to construct an effective and queryable geographic data model.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Conducting secondary data analysis</td>
+
+								<td>Structures databases relevant for the Secondary Data Review (SDR) during a natural or protracted crisis (sudden change of situation).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing quantitative data analysis</td>
+
+								<td>Applies advanced statistical methods/inferential statistics and modeling to identify correlations, variances, path analyses, and to anticipate and prescribe data (that is, forecast and predict the evolution of a situation as described in levels 4 and 5 of the IFRC Analysis Spectrum). Authors and explains an appropriate, clear, and concise analysis report that will benefit and be accepted by the intended audiences and various stakeholders. Identifies and selects appropriate structured analytical techniques to mitigate the impact of biases (for example, processing, group, and selection biases).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing qualitative data analysis</td>
+
+								<td>Demonstrates familiarity with a variety of qualitative analysis methods and when they are appropriate to use (for example, cross-case analysis, grounded theory, etc.). Applies advanced skills with a qualitative analysis software and is able to teach others to conduct analysis using that software.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing a data analysis plan using an analytical framework</td>
+
+								<td>Develops an analysis or tabulation plan targeted at specific audiences and decision points. Leads development of a contextualized analytical framework.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Conducts advanced geographic/spatial analysis (for example, voronoi diagram, nearest neighbor, calculating the center point (centroid) of polygons, boolean operations between multiple overlapping shapes (intersect, difference, union)). Applies spatial statistics (for example, spatial autocorrelation). Uses various scripting languages to process and analyze geospatial data. Describes the modifiable aerial unit problem (MAUP) and how to account for it in analysis.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Owns and monitors compliance with data sharing agreements. Trains others on data sharing best practices and open data. Adapts and contextualizes an open data policy for a specific group or institution.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Supports response option analysis (for example, suggesting programs to respond to identified needs). Identifies response gaps and provides recommendations for further action.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Fringe Specialties</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='fringe-specialties-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Identifies appropriate applications for machine learning algorithms as a tool to strengthen operational data use</td>
+
+								<td>Propose new machine learning models for tackling specific challenges (e.g. use of active learning for data scarcity). Describes computability and complexity. Applies knowledge of computer architecture such as memory and clusters.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
 	</div>
+</div>
 </div>
 {% endblock content %}

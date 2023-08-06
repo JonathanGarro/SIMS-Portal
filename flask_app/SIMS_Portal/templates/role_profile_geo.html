@@ -1,683 +1,771 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div class="container">
-		<div class="row my-5">
-			<div class='col col-md-4 me-4'>
-				<div class="col py-4 my-2 my-sm-3 ">
-		  		<div class="card bg-light h-100 border-0 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+<div class="container">
+	<div class="row my-5">
+		<div class='col col-md-4 me-4'>
+			<div class="col py-4 my-2 my-sm-3 ">
+				<div class="card bg-light h-100 border border-3 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
 					<div class="card-body pt-3">
-			  			<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
-							  <img src="/static/assets/img/Profile-Badge-Geo-sm.png" class="d-block m-1" width="100" alt="Icon">
+						<div class="d-inline-block shadow-primary position-absolute top-0 translate-middle-y">
+							<img src="/static/assets/img/Profile-Badge-Geo-sm.png" class="d-block m-1" width="100" alt="Icon">
 						</div>
-			  			<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">Geospatial Profile</h2>
-			  			<p class="fs-sm text-secondary">Geospatial experts create a variety of static and interactive map types, including basemaps, damage and impact maps, 3W's, and more.</p><br>
+						<h2 class="d-inline-flex align-items-center text-danger Montserrat mb-2">Geospatial Profile</h2>
+						<p class="fs-sm text-secondary">Geospatial experts create a variety of static and interactive map types, including basemaps, damage and impact maps, 3W's, and more.</p><br>
 						<h4 class="Montserrat">Qualified Members: <span class='text-danger fw-bold'>{{unpacked_count}}</span></h4>
 						<button class="btn btn-outline-secondary btn-sm mt-1 mb-3" type="button" data-toggle="collapse" data-target="#qualifiedMembers" aria-expanded="false" aria-controls="qualifiedMembers" id="memberListToggle">Toggle List of Members</button>
 						<div class="collapse" id="qualifiedMembers">
 							<p><small>Click on a member's name to view their profile</small></p>
 							<h5 class='text-danger Montserrat'>Tier 4</h5>
 							{% for member in users_with_profile_tier_4%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 3</h5>
 							{% for member in users_with_profile_tier_3%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 2</h5>
 							{% for member in users_with_profile_tier_2%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 							<h5 class='text-danger Montserrat mt-3'>Tier 1</h5>
 							{% for member in users_with_profile_tier_1%}
-								<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
+							<a href='/profile/view/{{member.id}}'><button type="button" class="btn btn-secondary btn-sm mb-2">{{member.firstname}} {{member.lastname}}</button></a>
 							{% endfor %}
 						</div><br>
 					</div>
-				  </div>
 				</div>
-			</div>
-			<div class='col'>
-				<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
-				<ul class="nav nav-pills" id="profilesNav" role="tablist">
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
-				  </li>
-				  <li class="nav-item" role="presentation">
-					  <button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
-					</li>
-				</ul>
-				<div class="tab-content" id="dashboardContent">
-					
-					<!-- Tier 1 - Foundational -->
-					
-					<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
-					
-						
-					
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Recalls why some data is considered sensitive or requires extra security concerns.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Recognizes the steps involved in collecting GPS coordinates. Differentiates between coordinate systems and map projections. Describes place-codes (p-codes). Identifies apps which can be used to collect GPS coordinates.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Recognizes satellite imagery can be procured for emergencies.</td>
-								</tr>
-							</tbody>
-						</table>
-	
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Names common data cleaning steps that need to be performed on a dataset.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Recognizes elements of a structured table versus unstructured dataset. Lists examples of common file formats (csv, xls, etc).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Differentiates between file storage formats and identifies pros/cons of each - topojson, shapefile, spatialite, Json, GeoJSON, GeoDB, GeoTIFF</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Describes how attribute matching takes place. Performs basic data transformation/restructuring tasks.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Defines basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Communicating key messages through an information product</td>
-									
-									<td>Lists effective formats and mediums for presenting information (for example, dashboard, web site, printed poster, slide deck, etc.)</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of GIS software</td>
-									
-									<td>Recognizes how to navigate the interfaces of GIS software</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
-									
-									<td>Differentiates between different kinds of maps that can be created using GIS software. Recognizes the types of visualizations that can be produced from a raster dataset.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
-									
-									<td>Describes the basic data structure used with OpenStreetMap</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Describes the data sharing principles used in the humanitarian sector.  Explains how to comply with the various components of open data policies and data governance guidelines.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Recognizes ways to identify patterns in data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Describes operational situations in which different information products would be useful. Describes the revision process of an information product.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-	
-					<!-- Tier 2 - Officer -->
-					
-					<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
-						
-						
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Identifies data that may be considered personally identifiable information (PII), sensitive personal information (SPI), or otherwise needing extra security considerations.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Outlines the considerations around the collection and use of GPS coordinates (example, implications of GPS accuracy). Describes the basics of collecting GPS (for example, requires an unobstructed view of the sky, accuracy limitations, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Recognizes the steps involved in producing satellite imagery.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Conducts basic data cleaning using tools in spreadsheet software.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Designs structured tables in spreadsheet software for the collection of various data. Describes use cases for common file formats (csv, xls, etc). Describes the elements/taxonomy of a data model (i.e. entity types, attributes, relationships, etc.). Sets up a simple logical data model.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Uses a variety of tools for converting geographic file formats (e.g. shapefile to GeoJSON). Prepares files (tables, vector datasets, raster datasets) as tables within geospatial database.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Joins tabular data to spatial data through attribute matching. Joins multiple dataset attributes to one data layer using spatial or tabular attributes.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Applies basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve). Describes cartographic standards and conventions. Describes coordinate systems and map projections and their impacts on distance, size, area, and shape.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Communicating key messages through an information product</td>
-									
-									<td>Identifies effective data visualizations for a given information need and uses best practices when implementing them (for example, pie chart, bar graph, map, table, etc.).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of GIS software</td>
-									
-									<td>Demonstrates basic mapping functions using open-source or proprietary GIS software. Converts x,y coordinates from tabular format into GIS software. Describes spatial design concepts (for example, alignment, proximity, balance).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
-									
-									<td>Uses the map composer function of a GIS software to create different types of maps. Visualizes a raster dataset (for example, hillshade, graduated color ramp).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
-									
-									<td>Demonstrates basic proficiency with OpenStreetMap and imagery sharing platforms such as OpenAerialMap.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing web-based geospatial information product</td>
-									
-									<td>Explains resource and skill requirements to implement various web based maps.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Successfully adheres to data sharing principles used in the humanitarian sector. Produces examples of data available via the International Aid Transparency Initiative (IATI). Complies with institutional open data policy and data governance guidelines.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Applies appropriate strategies to identify patterns in data.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Evaluates the operational relevance of an information product. Incorporates constructive feedback into current and future information products.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 3 - Coordinator -->
-					
-					<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Implements basic file encryption using software features and understanding of the limitations of such methods (for example, password protection on Microsoft Office documents)</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Describes remotely sensed data and spatial and spectral attributes of different types. Describes when to use what type of remotely sensed data based on disaster.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Describes the process of satellite imagery acquisition, processing, and analysis.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Cleans data using software developed specifically for that purpose according to data standards. Creates guidelines and basic controls to improve data collection quality (for example, written guidance or dropdowns in a spreadsheet template).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Differentiates between relational and non-relational databases. Uses advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Sets up a simple physical data model.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Indexes spatial datasets in a manner that supports performant queries.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Introduces raster, vector, satellite/aerial image data into data model, as appropriate.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Performs geographic/spatial analysis (for example, nearest neighbor, overlay). Conducts raster data analysis (for example, supervised classification, and raster calculations). Writes queries within spatial context. </td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Communicating key messages through an information product</td>
-									
-									<td>Selects appropriate formats and medium for presenting information. Develops dissemination strategy. Translates complex concepts and technical jargon into language that can be understood by a given audience (including non-technical audience).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of GIS software</td>
-									
-									<td>Utilizes advanced tools and functionalities in QGIS. Uses vector design programs for cartographic refinement. </td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
-									
-									<td>Describes and makes adjustments based on political sensitivities when displaying geographic data (e.g. contested boundaries). Manages development of established map products typically used in RCRC response; identifies when they are appropriate, and the required time/data/resources (e.g. basemap, damage extent map, 3W map, specialized maps such as flood extent map). Disseminates mapping products through various media.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
-									
-									<td>Extracts and uses OpenStreetMap or OpenAerialMap data with GIS software. </td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing web-based geospatial information product</td>
-									
-									<td>Uses GUI-based web services to create map visualizations. Applies relevant software development skills to produce specialized mapping products (for example, code a dedicated webportal).</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Describes the methods, formats, and protocols for improved interoperability, sharing, and accessibility both internally and with other humanitarian partners (HXL, metadata, ISO standards, common operational data models, place codes, IATA Standards). Shares and accesses data through several platforms (Humanitarian Data Exchange (HDX), Humanitarian Response Info, Open Street Map (OSM), Relief Web). Develops data sharing and open data guidance/job aids.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Recognizes patterns, trends, outliers and anomalies in datasets. </td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Interprets audience information requirements and identifies appropriate visualizations (for example, the varying needs of operational decision-makers, advocates, fundraisers, communications, or affected population). Independently applies feedback mechanisms and methods to iteratively improve information products.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
-					<!-- Tier 4 - Manager -->
-					
-					<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
-					
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-collection-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
-									
-									<td>Applies advanced encryption techniques for online and offline data collection, storage, and transfer.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
-									
-									<td>Applies different spatial and spectral attributes of remotely sensed data where relevant.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Procuring satellite imagery</td>
-									
-									<td>Evaluates the major providers of satellite imagery and identifies different pathways for requesting/procuring imagery.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
-									
-									<td>Designs quality assurance/ quality control (QA/ QC) procedures. Uses advanced skills with scripting languages for data manipulation.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring data and constructing a data model</td>
-									
-									<td>Applies advanced skills with different database options. Creates advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Utilizes contextually-appropriate data modeling techniques (i.e. hierarchical, object-oriented, network, entity-relationship, relational).</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Establishing a geospatial database</td>
-									
-									<td>Converts datasets to different serialization formats as needed (binary, text, XML, JSON). Identifies appropriate use cases for spatial database management systems and implements accordingly. </td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Structuring vector and raster data models</td>
-									
-									<td>Trains others to construct an effective and queryable geographic data model.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-analysis-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Performing geographic/spatial analysis</td>
-									
-									<td>Conducts advanced geographic/spatial analysis (for example, voronoi diagram, nearest neighbor, calculating the center point (centroid) of polygons, boolean operations between multiple overlapping shapes (intersect, difference, union)). Applies spatial statistics (for example, spatial autocorrelation). Uses various scripting languages to process and analyze geospatial data. Describes the modifiable aerial unit problem (MAUP) and how to account for it in analysis.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='data-dissemination-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Communicating key messages through an information product</td>
-									
-									<td>Adjusts design of information products to effectively shape key messaging and maximize impact. Actively adapts as needed strategic information management documents to better align with the circumstances of a complex emergency.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of GIS software</td>
-									
-									<td>Develops and leads trainings on GIS software for specific audiences such as National Society staff and volunteers, government officials, civil servants, community leaders, etc. Communicates complex geospatial concepts to non-specialists.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
-									
-									<td>Applies different methods to represent spatial data and their appropriate uses (e.g. choropleth, heat map, graduated symbols, proportional symbols, dot density). Evaluates information needs and decides if a map is appropriate and if so, what format/type of map (static, web, choropleth, heat map, etc) in order to convey a message or tell a story to the expected audience. Validates and corrects topology.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
-									
-									<td>Uses advanced tools for collecting and contributing to OpenStreetMap or OpenAerialMap data (for example, using ODK.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Developing web-based geospatial information product</td>
-									
-									<td>Creates a custom web map using various tools and code libraries.</td>
-								</tr>
-							</tbody>
-						</table>
-						
-						<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
-						<hr>
-						<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
-							<thead>
-								<tr>
-									<td style="width: 40%"><h5 class='Montserrat'>Competency</h5></td>
-									
-									<td><h5 class='Montserrat'>Description</h5></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
-									
-									<td>Owns and monitors compliance with data sharing agreements. Trains others on data sharing best practices and open data. Adapts and contextualizes an open data policy for a specific group or institution.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
-									
-									<td>Supports response option analysis (for example, suggesting programmes to respond to identified needs). Identifies response gaps and provides recommendations for further action.</td>
-								</tr>
-								<tr>
-									<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
-									
-									<td>Provides constructive and actionable feedback on information products. Leads a human-centered design process with stakeholders.</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				
+				<div class="card p-4 bg-light border border-3 mt-3">
+					<h5 class="text-secondary py-2 Montserrat">Learning Resources</h5>
+					<ul class='list-group border-0'>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="https://learn-sims.org/docs/geospatial/" class="text-secondary">Geospatial Guides</a>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
+		<div class='col'>
+			<h5 class="Montserrat mb-3 sims-blue">Competencies by Tier</h5>
+			<ul class="nav nav-pills" id="profilesNav" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="foundational-tab" data-bs-toggle="pill" data-bs-target="#foundational" type="button" role="tab" aria-controls="foundational" aria-selected="true">Foundational</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="officer-tab" data-bs-toggle="pill" data-bs-target="#officer" type="button" role="tab" aria-controls="officer" aria-selected="false">Officer</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="coordinator-tab" data-bs-toggle="pill" data-bs-target="#coordinator" type="button" role="tab" aria-controls="coordinator" aria-selected="false">Coordinator</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="manager-tab" data-bs-toggle="pill" data-bs-target="#manager" type="button" role="tab" aria-controls="manager" aria-selected="false">Manager</button>
+				</li>
+			</ul>
+			<div class="tab-content" id="dashboardContent">
+
+				<!-- Tier 1 - Foundational -->
+
+				<div class="tab-pane show fade active" id="foundational" role="tabpanel" aria-labelledby="foundational-tab">
+
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Recalls why some data is considered sensitive or requires extra security concerns.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Recognizes the steps involved in collecting GPS coordinates. Differentiates between coordinate systems and map projections. Describes place-codes (p-codes). Identifies apps which can be used to collect GPS coordinates.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Recognizes satellite imagery can be procured for emergencies.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Names common data cleaning steps that need to be performed on a dataset.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Recognizes elements of a structured table versus unstructured dataset. Lists examples of common file formats (csv, xls, etc).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Differentiates between file storage formats and identifies pros/cons of each - topojson, shapefile, spatialite, Json, GeoJSON, GeoDB, GeoTIFF</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Describes how attribute matching takes place. Performs basic data transformation/restructuring tasks.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Defines basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Communicating key messages through an information product</td>
+
+								<td>Lists effective formats and mediums for presenting information (for example, dashboard, web site, printed poster, slide deck, etc.)</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of GIS software</td>
+
+								<td>Recognizes how to navigate the interfaces of GIS software</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
+
+								<td>Differentiates between different kinds of maps that can be created using GIS software. Recognizes the types of visualizations that can be produced from a raster dataset.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
+
+								<td>Describes the basic data structure used with OpenStreetMap</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-1-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Describes the data sharing principles used in the humanitarian sector. Explains how to comply with the various components of open data policies and data governance guidelines.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Recognizes ways to identify patterns in data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Describes operational situations in which different information products would be useful. Describes the revision process of an information product.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 2 - Officer -->
+
+				<div class="tab-pane fade" id="officer" role="tabpanel" aria-labelledby="officer-tab">
+
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Identifies data that may be considered personally identifiable information (PII), sensitive personal information (SPI), or otherwise needing extra security considerations.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Outlines the considerations around the collection and use of GPS coordinates (example, implications of GPS accuracy). Describes the basics of collecting GPS (for example, requires an unobstructed view of the sky, accuracy limitations, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Recognizes the steps involved in producing satellite imagery.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Conducts basic data cleaning using tools in spreadsheet software.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Designs structured tables in spreadsheet software for the collection of various data. Describes use cases for common file formats (csv, xls, etc). Describes the elements/taxonomy of a data model (i.e. entity types, attributes, relationships, etc.). Sets up a simple logical data model.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Uses a variety of tools for converting geographic file formats (e.g. shapefile to GeoJSON). Prepares files (tables, vector datasets, raster datasets) as tables within geospatial database.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Joins tabular data to spatial data through attribute matching. Joins multiple dataset attributes to one data layer using spatial or tabular attributes.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Applies basic geographic/spatial analysis functions (for example, clip, buffer, and dissolve). Describes cartographic standards and conventions. Describes coordinate systems and map projections and their impacts on distance, size, area, and shape.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Communicating key messages through an information product</td>
+
+								<td>Identifies effective data visualizations for a given information need and uses best practices when implementing them (for example, pie chart, bar graph, map, table, etc.).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of GIS software</td>
+
+								<td>Demonstrates basic mapping functions using open-source or proprietary GIS software. Converts x,y coordinates from tabular format into GIS software. Describes spatial design concepts (for example, alignment, proximity, balance).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
+
+								<td>Uses the map composer function of a GIS software to create different types of maps. Visualizes a raster dataset (for example, hillshade, graduated color ramp).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
+
+								<td>Demonstrates basic proficiency with OpenStreetMap and imagery sharing platforms such as OpenAerialMap.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing web-based geospatial information product</td>
+
+								<td>Explains resource and skill requirements to implement various web based maps.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-2-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Successfully adheres to data sharing principles used in the humanitarian sector. Produces examples of data available via the International Aid Transparency Initiative (IATI). Complies with institutional open data policy and data governance guidelines.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Applies appropriate strategies to identify patterns in data.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Evaluates the operational relevance of an information product. Incorporates constructive feedback into current and future information products.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 3 - Coordinator -->
+
+				<div class="tab-pane fade" id="coordinator" role="tabpanel" aria-labelledby="coordinator-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Implements basic file encryption using software features and understanding of the limitations of such methods (for example, password protection on Microsoft Office documents)</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Describes remotely sensed data and spatial and spectral attributes of different types. Describes when to use what type of remotely sensed data based on disaster.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Describes the process of satellite imagery acquisition, processing, and analysis.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Cleans data using software developed specifically for that purpose according to data standards. Creates guidelines and basic controls to improve data collection quality (for example, written guidance or dropdowns in a spreadsheet template).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Differentiates between relational and non-relational databases. Uses advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Sets up a simple physical data model.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Indexes spatial datasets in a manner that supports performant queries.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Introduces raster, vector, satellite/aerial image data into data model, as appropriate.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Performs geographic/spatial analysis (for example, nearest neighbor, overlay). Conducts raster data analysis (for example, supervised classification, and raster calculations). Writes queries within spatial context. </td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Communicating key messages through an information product</td>
+
+								<td>Selects appropriate formats and medium for presenting information. Develops dissemination strategy. Translates complex concepts and technical jargon into language that can be understood by a given audience (including non-technical audience).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of GIS software</td>
+
+								<td>Utilizes advanced tools and functionalities in QGIS. Uses vector design programs for cartographic refinement. </td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
+
+								<td>Describes and makes adjustments based on political sensitivities when displaying geographic data (e.g. contested boundaries). Manages development of established map products typically used in RCRC response; identifies when they are appropriate, and the required time/data/resources (e.g. basemap, damage extent map, 3W map, specialized maps such as flood extent map). Disseminates mapping products through various media.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
+
+								<td>Extracts and uses OpenStreetMap or OpenAerialMap data with GIS software. </td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing web-based geospatial information product</td>
+
+								<td>Uses GUI-based web services to create map visualizations. Applies relevant software development skills to produce specialized mapping products (for example, code a dedicated webportal).</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-3-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Describes the methods, formats, and protocols for improved interoperability, sharing, and accessibility both internally and with other humanitarian partners (HXL, metadata, ISO standards, common operational data models, place codes, IATA Standards). Shares and accesses data through several platforms (Humanitarian Data Exchange (HDX), Humanitarian Response Info, Open Street Map (OSM), Relief Web). Develops data sharing and open data guidance/job aids.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Recognizes patterns, trends, outliers and anomalies in datasets. </td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Interprets audience information requirements and identifies appropriate visualizations (for example, the varying needs of operational decision-makers, advocates, fundraisers, communications, or affected population). Independently applies feedback mechanisms and methods to iteratively improve information products.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Tier 4 - Manager -->
+
+				<div class="tab-pane fade" id="manager" role="tabpanel" aria-labelledby="manager-tab">
+
+
+					<h3 class='text-danger Montserrat mt-5'>Data Collection</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-collection-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Applying data security and encryption techniques according to data governance guidelines</td>
+
+								<td>Applies advanced encryption techniques for online and offline data collection, storage, and transfer.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Collecting GIS and remotely sensed data</td>
+
+								<td>Applies different spatial and spectral attributes of remotely sensed data where relevant.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Procuring satellite imagery</td>
+
+								<td>Evaluates the major providers of satellite imagery and identifies different pathways for requesting/procuring imagery.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Storage & Management</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-storage-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Cleaning and manipulating data for improved quality</td>
+
+								<td>Designs quality assurance/ quality control (QA/ QC) procedures. Uses advanced skills with scripting languages for data manipulation.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring data and constructing a data model</td>
+
+								<td>Applies advanced skills with different database options. Creates advanced file formats for data collection and transformation (for example, macro-enabled workbooks). Utilizes contextually-appropriate data modeling techniques (i.e. hierarchical, object-oriented, network, entity-relationship, relational).</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Establishing a geospatial database</td>
+
+								<td>Converts datasets to different serialization formats as needed (binary, text, XML, JSON). Identifies appropriate use cases for spatial database management systems and implements accordingly. </td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Structuring vector and raster data models</td>
+
+								<td>Trains others to construct an effective and queryable geographic data model.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Analysis</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-analysis-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Performing geographic/spatial analysis</td>
+
+								<td>Conducts advanced geographic/spatial analysis (for example, voronoi diagram, nearest neighbor, calculating the center point (centroid) of polygons, boolean operations between multiple overlapping shapes (intersect, difference, union)). Applies spatial statistics (for example, spatial autocorrelation). Uses various scripting languages to process and analyze geospatial data. Describes the modifiable aerial unit problem (MAUP) and how to account for it in analysis.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data Dissemination</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='data-dissemination-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Communicating key messages through an information product</td>
+
+								<td>Adjusts design of information products to effectively shape key messaging and maximize impact. Actively adapts as needed strategic information management documents to better align with the circumstances of a complex emergency.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of GIS software</td>
+
+								<td>Develops and leads trainings on GIS software for specific audiences such as National Society staff and volunteers, government officials, civil servants, community leaders, etc. Communicates complex geospatial concepts to non-specialists.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Contextualizes geospatial information products for different operational needs </td>
+
+								<td>Applies different methods to represent spatial data and their appropriate uses (e.g. choropleth, heat map, graduated symbols, proportional symbols, dot density). Evaluates information needs and decides if a map is appropriate and if so, what format/type of map (static, web, choropleth, heat map, etc) in order to convey a message or tell a story to the expected audience. Validates and corrects topology.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Utilizing features of OpenStreetMap and OpenAerialMap</td>
+
+								<td>Uses advanced tools for collecting and contributing to OpenStreetMap or OpenAerialMap data (for example, using ODK.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Developing web-based geospatial information product</td>
+
+								<td>Creates a custom web map using various tools and code libraries.</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<h3 class='text-danger Montserrat mt-5'>Data for Decision-Making</h3>
+					<hr>
+					<table class='table table-striped table-hover align-middle' id='decision-making-4-table'>
+						<thead>
+							<tr>
+								<td style="width: 40%">
+									<h5 class='Montserrat'>Competency</h5>
+								</td>
+
+								<td>
+									<h5 class='Montserrat'>Description</h5>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class='fw-bold'>Sharing data in an appropriate and secure manner according to data governance guidelines</td>
+
+								<td>Owns and monitors compliance with data sharing agreements. Trains others on data sharing best practices and open data. Adapts and contextualizes an open data policy for a specific group or institution.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Identifying patterns and trends in data and using them to inform response analysis</td>
+
+								<td>Supports response option analysis (for example, suggesting programmes to respond to identified needs). Identifies response gaps and provides recommendations for further action.</td>
+							</tr>
+							<tr>
+								<td class='fw-bold'>Critically assessing and optimizing an information product for operational relevance</td>
+
+								<td>Provides constructive and actionable feedback on information products. Leads a human-centered design process with stakeholders.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
 	</div>
+</div>
 </div>
 {% endblock content %}
