@@ -47,7 +47,17 @@ def view_all_emergencies():
 def new_emergency():
 	form = NewEmergencyForm()
 	if form.validate_on_submit():
-		emergency = Emergency(emergency_name=form.emergency_name.data, emergency_location_id=form.emergency_location_id.data.ns_go_id, emergency_type_id=form.emergency_type_id.data.emergency_type_go_id, emergency_glide=form.emergency_glide.data, emergency_go_id=form.emergency_go_id.data, activation_details=form.activation_details.data, slack_channel=form.slack_channel.data, dropbox_url=form.dropbox_url.data, trello_url=form.trello_url.data)
+		emergency = Emergency(
+			emergency_name=form.emergency_name.data, 
+			emergency_location_id=form.emergency_location_id.data.ns_go_id, 
+			emergency_type_id=form.emergency_type_id.data.emergency_type_go_id, 
+			emergency_glide=form.emergency_glide.data, 
+			emergency_go_id=form.emergency_go_id.data, 
+			activation_details=form.activation_details.data, 
+			slack_channel=form.slack_channel.data, 
+			dropbox_url=form.dropbox_url.data, 
+			trello_url=form.trello_url.data
+		)
 		db.session.add(emergency)
 		db.session.commit()
 		
