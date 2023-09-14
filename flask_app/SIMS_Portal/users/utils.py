@@ -1,5 +1,5 @@
 import boto3
-from flask import url_for, current_app, flash, redirect
+from flask import url_for, current_app, flash, redirect, session
 from PIL import Image
 from flask_mail import Message
 from SIMS_Portal import db, cache
@@ -206,3 +206,19 @@ def save_picture_from_slack(picture):
 		s3.upload_fileobj(image_stream, current_app.config["UPLOAD_BUCKET"], picture_path)
 	
 	return picture_path
+
+def bulk_slack_photo_update():
+	# lazy import to avoid circular import error
+	from SIMS_Portal.users.routes import save_slack_photo_to_profile
+	
+	users_with_default_avatar = db.session.query(User).filter(User.image_file == 'default.png').all()
+	
+	for user in users_with_default_avatar:
+		try:
+			save_slack_photo_to_profile(user.id)
+			current_app.logger.info("User-{} ({} {}) has had their avatar automatically updated with their Slack photo.".format(user.id, user.firstname, user.lastname))
+			
+			# flush pending flashes to avoid alerting all users to this change
+			session['_flashes'] = []
+		except Exception as e:
+			current_app.logger.warning("bulk_slack_photo_update failed for user-{}: {}".format(user.id, e))
