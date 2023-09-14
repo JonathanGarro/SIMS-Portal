@@ -58,7 +58,11 @@ def refresh_surge_alerts_latest():
 						else:
 							temp_dict['im_filter'] = 0 
 						temp_dict['role_profile'] = y['description']
-						temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
+						try:
+							temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
+						except:
+							# surge team imported old alerts without 'opens' data that requires this fallback
+							temp_dict['alert_date'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
 						if x['start']:
 							temp_dict['start'] = datetime.datetime.strptime(x['start'], "%Y-%m-%dT%H:%M:%SZ")
 						else:
@@ -294,7 +298,11 @@ def refresh_surge_alerts():
 							else:
 								temp_dict['im_filter'] = 0 
 							temp_dict['role_profile'] = y['description']
-							temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
+							try:
+								temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
+							except:
+								# surge team imported old alerts without 'opens' data that requires this fallback
+								temp_dict['alert_date'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
 							if x['start']:
 								temp_dict['start'] = datetime.datetime.strptime(x['start'], "%Y-%m-%dT%H:%M:%SZ")
 							else:
