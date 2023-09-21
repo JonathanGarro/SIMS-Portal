@@ -131,6 +131,7 @@ class User(db.Model, UserMixin):
 	coordinates = db.Column(db.String(120))
 	time_zone = db.Column(db.String(120))
 	place_label = db.Column(db.String(120))
+	private_profile = db.Column(db.Boolean, default=False)
 	
 	ns_id = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
 	

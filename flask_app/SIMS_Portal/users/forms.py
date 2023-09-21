@@ -55,6 +55,7 @@ class UpdateAccountForm(FlaskForm):
 	messaging_number = IntegerField('Messaging Number (Integers Only)', validators=[Optional()])
 	languages = SelectMultipleField('Languages', choices=lambda:[language.name for language in Language.query.order_by(Language.name).all()], render_kw={'style':'height: 400px'})
 	skills = SelectMultipleField('Skills', choices=lambda:[skill.name for skill in Skill.query.order_by(Skill.name).all()], render_kw={'style':'height: 400px'})
+	private_profile = BooleanField('Set Profile Visibility to Private')
 	submit = SubmitField('Update Profile')
 	
 	def validate_email(self, email):

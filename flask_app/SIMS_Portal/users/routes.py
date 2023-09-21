@@ -28,7 +28,7 @@ from SIMS_Portal.users.forms import (
 from SIMS_Portal.users.utils import (
 	save_picture, new_user_slack_alert, send_slack_dm,
 	check_valid_slack_ids, send_reset_slack, search_location,
-	update_member_locations
+	update_member_locations, update_robots_txt
 )
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from SIMS_Portal.users.utils import download_profile_photo
@@ -39,7 +39,14 @@ users = Blueprint('users', __name__)
 def members():
 	page = request.args.get('page', 1, type = int)
 	per_page = 24
-	members_query = db.session.query(User).filter(User.status == 'Active').order_by(User.id)
+	
+	members_query = db.session.query(User).filter(
+		and_(
+			User.status == 'Active',
+			or_(User.private_profile.is_(None), User.private_profile == False)
+		)
+	).order_by(User.id)
+	
 	members = members_query.paginate(page = page, per_page = per_page)
 	return render_template('members.html', members=members)
 
@@ -47,7 +54,12 @@ def members():
 def inactive_members():
 	page = request.args.get('page', 1, type = int)
 	per_page = 24
-	members_query = db.session.query(User).filter(User.status == 'Inactive').order_by(User.id)
+	members_query = db.session.query(User).filter(
+		and_(
+			User.status == 'Inactive',
+			or_(User.private_profile.is_(None), User.private_profile == False)
+		)
+	).order_by(User.id)
 	members = members_query.paginate(page = page, per_page = per_page)
 	return render_template('members_inactive.html', members=members)
 
@@ -311,6 +323,14 @@ def update_profile():
 		current_user.linked_in = form.linked_in.data
 		current_user.messaging_number_country_code = form.messaging_number_country_code.data
 		current_user.messaging_number = form.messaging_number.data
+		current_user.private_profile = form.private_profile.data
+		
+		# update robots.txt with user profile info if they want it to be private
+		if form.private_profile.data: 
+			update_robots_txt(current_user.id, disallow=True)
+		else:
+			update_robots_txt(current_user.id, disallow=False)
+		
 		for skill in form.skills.data:
 			current_user.skills.append(Skill.query.filter(Skill.name==skill).one())
 		for language in form.languages.data:
@@ -332,6 +352,7 @@ def update_profile():
 		form.linked_in.data = current_user.linked_in
 		form.messaging_number_country_code.data = current_user.messaging_number_country_code
 		form.messaging_number.data = current_user.messaging_number
+		form.private_profile.data = current_user.private_profile
 	profile_picture = '/uploads/' + current_user.image_file
 	
 	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})

@@ -138,6 +138,9 @@
 				<div class='col'>
 				</div>
 				</div>
+				
+				<hr class="bg-danger border-3 border-top border-danger" />
+				
 				<div class="row">
 					<h4 class="text-secondary Montserrat py-3">Optional Fields</h4>
 					<div class="col-md-6">
@@ -285,10 +288,12 @@
 
 					
 				</div>
-
+				
+				<hr class="bg-danger border-3 border-top border-danger" />
+				
 				<div class="row mt-2">
 					<h4 class='text-secondary Montserrat py-3'>Skills and Languages</h4>
-					<div class="alert alert-warning mt-1 mb-4" role="alert">Hold the <span class="fw-bold">Command/Control</span> key to select multiple skills or languages. To remove skills you previously tagged on your profile, use the delete function on the left.</div>
+					<div class="alert alert-light border mt-1 mb-4" role="alert">Hold the <span class="fw-bold">Command/Control</span> key to select multiple skills or languages. To remove skills you previously tagged on your profile, use the delete function on the left.</div>
 					<div class="col-md-6">
 						<div class="form-group pb-4">
 							{{ form.skills.label(class="form-control-label pb-2 text-secondary") }}
@@ -332,9 +337,11 @@
 				{% endfor %}
 				</div>
 				
+				<hr class="bg-danger border-3 border-top border-danger" />
+				
 				<h4 class='text-secondary Montserrat py-3'>Profile Photo</h4>
 				
-				<div class="alert alert-warning mt-1 mb-4" role="alert">Files must be in PNG or JPEG format, and cannot have dimensions that exceed 1000px in height or width.</div>
+				<div class="alert alert-light border mt-1 mb-4" role="alert">Files must be in PNG or JPEG format, and cannot have dimensions that exceed 1000px in height or width.</div>
 				
 				<div class="row">
 
@@ -344,7 +351,19 @@
 					</div>
 				</div>
 				
+				<hr class="bg-danger border-3 border-top border-danger" />
 				
+				<h4 class='text-secondary Montserrat py-3'>Profile Visibility</h4>
+				<div class="alert alert-light border mt-1 mb-4" role="alert">Checking this box hides your profile to public viewers, prevents search engines from indexing your information, and only allows logged-in members to see your information.</div>
+				<div class="row">
+				
+					<div class="form-group pb-2">
+						{{ form.private_profile(class="form-check-input") }}
+						{{ form.private_profile.label(class="form-check-label text-secondary") }}
+					</div>
+				</div>
+				<br>
+				<hr>
 				{{ form.submit(class="btn btn-danger") }}
 			</form>
 		</div>
