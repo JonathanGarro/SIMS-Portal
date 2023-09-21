@@ -238,12 +238,12 @@ def update_robots_txt(user_id, disallow=True):
 	updated_content = []
 	
 	# construct the new Disallow or Allow rule
-	new_rule = "Disallow: /profile/{}/".format(user_id) if disallow else "Allow: /profile/{}/".format(user_id)
+	new_rule = "Disallow: /profile/view/{}/".format(user_id) if disallow else "Allow: /profile/view/{}/".format(user_id)
 	
 	# loop through existing rules
 	for line in existing_content:
 		# Check if the rule for the current user_id already exists
-		if line.strip().startswith("Disallow: /profile/{}/".format(user_id)) or line.strip().startswith("Allow: /profile/{}/".format(user_id)):
+		if line.strip().startswith("Disallow: /profile/view/{}/".format(user_id)) or line.strip().startswith("Allow: /profile/view/{}/".format(user_id)):
 			# If Disallow=False, replace with Allow
 			if not disallow:
 				updated_content.append(new_rule + "\n")
