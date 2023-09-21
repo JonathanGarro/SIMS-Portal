@@ -217,9 +217,48 @@ def view_emergency(id):
 		to_do_trello = None
 		count_cards = 0
 	
-	# filter for availability button
 	today = datetime.today()
 	current_weekday = today.weekday()
+	year, week_number, _ = today.isocalendar()
+	current_week_num = f"{year}-{week_number:02d}"
+	next_week = week_number + 1
+	next_week_num = f"{year}-{next_week:02d}"
+	days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+	
+	# current week supporters
+	available_supporters_current_week = db.session.query(User, Availability).join(Availability, User.id == Availability.user_id).filter(
+		Availability.emergency_id == id,
+		Availability.timeframe == current_week_num
+	)
+	available_supporter_current_week_list = available_supporters_current_week.all()
+	
+	# next week supporters
+	available_supporters_next_week = db.session.query(User, Availability).join(Availability, User.id == Availability.user_id).filter(
+		Availability.emergency_id == id,
+		Availability.timeframe == next_week_num 
+	)
+	available_supporter_next_week_list = available_supporters_next_week.all()
+	
+	def extract_day_of_week(date_string):
+		try:
+			date_obj = datetime.strptime(date_string, '%A, %B %d')
+			return date_obj.strftime('%A')
+		except ValueError:
+			return date_string
+	
+	# iterate through the results and format the dates
+	for member in available_supporter_current_week_list:
+		availability = member.Availability
+		dates = availability.dates[1:-1].split(', ')
+		formatted_dates = [extract_day_of_week(date.strip("'")) for date in dates]
+		availability.dates = ', '.join(formatted_dates)
+		availability.dates = availability.dates.replace(',','').split()
+		
+		available_days_of_week = []
+		for date in availability.dates:
+			if date in days_of_week:
+				available_days_of_week.append(date)
+		availability.dates = available_days_of_week
 	
 	return render_template(
 		'emergency.html', 
@@ -250,7 +289,9 @@ def view_emergency(id):
 		frequency_count=frequency_count,
 		kill_chart=kill_chart,
 		quick_action=quick_action,
-		quick_action_id=quick_action_id
+		quick_action_id=quick_action_id,
+		available_supporter_current_week_list=available_supporter_current_week_list,
+		available_supporter_next_week_list=available_supporter_next_week_list
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
