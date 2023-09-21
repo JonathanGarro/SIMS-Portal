@@ -416,6 +416,7 @@
 			</div>
 			<br>
 			<div class='my-3'>
+			<h4 class="text-dark mt-4 emergency-title">Members Available This Week</h4>
 			<table class="table" id="">
 				<thead class="">
 					<tr>
@@ -427,7 +428,7 @@
 				<tbody>
 					{% for member in available_supporter_current_week_list %}
 					<tr>
-						<td class="fw-bold">{{ member.User.firstname }} {{ member.User.lastname }}</td>
+						<td class="fw-bold"><a href='/profile/view/{{member.User.id}}'>{{ member.User.firstname }} {{ member.User.lastname }}</a></td>
 						<td><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{ member.User.slack_id }}'>Message</td>
 						<td>
 							{% for date in member.Availability.dates %}
