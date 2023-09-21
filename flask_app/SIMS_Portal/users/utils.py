@@ -222,3 +222,45 @@ def bulk_slack_photo_update():
 			session['_flashes'] = []
 		except Exception as e:
 			current_app.logger.warning("bulk_slack_photo_update failed for user-{}: {}".format(user.id, e))
+			
+def update_robots_txt(user_id, disallow=True):
+	robots_txt_path = os.path.join(current_app.root_path, 'robots.txt')
+	
+	# read the existing "robots.txt" content, if it exists
+	existing_content = []
+	if os.path.exists(robots_txt_path):
+		with open(robots_txt_path, 'r') as robots_file:
+			existing_content = robots_file.readlines()
+	
+	# flag to track if the rule was updated
+	rule_updated = False
+	
+	updated_content = []
+	
+	# construct the new Disallow or Allow rule
+	new_rule = "Disallow: /profile/{}/".format(user_id) if disallow else "Allow: /profile/{}/".format(user_id)
+	
+	# loop through existing rules
+	for line in existing_content:
+		# Check if the rule for the current user_id already exists
+		if line.strip().startswith("Disallow: /profile/{}/".format(user_id)) or line.strip().startswith("Allow: /profile/{}/".format(user_id)):
+			# If Disallow=False, replace with Allow
+			if not disallow:
+				updated_content.append(new_rule + "\n")
+				rule_updated = True
+		else:
+			# Keep other rules unchanged
+			updated_content.append(line)
+	
+	# if Disallow=True and the rule didn't exist, append it
+	if disallow and not rule_updated:
+		updated_content.append(new_rule + "\n")
+	
+	# write the updated content back to the "robots.txt" file
+	with open(robots_txt_path, 'w') as robots_file:
+		robots_file.writelines(updated_content)
+	
+	if rule_updated:
+		current_app.logger.info('User {} has updated their search engine settings on robots.txt'.format(user_id))
+	else:
+		current_app.logger.info('A new robots.txt rule as has been added for user {}'.format(user_id))
