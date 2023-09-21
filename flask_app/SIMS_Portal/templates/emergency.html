@@ -414,6 +414,35 @@
 					new Chart(ctx, chartConfig);
 				</script>
 			</div>
+			<br>
+			<div class='my-3'>
+			<table class="table" id="">
+				<thead class="">
+					<tr>
+						<th>Member</th>
+						<th>Slack</th>
+						<th>Dates</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for member in available_supporter_current_week_list %}
+					<tr>
+						<td class="fw-bold">{{ member.User.firstname }} {{ member.User.lastname }}</td>
+						<td><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{ member.User.slack_id }}'>Message</td>
+						<td>
+							{% for date in member.Availability.dates %}
+							{{ date }}{% if not loop.last %}, {% endif %}
+							{% endfor %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+			</div>
+			
+			</div>
+			
 		</div>
 		<div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
 			<div class="d-flex align-items-start">
