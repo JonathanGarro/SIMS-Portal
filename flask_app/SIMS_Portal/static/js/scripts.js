@@ -164,6 +164,14 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
+	$('#datatable-admins').DataTable( {
+		"autoWidth": false,
+		"bLengthChange": false,
+		"searching": false,
+	} );
+} );
+
+$(document).ready(function() {
 	$('#datatable-assigned-badges').DataTable( {
 		order: [[0, 'asc']],
 		"autoWidth": false,
