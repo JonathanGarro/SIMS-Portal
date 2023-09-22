@@ -14,7 +14,7 @@
 	</div>
 	<div class="row my-5">
 		<div class="col col-lg-4 mb-3 min-width-custom">
-			<div class="card p-4 card-bg-red">
+			<div class="card p-4 bg-dark">
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
 				{% if emergency_info.Emergency.emergency_status == 'Active' %}
@@ -383,9 +383,9 @@
 							datasets: [{
 								label: 'Daily Count of Available Remote Supporters',
 								data: frequency_count,
-								backgroundColor: '#be3846',
-								borderColor: '#962934',
-								borderWidth: 1,
+								backgroundColor: '#2E3338',
+								borderColor: '#2E3338',
+								borderWidth: 0,
 							}, ],
 						},
 						options: {
