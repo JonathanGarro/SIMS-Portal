@@ -72,7 +72,7 @@ def about():
 
 @main.route('/portal_admins')
 def portal_admins():
-	list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == 1).all()
+	list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == True).all()
 	return render_template('portal_admins.html', list_admins=list_admins)
 
 @main.route('/get_slack_id')
