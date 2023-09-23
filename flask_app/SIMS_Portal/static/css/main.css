@@ -430,6 +430,10 @@ p {
 	border-top: 0;
 }
 
+.table-vert-align td {
+	vertical-align: middle;
+}
+
 .tweet {
   color: #1DA1F2;
   font-weight: bold;
