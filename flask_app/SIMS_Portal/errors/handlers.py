@@ -9,7 +9,7 @@ def error_404(error):
 	
 @errors.app_errorhandler(403)
 def error_403(error):
-	list_of_admins = db.session.query(User).filter(User.is_admin == True, User.status == 'Adctive').all()
+	list_of_admins = db.session.query(User).filter(User.is_admin == True, User.status == 'Active').all()
 	return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @errors.app_errorhandler(413)
