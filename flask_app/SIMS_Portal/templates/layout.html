@@ -56,52 +56,93 @@
 						<span class="navbar-toggler-icon"></span>
 					</button>
 					<div class="collapse navbar-collapse" id="main_nav">
-						<ul class="navbar-nav ms-auto">
-							{% if current_user.is_authenticated %}
-							
-								{% if request.path == '/dashboard' %}
-									<li class="nav-item px-3"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Dashboard</button></li>
-								{% else %}
-									<li class="nav-item px-3"><a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"> Dashboard </a></li>
-								{% endif %}
-								
-								{% if '/profile_edit/' in request.path %}
-									<li class="nav-item px-2"><a class="nav-link text-light" href="/profile" style="font-family: 'Montserrat';"> Your Profile </a></li>
-								{% elif request.path == '/profile' %}
-									<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">{{ current_user.firstname }}'s Profile</button></li>
-								{% else %}
-									<li class="nav-item px-2"><a class="nav-link text-light" href="/profile" style="font-family: 'Montserrat';"> {{ current_user.firstname }}'s Profile </a></li>
-								{% endif %}
-									<li class="nav-item ps-2"><a class="nav-link Montserrat text-light" href="/logout"> Logout </a></li>
-									
+					  <div class="navbar-nav ms-auto">
+						{% if current_user.is_authenticated %}
+						
+						{% if current_user.is_admin == 1 %}
+							{% if '/admin_landing' in request.path %}
+							<div class="nav-item px-2">
+								<span class="nav-link text-light"><img src='/static/assets/img/admin-circle.png' data-toggle="tooltip" data-placement="auto" title="Viewing Admin Portal"></span>
+							</div>
 							{% else %}
-							
-								{% if '/about' in request.path %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/about" style="text-decoration: underline; text-decoration-thickness: 3px;"> About </a></li>
-								{% else %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/about"> About </a></li>
-								{% endif %}
-								
-								{% if '/portfolio' in request.path %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/portfolio" style="text-decoration: underline; text-decoration-thickness: 3px;"> Portfolio </a></li>
-								{% else %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/portfolio"> Portfolio </a></li>
-								{% endif %}
-								
-								{% if '/members' in request.path %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/members" style="text-decoration: underline; text-decoration-thickness: 3px;"> Members </a></li>
-								{% else %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/members"> Members </a></li>
-								{% endif %}
-								
-								{% if '/login' in request.path %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/login" style="text-decoration: underline; text-decoration-thickness: 3px;"> Login </a></li>
-								{% else %}
-									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/login"> Login </a></li>
-								{% endif %}
-								
+							<div class="nav-item px-2">
+								<a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';"><img src='/static/assets/img/admin-circle.png' data-toggle="tooltip" data-placement="auto" title="Admin Portal"></a>
+							</div>
+							{% endif %}
 						{% endif %}
-						</ul>
+						
+						{% if request.path == '/dashboard' %}
+						<div class="nav-item px-2">
+						  <span class="nav-link text-light"><img src='/static/assets/img/dashboard-circle.png' data-toggle="tooltip" data-placement="auto" title="Dashboard"></span>
+						</div>
+						{% else %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"><img src='/static/assets/img/dashboard-circle.png' data-toggle="tooltip" data-placement="auto" title="Dashboard"></a>
+						</div>
+						{% endif %}
+						
+						{% if '/profile_edit/' in request.path %}
+						<div class="nav-item px-2">
+						  <a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src='/static/assets/img/person-circle.png' data-toggle="tooltip" data-placement="auto" title="Editing Your Profile"></a>
+						</div>
+						{% elif request.path == '/profile' %}
+						<div class="nav-item px-2">
+						  <a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src='/static/assets/img/person-circle.png' data-toggle="tooltip" data-placement="auto" title="Viewing Your Profile"></a>
+						</div>
+						{% else %}
+						<div class="nav-item px-2">
+							<a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src='/static/assets/img/person-circle.png' data-toggle="tooltip" data-placement="auto" title="View and Edit Your Profile"></a>
+						</div>
+						{% endif %}
+						
+						<div class="nav-item ps-2">
+						  <a class="nav-link Montserrat text-light" href="/logout"><img src='/static/assets/img/x-circle.png' data-toggle="tooltip" data-placement="auto" title="Log Out"></a>
+						</div>
+						
+						{% else %}
+						
+						{% if '/about' in request.path %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/about" style="text-decoration: underline; text-decoration-thickness: 3px;">About</a>
+						</div>
+						{% else %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/about">About</a>
+						</div>
+						{% endif %}
+						
+						{% if '/portfolio' in request.path %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/portfolio" style="text-decoration: underline; text-decoration-thickness: 3px;">Portfolio</a>
+						</div>
+						{% else %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/portfolio">Portfolio</a>
+						</div>
+						{% endif %}
+						
+						{% if '/members' in request.path %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/members" style="text-decoration: underline; text-decoration-thickness: 3px;">Members</a>
+						</div>
+						{% else %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/members">Members</a>
+						</div>
+						{% endif %}
+						
+						{% if '/login' in request.path %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/login" style="text-decoration: underline; text-decoration-thickness: 3px;">Login</a>
+						</div>
+						{% else %}
+						<div class="nav-item px-2">
+						  <a class="nav-link text-light Montserrat" href="/login">Login</a>
+						</div>
+						{% endif %}
+						
+						{% endif %}
+					  </div>
 					</div>
 			</nav>
 			{% if current_user.is_authenticated %}
@@ -112,13 +153,6 @@
 					</button>
 					<div class="collapse navbar-collapse" id="main_nav">
 						<ul class="navbar-nav ms-auto">
-							{% if current_user.is_admin == 1 %}
-							{% if '/admin_landing' in request.path %}
-							<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Admin Portal</button></li>
-							{% else %}
-							<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';">Admin Portal</a></li>
-							{% endif %}
-							{% endif %}
 							{% if '/emergencies/all' in request.path %}
 							<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Emergencies</button></li>
 							{% else %}
