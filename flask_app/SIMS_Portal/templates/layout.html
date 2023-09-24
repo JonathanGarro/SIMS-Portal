@@ -58,41 +58,49 @@
 					<div class="collapse navbar-collapse" id="main_nav">
 						<ul class="navbar-nav ms-auto">
 							{% if current_user.is_authenticated %}
-							{% if request.path == '/dashboard' %}
-							<li class="nav-item px-3"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Dashboard</button></li>
+							
+								{% if request.path == '/dashboard' %}
+									<li class="nav-item px-3"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Dashboard</button></li>
+								{% else %}
+									<li class="nav-item px-3"><a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"> Dashboard </a></li>
+								{% endif %}
+								
+								{% if '/profile_edit/' in request.path %}
+									<li class="nav-item px-2"><a class="nav-link text-light" href="/profile" style="font-family: 'Montserrat';"> Your Profile </a></li>
+								{% elif request.path == '/profile' %}
+									<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">{{ current_user.firstname }}'s Profile</button></li>
+								{% else %}
+									<li class="nav-item px-2"><a class="nav-link text-light" href="/profile" style="font-family: 'Montserrat';"> {{ current_user.firstname }}'s Profile </a></li>
+								{% endif %}
+									<li class="nav-item ps-2"><a class="nav-link Montserrat text-light" href="/logout"> Logout </a></li>
+									
 							{% else %}
-							<li class="nav-item px-3"><a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"> Dashboard </a></li>
-							{% endif %}
-							{% if '/profile_edit/' in request.path %}
-							<li class="nav-item px-2"><a class="nav-link text-light" href="/profile" style="font-family: 'Montserrat';"> Your Profile </a></li>
-							{% elif request.path == '/profile' %}
-							<li class="nav-item px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">{{ current_user.firstname }}'s Profile</button></li>
-							{% else %}
-							<li class="nav-item px-2"><a class="nav-link text-light" href="/profile" style="font-family: 'Montserrat';"> {{ current_user.firstname }}'s Profile </a></li>
-							{% endif %}
-							<li class="nav-item ps-2"><a class="nav-link Montserrat text-light" href="/logout"> Logout </a></li>
-							{% else %}
-							{% if '/about' in request.path %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/about" style="text-decoration: underline; text-decoration-thickness: 3px;"> About </a></li>
-							{% else %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/about"> About </a></li>
-							{% endif %}
-							{% if '/portfolio' in request.path %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/portfolio" style="text-decoration: underline; text-decoration-thickness: 3px;"> Portfolio </a></li>
-							{% else %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/portfolio"> Portfolio </a></li>
-							{% endif %}
-							{% if '/members' in request.path %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/members" style="text-decoration: underline; text-decoration-thickness: 3px;"> Members </a></li>
-							{% else %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/members"> Members </a></li>
-							{% endif %}
-							{% if '/login' in request.path %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/login" style="text-decoration: underline; text-decoration-thickness: 3px;"> Login </a></li>
-							{% else %}
-							<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/login"> Login </a></li>
-							{% endif %}
-							{% endif %}
+							
+								{% if '/about' in request.path %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/about" style="text-decoration: underline; text-decoration-thickness: 3px;"> About </a></li>
+								{% else %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/about"> About </a></li>
+								{% endif %}
+								
+								{% if '/portfolio' in request.path %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/portfolio" style="text-decoration: underline; text-decoration-thickness: 3px;"> Portfolio </a></li>
+								{% else %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/portfolio"> Portfolio </a></li>
+								{% endif %}
+								
+								{% if '/members' in request.path %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/members" style="text-decoration: underline; text-decoration-thickness: 3px;"> Members </a></li>
+								{% else %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/members"> Members </a></li>
+								{% endif %}
+								
+								{% if '/login' in request.path %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/login" style="text-decoration: underline; text-decoration-thickness: 3px;"> Login </a></li>
+								{% else %}
+									<li class="nav-item px-2"><a class="nav-link text-light Montserrat" href="/login"> Login </a></li>
+								{% endif %}
+								
+						{% endif %}
 						</ul>
 					</div>
 			</nav>
