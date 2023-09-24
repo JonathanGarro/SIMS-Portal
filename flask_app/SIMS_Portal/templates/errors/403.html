@@ -7,8 +7,8 @@
 		</div>
 		{% if user_is_sims_co == False %}
 		<div class='col ps-5'>
-			<h2 class='text-danger Montserrat mb-2'>Ah, ah, ah! You can't do that.</h2>
-			<p><span class='fw-bold'>Error 403:</span> You need to be a SIMS Remote Coordinator for <span class='fw-bold text-danger'>{{event_name.emergency_name}}</span> to assign badges. Reach out to one of the coordinators assigned to this event to get this product approved.</p>
+			<div class='mt-2'><h2 class='text-danger Montserrat mb-2'>Ah, ah, ah! You can't do that.</h2></div>
+			<div class='ps-5'><span class='fw-bold'>Error 403:</span> You need to be a SIMS Remote Coordinator for <span class='fw-bold text-danger'>{{event_name.emergency_name}}</span> to assign badges. Reach out to one of the coordinators assigned to this event to get this product approved.</div>
 			<table class='table'>
 				<thead>
 					<tr>
@@ -29,7 +29,7 @@
 		{% elif disaster_coordinator_query %}
 			<div class='col ps-5'>
 				<h2 class='text-danger'>Ah, ah, ah! You can't do that.</h2>
-				<p><span class='fw-bold'>Error 403:</span> You need to be either a site administrator or a SIMS Remote Coordinator for <span class='fw-bold text-danger'>{{event_name.emergency_name}}</span> to approve portfolio products. Reach out to one of the coordinators assigned to this event to get this product approved.</p>
+				<div class='mt-2'><span class='fw-bold'>Error 403:</span> You need to be either a site administrator or a SIMS Remote Coordinator for <span class='fw-bold text-danger'>{{event_name.emergency_name}}</span> to approve portfolio products. Reach out to one of the coordinators assigned to this event to get this product approved.</div>
 				<table class='table'>
 					<thead>
 						<tr>
@@ -50,7 +50,7 @@
 		{% else %}
 		<div class='col ps-5'>
 			<h2 class='text-danger'>Ah ah ah, you didn't say the magic word!</h2>
-			<p><span class='fw-bold'>Error 403:</span> You don't have permission to do that. Reach out to a SIMS Portal administrator if you need help.</p>
+			<div class='mt-2'><span class='fw-bold'>Error 403:</span> You don't have permission to do that. Reach out to a SIMS Portal administrator if you need help.</div>
 			<table class='table'>
 				<thead>
 					<tr>
