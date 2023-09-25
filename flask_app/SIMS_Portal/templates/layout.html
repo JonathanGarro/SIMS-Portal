@@ -62,41 +62,41 @@
 						{% if current_user.is_admin == 1 %}
 							{% if '/admin_landing' in request.path %}
 							<div class="nav-item px-2">
-								<span class="nav-link text-light"><img src='/static/assets/img/admin-circle.png' data-toggle="tooltip" data-placement="auto" title="Viewing Admin Portal"></span>
+								<span class="nav-link text-light"><img src="{{ url_for('main.static_files', filename='assets/img/admin-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Viewing Admin Portal"></span>
 							</div>
 							{% else %}
 							<div class="nav-item px-2">
-								<a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';"><img src='/static/assets/img/admin-circle.png' data-toggle="tooltip" data-placement="auto" title="Admin Portal"></a>
+								<a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/admin-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Admin Portal"></a>
 							</div>
 							{% endif %}
 						{% endif %}
 						
 						{% if request.path == '/dashboard' %}
 						<div class="nav-item px-2">
-						  <span class="nav-link text-light"><img src='/static/assets/img/dashboard-circle.png' data-toggle="tooltip" data-placement="auto" title="Dashboard"></span>
+						  <span class="nav-link text-light"><img src="{{ url_for('main.static_files', filename='assets/img/dashboard-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Currently Viewing: Dashboard"></span>
 						</div>
 						{% else %}
 						<div class="nav-item px-2">
-						  <a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"><img src='/static/assets/img/dashboard-circle.png' data-toggle="tooltip" data-placement="auto" title="Dashboard"></a>
+						  <a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/dashboard-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Dashboard"></a>
 						</div>
 						{% endif %}
 						
-						{% if '/profile_edit/' in request.path %}
+						{% if '/profile_edit' in request.path %}
 						<div class="nav-item px-2">
-						  <a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src='/static/assets/img/person-circle.png' data-toggle="tooltip" data-placement="auto" title="Editing Your Profile"></a>
+						  <a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/person-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Editing Your Profile"></a>
 						</div>
 						{% elif request.path == '/profile' %}
 						<div class="nav-item px-2">
-						  <a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src='/static/assets/img/person-circle.png' data-toggle="tooltip" data-placement="auto" title="Viewing Your Profile"></a>
+						  <a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/person-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Viewing Your Profile"></a>
 						</div>
 						{% else %}
 						<div class="nav-item px-2">
-							<a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src='/static/assets/img/person-circle.png' data-toggle="tooltip" data-placement="auto" title="View and Edit Your Profile"></a>
+							<a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/person-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="View and Edit Your Profile"></a>
 						</div>
 						{% endif %}
 						
 						<div class="nav-item ps-2">
-						  <a class="nav-link Montserrat text-light" href="/logout"><img src='/static/assets/img/x-circle.png' data-toggle="tooltip" data-placement="auto" title="Log Out"></a>
+						  <a class="nav-link Montserrat text-light" href="/logout"><img src="{{ url_for('main.static_files', filename='assets/img/x-circle.png') }}" data-toggle="tooltip" data-placement="auto" title="Logout"></a>
 						</div>
 						
 						{% else %}

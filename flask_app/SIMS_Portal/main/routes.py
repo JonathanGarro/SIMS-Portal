@@ -9,7 +9,7 @@ from datetime import datetime
 import pandas as pd
 from flask import (
 	abort, request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app, session, send_file
+	jsonify, Blueprint, current_app, session, send_file, send_from_directory
 )
 from flask_login import (
 	login_user, current_user, logout_user, login_required
@@ -432,7 +432,7 @@ def staging():
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@main.route("/uploads/<path:name>")
+@main.route('/uploads/<path:name>')
 def download_file(name):
     s3 = boto3.resource('s3')
     file_stream = io.BytesIO()
@@ -444,3 +444,9 @@ def download_file(name):
         abort(404)
     file_stream.seek(0)
     return send_file(file_stream, mimetype=s3_object.content_type)
+
+@main.route('/static/<path:filename>')
+def static_files(filename):
+	"""Route to handle caching of static files"""
+	cache_timeout = 3600 
+	return send_from_directory(app.config['STATIC_FOLDER'], filename, cache_timeout=cache_timeout)
