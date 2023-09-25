@@ -32,3 +32,4 @@ class Config:
 	WERKZEUG_DEBUG_PIN = '443-431-665'
 	UPLOAD_BUCKET = 'sims-portal-uploads'
 	CACHE_TYPE = 'simple'
+	STATIC_FOLDER = 'static'
