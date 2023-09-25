@@ -1,4 +1,4 @@
-![Screen Shot 2023-06-02 at 08 26 33 PM](https://github.com/JonathanGarro/SIMS-Portal/assets/8890661/8259016f-59fe-4279-831f-ad492e808bbb)
+![Screen Shot 2023-09-25 at 12 59 02 PM](https://github.com/JonathanGarro/SIMS-Portal/assets/8890661/f5f69241-a2d0-4081-adc2-0d7102577364)
 
 # SIMS-Portal
 
