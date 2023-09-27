@@ -118,10 +118,12 @@
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="/emergency/edit/{{emergency_info.Emergency.id}}" class="text-secondary">Edit Emergency</a>
 						</li>
+						{% if emergency_info.Emergency.emergency_status == 'Active' %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
 							<a href="https://learn-sims.org/docs/sims-portal-documentation/emergency-page-overview" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 						</li>
+						{% endif %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="#" class="text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Emergency</a>
 						</li>
