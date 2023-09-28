@@ -80,10 +80,11 @@ def new_emergency():
 @emergencies.route('/emergency/<int:id>', methods=['GET', 'POST'])
 @login_required
 def view_emergency(id):
+	# get user info for various filtering
 	user_info = db.session.query(User).filter(User.id == current_user.id).first()
-
-	week_dates, frequency_count = emergency_availability_chart_data(id)
 	
+	# build availability chart
+	week_dates, frequency_count = emergency_availability_chart_data(id)
 	if frequency_count == [0, 0, 0, 0, 0, 0, 0]:
 		kill_chart = True
 	else:
@@ -101,6 +102,7 @@ def view_emergency(id):
 	else:
 		user_is_sims_co = False
 	
+	# build availability query parameters
 	emergency_id = id
 	user_id = current_user.id
 	today = datetime.today().year
@@ -166,18 +168,25 @@ def view_emergency(id):
 	else:
 		quick_action_id = 0
 	
+	# get emergency information
 	emergency_info = db.session.query(Emergency, EmergencyType, NationalSociety).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id).filter(Emergency.id == id).first()
 	
+	# count approved products for emergency
 	emergency_portfolio_size = len(db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == id, Portfolio.product_status == 'Approved').all())
 	
+	# get 3 portfolio products for emergency
 	emergency_portfolio = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == id, Portfolio.product_status == 'Approved').limit(3).all()
 	
+	# check if story already exists for button filtering
 	check_for_story = db.session.query(Story, Emergency).join(Emergency, Emergency.id == Story.emergency_id).filter(Story.emergency_id == id).first()
 
+	# count how many learnings have been logged by remote supporters
 	learning_count = db.session.query(Learning, Assignment, Emergency).join(Assignment, Assignment.id == Learning.assignment_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id).count()
 
+	# get the average learning scores across all operations
 	learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}'.format(id))
 	
+	# build chart's x and y
 	data_dict_learnings = [x._asdict() for x in learning_data]
 	learning_keys = []
 	learning_values = []
