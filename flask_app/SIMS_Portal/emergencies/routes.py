@@ -295,6 +295,7 @@ def view_emergency(id):
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_emergency(id):
 	form = UpdateEmergencyForm()
 	emergency_info = db.session.query(Emergency).filter(Emergency.id == id).first()
