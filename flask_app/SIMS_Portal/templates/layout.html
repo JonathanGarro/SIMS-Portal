@@ -38,7 +38,6 @@
 
 <!-- Only load the getRandomImage js if viewing the login page -->
 {% if request.path == '/login' %}
-
 <body class="d-flex flex-column min-vh-100" data-spy="scroll" data-target=".card" data-offset="50" onload="getRandomImage()">
 {% else %}
 <body class="d-flex flex-column min-vh-100" data-spy="scroll" data-target=".card" data-offset="50">
