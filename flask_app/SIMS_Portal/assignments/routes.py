@@ -91,6 +91,10 @@ def new_assignment_from_disaster(dis_id):
 def view_assignment(id):
 	assignment_info = db.session.query(Assignment, User, Emergency).join(User).join(Emergency).filter(Assignment.id == id).first()
 	
+	# check if user viewing the assignment is a sims co for this emergency
+	assignment_emergency_id = assignment_info.Emergency.id
+	sims_co_check = check_sims_co(assignment_emergency_id)
+	
 	assignment_portfolio = db.session.query(Portfolio).filter(Portfolio.assignment_id==id, Portfolio.product_status != 'Removed').all()
 	count_assignment_portfolio = len(assignment_portfolio)
 	
@@ -102,7 +106,7 @@ def view_assignment(id):
 	else:
 		available_dates = []
 		
-	return render_template('assignment_view.html', assignment_info=assignment_info, assignment_portfolio=assignment_portfolio, count_assignment_portfolio=count_assignment_portfolio)
+	return render_template('assignment_view.html', assignment_info=assignment_info, assignment_portfolio=assignment_portfolio, count_assignment_portfolio=count_assignment_portfolio, sims_co_check=sims_co_check)
 
 @assignments.route('/assignment/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

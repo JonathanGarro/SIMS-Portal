@@ -19,7 +19,7 @@
 			<a href='/profile/view/{{assignment_info.User.id}}'><h1 class="text-danger mb-1 emergency-title">{{assignment_info.User.firstname}} {{assignment_info.User.lastname}}</h1></a>
 			<h5 class="text-secondary mb-5">{{assignment_info.Assignment.role}} for <a href='/emergency/{{assignment_info.Emergency.id}}'>{{assignment_info.Emergency.emergency_name}}</a> </h5>
 
-				{% if current_user.is_admin == 1 or current_user.id == assignment_info.Assignment.user_id %}
+				{% if current_user.is_admin == 1 or current_user.id == assignment_info.Assignment.user_id or sims_co_check == True %}
 				<h5 class="text-secondary Montserrat mt-2">Available Actions</h5>
 				<div class="list-group mt-2 border-0">
 					
@@ -28,7 +28,7 @@
 							<a href="/learning/assignment/new/{{assignment_info.Assignment.user_id}}/{{assignment_info.Assignment.id}}" class="list-group-item list-group-item-action text-secondary">Create Learning Review</a>
 						{% endif %}
 						
-						{% if current_user.is_admin == 1 or current_user.id == assignment_info.User.id %}
+						{% if current_user.is_admin == 1 or current_user.id == assignment_info.User.id or sims_co_check == True %}
 							<a href="/assignment/edit/{{assignment_info.Assignment.id}}" class="list-group-item list-group-item-action text-secondary">Edit Assignment</a>
 						{% if assignment_info.Assignment.assignment_status != 'Removed' %}
 							<a href="/assignment/delete/{{assignment_info.Assignment.id}}" class="list-group-item list-group-item-action text-danger">Delete Assignment</a>
