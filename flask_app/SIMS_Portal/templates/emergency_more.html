@@ -10,7 +10,10 @@
 			  	<div class="col d-flex align-items-stretch">
 					<a href="/portfolio/view/{{product.Portfolio.id}}">
 					<div class="card" id='portfolio-card'>
-						<img src="/uploads/{{product.Portfolio.image_file}}" class="card-img-top" alt="...">
+						{% if 'portfolio_cover_images' in product.Portfolio.image_file %}
+						<img src="/uploads/{{product.Portfolio.image_file}}" class="card-img-top" alt="preview of product image">
+						{% else %}
+						<img src="/static/assets/img/portfolio_placeholders/{{product.Portfolio.image_file}}" class="card-img-top" alt="preview of product image">
 						{% endif %}
 						<div class="card-body d-flex flex-column">
 							<div class='pb-4'><button type="button" class="btn btn-secondary btn-sm">{{product.Portfolio.type}}</button></div>
