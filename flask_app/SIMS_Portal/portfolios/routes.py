@@ -14,9 +14,9 @@ from SIMS_Portal import db
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Portfolio,
 	EmergencyType, Skill, Language, user_skill, user_language,
-	Badge, Alert
+	Badge, Alert, Documentation
 )
-from SIMS_Portal.portfolios.forms import PortfolioUploadForm
+from SIMS_Portal.portfolios.forms import PortfolioUploadForm, NewDocumentationForm
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal.portfolios.utils import (
 	get_full_portfolio, save_portfolio_to_dropbox, save_cover_image
@@ -325,6 +325,70 @@ def remove_supporter_from_product(product_id):
 	else:
 		flash('This product has no collaborators listed that can be removed.', 'danger')
 		return redirect(url_for('portfolios.view_portfolio', id=product_id))
+
+@portfolios.route('/documentation')
+def view_documentation():
+	documentation = db.session.query(Documentation, User, Portfolio).outerjoin(User, User.id == Documentation.author_id).outerjoin(Portfolio, Portfolio.id == Documentation.portfolio_id).all()
+
+	return render_template('documentation.html', documentation=documentation)
+
+@portfolios.route('/add_documentation', methods=['GET', 'POST'])
+@login_required
+def add_documentation():
+	"""
+	Add documentation from WordPress to SIMS Portal. This route is for adding documentation that is not
+	connected to a portfolio product. When adding documentation that walks a user through how a certain
+	product was created, use the connect_documentation() route.
+	"""
+	form = NewDocumentationForm()
+	if request.method == 'GET':
+		return render_template('add_documentation.html', form=form)
+	else:
+		if form.validate_on_submit():
+			documentation = Documentation(
+				article_name = form.article_name.data,
+				summary = form.summary.data,
+				url = form.url.data,
+				category = form.category.data,
+				author_id = form.author_id.data.id,
+				wp_id = form.wordpress_id.data,
+				featured = form.featured.data
+			)
+			db.session.add(documentation)
+			db.session.commit()
+			flash('New documentation added.', 'success')
+			return redirect(url_for('main.dashboard'))
+		else:
+			flash('Please correct the errors in the documentation form.', 'danger')
+		return render_template('add_documentation.html', form=form)	
+
+@portfolios.route('/portfolio/connect_documentation/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def connect_documentation(product_id):
+	"""
+	Add documentation from an existing product page.
+	"""
+	form = NewDocumentationForm()
+	if request.method == 'GET':
+		return render_template('connect_documentation.html', form=form)
+	else:
+		if form.validate_on_submit():
+			documentation = Documentation(
+				article_name = form.article_name.data,
+				summary = form.summary.data,
+				url = form.url.data,
+				category = form.category.data,
+				author_id = form.author_id.data.id,
+				wp_id = form.wp_id.data,
+				portfolio_id = product_id
+			)
+			db.session.add(documentation)
+			db.session.commit()
+			flash('New documentation added.', 'success')
+			return redirect(url_for('main.dashboard'))
+		else:
+			flash('Please correct the errors in the documentation form.', 'danger')
+		return render_template('connect_documentation.html', form=form)	
 		
 @portfolios.route('/api/portfolio', methods=['GET'])
 def api_get_products():

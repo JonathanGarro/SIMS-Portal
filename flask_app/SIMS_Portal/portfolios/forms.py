@@ -17,3 +17,13 @@ class PortfolioUploadForm(FlaskForm):
 	format = SelectField('Final Product Format', choices=['', 'AI', 'APK', 'CSV', 'DOC', 'DOCX', 'EXE', 'GPKG', 'HTML', 'INDD', 'JAVA', 'JPG', 'JPEG', 'JS', 'JSON', 'KML', 'KMZ', 'PBIX', 'PDF', 'PHP', 'PNG', 'PPT', 'PPTX', 'PSD', 'PY', 'QGIS', 'SHP', 'SQL', 'SVG', 'TXT', 'XLS', 'XLSX', 'XML', 'ZIP', 'OTHER'], validators=[DataRequired()])
 	external = BooleanField('Share Publicly')
 	submit = SubmitField('Upload SIMS Product')
+
+class NewDocumentationForm(FlaskForm):
+	article_name = StringField('Article Title', validators=[DataRequired()])
+	url = StringField('Article URL', validators=[DataRequired()])
+	category = SelectField('Categories', choices=['', 'Data Collection and Survey Design', 'Data Transformation and Analysis', 'Geospatial', 'Information Design', 'SIMS Remote Coordination', 'Standard Operating Procedures', 'Style Guidance'], validators=[DataRequired()])
+	author_id =  QuerySelectField('Author', query_factory=lambda:User.query.filter_by(status='Active').order_by(User.firstname), get_label='fullname', allow_blank=True, validators=[DataRequired()])
+	wordpress_id = IntegerField('Wordpress ID')
+	summary = TextAreaField('Brief Summary of Article (One to two sentences)', validators=[DataRequired()], render_kw={'style':'height: 100px'})
+	featured = BooleanField('Featured')
+	submit = SubmitField('Submit Documentation')
