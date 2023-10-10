@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <div id="hideMe">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                   {% if messages %}
+                       {% for category, message in messages %}
+                           <div class="mt-4 alert alert-{{ category }}">
+                               {{ message }} 
+                           </div>
+                       {% endfor %}
+                   {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    <div class="container mt-3">
+    
+        <div class="row my-5">
+            <div class="col-md-4">
+                <div class="card border-0 px-4 ">
+                    <h3 class="Montserrat text-danger mt-4 pb-3">Adding Documentation</h3>
+                    <ul class="timeline" style="list-style: none; padding-left: 0">
+                        <li>
+                            <h5 class="text-secondary">Draft Documentation in WordPress</h5>
+                            <p>The guides, tutorials, and documentation for the SIMS network are drafted in WordPress and hosted at <a href="learn-sims.org">learn-sims.org</a>. This allows for better content management than the Flask backend that powers the SIMS Portal. If you don't have an account with the learning site and would like to contribute, reach out to a <a href="https://rcrcsims.org/portal_admins">Portal admin</a> to get you set up.</p>
+                        </li>
+                        <li>
+                            <h5 class="text-secondary">Article Name and Summary</h5>
+                            <p>Use the same name as the documentation on WordPress. The summary is a brief description of the document, which should also be the same as what you wrote on WordPress in the "Excerpt" box.</p>
+                        </li>
+                        <li>
+                            <h5 class="text-secondary">Category</h5>
+                            <p>All guides should be able to fit into the categories we use for remote support or guidance around design. If your documentation doesn't fit these categories, reach out to an admin.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col">
+                <form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light border border-3 rounded-3" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <h4 class="Montserrat text-danger pb-3">Product Information</h4>
+                            <div class="col-md-6">
+                                <div class="form-group pb-4">
+                                    {{ form.article_name.label(class="form-control-label pb-2 text-danger") }}
+                                    {% if form.article_name.errors %}
+                                        {{ form.article_name(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.article_name.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                    {% else %}
+                                        {{ form.article_name(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        <div class="col">
+                            <div class="form-group pb-4">
+                                {{ form.category.label(class="form-control-label pb-2 text-danger") }}
+                                {% if form.category.errors %}
+                                    {{ form.category(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.category.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                {% else %}
+                                    {{ form.category(class="form-control form-control-lg") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group pb-4">
+                                {{ form.author_id.label(class="form-control-label pb-2 text-danger") }}
+                                
+                                {% if form.author_id.errors %}
+                                    {{ form.author_id(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.author_id.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                {% else %}
+                                    {{ form.author_id(class="form-control form-control-lg") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col">
+                               <div class="form-group pb-4">
+                                   {{ form.url.label(class="form-control-label pb-2 text-danger") }}
+                                   {% if form.url.errors %}
+                                       {{ form.url(class="form-control form-control-lg is-invalid") }}
+                                           <div class="invalid-feedback">
+                                               {% for error in form.url.errors %}
+                                                   <span>{{ error }}</span>
+                                               {% endfor %}
+                                           </div>
+                                   {% else %}
+                                       {{ form.url(class="form-control form-control-lg") }}
+                                   {% endif %}
+                               </div>
+                        </div>
+                        
+                    </div>
+                        <div class="row">
+        
+                                <div class="form-group pb-4">
+                                    {{ form.summary.label(class="form-control-label pb-2 text-danger") }}
+                                    
+                                    {% if form.summary.errors %}
+                                        {{ form.summary(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.summary.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                    {% else %}
+                                        {{ form.summary(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+        
+                                <div class="form-group pb-4">
+                                    {{ form.featured(class="form-check-input") }}
+                                    {{ form.featured.label(class="form-check-label text-danger") }}
+                                </div>
+
+                            </div>
+                    {{ form.submit(class="btn btn-outline-danger") }}
+                </form>
+            </div>
+        </div>
+    
+    </div>        
+{% endblock content %}

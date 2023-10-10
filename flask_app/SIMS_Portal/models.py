@@ -44,6 +44,22 @@ user_workinggroup = db.Table('user_workinggroup',
 	db.Column('workinggroup_id', db.Integer, db.ForeignKey('workinggroup.id'))
 )
 
+class Documentation(db.Model):
+	__tablename__ = 'documentation'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	article_name = db.Column(db.String)
+	url = db.Column(db.String)
+	category = db.Column(db.String)
+	summary = db.Column(db.String)
+	featured = db.Column(db.Boolean)
+	
+	author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'))
+	
+	created_at = db.Column(db.DateTime, server_default=func.now())
+	updated_at = db.Column(db.DateTime, onupdate=func.now())
+
 class Profile(db.Model):
 	__tablename__ = 'profile'
 	
