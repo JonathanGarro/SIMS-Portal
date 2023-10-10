@@ -49,7 +49,6 @@ class Documentation(db.Model):
 	
 	id = db.Column(db.Integer, primary_key=True)
 	article_name = db.Column(db.String)
-	wp_id = db.Column(db.Integer)
 	url = db.Column(db.String)
 	category = db.Column(db.String)
 	summary = db.Column(db.String)
