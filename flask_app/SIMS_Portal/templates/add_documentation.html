@@ -72,22 +72,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group pb-4">
-                            {{ form.url.label(class="form-control-label pb-2 text-danger") }}
-                            {% if form.url.errors %}
-                                {{ form.url(class="form-control form-control-lg is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.url.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                            {% else %}
-                                {{ form.url(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <div class="form-group pb-4">
                                 {{ form.author_id.label(class="form-control-label pb-2 text-danger") }}
                                 
@@ -104,18 +89,19 @@
                             </div>
                         </div>
                         <div class="col">
-                                {{ form.wordpress_id.label(class="form-control-label pb-2 text-secondary") }}
-                            
-                                {% if form.wordpress_id.errors %}
-                                    {{ form.wordpress_id(class="form-control form-control-lg is-invalid") }}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.wordpress_id.errors %}
-                                            <span>{{ error }}</span>
-                                            {% endfor %}
-                                            </div>
-                                {% else %}
-                                    {{ form.wordpress_id(class="form-control form-control-lg") }}
-                                {% endif %}
+                               <div class="form-group pb-4">
+                                   {{ form.url.label(class="form-control-label pb-2 text-danger") }}
+                                   {% if form.url.errors %}
+                                       {{ form.url(class="form-control form-control-lg is-invalid") }}
+                                           <div class="invalid-feedback">
+                                               {% for error in form.url.errors %}
+                                                   <span>{{ error }}</span>
+                                               {% endfor %}
+                                           </div>
+                                   {% else %}
+                                       {{ form.url(class="form-control form-control-lg") }}
+                                   {% endif %}
+                               </div>
                         </div>
                         
                     </div>

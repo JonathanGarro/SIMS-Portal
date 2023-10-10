@@ -16,14 +16,14 @@
     <div class="container my-5">
         <div class='d-flex justify-content-between'>
             <div>
-                <h3 class='text-danger Montserrat'>Documentation</h3>
-                <p class='text-secondary mb-4'>Guides, tutorials, and walkthroughs from the SIMS network. </p>
+                <h3 class='text-danger Montserrat'>Resources and Documentation</h3>
+                <p class='text-secondary mb-4'>Guides, tutorials, and walkthroughs from the SIMS network</p>
             </div>
             <div>
                 <a href="/add_documentation"><button class="btn btn-danger">Add Documentation</button></a>
             </div>
         </div>
-        <table class='table table-striped table-hover' id='datatable-documentation'>
+        <table class='table table-striped table-hover table-vert-align' id='datatable-documentation'>
             <thead>
                 <tr>
                     <th>Title</th>
@@ -31,7 +31,7 @@
                     <th>Summary</th>
                     <th>Author</th>
                     <th>Related Product</th>
-                    <th>Featured</th>
+                    <!-- <th>Featured</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -39,10 +39,16 @@
                     <tr>
                         <td class="fw-bold"><a href="{{document.Documentation.url}}" class='link-danger'>{{document.Documentation.article_name}}</a></td>
                         <td>{{document.Documentation.category}}</td>
-                        <td>{{document.Documentation.summary[:100]}}</td>
+                        <td>{% if document.Documentation.summary|length > 200 %}{{document.Documentation.summary[:200]}}...{% else %}{{document.Documentation.summary[:200]}}{% endif %}</td>
                         <td>{{document.User.fullname}}</td>
                         <td><a href="/portfolio/view/{{document.Portfolio.id}}">{{document.Portfolio.title}}</a></td>
-                        <td >{% if document.Documentation.featured == True %}<i class="text-success" data-feather="check-circle"></i>{% else %}<i class="text-danger" data-feather="x-circle"></i>{% endif %}</td>
+                        <!-- <td>
+                            {% if document.Documentation.featured == True %}
+                                <i class="text-success" data-feather="check-circle"></i>
+                            {% elif document.Documentation.featured == False %}
+                                <i class="text-danger" data-feather="x-circle"></i>
+                            {% endif %}
+                        </td> -->
                     </tr>
                 {% endfor %}
             </tbody>
