@@ -114,7 +114,13 @@ def register():
 				return render_template('register.html', title='Register for SIMS', form=form)
 			else:
 				hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-				user = User(firstname=form.firstname.data, lastname=form.lastname.data, ns_id=form.ns_id.data.ns_go_id, slack_id=form.slack_id.data, email=form.email.data, password=hashed_password)
+				user = User(
+					firstname=form.firstname.data, 
+					lastname=form.lastname.data, 
+					ns_id=form.ns_id.data.ns_go_id, 
+					slack_id=form.slack_id.data, 
+					email=form.email.data, 
+					password=hashed_password)
 				db.session.add(user)
 				db.session.commit()
 				message = "Thank you for registering for the SIMS Portal, {}. Your account has been placed into a queue, and will be approved by a SIMS Governance Committee member. You will be alerted here when that action is taken. In the meantime, you can log into the portal and explore the resources, but you will have limited permissions.".format(form.firstname.data)
