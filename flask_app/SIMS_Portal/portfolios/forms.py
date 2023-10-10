@@ -26,7 +26,7 @@ class PortfolioUploadForm(FlaskForm):
 class NewDocumentationForm(FlaskForm):
 	article_name = StringField('Article Title', validators=[DataRequired()])
 	url = StringField('Article URL', validators=[DataRequired(), URL()])
-	category = SelectField('Categories', choices=['', 'Data Collection and Survey Design', 'Data Transformation and Analysis', 'Geospatial', 'Information Design', 'SIMS Remote Coordination', 'Standard Operating Procedures', 'Style Guidance'], validators=[DataRequired()])
+	category = SelectField('Categories', choices=['', 'Data Collection and Survey Design', 'Data Transformation and Analysis', 'Geospatial', 'Information Design', 'SIMS Remote Coordination', 'Standard Operating Procedures', 'Style Guidance', 'Web Visualization'], validators=[DataRequired()])
 	author_id =  QuerySelectField('Author', query_factory=lambda:User.query.filter_by(status='Active').order_by(User.firstname), get_label='fullname', allow_blank=True, validators=[DataRequired()])
 	summary = TextAreaField('Brief Summary of Article (One to two sentences)', validators=[DataRequired()], render_kw={'style':'height: 100px'})
 	featured = BooleanField('Featured')
