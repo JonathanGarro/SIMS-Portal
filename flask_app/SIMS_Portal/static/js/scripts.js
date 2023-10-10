@@ -197,6 +197,40 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
+	var table = $('#datatable-documentation').DataTable({
+		order: [[0, 'asc']],
+		"bLengthChange": false
+	});
+
+	// dropdown filter for the "Category" column in the table header
+	table.columns(1).every(function() {
+		var column = this;
+		var select = $('<select><option value="">Category</option></select>') // Add the default option
+			.appendTo($(column.header()).empty())
+			.on('change', function() {
+				var val = $.fn.dataTable.util.escapeRegex(
+					$(this).val()
+				);
+
+				column
+					.search(val ? '^' + val + '$' : '', true, false)
+					.draw();
+			});
+
+		// add distinct values from the "Category" column to the dropdown
+		column
+			.data()
+			.unique()
+			.sort()
+			.each(function(d, j) {
+				select.append('<option value="' + d + '">' + d + '</option>');
+			});
+	});
+});
+
+
+
+$(document).ready(function() {
 	$('#datatable-active-assignments').DataTable( {
 		order: [[0, 'asc']],
 		"bLengthChange": false,

@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <div id="hideMe">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                   {% if messages %}
+                       {% for category, message in messages %}
+                           <div class="mt-4 alert alert-{{ category }}">
+                               {{ message }} 
+                           </div>
+                       {% endfor %}
+                   {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    <div class="container my-5">
+        <div class='d-flex justify-content-between'>
+            <div>
+                <h3 class='text-danger Montserrat'>Documentation</h3>
+                <p class='text-secondary mb-4'>Guides, tutorials, and walkthroughs from the SIMS network. </p>
+            </div>
+            <div>
+                <a href="/add_documentation"><button class="btn btn-danger">Add Documentation</button></a>
+            </div>
+        </div>
+        <table class='table table-striped table-hover' id='datatable-documentation'>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Summary</th>
+                    <th>Author</th>
+                    <th>Related Product</th>
+                    <th>Featured</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for document in documentation %}
+                    <tr>
+                        <td class="fw-bold"><a href="{{document.Documentation.url}}" class='link-danger'>{{document.Documentation.article_name}}</a></td>
+                        <td>{{document.Documentation.category}}</td>
+                        <td>{{document.Documentation.summary[:100]}}</td>
+                        <td>{{document.User.fullname}}</td>
+                        <td><a href="/portfolio/view/{{document.Portfolio.id}}">{{document.Portfolio.title}}</a></td>
+                        <td >{% if document.Documentation.featured == True %}<i class="text-success" data-feather="check-circle"></i>{% else %}<i class="text-danger" data-feather="x-circle"></i>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock content %}
