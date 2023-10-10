@@ -351,13 +351,13 @@ def add_documentation():
 				url = form.url.data,
 				category = form.category.data,
 				author_id = form.author_id.data.id,
-				wp_id = form.wordpress_id.data,
 				featured = form.featured.data
 			)
 			db.session.add(documentation)
 			db.session.commit()
 			flash('New documentation added.', 'success')
-			return redirect(url_for('main.dashboard'))
+			current_app.logger.info("User-{} has added new documentation to the Portal: {}.".format(current_user.id, documentation.article_name))
+			return redirect(url_for('portfolios.view_documentation'))
 		else:
 			flash('Please correct the errors in the documentation form.', 'danger')
 		return render_template('add_documentation.html', form=form)	
