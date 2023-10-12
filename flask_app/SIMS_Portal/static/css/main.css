@@ -439,6 +439,10 @@ p {
 	vertical-align: middle;
 }
 
+.text-lg {
+	font-size: 1.2em;
+}
+
 .tweet {
   color: #1DA1F2;
   font-weight: bold;
