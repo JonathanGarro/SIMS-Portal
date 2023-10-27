@@ -47,10 +47,15 @@ def init_logging():
             },
             "root": {"level": "INFO", "handlers": ["logtail", "console"]},
     })
-
 init_logging()
 
 from SIMS_Portal import models
+from SIMS_Portal.main.utils import get_ns_list
+
+# run utility to generate active NS list
+def build_ns_dropdown():
+	ns_list = get_ns_list()
+	return {'ns_list': ns_list}
 
 # AdminView inherits from ModelView to only show tables in the admin page if user is logged in AND is listed as an admin
 class AdminView(ModelView):
@@ -73,6 +78,9 @@ def create_app(config_class=Config):
 
 	db.init_app(app)
 	migrate.init_app(app, db)
+	
+	# send build_ns_dropdown() data to context_processor for use in layout.html
+	app.context_processor(build_ns_dropdown)
 	
 	bcrypt.init_app(app)
 	login_manager.init_app(app)
@@ -101,6 +109,7 @@ def create_app(config_class=Config):
 		app.logger.setLevel(logging.INFO)
 		app.logger.info('SIMS Portal Started Up')
 	
+	# only turn scheduled tasks on in production
 	if app.config['DEBUG'] == False:
 	
 		scheduler = APScheduler()
@@ -129,7 +138,8 @@ def create_app(config_class=Config):
 				auto_badge_assigner_world_traveler()
 				auto_badge_assigner_old_salt()
 				heartbeats('run_auto_badge_assigners', 'https://uptime.betterstack.com/api/v1/heartbeat/QWvz7BCEoLnpKeCFMFbK3d2a')
-	
+		
+		# scheduler to automatically ping all associated members to active disasters to request availability
 		# @scheduler.task('cron', id='request_availability', week='*', day_of_week='mon', hour=8)
 		# def run_request_availability():
 		# 	with scheduler.app.app_context():
@@ -173,7 +183,6 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
-	# admin.add_view(AdminView(Availability, db.session))
 	
 	with app.app_context():
 		inspector = inspect(db.engine)
@@ -182,7 +191,7 @@ def create_app(config_class=Config):
 			flask_migrate.stamp(revision="17e65488bd11")
 		flask_migrate.upgrade()
 	
-	# Required to reinit logging after flask_migrate
+	# required to reinit logging after flask_migrate
 	init_logging()
 	
 	return app

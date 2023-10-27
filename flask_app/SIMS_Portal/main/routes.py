@@ -15,7 +15,7 @@ from flask_login import (
 	login_user, current_user, logout_user, login_required
 )
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, distinct, desc, asc, select
 import boto3
 import botocore
 
@@ -37,7 +37,7 @@ from SIMS_Portal.main.utils import (
 	auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot,
 	auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades,
 	auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler,
-	auto_badge_assigner_old_salt
+	auto_badge_assigner_old_salt, user_info_by_ns
 )
 from SIMS_Portal.users.forms import AssignProfileTypesForm
 from SIMS_Portal.users.utils import (
@@ -421,16 +421,59 @@ def manual_refresh(func):
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@main.route('/staging') 
-def staging(): 
+@main.route('/staging')
+def staging():
 	if current_user.is_admin == 1:
-		# put code to debug here
-
-		return render_template('visualization.html')
+		count_ns = db.session.query(func.count(func.distinct(NationalSociety.ns_go_id)))\
+		.join(User, NationalSociety.ns_go_id == User.ns_id)\
+		.filter(User.status == 'Active')\
+		.filter(~NationalSociety.ns_name.like('%IFRC%')) \
+		.scalar()
+		
+		return render_template('visualization.html', count_ns=count_ns)
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+@main.route('/get_ns_member_location_data')
+def get_ns_member_location_data():
+	active_national_societies = db.session.query(
+		distinct(NationalSociety.ns_name).label('ns_name'),
+		NationalSociety.iso2,
+		NationalSociety.iso3,
+		NationalSociety.ns_go_id,
+		func.count().over(partition_by=NationalSociety.ns_name).label('ns_name_count')
+	) \
+	.join(User, NationalSociety.ns_go_id == User.ns_id) \
+	.filter(User.status == 'Active') \
+	.filter(~NationalSociety.ns_name.like('%IFRC%')) \
+	.order_by(desc('ns_name_count')) \
+	.all()
+	
+	location_data = []
+	for row in active_national_societies:
+		location_data.append({
+			"ns_name": row.ns_name,  
+			"ns_name_count": row.ns_name_count 
+		})
+	
+	return jsonify(location_data)
+	
+@main.route('/national_societies/<int:ns_id>')
+@login_required
+def view_national_society(ns_id):
+	ns_info = db.session.query(NationalSociety).filter(NationalSociety.ns_go_id == ns_id).first()
+	
+	ns_members = user_info_by_ns(ns_id)
+	
+	active_ns_member_count = db.session.query(NationalSociety, User) \
+	.join(User, User.ns_id == NationalSociety.ns_go_id) \
+	.filter(NationalSociety.ns_go_id == ns_id) \
+	.filter(User.status == 'Active') \
+	.count()
+	
+	return render_template('national_society_view.html', ns_members=ns_members, ns_info=ns_info, active_ns_member_count=active_ns_member_count)
 
 @main.route('/uploads/<path:name>')
 def download_file(name):
@@ -443,10 +486,12 @@ def download_file(name):
         current_app.logger.error(e)
         abort(404)
     file_stream.seek(0)
+	
     return send_file(file_stream, mimetype=s3_object.content_type)
 
 @main.route('/static/<path:filename>')
 def static_files(filename):
-	"""Route to handle caching of static files"""
+	"""route to handle caching of static files"""
 	cache_timeout = 3600 
+	
 	return send_from_directory(app.config['STATIC_FOLDER'], filename, cache_timeout=cache_timeout)

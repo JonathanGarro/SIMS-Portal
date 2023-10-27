@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+  <div id="hideMe">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+        <div class="py-3 alert alert-{{ category }}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+  <div class="row my-5">
+    <div class='col-lg-4 min-width-custom'>
+      <div class="card bg-light border-3 text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2 mt-4">
+        <div class="card-body pt-3">
+          <div class="d-inline-block bg-danger border border-3 border-white shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3" >
+            <h1 class='text-light fw-bold px-3'>{{count_ns}}</h1>
+          </div>
+          <h2 class="Montserrat">National Societies</h2>
+          <h5 class="text-danger">With Active SIMS Members</h5>
+            <div class="dropdown mt-5 mb-1">
+                <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select Country
+                </button>
+                <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
+                    {% for ns in ns_list %}
+                        <a class="dropdown-item" href="/national_societies/{{ ns[0]) }}">{{ ns[2] }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class='btn btn-secondary'>Jump to your National Society</button>
+          
+        </div>
+      </div>
+    </div>
+    
+    <div class="col">
+    <canvas id="barChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+<script>
+        // Function to update the chart with dynamic data
+        function updateChartWithDynamicData(data) {
+          var iso3Data = data.map(function(item) {
+            return item.ns_name;
+          });
+
+          var countData = data.map(function(item) {
+            return item.ns_name_count;
+          });
+
+          var ctx = document.getElementById('barChart').getContext('2d');
+          var myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: iso3Data,
+              datasets: [{
+                label: '# of Members',
+                data: countData,
+                backgroundColor: '#505050',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              indexAxis: 'y', // Set the axis for horizontal bars to 'y'
+              scales: {
+                x: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
+
+        // Function to fetch data from the server
+        function fetchData() {
+          fetch('/get_ns_member_location_data')
+            .then(response => response.json())
+            .then(data => {
+              updateChartWithDynamicData(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Call the function to fetch data and update the chart
+        fetchData();
+      </script>
+
+{% endblock content %}
