@@ -1,0 +1,108 @@
+<script src="https://unpkg.com/feather-icons"></script>
+{% extends "layout.html" %}
+{% block content %}
+  <div class="container-fluid" style='background-color: #e0e0e0'>
+      <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+          <div class="d-inline-flex align-items-start">
+              <div class="container py-4">
+                  <h6 class="text-dark Montserrat">National Society</h6>
+                  <h3 class="Montserrat title-red">{{ ns_info.ns_name }}</h3>
+              </div>
+          </div>
+          <div>
+              <div class="d-inline-flex align-items-start ms-3">
+                  <div class="text-end">
+                    <h6 class="text-dark Montserrat">Members</h6>
+                    <h3 class="Montserrat title-red">{{ active_ns_member_count }}</h3>
+                  </div>
+
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+<div class="container">
+  <div class="row my-5"> 
+        <table class='table grouped-table-rows table-vert-align' id='ns_view_members' width="100%">
+        <thead>
+            <tr>
+                <th class="Montserrat" style="font-size: 24px;">Member</th>
+                <th><a href="/role_profile/geo"><img src='/static/assets/img/Profile-Badge-Geo-sm.png' width=100%></a></th>
+                <th><a href="/role_profile/webviz"><img src='/static/assets/img/Profile-Badge-Webviz-sm.png' width=100%></a></th>
+                <th><a href="/role_profile/infodes"><img src='/static/assets/img/Profile-Badge-Infodes-sm.png' width=100%></a></th>
+                <th><a href="/role_profile/datatrans"><img src='/static/assets/img/Profile-Badge-Datatrans-sm.png' width=100%></a></th>
+                <th><a href="/role_profile/mobdata"><img src='/static/assets/img/Profile-Badge-Mobdata-sm.png' width=100%></a></th>
+                <th><a href="/role_profile/simsco"><img src='/static/assets/img/Profile-Badge-Simsco-sm.png' width=100%></a></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for member in ns_members %}
+        <tr>
+            <td class="Montserrat" style="font-size: 18px;"><a href='/profile/view/{{member.id}}'>{% if member.status == 'Active' %}<i data-feather="check-circle" style="color: green"></i>{% else %}<i data-feather="x-circle" style="color: grey"></i>{% endif %} &nbsp {{member.firstname}} {{member.lastname}}</a></td>
+            <td class="ns-view-members-table text-center star-{{ member.geospatial if member.geospatial is not none else "0" }}">
+                {% if member.geospatial is not none %}
+                    {% set stars = '★' * member.geospatial %}
+                    {{ stars }}
+                {% else %}
+                    <span class="star">⚊</span>
+                {% endif %}
+            </td>
+            <td class="ns-view-members-table text-center star-{{ member.webviz if member.webviz is not none else "0" }}">
+                {% if member.webviz is not none %}
+                    {% set stars = '★' * member.webviz %}
+                    {{ stars }}
+                {% else %}
+                    <span class="star">⚊</span>
+                {% endif %}
+            </td>
+            <td class="ns-view-members-table text-center star-{{ member.infodes if member.infodes is not none else "0" }}">
+                {% if member.infodes is not none %}
+                    {% set stars = '★' * member.infodes %}
+                    {{ stars }}
+                {% else %}
+                    <span class="star">⚊</span>
+                {% endif %}
+            </td>
+            <td class="ns-view-members-table text-center star-{{ member.datatrans if member.datatrans is not none else "0" }}">
+                {% if member.datatrans is not none %}
+                    {% set stars = '★' * member.datatrans %}
+                    {{ stars }}
+                {% else %}
+                    <span class="star">⚊</span>
+                {% endif %}
+            </td>
+            <td class="ns-view-members-table text-center star-{{ member.datacollect if member.datacollect is not none else "0" }}">
+                {% if member.datacollect is not none %}
+                    {% set stars = '★' * member.datacollect %}
+                    {{ stars }}
+                {% else %}
+                    <span class="star">⚊</span>
+                {% endif %}
+            </td>
+            <td class="ns-view-members-table text-center star-{{ member.remoteco if member.remoteco is not none else "0" }}">
+                {% if member.remoteco is not none %}
+                    {% set stars = '★' * member.remoteco %}
+                    {{ stars }}
+                {% else %}
+                    <span class="star">⚊</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-inline-flex align-items-start border border-1 p-2 pe-3">
+                <div class="me-5"><i data-feather="check-circle" style="color: green"></i> &nbsp; Active</div>
+                <div><i data-feather="x-circle" style="color: grey"></i> &nbsp; Inactive</div>
+            </div>
+            <div class="d-inline-flex align-items-start ms-3">
+                <div class="text-end">
+                    <small style="color: rgb(81, 81, 81)"><span class="fw-bold">Stars equate to tiers</span><br>Click on role profiles icons at top of table columns to learn more</small>
+                </div>
+            </div>
+        </div>
+  </div>
+</div>
+{% endblock content %}

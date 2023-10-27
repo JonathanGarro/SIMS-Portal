@@ -247,16 +247,27 @@ p {
 }
 
 .drk:after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: black;
-  opacity: 0.5;
-  z-index: 1;
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: black;
+	opacity: 0.5;
+	z-index: 1;
+}
+
+.dropdown-menu {
+	position: absolute !important;
+	max-height: 300px; 
+	overflow-y: auto;
+}
+
+.dropdown-toggle {
+	font-family: 'Montserrat'; 
+	font-size: 14px;
 }
 
 .emergency-status-label {
@@ -289,6 +300,10 @@ p {
 	width: 100%;
 }
 
+.full-width-dropdown {
+	width: 100%;
+}
+
 .iframe-loader {
 	background:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921') center center no-repeat;
 }
@@ -310,6 +325,10 @@ p {
 
 .min-width-custom {
 	min-width: 380px;
+}
+
+.min-width-custom-sm {
+	min-width: 325px;
 }
 
 .Montserrat {
@@ -345,6 +364,10 @@ p {
 	background-color: #dc3545;
 }
 
+.ns-view-members-table {
+	width: 10%;
+}
+
 .page-link {
 	color: rgb(101, 101, 101)
 }
@@ -354,7 +377,6 @@ p {
 	border: 1px solid lightgrey;
 	color: red;
 }
-
 
 .parallax {
   position: relative;
@@ -404,6 +426,31 @@ p {
 	color: #011E41
 }
 
+.star {
+	color: #838080;
+	font-size: 16px;
+}
+
+.star-1 {
+  color: #838080;
+  font-size: 16px;
+}
+
+.star-2 {
+  color: #005b08;
+  font-size: 16px;
+}
+
+.star-3 {
+  color: #d58d20;
+  font-size: 16px;
+}
+
+.star-4 {
+  color: #991622;
+  font-size: 16px;
+}
+
 .status-circle {
   width: 20px;
   height: 20px;
@@ -441,6 +488,10 @@ p {
 
 .text-lg {
 	font-size: 1.2em;
+}
+
+.title-red {
+	color: #5C0000;
 }
 
 .tweet {

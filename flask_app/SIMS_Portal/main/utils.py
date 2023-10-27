@@ -7,8 +7,43 @@ from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, use
 from SIMS_Portal import db
 from flask_login import current_user
 import boto3
-from sqlalchemy import func, String
+from sqlalchemy import func, String, distinct, desc, asc, select, text
+from sqlalchemy.orm import aliased
 import requests
+
+def user_info_by_ns(ns_id):
+	query_text = text(
+		"""
+		SELECT u.id, u.firstname, u.lastname, u.status,
+			MAX(CASE WHEN up.profile_id = 1 THEN up.tier END) AS geospatial,
+			MAX(CASE WHEN up.profile_id = 2 THEN up.tier END) AS webviz,
+			MAX(CASE WHEN up.profile_id = 3 THEN up.tier END) AS infodes,
+			MAX(CASE WHEN up.profile_id = 4 THEN up.tier END) AS datatrans,
+			MAX(CASE WHEN up.profile_id = 5 THEN up.tier END) AS datacollect,
+			MAX(CASE WHEN up.profile_id = 6 THEN up.tier END) AS remoteco
+		FROM public.nationalsociety ns
+		JOIN public.user u ON u.ns_id = ns.ns_go_id
+		LEFT JOIN public.user_profile up ON up.user_id = u.id
+		WHERE ns.ns_go_id = :ns_id AND u.status != 'Other'
+		GROUP BY u.id, u.firstname, u.lastname
+		ORDER BY u.firstname
+		"""
+	)
+	
+	results = db.engine.execute(query_text, ns_id=ns_id)
+	processed_results = [dict(row) for row in results]
+	
+	return processed_results
+
+def get_ns_list():
+	ns_query = select([distinct(NationalSociety.ns_go_id), NationalSociety.ns_name, NationalSociety.country_name]) \
+		.join(User, NationalSociety.ns_go_id == User.ns_id) \
+		.filter(~NationalSociety.ns_name.like('%IFRC%')) \
+		.order_by(asc(NationalSociety.country_name))
+	
+	ns_list = db.session.execute(ns_query).fetchall()
+	
+	return ns_list
 
 def heartbeats(name, url):
 	"""

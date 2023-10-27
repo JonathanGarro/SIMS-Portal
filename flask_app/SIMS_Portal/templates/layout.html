@@ -146,32 +146,50 @@
 					</div>
 			</nav>
 			{% if current_user.is_authenticated %}
+			{% if '/national_societies/' in request.path %}
+			<nav id="navbar_top_login" class="navbar navbar-expand-sm box-shadow shadow-sm navbar-dark sticky-top">
+			{% else %}
 			<nav id="navbar_top_login" class="navbar navbar-expand-sm box-shadow shadow-sm navbar-dark sticky-top mb-2">
+			{% endif %}
 				<div class="container">
 					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav">
 						<span class="navbar-toggler-icon"></span>
 					</button>
 					<div class="collapse navbar-collapse" id="main_nav">
 						<ul class="navbar-nav ms-auto">
+							<li class="nav-item-bottom px-2">
+								<div class="dropdown" style="margin-top: 1px;"> 
+									<button class="btn text-light dropdown-toggle" type="button" id="nsDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" >
+										National Societies
+									</button>
+									<div class="dropdown-menu" aria-labelledby="nsDropdownMenuButton">
+										{% for ns in ns_list %}
+											<a class="dropdown-item" href="/national_societies/{{ ns[0] }}">{{ ns[2] }}</a>
+										{% endfor %}
+									</div>
+								</div>
+							</li>
+							
+							
 							{% if '/emergencies/all' in request.path %}
-							<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Emergencies</button></li>
+							<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Emergencies</button></li>
 							{% else %}
-							<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('emergencies.view_all_emergencies')}}" style="font-family: 'Montserrat';">Emergencies</a></li>
+							<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('emergencies.view_all_emergencies')}}">Emergencies</a></li>
 							{% endif %}
 							{% if '/members/all' in request.path %}
-							<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Members</button></li>
+							<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Members</button></li>
 							{% else %}
-							<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('users.members_all')}}" style="font-family: 'Montserrat';">Members</a></li>
+							<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('users.members_all')}}">Members</a></li>
 							{% endif %}
 							{% if '/all_products' in request.path %}
-							<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Portfolio</button></li>
+							<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Portfolio</button></li>
 							{% else %}
-							<li class="nav-item-bottom px-2"><a class="nav-link text-light" href="{{ url_for('portfolios.all_products')}}" style="font-family: 'Montserrat';">Portfolio</a></li>
+							<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('portfolios.all_products')}}">Portfolio</a></li>
 							{% endif %}
 							{% if '/documentation' in request.path %}
-							<li class="nav-item-bottom px-2"><button type="button" class="btn btn-light" style="font-family: 'Montserrat';">Documentation</button></li>
+							<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Documentation</button></li>
 							{% else %}
-							<li class="nav-item-bottom ps-2"><a class="nav-link text-light" href="{{ url_for('portfolios.view_documentation')}}" style="font-family: 'Montserrat';">Documentation</a></li>
+							<li class="nav-item-bottom ps-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('portfolios.view_documentation')}}">Documentation</a></li>
 							{% endif %}
 						</ul>
 					</div>
