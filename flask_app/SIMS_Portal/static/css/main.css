@@ -417,6 +417,10 @@ p {
 	font-family: 'Montserrat';
 }
 
+.reduced-vert-space {
+	margin-top: -6px; /* Adjust the value as needed */
+}
+
 .sidebar-guidance {
 	font-size: 1em;
 	color: grey

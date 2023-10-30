@@ -1,18 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container mb-5">
-    <h3 class="mt-5 Montserrat sims-blue">Inactive Members</h3>
-    <p><a href="/members"><span class="fs-6">View Active Members</span></a></p>
-    <div class="row mb-4">
+    
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="">
+            <h3 class="mt-5 Montserrat sims-blue">Inactive Members</h3>
+            <p class="reduced-vert-space"><a href="/members">Active Members</a></p>
+        </div>
         <div class="d-flex justify-content-end">
             {% if members.has_prev %}
-                <a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-danger me-1">Previous</button></a>
+            <a href="{{ url_for('users.members', page=members.prev_num) }}"><button type="button" class="btn btn-danger me-1">Previous</button></a>
             {% endif %}
             {% if members.has_next %}
-                <a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-danger me-1">Next</button></a>
+            <a href="{{ url_for('users.members', page=members.next_num) }}"><button type="button" class="btn btn-danger me-1">Next</button></a>
             {% endif %}
         </div>
     </div>
+    
     <div class="row row-cols-xxl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
         {% for member in members.items %}
               <div class="col d-flex align-items-stretch">
