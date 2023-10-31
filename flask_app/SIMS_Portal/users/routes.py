@@ -180,9 +180,22 @@ def profile():
 	
 	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
-	qualifying_profile_list = db.engine.execute(text('SELECT profile.image, profile.name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
-		'SELECT p.name AS name, MAX(up.tier) AS tier FROM user_profile up JOIN profile p ON p.id = up.profile_id WHERE up.user_id = :user_id GROUP BY p.name'
-	') highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier WHERE user_profile.user_id = :user_id'), {'user_id': current_user.id})
+	qualifying_profile_list_query = text("""
+		SELECT profile.image, profile.name
+		FROM user_profile
+		JOIN profile ON profile.id = user_profile.profile_id
+		JOIN (
+			SELECT p.name AS name, MAX(up.tier) AS tier
+			FROM user_profile up
+			JOIN profile p ON p.id = up.profile_id
+			WHERE up.user_id = :user_id
+			GROUP BY p.name
+		) highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier
+		WHERE user_profile.user_id = :user_id
+	""")
+	
+	qualifying_profile_list = db.engine.execute(qualifying_profile_list_query, user_id=user_info.id).fetchall()
+	qualifying_profile_count = db.engine.execute(qualifying_profile_list_query, user_id=user_info.id).scalar()
 	
 	languages_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
@@ -192,7 +205,7 @@ def profile():
 	
 	count_badges = db.engine.execute(text("SELECT count(user_id) as count FROM user_badge WHERE user_id = :user_id"), {'user_id': current_user.id}).scalar()
 
-	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list)
+	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list, qualifying_profile_count=qualifying_profile_count)
 	
 @users.route('/profile/view/<int:id>')
 def view_profile(id):
