@@ -40,6 +40,7 @@
 				</div>
 			</div>
 			
+			{% if qualifying_profile_count %}
 			<div class="card border border-3 p-4 bg-light mt-3">
 				<div class="row my-2">
 					<div>
@@ -54,11 +55,14 @@
 						</div>
 					</div>
 				</div>
-
-
+			</div>
+			{% endif %}
+			
+			<div class="card border border-3 p-4 bg-light mt-3">
+				
 				<div class="row">
 					<div>
-					<h5 class="text-secondary Montserrat mt-4">Skills</h5>
+					<h5 class="text-secondary Montserrat mt-2">Skills</h5>
 					{% for skill in skills_list %}
 						<button type="button" class="btn btn-dark btn-sm mb-2">{{skill.name}}</button>
 					{% endfor %}

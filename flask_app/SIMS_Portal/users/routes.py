@@ -11,7 +11,7 @@ from flask_login import (
 )
 from flask_mail import Message
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, and_, Integer, text
+from sqlalchemy import or_, and_, Integer, text, func
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from SIMS_Portal import db, bcrypt
@@ -221,9 +221,22 @@ def view_profile(id):
 	
 	languages_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:member_id'), {'member_id': id})
 	
-	qualifying_profile_list = db.engine.execute(text('SELECT profile.image, profile.name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
-		'SELECT p.name AS name, MAX(up.tier) AS tier FROM user_profile up JOIN profile p ON p.id = up.profile_id WHERE up.user_id = :user_id GROUP BY p.name'
-	') highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier WHERE user_profile.user_id = :user_id'), {'user_id': id})
+	qualifying_profile_list_query = text("""
+		SELECT profile.image, profile.name
+		FROM user_profile
+		JOIN profile ON profile.id = user_profile.profile_id
+		JOIN (
+			SELECT p.name AS name, MAX(up.tier) AS tier
+			FROM user_profile up
+			JOIN profile p ON p.id = up.profile_id
+			WHERE up.user_id = :user_id
+			GROUP BY p.name
+		) highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier
+		WHERE user_profile.user_id = :user_id
+	""")
+	
+	qualifying_profile_list = db.engine.execute(qualifying_profile_list_query, user_id=id).fetchall()
+	qualifying_profile_count = db.engine.execute(qualifying_profile_list_query, user_id=id).scalar()
 	
 	profile_picture = '/uploads/' + user_info.image_file
 	
@@ -231,7 +244,7 @@ def view_profile(id):
 	
 	badges = db.engine.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id ORDER BY name LIMIT 4'), {'member_id': id})
 	
-	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges, qualifying_profile_list=qualifying_profile_list)
+	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges, qualifying_profile_list=qualifying_profile_list, qualifying_profile_count=qualifying_profile_count)
 
 @users.route('/assign_profiles/<int:user_id>/<int:profile_id>/<int:tier>', methods=['GET', 'POST'])
 @login_required
