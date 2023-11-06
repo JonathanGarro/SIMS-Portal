@@ -424,13 +424,8 @@ def manual_refresh(func):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
-		count_ns = db.session.query(func.count(func.distinct(NationalSociety.ns_go_id)))\
-		.join(User, NationalSociety.ns_go_id == User.ns_id)\
-		.filter(User.status == 'Active')\
-		.filter(~NationalSociety.ns_name.like('%IFRC%')) \
-		.scalar()
 		
-		return render_template('visualization.html', count_ns=count_ns)
+		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
