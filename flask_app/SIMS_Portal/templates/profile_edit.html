@@ -34,17 +34,7 @@
 				</div>
 				<a href='/reset_password'><button class='btn btn-outline-secondary mt-5 w-100'>Change Password</button></a>
 			</div>
-			<div class="card border border-3 p-4 bg-light">
-				<div class="row mt-3">
-					<div>
-					<h5 class="text-secondary Montserrat">Remove Skills</h5>
-					<p class="text-secondary">Click a skill to remove it from your profile</p>
-					{% for skill in skills_list %}
-						<a href='/delete_skill/{{current_user.id}}/{{skill.id}}'><button type="button" class="btn btn-dark btn-sm mb-2">{{skill.name}}</button></a>
-					{% endfor %}
-					</div>
-				</div>
-			</div>
+
 		</div>
 		<div class="col mx-4">
 			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
@@ -285,7 +275,6 @@
 								{{ form.bio(class="form-control form-control-lg") }}
 							{% endif %}
 						</div>
-
 					
 				</div>
 				
@@ -294,36 +283,28 @@
 				<div class="row mt-2">
 					<h4 class='text-secondary Montserrat py-3'>Skills and Languages</h4>
 					<div class="alert alert-light border mt-1 mb-4" role="alert">Hold the <span class="fw-bold">Command/Control</span> key to select multiple skills or languages. To remove skills you previously tagged on your profile, use the delete function on the left.</div>
+					
 					<div class="col-md-6">
-						<div class="form-group pb-4">
-							{{ form.skills.label(class="form-control-label pb-2 text-secondary") }}
-							
-							{% if form.skills.errors %}
-								{{ form.skills(class="form-control form-control-lg is-invalid") }}
-									<div class="invalid-feedback">
-										{% for error in form.skills.errors %}
-											<span>{{ error }}</span>
-										{% endfor %}
-									</div>
-							{% else %}
-								{{ form.skills(class="form-control form-control-lg") }}
-							{% endif %}
+						<div class="form-group">
+							<label class="form-label fw-bold text-dark">Skills</label>
+							{% for skill in form.skills.choices %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="skill-{{ skill }}" name="skills" value="{{ skill }}" {% if skill in selected_skill_names %}checked{% endif %}>
+								<label class="form-check-label text-dark" for="skill-{{ skill }}">{{ skill }}</label>
+							</div>
+							{% endfor %}
 						</div>
 					</div>
-					<div class="col">
-						<div class="form-group pb-4">
-							{{ form.languages.label(class="form-control-label pb-2 text-secondary") }}
-							
-							{% if form.languages.errors %}
-								{{ form.languages(class="form-control form-control-lg is-invalid") }}
-									<div class="invalid-feedback">
-										{% for error in form.languages.errors %}
-											<span>{{ error }}</span>
-										{% endfor %}
-									</div>
-							{% else %}
-								{{ form.languages(class="form-control form-control-lg") }}
-							{% endif %}
+
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="form-label fw-bold text-dark">Languages</label>
+							{% for language in form.languages.choices %}
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" id="language-{{ language }}" name="languages" value="{{ language }}" {% if language in selected_language_names %}checked{% endif %}>
+								<label class="form-check-label text-dark" for="language-{{ language }}">{{ language }}</label>
+							</div>
+							{% endfor %}
 						</div>
 					</div>
 				</div>

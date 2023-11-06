@@ -362,11 +362,29 @@ def update_profile():
 			update_robots_txt(current_user.id, disallow=True)
 		else:
 			update_robots_txt(current_user.id, disallow=False)
+
+		# look for new skills added in the edit page
+		for skill_name in form.skills.data:
+			skill = Skill.query.filter(Skill.name == skill_name).first()
+			if skill:
+				current_user.skills.append(skill)
 		
-		for skill in form.skills.data:
-			current_user.skills.append(Skill.query.filter(Skill.name==skill).one())
-		for language in form.languages.data:
-			current_user.languages.append(Language.query.filter(Language.name==language).one())
+		# remove skills that are not in the updated list
+		skills_to_remove = [skill for skill in current_user.skills if skill.name not in form.skills.data]
+		for skill in skills_to_remove:
+			current_user.skills.remove(skill)
+			
+		# look for new languages added in the edit page
+		for language_name in form.languages.data:
+			language = Language.query.filter(Language.name == language_name).first()
+			if language:
+				current_user.languages.append(language)
+		
+		# remove languages that are not in the updated list
+		languages_to_remove = [language for language in current_user.languages if language.name not in form.languages.data]
+		for language in languages_to_remove:
+			current_user.languages.remove(language)
+
 		db.session.commit()
 		flash('Your account has been updated!', 'success')
 		return redirect(url_for('users.profile'))
@@ -385,11 +403,21 @@ def update_profile():
 		form.messaging_number_country_code.data = current_user.messaging_number_country_code
 		form.messaging_number.data = current_user.messaging_number
 		form.private_profile.data = current_user.private_profile
+		
+		skill_names = [skill.name for skill in current_user.skills]
+		language_names = [language.name for language in current_user.languages]
+		
+		selected_skill_names = [skill.name for skill in current_user.skills]
+		selected_language_names = [language.name for language in current_user.languages]
+		
+		form.skills.data = skill_names
+		form.languages.data = language_names
+
 	profile_picture = '/uploads/' + current_user.image_file
 	
 	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
-	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, skills_list=skills_list)
+	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, skills_list=skills_list, selected_skill_names=selected_skill_names, selected_language_names=selected_language_names)
 
 @users.route('/profile_edit/<int:id>', methods=['GET', 'POST'])
 @login_required
