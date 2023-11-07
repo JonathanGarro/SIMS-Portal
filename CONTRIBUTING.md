@@ -1,5 +1,20 @@
 # Contributing
 
+## Flask Framework
+
+The SIMS Portal is built on [Flask](https://flask.palletsprojects.com/en/3.0.x/), a micro-framework for web development. Supporting this project requires a base level of understanding of how Flask works, or of a similar framework like the comparatively more powerful [Django](https://www.djangoproject.com/). As a full stack application, the Portal makes use of the following languages and technologies: 
+
+- Python
+- [Jinja2](https://jinja.palletsprojects.com/en/3.1.x/)
+- JavaScript
+- HTML/CSS 
+- PostgresQL
+- AWS
+
+Additionally, it is helpful to be familiar with the basics of collaborating on coding projects through Git.
+
+For a SIMS member looking to upskill in a particular area, whether that is backend development with Python and PSQL, or frontend development with HTML/CSS or JavaScript, it is helpful to drill down to what you're most interested in and we can find opportunities for support. The main area where I could use support is on frontend development, so anyone interested in simple web design or more advanced libraries/frameworks like React or Vue, but am happy to have collaborators on any facet of the project.
+
 ## Setting up a development environment
 
 - Make sure you have an integrated development environment (IDE) installed. Some options include: [Microsoft Visual Studio Code](https://code.visualstudio.com/?wt.mc_id=DX_841432), [Kate](https://kate-editor.org/), or [Pulsar](https://pulsar-edit.dev/).
