@@ -37,7 +37,7 @@
             <tbody>
                 {% for document in documentation %}
                     <tr>
-                        <td class="fw-bold text-lg"><a href="{{document.Documentation.url}}" class='link-danger'>{{document.Documentation.article_name}}</a></td>
+                        <td class="fw-bold text-lg"><a href="{{document.Documentation.url}}" class='link-danger' target="_blank" rel="noopener noreferrer">{{document.Documentation.article_name}}</a></td>
                         <td>{{document.Documentation.category}}</td>
                         <td>{% if document.Documentation.summary|length > 200 %}{{document.Documentation.summary[:200]}}...{% else %}{{document.Documentation.summary[:200]}}{% endif %}</td>
                         <td>{{document.User.fullname}}</td>
