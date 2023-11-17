@@ -172,7 +172,7 @@ def create_app(config_class=Config):
 	app.register_blueprint(errors)
 	app.register_blueprint(availability)
 	
-	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge, Availability
+	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge, Availability, Documentation
 	admin.add_view(AdminView(User, db.session))
 	admin.add_view(AdminView(Assignment, db.session))
 	admin.add_view(AdminView(Emergency, db.session))
@@ -183,6 +183,7 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Alert, db.session))
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
+	admin.add_view(AdminView(Documentation, db.session))
 	
 	with app.app_context():
 		inspector = inspect(db.engine)
