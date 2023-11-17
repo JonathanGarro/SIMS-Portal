@@ -56,7 +56,7 @@
 						{% endif %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="/availability/report/{{emergency_info.Emergency.id}}" class="text-secondary">Report for Current Week</a>
-							<a href="https://learn-sims.org/docs/sims-portal-documentation/availability-tracking" target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+							<a href="https://learn-sims.org/portal-documentation/availability-tracking/" target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 						</li>
 						{% if current_weekday > 2 %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
@@ -82,13 +82,13 @@
 						{% if user_is_sims_co %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="/badge_assignment_simsco/{{emergency_info.Emergency.id}}" class="text-secondary">Assign Badges</a>
-							<a href="https://learn-sims.org/docs/sims-portal-documentation/badge-overview" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+							<a href="https://learn-sims.org/portal-documentation/badge-overview/" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 						</li>
 						{% endif %}
 						{% if user_is_sims_co %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="/operation_review/new/{{emergency_info.Emergency.id}}" class="text-secondary">Review Operation</a>
-							<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview" class='text-dark'><span class="badge bg-light rounded-pill text-dark">?</span></a>
+							<a href="https://learn-sims.org/portal-documentation/knowledge-management-overview/" class='text-dark'><span class="badge bg-light rounded-pill text-dark">?</span></a>
 						</li>
 						{% endif %}
 					</ul>
@@ -121,7 +121,7 @@
 						{% if emergency_info.Emergency.emergency_status == 'Active' %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
-							<a href="https://learn-sims.org/docs/sims-portal-documentation/emergency-page-overview" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+							<a href="https://learn-sims.org/portal-documentation/emergency-page-overview/" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 						</li>
 						{% endif %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
@@ -463,7 +463,7 @@
 					<h3 class="text-dark emergency-title">Assignment Reviews</h3>
 				</div>
 				<div class="ml-auto">
-					<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview/#remote-supporter-learning-reviews" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+					<a href="https://learn-sims.org/portal-documentation/knowledge-management-overview/" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 				</div>
 			</div>
 			{% if learning_count == 0 %}
@@ -555,7 +555,7 @@
 					<h3 class="text-dark emergency-title">Operational Reviews</h3>
 				</div>
 				<div class="ml-auto">
-					<a href="https://learn-sims.org/docs/sims-portal-documentation/knowledge-management-overview-269/#sims-remote-coordinator-operation-reviews" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
+					<a href="https://learn-sims.org/portal-documentation/knowledge-management-overview/" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 				</div>
 			</div>
 			{% if existing_reviews %}
