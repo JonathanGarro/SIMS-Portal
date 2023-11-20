@@ -5,12 +5,16 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
-# 1.7.3 (Friendship Heights) - TBD
+# 1.7.3 (Friendship Heights) - 2023-11-20
 
 ## Changes
 
 - **Documentation Links Open New Tabs**: Links to documentation on learn-sims.org now open as new tabs in the user's browser.
 - **Update Stroke Width on Map**: The response history map on the about page has been updated to be thicker in order to be more visible on smaller screens.
+
+## Fixes
+
+- **Tooltip Link Fixes**: Tooltips with links to the new learn-sims.org site (which was moved from a separate host to the same AWS account as the Portal) have been updated.
 
 # 1.7.2 (Friendship Heights) - 2023-11-07
 
