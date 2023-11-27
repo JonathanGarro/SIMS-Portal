@@ -5,6 +5,16 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.7.4 (Friendship Heights) - TBD
+
+## Changes
+
+- **Add Guidance for SIMS Remote Coordinator Product Approvals**: Products awaiting approval for public posting now include a link for the SIMS Remote Coordinator to learn how to evaluate what is and isn't appropriate to share. 
+
+## Fixes
+
+- **Fix Broken Links on Role Profile Pages**: Links to the category pages on SIMS learning site were fixed on role profile pages.
+
 # 1.7.3 (Friendship Heights) - 2023-11-20
 
 ## Changes
