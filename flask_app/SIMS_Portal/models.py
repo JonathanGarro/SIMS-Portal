@@ -343,7 +343,8 @@ class Portfolio(db.Model):
 	collaborator_ids = db.Column(db.String(200))
 	approver_id = db.Column(db.Integer)
 	approver_message = db.Column(db.Text)
-	km_article_id = db.Column(db.Integer)
+	km_article_id = db.Column(db.Integer) # this has been retired as we moved away from int for documentation ID
+	learning_site_url = db.Column(db.String(1000)) # this has replaced the km_article_id
 	
 	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
 	creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

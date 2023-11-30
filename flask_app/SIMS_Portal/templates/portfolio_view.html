@@ -52,10 +52,10 @@
 					<p class='text-secondary'>{{ product.Portfolio.description}}</p>
 				</div>
 				
-				{% if product.Portfolio.km_article_id %}
+				{% if product.Portfolio.learning_site_url %}
 				<div class="row">
 					<h5 class="text-secondary Montserrat mt-4">Walkthrough</h5>
-					<p><a href='https://learn-sims.org/docs/?p={{ product.Portfolio.km_article_id}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">View Article</a></p>
+					<p><a href='{{ product.Portfolio.learning_site_url}}' class="btn btn-sm btn-secondary mt-1" id="override-link-color">View Article</a></p>
 				</div>
 				{% endif %}
 				
