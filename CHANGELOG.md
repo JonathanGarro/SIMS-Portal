@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.7.5 (Friendship Heights) - 2023-12-01
+
+## New Features
+
+- **Bulk Slack Avatar Update**: A new function has been added to the manual refresh page within the admin portal to loop over all members that have the default.png avatar and update their photo with the one they have associated with their Slack account.
+
 # 1.7.4 (Friendship Heights) - 2023-11-30
 
 ## Changes

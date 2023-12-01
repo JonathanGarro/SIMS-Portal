@@ -41,7 +41,8 @@ from SIMS_Portal.main.utils import (
 )
 from SIMS_Portal.users.forms import AssignProfileTypesForm
 from SIMS_Portal.users.utils import (
-	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations
+	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations, 
+	bulk_slack_photo_update
 )
 from SIMS_Portal.alerts.utils import (
 	refresh_surge_alerts, refresh_surge_alerts_latest
@@ -424,7 +425,7 @@ def manual_refresh(func):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
-		
+		bulk_slack_photo_update()
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
