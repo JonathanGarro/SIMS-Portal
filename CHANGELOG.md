@@ -5,6 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.7.6 (Friendship Heights) - 2023-12-04
+
+## Fixes
+
+- **Override Form Submit Text on Availability**: The submit button on the availability reporting form was showing inconsistent label values, so these have new `value=` tags.
+- **Higher Resolution Icons in Ribbon**: The navigation ribbon for logged-in users now use SVGs in order to avoid pixelation.
+
 # 1.7.5 (Friendship Heights) - 2023-12-01
 
 ## New Features
