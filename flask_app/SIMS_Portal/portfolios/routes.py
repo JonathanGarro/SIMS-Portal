@@ -8,7 +8,7 @@ from flask_login import (
 	login_user, logout_user, current_user, login_required
 )
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 
 from SIMS_Portal import db
 from SIMS_Portal.models import (
@@ -68,7 +68,16 @@ def filter_portfolio_private(type):
 @portfolios.route('/portfolio/new_from_assignment/<int:assignment_id>/<int:user_id>/<int:emergency_id>', methods=['GET', 'POST'])
 @login_required
 def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
+	emergency_info = db.session.query(Emergency).filter(Emergency.id == emergency_id).first()
+	
+	try:
+		# get SIMS Cos from this emergency, return the row with the latest end_date on the assignment
+		latest_emergency_simsco = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == emergency_id).filter(Assignment.role == 'SIMS Remote Coordinator').order_by(desc(Assignment.end_date)).first()
+	except:
+		current_app.logger.error(f"User-{user_id} tried to upload a product, but new_portfolio_from_assignment() could not retrieve latest SIMS Remote Coordinator for {latest_emergency_simsco.Emergency.emergency_name}.")
+	
 	user_info = db.session.query(User).filter(User.id == user_id).first()
+	
 	form = PortfolioUploadForm()
 	if form.validate_on_submit():
 		if form.file.data:
@@ -90,8 +99,11 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 		product = Portfolio(
 			local_file = file['file_filename'], title = form.title.data, creator_id = user_id, description = form.description.data, type = form.type.data, emergency_id = emergency_id, external = form.external.data, assignment_id = assignment_id, dropbox_file = file['share_link'], product_status = status, image_file = cover_image, format = form.format.data,
 		)
+		
 		db.session.add(product)
 		db.session.commit()
+		
+		# send user a Slack message
 		if user_info.slack_id is not None:
 			if form.external.data == True:
 				message = 'You have successfully posted {} to the portal! Since you have requested that it be publicly visible, it has been added to the review queue for a SIMS Remote Coordinator. In the meantime, the product will be visible on your profile page to viewers that are logged in, and on your individual assignment page for this emergency.'.format(form.title.data)
@@ -99,6 +111,12 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 				message = 'You have successfully posted {} to the portal! It has been marked as "Personal", and is now visible on your profile page to viewers that are logged in, and on your individual assignment page for this emergency.'.format(form.title.data)
 			user = user_info.slack_id
 			send_slack_dm(message, user)
+		
+		if latest_emergency_simsco.User.slack_id is not None and form.external.data == True:
+			message = 'A remote supporter for {} has posted a product that they have requested to be made publicly available. As a SIMS Remote Coordinator for this emergency, you are asked to review it and either approve or reject it. <https://rcrcsims.org/portfolio/review/{}|Click here to review the product.>'.format(emergency_info.emergency_name, emergency_id)
+			user = latest_emergency_simsco.User.slack_id
+			send_slack_dm(message, user)
+		
 		flash('New product successfully uploaded.', 'success')
 		redirect_url = '/assignment/{}'.format(assignment_id)
 		return redirect(redirect_url)
