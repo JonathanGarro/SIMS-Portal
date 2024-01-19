@@ -5,6 +5,22 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.7.7 (Friendship Heights) - 2024-01-19
+
+## New Features
+
+- **Alert Remote Coordinator on Public Product Upload**: When a remote supporter uploads a product and marks it as "Public", the active (or most recently active) SIMS Remote Coordinator gets an alert in Slack with a link to the review.
+
+## Changes
+
+- **Updated Language on Profile Edit Form**: With switch to checkboxes for language and skill picker, the language on this page needed to be changed.
+
+## Fixes
+
+- **Adjust Emergency Page Spacing for Mobile**: As part of broader effort to improve experience on mobile, some elements have had spacing and resizing adjusted on the Emergency page.
+- **New Icons in Navigation Ribbon**: The icons used for the ribbon when logged in were fuzzy on larger screens, so the PNGs have been updated with SVGs. 
+- **Fix Date Format on SIMS Co Gantt Chart**: A pesky bug that was preventing dates from being displayed correctly when hovering over bars in the Gantt chart has been fixed.
+
 # 1.7.6 (Friendship Heights) - 2023-12-04
 
 ## Fixes
