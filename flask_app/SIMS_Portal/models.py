@@ -44,6 +44,30 @@ user_workinggroup = db.Table('user_workinggroup',
 	db.Column('workinggroup_id', db.Integer, db.ForeignKey('workinggroup.id'))
 )
 
+class Acronym(db.Model):
+	__tablename__ = 'acronym'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	acronym_eng = db.Column(db.String(255), nullable=True)
+	def_eng = db.Column(db.Text, nullable=True)
+	expl_eng = db.Column(db.Text, nullable=True)
+	acronym_esp = db.Column(db.String(255), nullable=True)
+	def_esp = db.Column(db.Text, nullable=True)
+	expl_esp = db.Column(db.Text, nullable=True)
+	acronym_fra = db.Column(db.String(255), nullable=True)
+	def_fra = db.Column(db.Text, nullable=True)
+	expl_fra = db.Column(db.Text, nullable=True)
+	relevant_link = db.Column(db.String(), nullable=True)
+	
+	added_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	approved_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+	
+	date_added = db.Column(db.DateTime, server_default=func.now())
+	date_modified = db.Column(db.DateTime, onupdate=func.now())
+	
+	def __repr__(self):
+		return f"{self.acronym_eng} - {self.def_eng}"
+
 class Documentation(db.Model):
 	__tablename__ = 'documentation'
 	

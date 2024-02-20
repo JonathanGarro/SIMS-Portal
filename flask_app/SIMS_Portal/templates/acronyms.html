@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mb-5">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="mt-4 alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row my-5">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="">
+                        <h3 class="Montserrat">Acronym Index</h3>
+                        <lead>A crowd-sourced listing of common (and not so common!) acronyms used in across the Red Cross Red Crescent Movement, international development, humanitarian affairs, and more. </lead>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="">
+                        <a href='/submit_acronym'><button class='btn btn-danger btn-lg float-right'>Add Acronym</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped mt-5" id='acronyms-datatable'>
+            <thead class="">
+                <tr>
+                    <th>
+                        <h5>Acronym (English)</h5>
+                    </th>
+                    <th>
+                        <h5>Definition (English)</h5>
+                    </th>
+                    <th>
+                        <h5>Link</h5>
+                    </th>
+                    <th>
+                        <h5>More Info</h5>
+                    </th>
+                    <th>
+                        <h5>Acronym (Spanish)</h5>
+                    </th>
+                    <th>
+                        <h5>Definition (Spanish)</h5>
+                    </th>
+                    <th>
+                        <h5>Acronym (French)</h5>
+                    </th>
+                    <th>
+                        <h5>Definition (French)</h5>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for acronym in all_acronyms %}
+                <tr>
+                    <td class="align-middle text-danger">
+                        <h5>{{ acronym.acronym_eng }}</h5>
+                    </td>
+                    <td class="align-middle">
+                        <h5>{{ acronym.def_eng }}</h5>
+                    </td>
+                    <td class="align-middle">
+                        {% if acronym.relevant_link %}<a href="/view_acronym/{{acronym.relevant_link}}"><button type="button" class="btn btn-secondary btn-sm">&#8594;</button></a>{% endif %}
+                    </td>
+                    <td class="align-middle">
+                        <a href="/view_acronym/{{acronym.id}}"><button type="button" class="btn btn-secondary btn-sm">&#10065;</button></a>
+                    </td>
+                    <td class="align-middle">
+                        <h5>{{ acronym.acronym_esp }}</h5>
+                    </td>
+                    <td class="align-middle">
+                        <h5>{{ acronym.def_esp }}</h5>
+                    </td>
+                    <td class="align-middle">
+                        <h5>{{ acronym.acronym_fra }}</h5>
+                    </td>
+                    <td class="align-middle">
+                        <h5>{{ acronym.def_fra }}</h5>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

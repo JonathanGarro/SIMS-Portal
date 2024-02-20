@@ -59,6 +59,50 @@ $(document).ready(function () {
 	});
 });
 
+$(document).ready(function () {
+	$('#acronyms-preview-datatable').DataTable({
+		order: [[0, 'asc']],
+		lengthChange: false,
+		searching: false,
+	});
+});
+
+$(document).ready(function () {
+	$('#acronyms-datatable').DataTable({
+		order: [[0, 'asc']],
+		lengthChange: false,
+		autoWidth: true,
+		dom: 'frtipB', // add buttons to the DOM
+		buttons: [
+			{
+				extend: 'copy',
+				exportOptions: {
+					columns: [0, 1, 4, 5, 6, 7]
+				}
+			},
+			{
+				extend: 'csv',
+				exportOptions: {
+					columns: [0, 1, 4, 5, 6, 7] 
+				}
+			},
+		],
+		columns: [
+			null,  
+			null, 
+			{ className: 'text-center' },
+			{ className: 'text-center' },
+			null,
+			null,
+			null,
+			null
+		],
+		"columnDefs": [
+			{ "targets": [4, 5, 6, 7], "visible": false } 
+		]
+	});
+});
+
 $(document).ready(function() {
 	$('#skills-datatable').DataTable( {
 		order: [[0, 'asc']],

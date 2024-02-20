@@ -159,6 +159,7 @@ def create_app(config_class=Config):
 	from SIMS_Portal.alerts.routes import alerts
 	from SIMS_Portal.errors.handlers import errors
 	from SIMS_Portal.availability.routes import availability
+	from SIMS_Portal.acronym.routes import acronym
 
 	app.register_blueprint(main)
 	app.register_blueprint(assignments)
@@ -171,6 +172,7 @@ def create_app(config_class=Config):
 	app.register_blueprint(alerts)
 	app.register_blueprint(errors)
 	app.register_blueprint(availability)
+	app.register_blueprint(acronym)
 	
 	from SIMS_Portal.models import User, Assignment, Emergency, Portfolio, NationalSociety, Story, Learning, Review, Alert, Badge, Availability, Documentation
 	admin.add_view(AdminView(User, db.session))
