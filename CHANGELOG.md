@@ -5,7 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
-# 1.8 (Tenleytown) - 2024-02-20
+# 1.8.1 (Tenleytown) - 2024-02-21
+
+## New Features
+
+- **New Acronym Alerts**: A Slack alert is now sent to the SIMS Portal API channel in the SIMS Slack to let administrators know that there is a new item in the review queue.
+
+# 1.8.0 (Tenleytown) - 2024-02-20
 
 ## New Features
 
