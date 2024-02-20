@@ -11,10 +11,13 @@
 
 - **New Acronym Alerts**: A Slack alert is now sent to the SIMS Portal API channel in the SIMS Slack to let administrators know that there is a new item in the review queue.
 
+<<<<<<< HEAD
 ## Fixes
 
 - **Fixed Link Builder on Acronym Table**: The link generator for external resources was not being constructed correctly, but has been fixed.
 
+=======
+>>>>>>> main
 # 1.8.0 (Tenleytown) - 2024-02-20
 
 ## New Features
