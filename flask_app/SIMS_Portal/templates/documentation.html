@@ -20,7 +20,12 @@
                 <p class='text-secondary mb-4'>Guides, tutorials, and walkthroughs from the SIMS network</p>
             </div>
             <div>
-                <a href="/add_documentation"><button class="btn btn-danger">Add Documentation</button></a>
+                <div class="row mb-5">
+                    <div class="col d-flex flex-column">
+                        <a href="/add_documentation" class="btn btn-danger mb-1"><span class="text-light">Add Documentation</span></a>
+                        <a href="/acronyms" class="btn btn-secondary">View Acronyms</a>
+                    </div>
+                </div>
             </div>
         </div>
         <table class='table table-striped table-hover table-vert-align' id='datatable-documentation'>
@@ -31,7 +36,6 @@
                     <th>Summary</th>
                     <th>Author</th>
                     <th>Related Product</th>
-                    <!-- <th>Featured</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -42,13 +46,6 @@
                         <td>{% if document.Documentation.summary|length > 200 %}{{document.Documentation.summary[:200]}}...{% else %}{{document.Documentation.summary[:200]}}{% endif %}</td>
                         <td>{{document.User.fullname}}</td>
                         <td><a href="/portfolio/view/{{document.Portfolio.id}}">{{document.Portfolio.title}}</a></td>
-                        <!-- <td>
-                            {% if document.Documentation.featured == True %}
-                                <i class="text-success" data-feather="check-circle"></i>
-                            {% elif document.Documentation.featured == False %}
-                                <i class="text-danger" data-feather="x-circle"></i>
-                            {% endif %}
-                        </td> -->
                     </tr>
                 {% endfor %}
             </tbody>
