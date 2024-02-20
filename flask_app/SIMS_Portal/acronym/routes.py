@@ -12,7 +12,7 @@ from flask_login import (
 from sqlalchemy.orm.exc import NoResultFound
 
 from SIMS_Portal.models import Acronym, User
-from SIMS_Portal.users.utils import send_slack_dm
+from SIMS_Portal.users.utils import send_slack_dm, new_acronym_alert
 from SIMS_Portal import db, login_manager
 from SIMS_Portal.acronym.forms import NewAcronymForm
 
@@ -71,7 +71,10 @@ def submit_acronym():
 
             db.session.add(new_acronym)
             db.session.commit()
-            
+            try:
+                new_acronym_alert(f"A new acronym has been added to the SIMS Portal: {new_acronym.def_eng}. Log into the Admin portal to approve or reject it.")
+            except: 
+                pass
             flash('New acronym added to review queue.', 'success')
         else:
             for field, errors in form.errors.items():

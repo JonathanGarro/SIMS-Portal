@@ -58,6 +58,16 @@ def new_surge_alert(message):
 	except Exception as e:
 		current_app.logger.error('new_surge_alert Slack message failed: {}'.format(e))
 
+def new_acronym_alert(message):
+	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
+	try:
+		result = client.chat_postMessage(
+			channel = 'C046A8T9ZJB',
+			text = message
+		)
+	except Exception as e:
+		current_app.logger.error('new_acronym_alert Slack message failed: {}'.format(e))
+
 def rem_cos_search():
 	with app.app_context():
 		active_SIMS_cos = db.session.query(Assignment, User, Emergency).join(User, User.id == Assignment.user_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.emergency_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').all()
