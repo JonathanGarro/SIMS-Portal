@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.8 (Tenleytown) - 2024-02-20
+
+## New Features
+
+- **Acronym Index**: A new collaborative index allows users to post acronyms along with their definitions, supporting information, and relevant links. The system supports English, French, and Spanish. Arabic to be considered in the future.
+
 # 1.7.7 (Friendship Heights) - 2024-01-19
 
 ## New Features
