@@ -11,6 +11,16 @@ from sqlalchemy import func, String, distinct, desc, asc, select, text
 from sqlalchemy.orm import aliased
 import requests
 
+def send_error_message(message):
+	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
+	try:
+		result = client.chat_postMessage(
+			channel = 'C046A8T9ZJB',
+			text = message
+		)
+	except Exception as e:
+		current_app.logger.error('new_acronym_alert Slack message failed: {}'.format(e))
+
 def user_info_by_ns(ns_id):
 	query_text = text(
 		"""

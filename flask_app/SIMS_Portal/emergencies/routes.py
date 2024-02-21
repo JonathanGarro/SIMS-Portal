@@ -20,7 +20,7 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety,
 	EmergencyType, Alert, Portfolio, Story,
-	Learning, Review, Availability
+	Learning, Review, Availability, Log
 )
 from SIMS_Portal.emergencies.forms import (
 	NewEmergencyForm, UpdateEmergencyForm
@@ -65,7 +65,11 @@ def new_emergency():
 		update_response_locations()
 		update_active_response_locations()
 		
-		current_app.logger.info('A new emergency record has been created for {} by User-{}'.format(form.emergency_name.data, current_user.id))
+		log_message = f"[INFO] User {current_user.id} created emergency record: {emergency.emergency_name}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		flash('New emergency successfully created.', 'success')
 		
 		return redirect(url_for('main.dashboard'))
@@ -330,6 +334,12 @@ def edit_emergency(id):
 		emergency_info.trello_url = form.trello_url.data
 		db.session.commit()
 		flash('Emergency record updated!', 'success')
+		
+		log_message = f"[INFO] User {current_user.id} edited emergency {emergency_info.emergency_name}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		return redirect(url_for('emergencies.view_emergency', id=id))
 	elif request.method == 'GET':
 		form.emergency_name.data = emergency_info.emergency_name
@@ -395,8 +405,14 @@ def delete_emergency(id):
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Removed'})
 			db.session.commit()
 			update_active_response_locations()
-			current_app.logger.info("Emergency-{} has been deleted.".format(id))
 			flash("Emergency deleted.", 'success')
+			
+			emergency_info = db.session.query(Emergency).filter(Emergency.id==id).first()
+			log_message = f"[WARNING] User {current_user.id} deleted emergency {emergency_info.emergency_name}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 		except:
 			flash("Error deleting emergency. Check that the emergency ID exists.")
 		return redirect(url_for('main.dashboard'))
