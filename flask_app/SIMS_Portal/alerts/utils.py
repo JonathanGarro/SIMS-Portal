@@ -271,7 +271,7 @@ def refresh_surge_alerts_latest():
 		db.session.commit()
 		send_error_message(log_message)
 	
-	log_message = f"[INFO] The Surge Alert cron job has finished and logged {count_new_records} new records.'"
+	log_message = f"[INFO] The Surge Alert cron job has finished and logged {count_new_records} new records."
 	new_log = Log(message=log_message, user_id=0)
 	db.session.add(new_log)
 	db.session.commit()	
