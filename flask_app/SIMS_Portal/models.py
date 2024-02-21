@@ -44,6 +44,17 @@ user_workinggroup = db.Table('user_workinggroup',
 	db.Column('workinggroup_id', db.Integer, db.ForeignKey('workinggroup.id'))
 )
 
+class Log(db.Model):
+	__tablename__ = 'log'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	message = db.Column(db.String(500))
+	user_id = db.Column(db.Integer)
+	timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+	
+	def __repr__(self):
+		return f"Log({self.timestamp}: {self.message}"
+
 class Acronym(db.Model):
 	__tablename__ = 'acronym'
 	
