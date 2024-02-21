@@ -1,8 +1,9 @@
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from SIMS_Portal.models import Alert
+from SIMS_Portal.models import Alert, Log
 from SIMS_Portal.users.utils import new_surge_alert
+from SIMS_Portal.main.utils import send_error_message
 from flask_apscheduler import APScheduler
 import datetime
 import math
@@ -27,7 +28,11 @@ def refresh_surge_alerts_latest():
 	"""
 	
 	try:
-		current_app.logger.info('Surge Alert GO API query started.')
+		log_message = f"[INFO] The Surge Alert cron job has started."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		existing_alerts = db.session.query(Alert).order_by(Alert.alert_id.desc()).all()
 		existing_alert_ids = []
 		existing_statuses = []
@@ -260,9 +265,16 @@ def refresh_surge_alerts_latest():
 				except:
 					pass
 	except Exception as e:
-		current_app.logger.error('Surge Alert (Latest) GO API Query Failed: {}'.format(e))
+		log_message = f"[ERROR] The Surge Alert cron job has failed: {e}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		send_error_message(log_message)
 	
-	current_app.logger.info('Surge Alert GO API query finished, logged {} new records.'.format(count_new_records))	
+	log_message = f"[INFO] The Surge Alert cron job has finished and logged {count_new_records} new records.'"
+	new_log = Log(message=log_message, user_id=0)
+	db.session.add(new_log)
+	db.session.commit()	
 
 def refresh_surge_alerts():
 	"""

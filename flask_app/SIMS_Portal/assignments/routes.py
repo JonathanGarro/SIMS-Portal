@@ -13,8 +13,8 @@ from flask_login import (
 from sqlalchemy import func, text
 
 from SIMS_Portal.assignments.utils import get_dates_current_and_next_week
-from SIMS_Portal.main.utils import check_sims_co
-from SIMS_Portal.models import Assignment, User, Emergency, Portfolio
+from SIMS_Portal.main.utils import check_sims_co, send_error_message
+from SIMS_Portal.models import Assignment, User, Emergency, Portfolio, Log
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal import db, login_manager
 from SIMS_Portal.assignments.forms import (
@@ -32,6 +32,12 @@ def new_assignment():
 		db.session.add(assignment)
 		db.session.commit()
 		flash('New assignment successfully created.', 'success')
+		
+		log_message = f"[INFO] User {current_user.id} created an assignment for {assignment.user_id}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		return redirect(url_for('main.dashboard'))
 	return render_template('create_assignment.html', title='New Assignment', form=form)
 
@@ -68,7 +74,11 @@ def new_assignment_from_disaster(dis_id):
 			
 			db.session.add(assignment)
 			db.session.commit()
-			current_app.logger.info('New assignment created for User-{}.'.format(form.user_id.data.id))
+			
+			log_message = f"[INFO] User {current_user.id} created an assignment for user {assignment.user_id}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
 			
 			# attempt to send slack message to user after successful assignment creation
 			try:
@@ -123,6 +133,12 @@ def edit_assignment(id):
 		this_assignment.hours = form.hours.data
 		db.session.commit()
 		flash('Assignment record updated!', 'success')
+		
+		log_message = f"[INFO] User {current_user.id} created an assignment for {assignment.user_id}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		return redirect(url_for('assignments.view_assignment', id=this_assignment.id))
 	
 	return render_template('assignment_edit.html', form=form, assignment_info=assignment_info)
@@ -136,6 +152,11 @@ def delete_assignment(id):
 			db.session.query(Assignment).filter(Assignment.id==id).update({'assignment_status':'Removed'})
 			db.session.commit()
 			flash("Assignment deleted.", 'success')
+			
+			log_message = f"[WARNING] User {current_user.id} deleted assignment {user_assignment.Assignment.id} for user {user_assignment.User.id}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
 		except:
 			flash("Error deleting assignment. Check that the assignment ID exists.")
 		return redirect(url_for('main.dashboard'))

@@ -14,10 +14,11 @@ from SIMS_Portal import db
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Portfolio,
 	EmergencyType, Skill, Language, user_skill, user_language,
-	Badge, Alert, Documentation
+	Badge, Alert, Documentation, Log
 )
 from SIMS_Portal.portfolios.forms import PortfolioUploadForm, NewDocumentationForm
 from SIMS_Portal.users.utils import send_slack_dm
+from SIMS_Portal.main.utils import send_error_message
 from SIMS_Portal.portfolios.utils import (
 	get_full_portfolio, save_portfolio_to_dropbox, save_cover_image
 )
@@ -73,8 +74,12 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 	try:
 		# get SIMS Cos from this emergency, return the row with the latest end_date on the assignment
 		latest_emergency_simsco = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == emergency_id).filter(Assignment.role == 'SIMS Remote Coordinator').order_by(desc(Assignment.end_date)).first()
-	except:
-		current_app.logger.error(f"User-{user_id} tried to upload a product, but new_portfolio_from_assignment() could not retrieve latest SIMS Remote Coordinator for {latest_emergency_simsco.Emergency.emergency_name}.")
+	except Exception as e:
+		log_message = f"[ERROR] User {current_user.id} tried to upload a product but got an error: {e}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		send_error_message(log_message)
 	
 	user_info = db.session.query(User).filter(User.id == user_id).first()
 	
@@ -101,6 +106,11 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 		)
 		
 		db.session.add(product)
+		db.session.commit()
+		
+		log_message = f"[INFO] User {current_user.id} uploaded product {product.id} ({product.title})."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
 		db.session.commit()
 		
 		# send user a Slack message
@@ -155,9 +165,21 @@ def delete_portfolio(id):
 		try:
 			db.session.query(Portfolio).filter(Portfolio.id==id).update({'product_status':'Removed'})
 			db.session.commit()
+			
+			product_info = db.session.query(Portfolio).filter(Portfolio.id==id).first()
+			log_message = f"[WARNING] User {current_user.id} deleted product {product_info.id} ({product_info.title})."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
 			flash("Product deleted.", 'success')
-		except:
-			flash("Error deleting product. Check that the product ID exists.")
+		except Exception as e:
+			log_message = f"[ERROR] User {current_user.id} encountered an error when deleting product. They tried to delete product {id}: {e}"
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			send_error_message(log_message)
+			
+			flash("Error deleting product. Check that the product ID exists.", "danger")
 		return redirect(url_for('main.dashboard'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
@@ -192,6 +214,7 @@ def review_portfolio(dis_id):
 def approve_portfolio(prod_id, dis_id):
 	# get list of all SIMS coordinators for event
 	disaster_coordinator_query = db.session.query(Emergency, Assignment, User).join(Assignment, Assignment.emergency_id == Emergency.id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id, Assignment.role == 'SIMS Remote Coordinator').all()
+	product_info = db.session.query(Portfolio).filter(Portfolio.id==prod_id).first()
 	
 	# for loop gets the user id of query and appends to list
 	disaster_coordinator_list = []
@@ -201,17 +224,35 @@ def approve_portfolio(prod_id, dis_id):
 	# check that product is associated with that disaster
 	check_record = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Portfolio.id == prod_id, Emergency.id == dis_id).first()
 	
+	
 	# check if current user is one of the event's coordinators, and that the product passed the route is associated with the emergency
 	if (current_user.id in disaster_coordinator_list or current_user.is_admin == 1) and check_record:
 		try:
 			db.session.query(Portfolio).filter(Portfolio.id == prod_id).update({'product_status':'Approved'})
 			db.session.commit()
+			
+			
+			log_message = f"[INFO] User {current_user.id} approved product {product_info.id} ({product_info.title})."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 			flash('Product has been approved for external viewers.', 'success')
-		except:
+		except Exception as e:
+			log_message = f"[ERROR] User {current_user.id} tried to approve product {product_info.id} ({product_info.title}) but got an error: {e}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 			flash('Error approving the product.', 'warning')
 		redirect_url = '/portfolio/review/{}'.format(dis_id)
 		return redirect(redirect_url)
 	elif (current_user.id in disaster_coordinator_list or current_user.is_admin == 1) and not check_record:
+		log_message = f"[ERROR] User {current_user.id} tried to approve product {prod_id} but got an error."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		flash('Error approving the product. It looks like that product is not associated with this emergency, or an ID number is wrong. Contact a site administrator.', 'warning')
 		redirect_url = '/portfolio/review/{}'.format(dis_id)
 		return redirect(redirect_url)
@@ -374,7 +415,14 @@ def add_documentation():
 			db.session.add(documentation)
 			db.session.commit()
 			flash('New documentation added.', 'success')
-			current_app.logger.info("User-{} has added new documentation to the Portal: {}.".format(current_user.id, documentation.article_name))
+			
+			log_message = f"[INFO] User {current_user.id} added a new documentation link for {documentation.article_name}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
+			send_error_message(log_message)
+			
 			return redirect(url_for('portfolios.view_documentation'))
 		else:
 			flash('Please correct the errors in the documentation form.', 'danger')

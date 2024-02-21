@@ -18,7 +18,7 @@ from SIMS_Portal import db, bcrypt
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Portfolio,
 	EmergencyType, Skill, Language, user_skill, user_language,
-	Badge, Alert, user_badge, Profile, user_profile
+	Badge, Alert, user_badge, Profile, user_profile, Log
 )
 from SIMS_Portal.users.forms import (
 	RegistrationForm, LoginForm, UpdateAccountForm,
@@ -32,6 +32,7 @@ from SIMS_Portal.users.utils import (
 )
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from SIMS_Portal.users.utils import download_profile_photo
+from SIMS_Portal.main.utils import send_error_message
 
 users = Blueprint('users', __name__)
 
@@ -127,6 +128,12 @@ def register():
 				send_slack_dm(message, form.slack_id.data)
 				new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin_landing|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
 				flash('Your account has been created.', 'success')
+				
+				log_message = f"[INFO] A new user has registered for the Portal: {user.firstname} {user.lastname}."
+				new_log = Log(message=log_message, user_id=0)
+				db.session.add(new_log)
+				db.session.commit()
+				
 				return redirect(url_for('users.login'))
 		else:
 			flash('Please correct the errors in the registration form.', 'danger')
@@ -144,7 +151,12 @@ def login():
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
 			login_user(user, remember=form.remember.data)
 			next_page = request.args.get('next')
-			current_app.logger.info('User-{} ({} {}) logged in.'.format(user.id, user.firstname, user.lastname))
+			
+			log_message = f"[INFO] User {current_user.id} logged in."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 			return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
 		else:
 			flash('Login failed. Please check email and password', 'danger')
@@ -278,12 +290,21 @@ def assign_profiles(user_id, profile_id, tier):
 			new_profile = user_profile_table.insert().values(user_id=user_id, profile_id=profile_id, tier=tier)
 			db.session.execute(new_profile)
 			db.session.commit()
-		
-			current_app.logger.info('A new profile has been assigned to User-{}'.format(user_id))
+			
+			log_message = f"[INFO] A new profile has been assigned to {user_id} by {current_user.id}: Profile id: {profile_id} at tier {tier}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 			flash('User has been assigned a new profile.', 'success')
 			return redirect(url_for('main.admin_landing'))
 		except Exception as e:
-			current_app.logger.error('Error assigning a new profile tier to user: {}'.format(e))
+			log_message = f"[ERROR] Error assigning a new profile tier to user {user_id}: {e}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			send_error_message(log_message)
+			
 			return redirect(url_for('main.admin_landing'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
@@ -387,6 +408,12 @@ def update_profile():
 
 		db.session.commit()
 		flash('Your account has been updated!', 'success')
+		
+		log_message = f"[INFO] User {current_user.id} successfully updated their their profile."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		return redirect(url_for('users.profile'))
 	elif request.method == 'GET':
 		form.firstname.data = current_user.firstname
@@ -509,7 +536,13 @@ def save_user_location(user_id):
 					return render_template('validate_location.html', query_url=query_url, user_id=user_id)
 				except Exception as e:
 					flash('The PositionStack API is not responsive. Please try again later.', 'warning')
-					current_app.logger.error('PositionStack API call failed: {}'.format(e))
+					
+					log_message = f"[ERROR] PositionStack API call failed: {e}."
+					new_log = Log(message=log_message, user_id=current_user.id)
+					db.session.add(new_log)
+					db.session.commit()
+					send_error_message(log_message)
+					
 					return redirect(url_for('users.profile'))
 			else:
 				flash("You are not allowed to edit other people's location.", "danger")
@@ -527,7 +560,12 @@ def confirm_user_location(user_id):
 		db.session.query(User).filter(User.id==user_id).update({'coordinates':str(coordinates), 'place_label':place_label, 'time_zone': time_zone})
 		db.session.commit()
 		flash("You've successfully saved your location!", "success")
-		current_app.logger.info("User-{} ({} {}) has updated their location.".format(user_info.id, user_info.firstname, user_info.lastname))
+		
+		log_message = f"[INFO] User {user_info.id} has updated their location."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
 		update_member_locations()
 		return redirect(url_for('users.profile'))
 	else:
@@ -547,14 +585,23 @@ def reset_request():
 			send_reset_slack(user)
 			# log if user is resetting password, pass if using the forgot password route
 			try:
-				current_app.logger.info('User-{} requested a password reset.'.format(current_user.id))
+				log_message = f"[INFO] User {current_user.id} has requested a password reset."
+				new_log = Log(message=log_message, user_id=current_user.id)
+				db.session.add(new_log)
+				db.session.commit()
 			except: 
 				pass
 			flash('A Slack message has been sent with instructions to reset your password.', 'info')
 			return redirect(url_for('users.login'))
 		else:
 			flash("That Slack ID does not match any existing users. Contact a Portal administrator if you continue having issues locating your ID.", 'danger')
-			current_app.logger.warning('Password reset was requested but the system could not find the requested Slack ID.')
+			
+			log_message = f"[WARNING] Password reset was requested by {current_user.id} but the system could not find the requested Slack ID."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			send_error_message(log_message)
+			
 			return redirect('/reset_password')
 	elif request.method == 'GET':
 		if current_user.is_authenticated:
@@ -590,6 +637,12 @@ def approve_user(id):
 			message = "Hi {}, your SIMS registration has been approved by {} {}. You now have full access to the SIMS Portal. I recommend logging in and updating your profile to help others learn more about you.".format(check_slack_id.firstname, approver_info.firstname, approver_info.lastname)
 			user = check_slack_id.slack_id
 			send_slack_dm(message, user)
+			
+			log_message = f"[INFO] The registration request for user {current_user.id} has been approved."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 			flash("Account approved.", 'success')
 		except:
 			flash("Error approving user. Check that the user ID exists.")
@@ -609,6 +662,13 @@ def delete_user(id):
 			db.session.query(User).filter(User.id==id).update({'status':'Removed'})
 			db.session.commit()
 			flash("Account deleted.", 'success')
+			
+			log_message = f"[WARNING] User {current_user.id} deleted their profile."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			send_error_message(log_message)
+			
 		except:
 			flash("Error deleting user. Check that the user ID exists.")
 		return redirect(url_for('users.logout'))
@@ -617,6 +677,13 @@ def delete_user(id):
 			db.session.query(User).filter(User.id==id).update({'status':'Removed'})
 			db.session.commit()
 			flash("Account deleted.", 'success')
+			
+			log_message = f"[WARNING] Admin user {current_user.id} deleted user {id}'s profile."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			send_error_message(log_message)
+			
 		except:
 			flash("Error deleting user. Check that the user ID exists.")
 		return redirect(url_for('main.admin_landing'))
@@ -632,9 +699,21 @@ def save_slack_photo_to_profile(user_id):
 			user_info = db.session.query(User).filter(User.id == user_id).first()
 			download_profile_photo(user_info.slack_id)
 			flash('Your profile has been updated with your Slack photo!', 'success')
+			
+			log_message = f"[INFO] User {current_user.id} successfully updated their their profile photo with their Slack photo."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			
 			return redirect(url_for("users.profile"))
 		except Exception as e:
-			current_app.logger.error("User {} tried to save download their Slack photo and failed: {}".format(user_info.id, e))
+			
+			log_message = f"[ERROR] User {current_user.id} tried to download their Slack photo but failed: {e}"
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+			send_error_message(log_message)
+			
 			flash('There was an error trying to download your photo. Please try again later or contact an administrator.', 'danger')
 			return redirect(url_for("users.profile"))
 	else:
