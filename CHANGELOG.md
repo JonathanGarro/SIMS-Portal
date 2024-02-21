@@ -20,6 +20,7 @@
 
 ## New Features
 
+- **Custom Logging**: After trialing BetterStack, I decided to implement a customized logging solution that stores logs in a dedicated table in the SIMS Portal database. This release includes the first pass at triggers for common actions like user logins and file uploads.
 - **Acronym Index**: A new collaborative index allows users to post acronyms along with their definitions, supporting information, and relevant links. The system supports English, French, and Spanish. Arabic to be considered in the future.
 
 # 1.7.7 (Friendship Heights) - 2024-01-19
