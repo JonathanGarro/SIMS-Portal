@@ -13,6 +13,7 @@
 
 ## Fixes
 
+- **Broken Links on Resources Page**: Links to the learn-sims knowledge management portal have been fixed. (Thanks Natalie!)
 - **Fixed Link Builder on Acronym Table**: The link generator for external resources was not being constructed correctly, but has been fixed.
 
 # 1.8.0 (Tenleytown) - 2024-02-20
