@@ -454,6 +454,3 @@ def refresh_surge_alerts(pages_to_fetch):
 	new_log = Log(message=log_message, user_id=0)
 	db.session.add(new_log)
 	db.session.commit()	
-
-
-
