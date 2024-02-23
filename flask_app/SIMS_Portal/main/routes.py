@@ -425,7 +425,7 @@ def manual_refresh(func):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
-		bulk_slack_photo_update()
+		
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))

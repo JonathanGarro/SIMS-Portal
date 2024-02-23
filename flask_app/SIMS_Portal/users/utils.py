@@ -58,6 +58,16 @@ def new_surge_alert(message):
 	except Exception as e:
 		current_app.logger.error('new_surge_alert Slack message failed: {}'.format(e))
 
+def test_surge_alert(message):
+	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
+	try:
+		result = client.chat_postMessage(
+			channel = 'C046A8T9ZJB',
+			text = message
+		)
+	except Exception as e:
+		current_app.logger.error('new_surge_alert Slack message failed: {}'.format(e))
+
 def new_acronym_alert(message):
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:

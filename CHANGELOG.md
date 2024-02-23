@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.8.2 (Tenleytown) - 2024-02-23
+
+## New Features
+
+- **Slack Availability Channel Surge Alerter**: The script that downloads surge alert data, parses IM-related alerts, and pings the Availability channel in the SIMS Slack account has been rebuilt to take advantage of improvements made to the GO API last year. The alert messages to that channel now include rotation number, language requirements, a link to the alert in Molnix, and more. It handles exceptions better and includes new logging to better track when the Surge Desk puts data into the system that isn't properly structured against the data model. 
+
 # 1.8.1 (Tenleytown) - 2024-02-21
 
 ## New Features
