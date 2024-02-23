@@ -150,7 +150,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 	$('#alert-table').DataTable({
-		order: [[5, 'desc']],
+		order: [[8, 'desc']],
 		dom: 'frtipB',
 		buttons: [
 			'copy', 'csv'
@@ -164,13 +164,13 @@ $(document).ready(function () {
 			target: 7, 
 			visible: false,
 			searchable: true
+		},
+		{
+			target: 8, 
+			visible: false,
+			searchable: true
 		}],
-		"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-		  if (aData[6] == "True") {
-			$('td', nRow).css('background-color', 'DarkSlateGray');
-			$('td', nRow).css('color', 'White');
-		  }
-		}
+		
 	});
 });
 
