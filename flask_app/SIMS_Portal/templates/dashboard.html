@@ -182,19 +182,21 @@
 						  		<th><h5 class='Montserrat'>Alert Date</h5></th>
 						  		<th><h5 class='Montserrat'>IM</h5></th>
 						  		<th><h5 class='Montserrat'>iso3</h5></th>
+								<th><h5 class='Montserrat'>Molnix ID</h5></th>
 								</tr>
 					  		</thead>
 					  		<tbody>
 								{% for alert in surge_alerts %}
 						  		<tr>
 									<td class="fw-bold text-dangeralign-middle">{{alert.role_profile}}</td>
-									<td class="align-middle fw-bold"><a href='https://go.ifrc.org/emergencies/{{alert.event_go_id}}'>{{alert.event_name}}</a></td>
-									<td class="align-middle">{{alert.country}}</td>
-									<td class="align-middle">{{alert.severity}}</td>
+									<td class="align-middle fw-bold"><a href='https://go.ifrc.org/emergencies/{{alert.event_go_id}}'>{{alert.event}}</a></td>
+									<td class="align-middle">{{alert.country_name}}</td>
+									<td class="align-middle">{{alert.ifrc_severity_level_display}}</td>
 									<td class="align-middle">{{alert.scope}}</td>
-									<td class="align-middle">{{alert.alert_date}}</td>
+									<td class="align-middle">{{alert.start.strftime('%b %d, %Y')}}</td>
 									<td class="align-middle">{{alert.im_filter}}</td>
 									<td class="align-middle">{{alert.iso3}}</td>
+									<td class="align-middle">{{alert.molnix_id}}</td>
 									
 						  		</tr>
 								{% endfor %}
