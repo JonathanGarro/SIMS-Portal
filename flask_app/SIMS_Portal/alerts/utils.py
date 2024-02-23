@@ -2,10 +2,11 @@ from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from SIMS_Portal.models import Alert, Log
-from SIMS_Portal.users.utils import new_surge_alert
+from SIMS_Portal.users.utils import new_surge_alert, test_surge_alert
 from SIMS_Portal.main.utils import send_error_message
 from flask_apscheduler import APScheduler
-import datetime
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import math
 import requests
 import logging
@@ -13,14 +14,54 @@ import re
 
 scheduler = APScheduler()
 
-tags_list = ['ADMIN-CO', 'ASSESS-CO', 'CEA- RCCE', 'CEA-CO', 'CEA-OF', 'CIVMILCO', 'COM-TL', 'COMCO', 'COMOF', 'COMPH', 'COMVID', 'CVACO', 'CVAOF', 'DEP-OPMGR', 'DRR-CO', 'EAREC-OF', 'FA Of', 'FIELDCO', 'FIN-CO', 'HEALTH-CO', 'HEALTH-ETL', 'HEOPS', 'HRCO', 'HR-OF', 'HUMLIAS', 'IDRLCO', 'IM-CO', 'IM-PDC', 'IM-VIZ', 'IMANALYST', 'ITT-CO', 'ITT-OF', 'LIVECO', 'LIVEINCM', 'LIVEMRKT', 'LOG-CO', 'LOG-ETL', 'LOG-OF', 'LOGADMIN', 'LOGAIROPS', 'LOGCASH', 'LOGFLEET', 'LOGPIPELINE', 'LOGPROC', 'LOGWARE', 'MDHEALTH-CO', 'MEDLOG', 'MIG-CO', 'MOVCO', 'NSDCO', 'NSDVOL', 'OPMGR', 'PER-CO', 'PER-OF', 'PGI-CO', 'PGI-OF', 'PHEALTH-CO', 'PMER-CO', 'PMER-OF', 'PRD-NS', 'PRD-OF', 'PSS-CO', 'PSS-ERU', 'PSS-OF', 'PSSCMTY', 'RECCO', 'RELCO', 'RELOF', 'SEC-CO', 'SHCLUSTER-CO', 'SHCLUSTER-DEP', 'SHCLUSTER-ENV', 'SHCLUSTER-HUB', 'SHCLUSTER-IM', 'SHCLUSTER-REC', 'SHCLUSTER-TEC', 'SHELTERP-CB', 'SHELTERP-CO', 'SHELTERP-SP', 'SHELTERP-TEC', 'SHELTERP-TL', 'SIMSCo', 'STAFFHEALTH', 'WASH-CO', 'WASH-ENG', 'WASH-ETL', 'WASH-HP', 'WASH-OF', 'WASH-SAN', 'WASH-TEC']
+def calculate_months_difference(start_date, end_date):
+	if isinstance(start_date, str):
+		start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+	if isinstance(end_date, str):
+		end_date = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S")
+	
+	date_difference = relativedelta(end_date, start_date)
+	
+	months_difference = date_difference.years * 12 + date_difference.months + round(date_difference.days / 30, 2)
+	
+	return months_difference
 
-# same as molnix tags, this list must be manually updated
-im_tags = ['IM-CO', 'IM-PDC', 'IM-VIZ', 'IMANALYST', 'SIMSCo']
-
-region_list = ['AFRICA', 'ASIAP', 'AMER', 'EURO', 'MENA']
-
-scope_list = ['REGIONAL', 'GLOBAL']
+def send_im_alert_to_slack(alert_info):
+	colors_to_emoji = {'Red': 'a :red_circle: red', 'Orange': 'an :large_orange_circle: orange', 'Yellow': 'a :large_yellow_circle: yellow'}
+	# link to ifrc sharepoint's file on the role profile
+	standard_profiles = {
+		'Information Management Coordinator': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/Ea_YRhCI_IJHkhISEh5zH2YBCUtMAdWUqiC8JH7g1Jj8AQ', 
+		'Humanitarian Information Analysis Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EYUNi8qR395Oq3Ng3SHbsXMBUbS4XdfVw03tECGEb828Nw', 
+		'Primary Data Collection Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EdB7tgvjH5dApy5PcFNZcx0BzGKQJfS2nP-L3CFKRdr5Ow', 
+		'Mapping and Data Visualization Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/ER92aBZKBpxHrH61MJf4hLEBxwEnqzfqjLVR7cscPlxDKA',
+		'SIMS Remote Coordinator': 'https://go.ifrc.org/deployments/catalogue/infoMgt'
+	}
+	
+	position_description = standard_profiles.get(alert_info.role_profile, None)
+	if position_description is not None:
+		position_description_link = f"<{position_description}|Standard role profile for this position>"
+	else:
+		position_description_link = None
+	
+	alert_length = calculate_months_difference(alert_info.start, alert_info.end_time)
+	
+	# reformat dates for slack message
+	requested_timeframe_start = alert_info.start.strftime("%B %d, %Y")
+	requested_timeframe_end = alert_info.end_time.strftime("%B %d, %Y")
+	
+	# construct message depending on these variables
+	if alert_info.scope == 'Global':
+		if alert_info.role_profile == 'SIMS Remote Coordinator':
+			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *SIMS Remote Coordinator* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Note*: SIMS Remote Coordinator positions are remote \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+		
+		else:
+			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+	
+	if alert_info.scope == 'Regional':
+		message = f'\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+	
+	new_surge_alert(message)
+	# test_surge_alert(message)
 
 def refresh_surge_alerts_latest():
 	"""
@@ -33,240 +74,188 @@ def refresh_surge_alerts_latest():
 		db.session.add(new_log)
 		db.session.commit()
 		
-		existing_alerts = db.session.query(Alert).order_by(Alert.alert_id.desc()).all()
+		existing_alerts = db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
 		existing_alert_ids = []
 		existing_statuses = []
 		for alert in existing_alerts:
 			existing_alert_ids.append(alert.alert_id)
-			temp_dict = {}
-			temp_dict['alert_id'] = alert.alert_id
-			temp_dict['alert_status'] = alert.alert_status
-			existing_statuses.append(temp_dict)
+			alert_dict = {}
+			alert_dict['molnix_id'] = alert.alert_id
+			alert_dict['alert_status'] = alert.alert_status
+			existing_statuses.append(alert_dict)
 		
-		api_call = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
-		r = requests.get(api_call).json()
+		url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
+		result_list = []
 		
-		# page flipper for paginated surge alerts
-		current_page = 1
-		page_count = int(math.ceil(r['count'] / 50))
-		current_app.logger.info('Surge Alert GO API query run, returned {} pages.'.format(page_count))
+		response = requests.get(url)
+		data = response.json()
+		results = data.get("results", [])
 		
-		output = []
+		for result in results:
+			molnix_tags = result.get("molnix_tags", [])
 		
-		for x in r['results']:
-			temp_dict = {}
-			if x['molnix_tags']:
-				for y in x['molnix_tags']:
-					if y['name'] in tags_list:
-						if y['name'] in im_tags:
-							temp_dict['im_filter'] = 1
-						else:
-							temp_dict['im_filter'] = 0 
-						temp_dict['role_profile'] = y['description']
-						try:
-							temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
-						except:
-							# surge team imported old alerts without 'opens' data that requires this fallback
-							temp_dict['alert_date'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
-						if x['start']:
-							temp_dict['start'] = datetime.datetime.strptime(x['start'], "%Y-%m-%dT%H:%M:%SZ")
-						else:
-							temp_dict['start'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
-						if x['end']:
-							temp_dict['end'] = datetime.datetime.strptime(x['end'], "%Y-%m-%dT%H:%M:%SZ")
-						else:
-							temp_dict['end'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")	
-						temp_dict['alert_id'] = x['id']
-						temp_dict['molnix_id'] = x['molnix_id']
-						temp_dict['alert_status'] = x['molnix_status']
-						if x['event']:
-							temp_dict['event_name'] = x['event']['name']
-							try:
-								temp_dict['severity'] = x['event']['ifrc_severity_level_display']
-							except:
-								temp_dict['severity'] = 'n/a'
-							temp_dict['event_go_id'] = x['event']['id']
-							temp_dict['event_date'] = datetime.datetime.strptime(x['event']['disaster_start_date'], "%Y-%m-%dT%H:%M:%SZ")
-							if x['country']:
-								temp_dict['country'] = x['country']['name']
-								try:
-									temp_dict['iso3'] = x['country']['iso3']
-								except:
-									temp_dict['iso3'] = ''
-							else:
-								temp_dict['country'] = 'MISSING COUNTRY'
-								temp_dict['iso3'] = 'ZZZ'
-						else:
-							temp_dict['event_name'] = 'MISSING EMERGENCY'
-							temp_dict['severity'] = 'MISSING EMERGENCY'
-							temp_dict['event_go_id'] = 0
-							temp_dict['event_date'] = datetime.date(2000, 1, 1)
-							temp_dict['country'] = 'MISSING EMERGENCY'
-							temp_dict['iso3'] = 'MISSING EMERGENCY'
-				for y in x['molnix_tags']:
-					if y['name'] in region_list:
-						try:
-							if y['name'] == 'AFRICA':
-								temp_dict['region'] = 'Africa'
-							elif y['name'] == 'AMER':
-								temp_dict['region'] = 'Americas'
-							elif y['name'] == 'ASIAP':
-								temp_dict['region'] = 'Asia Pacific'
-							elif y['name'] == 'EURO':
-								temp_dict['region'] = 'Europe'
-							elif y['name'] == 'MENA':
-								temp_dict['region'] = 'Middle East and North Africa'
-							else:
-								temp_dict['region'] = 'MISSING'
-						except:
-							pass
-				for y in x['molnix_tags']:
-					if y['name'] in scope_list:
-						try:
-							if y['name'] == 'REGIONAL':
-								temp_dict['scope'] = 'Regional'
-							elif y['name'] == 'GLOBAL':
-								temp_dict['scope'] = 'Global'
-						except:
-							temp_dict['scope'] = 'MISSING'
-
-			if temp_dict.get('alert_id') is not None:
-				output.append(temp_dict)
+			sectors = []
+			roles = []
+			
+			alert_id = result.get("id", None)
+			molnix_id = result.get("molnix_id", None)
+			alert_record_created_at = result.get("created_at", None)
+			molnix_status = result.get("molnix_status", None)
+			alert_status = result.get("status_display", None)
+			opens = result.get("opens", None)
+			start = result.get("start", None)
+			end = result.get("end", None)
+		
+			modality = None
+			im_filter = False
+		
+			for tag in molnix_tags:
+				groups = tag.get("groups", [])
+		
+				if "SECTOR" in groups:
+					sector = tag.get("description", None)
+					sectors.append(sector)
+		
+				if "ROLES" in groups:
+					role_profile = tag.get("description", None)
+					roles.append(role_profile)
+		
+				if "Modality" in groups:
+					modality = tag.get("name", None)
 				
-		if r['next']:
-			next_page = requests.get(r['next']).json()
-			r = next_page
-			current_page += 1
-
+				if "ALERT TYPE" in groups:
+					scope = tag.get("name", None).title()
+		
+			im_filter = "Information Management" in sectors
+		
+			language_required = next((tag.get("description", None) for tag in molnix_tags if tag.get("tag_type") == "language"), None)
+			rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in group.get("groups", [])), None)
+		
+			country = result.get("country", {})
+			iso3 = country.get("iso3", None)
+			country_name = country.get("name", None)
+		
+			event = result.get("event", {})
+			disaster_type_id = event.get("dtype", {}).get("id", None)
+			disaster_type_name = event.get("dtype", {}).get("name", None)
+			ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
+			event_name = event.get("name", None)
+			disaster_go_id = event.get("id", None)
+		
+			result_dict = {
+				"molnix_id": molnix_id,
+				"alert_record_created_at": alert_record_created_at,
+				"event": event_name,
+				"role_profile": role_profile,
+				"rotation": rotation,
+				"modality": modality,
+				"language_required": language_required,
+				"molnix_status": molnix_status,
+				"alert_status": alert_status,
+				"opens": opens,
+				"start": start,
+				"end_time": end,
+				"sectors": sectors,
+				"role_tags": roles,
+				"scope": scope,
+				"im_filter": im_filter,
+				"iso3": iso3,
+				"country_name": country_name,
+				"disaster_type_id": disaster_type_id,
+				"disaster_type_name": disaster_type_name,
+				"disaster_go_id": disaster_go_id,
+				"ifrc_severity_level_display": ifrc_severity_level_display,
+				"alert_id": alert_id
+			}
+		
+			result_list.append(result_dict)
 		
 		count_new_records = 0
+		count_updated_records = 0
 		
-		# add new records
-		for alert in output:
-			if alert and alert['alert_id'] not in existing_alert_ids:
-				try:
-					individual_alert = Alert(
-						im_filter = alert['im_filter'],
-						role_profile = alert['role_profile'],
-						alert_date = alert['alert_date'],
-						start = alert['start'],
-						end = alert['end'],
-						alert_id = alert['alert_id'],
-						molnix_id = alert['molnix_id'],
-						alert_status = alert['alert_status'],
-						event_name = alert['event_name'],
-						severity = alert['severity'],
-						event_go_id = alert['event_go_id'],
-						event_date = alert['event_date'],
-						country = alert['country'],
-						iso3 = alert['iso3'],
-						region = alert['region'],
-						scope = alert['scope']
-					)
-				except KeyError as e:
-					caused_key = e.args[0]
-					if caused_key == 'scope':
-						try:
-							individual_alert = Alert(
-								im_filter = alert['im_filter'],
-								role_profile = alert['role_profile'],
-								alert_date = alert['alert_date'],
-								start = alert['start'],
-								end = alert['end'],
-								alert_id = alert['alert_id'],
-								molnix_id = alert['molnix_id'],
-								alert_status = alert['alert_status'],
-								event_name = alert['event_name'],
-								severity = alert['severity'],
-								event_go_id = alert['event_go_id'],
-								event_date = alert['event_date'],
-								country = alert['country'],
-								iso3 = alert['iso3'],
-								region = alert['region'],
-								scope = 'MISSING'
-							)
-						except:
-							pass
-					elif caused_key == 'region':
-						try:
-							individual_alert = Alert(
-								im_filter = alert['im_filter'],
-								role_profile = alert['role_profile'],
-								alert_date = alert['alert_date'],
-								start = alert['start'],
-								end = alert['end'],
-								alert_id = alert['alert_id'],
-								molnix_id = alert['molnix_id'],
-								alert_status = alert['alert_status'],
-								event_name = alert['event_name'],
-								severity = alert['severity'],
-								event_go_id = alert['event_go_id'],
-								event_date = alert['event_date'],
-								country = alert['country'],
-								iso3 = alert['iso3'],
-								region = 'MISSING',
-								scope = alert['scope']
-							)
-						except:
-							pass
-					else:
-						try:
-							individual_alert = Alert(
-								im_filter = alert['im_filter'],
-								role_profile = alert['role_profile'],
-								alert_date = alert['alert_date'],
-								start = alert['start'],
-								end = alert['end'],
-								alert_id = alert['alert_id'],
-								molnix_id = alert['molnix_id'],
-								alert_status = alert['alert_status'],
-								event_name = alert['event_name'],
-								severity = alert['severity'],
-								event_go_id = alert['event_go_id'],
-								event_date = alert['event_date'],
-								country = alert['country'],
-								iso3 = alert['iso3'],
-								region = 'MISSING',
-								scope = 'MISSING'
-							)
-						except:
-							pass
-				
-				if alert['im_filter'] == 1:
-					# send IM alerts to the availability channel in SIMS slack
+		for result in result_list:
+			
+			# these fields can have multiple values, so strip curly brackets and save as comma-separated strings
+			result['sectors'] = ', '.join(result['sectors'])
+			result['role_tags'] = ', '.join(result['role_tags'])
+			
+			existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
+			
+			if existing_alert:
+				# check if alert_status has changed
+				if existing_alert.alert_status != result['alert_status']:
 					try:
-						# convert emergency classification to emoji
-						colors_to_emoji = {'Red': 'a :red_circle: red', 'Orange': 'an :large_orange_circle: orange', 'Yellow': 'a :large_yellow_circle: yellow'}
-						# link to ifrc sharepoint's file on the role profile
-						standard_profiles = {
-							'Information Management Coordinator': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/Ea_YRhCI_IJHkhISEh5zH2YBCUtMAdWUqiC8JH7g1Jj8AQ', 
-							'Humanitarian Information Analysis Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EYUNi8qR395Oq3Ng3SHbsXMBUbS4XdfVw03tECGEb828Nw', 
-							'Primary Data Collection Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EdB7tgvjH5dApy5PcFNZcx0BzGKQJfS2nP-L3CFKRdr5Ow', 
-							'Mapping and Data Visualization Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/ER92aBZKBpxHrH61MJf4hLEBxwEnqzfqjLVR7cscPlxDKA',
-							'SIMS Remote Coordinator': 'https://go.ifrc.org/deployments/catalogue/infoMgt'
-						}
-						# construct message
-						if alert['scope'] == 'Global':
-							if alert['role_profile'] == 'SIMS Remote Coordinator':
-								message = '\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n The following Rapid Response profile has been requested for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, with a desired start date of {}. This is a remote deployment.\n\nYou can find the standard role profile for this position <{}|here>.'.format(alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
-							else: 
-								message = '\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n The following Rapid Response profile has been requested for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, based in {}, with a desired start date of {}.\n\nYou can find the standard role profile for this position <{}|here>.'.format(alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
-						if alert['scope'] == 'Regional':
-							message = "\n*New Regional Information Management Surge Alert Released!*\n\n The {} region has released the following Rapid Response surge alert for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, based in {}, with a desired start date of {}.\n\n*This is a regional alert only,* and is not being triaged globally. This message is for the SIMS Network's situational awareness only.\n\nYou can find the standard role profile for this position <{}|here>.".format(alert['region'], alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
-						# fire off alert
-						new_surge_alert(message)
-					# skip if slack api not responsive
-					except Exception as e: 
-						current_app.logger.error('Send IM Surge Alert to Slack failed: {}'.format(e))
-				try:
-					db.session.add(individual_alert)
-					db.session.commit()
-					count_new_records += 1
-				except:
-					pass
+						# update the existing alert in the database
+						existing_alert.alert_status = result['alert_status']
+						db.session.commit()
+						count_updated_records += 1
+					except Exception as e:
+						log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}: {e}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+			
+			else:
+				# this is a new alert; add it to the database
+				if result['alert_id'] not in existing_alert_ids:
+					try:
+						individual_alert = Alert(
+							molnix_id = result['molnix_id'],
+							alert_record_created_at = result['alert_record_created_at'],
+							event = result['event'],
+							role_profile = result['role_profile'],
+							rotation = result['rotation'],
+							modality = result['modality'],
+							language_required = result['language_required'],
+							molnix_status = result['molnix_status'],
+							alert_status = result['alert_status'],
+							opens = result['opens'],
+							start = result['start'],
+							end_time = result['end_time'],
+							sectors = result['sectors'],
+							role_tags = result['role_tags'],
+							scope = result['scope'],
+							im_filter = result['im_filter'],
+							iso3 = result['iso3'],
+							country_name = result['country_name'],
+							disaster_type_id = result['disaster_type_id'],
+							disaster_type_name = result['disaster_type_name'],
+							disaster_go_id = result['disaster_go_id'],
+							ifrc_severity_level_display = result['ifrc_severity_level_display'],
+							alert_id = result['alert_id']
+						)
+					except Exception as e:
+						log_message = f"[WARNING] The refresh_surge_alerts_latest function couldn't parse one of the alerts it found in the Surge Alert cron job as it tried to instantiate a new Alert object: {e}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+					
+					
+					
+					try:
+						db.session.add(individual_alert)
+						db.session.commit()
+						count_new_records += 1
+						
+						# send IM alerts to availability channel in slack
+						if individual_alert.im_filter == True:
+							log_message = f"SUCCESS - IM Filter check passed"
+							new_log = Log(message=log_message, user_id=0)
+							db.session.add(new_log)
+							db.session.commit()
+							send_im_alert_to_slack(individual_alert)
+						
+						
+					except Exception as e:
+						log_message = f"[ERROR] The refresh_surge_alerts_latest function couldn't add one of the alerts (id={individual_alert.id}) to the database: {e}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+
+			
 	except Exception as e:
 		log_message = f"[ERROR] The Surge Alert cron job has failed: {e}."
-		new_log = Log(message=log_message, user_id=current_user.id)
+		new_log = Log(message=log_message, user_id=0)
 		db.session.add(new_log)
 		db.session.commit()
 		send_error_message(log_message)
@@ -276,243 +265,9 @@ def refresh_surge_alerts_latest():
 	db.session.add(new_log)
 	db.session.commit()	
 
+
 def refresh_surge_alerts():
-	"""
-	Queries the GO API to get the latest surge alerts. This version of the function loops through all pages in the database. For a faster version of this function, use `refresh_surge_alerts_latest`, which will only look at the most recent page, and should still catch all new alerts if it is run at least once per day.
-	"""
-	try:
-		current_app.logger.info('Surge Alert GO API query started.')
-		existing_alerts = db.session.query(Alert).order_by(Alert.alert_id.desc()).all()
-		existing_alert_ids = []
-		existing_statuses = []
-		for alert in existing_alerts:
-			existing_alert_ids.append(alert.alert_id)
-			temp_dict = {}
-			temp_dict['alert_id'] = alert.alert_id
-			temp_dict['alert_status'] = alert.alert_status
-			existing_statuses.append(temp_dict)
-		
-		api_call = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
-		r = requests.get(api_call).json()
-		
-		# page flipper for paginated surge alerts
-		current_page = 1
-		page_count = int(math.ceil(r['count'] / 50))
-		current_app.logger.info('Surge Alert GO API query run, returned {} pages.'.format(page_count))
-		
-		output = []
-		
-		while current_page <= page_count:
-			for x in r['results']:
-				temp_dict = {}
-				if x['molnix_tags']:
-					for y in x['molnix_tags']:
-						if y['name'] in tags_list:
-							if y['name'] in im_tags:
-								temp_dict['im_filter'] = 1
-							else:
-								temp_dict['im_filter'] = 0 
-							temp_dict['role_profile'] = y['description']
-							try:
-								temp_dict['alert_date'] = datetime.datetime.strptime(x['opens'], "%Y-%m-%dT%H:%M:%SZ")
-							except:
-								# surge team imported old alerts without 'opens' data that requires this fallback
-								temp_dict['alert_date'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
-							if x['start']:
-								temp_dict['start'] = datetime.datetime.strptime(x['start'], "%Y-%m-%dT%H:%M:%SZ")
-							else:
-								temp_dict['start'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")
-							if x['end']:
-								temp_dict['end'] = datetime.datetime.strptime(x['end'], "%Y-%m-%dT%H:%M:%SZ")
-							else:
-								temp_dict['end'] = datetime.datetime.strptime('1900-01-01T00:00:00Z', "%Y-%m-%dT%H:%M:%SZ")	
-							temp_dict['alert_id'] = x['id']
-							temp_dict['molnix_id'] = x['molnix_id']
-							temp_dict['alert_status'] = x['molnix_status']
-							if x['event']:
-								temp_dict['event_name'] = x['event']['name']
-								try:
-									temp_dict['severity'] = x['event']['ifrc_severity_level_display']
-								except:
-									temp_dict['severity'] = 'n/a'
-								temp_dict['event_go_id'] = x['event']['id']
-								temp_dict['event_date'] = datetime.datetime.strptime(x['event']['disaster_start_date'], "%Y-%m-%dT%H:%M:%SZ")
-								if x['country']:
-									temp_dict['country'] = x['country']['name']
-									try:
-										temp_dict['iso3'] = x['country']['iso3']
-									except:
-										temp_dict['iso3'] = ''
-								else:
-									temp_dict['country'] = 'MISSING COUNTRY'
-									temp_dict['iso3'] = 'ZZZ'
-							else:
-								temp_dict['event_name'] = 'MISSING EMERGENCY'
-								temp_dict['severity'] = 'MISSING EMERGENCY'
-								temp_dict['event_go_id'] = 0
-								temp_dict['event_date'] = datetime.date(2000, 1, 1)
-								temp_dict['country'] = 'MISSING EMERGENCY'
-								temp_dict['iso3'] = 'MISSING EMERGENCY'
-					for y in x['molnix_tags']:
-						if y['name'] in region_list:
-							try:
-								if y['name'] == 'AFRICA':
-									temp_dict['region'] = 'Africa'
-								elif y['name'] == 'AMER':
-									temp_dict['region'] = 'Americas'
-								elif y['name'] == 'ASIAP':
-									temp_dict['region'] = 'Asia Pacific'
-								elif y['name'] == 'EURO':
-									temp_dict['region'] = 'Europe'
-								elif y['name'] == 'MENA':
-									temp_dict['region'] = 'Middle East and North Africa'
-								else:
-									temp_dict['region'] = 'MISSING'
-							except:
-								pass
-					for y in x['molnix_tags']:
-						if y['name'] in scope_list:
-							try:
-								if y['name'] == 'REGIONAL':
-									temp_dict['scope'] = 'Regional'
-								elif y['name'] == 'GLOBAL':
-									temp_dict['scope'] = 'Global'
-							except:
-								temp_dict['scope'] = 'MISSING'
-	
-				if temp_dict.get('alert_id') is not None:
-					output.append(temp_dict)
-					
-			if r['next']:
-				next_page = requests.get(r['next']).json()
-				r = next_page
-				current_page += 1
-			else:
-				break
-		
-		count_new_records = 0
-		
-		# add new records
-		for alert in output:
-			if alert and alert['alert_id'] not in existing_alert_ids:
-				try:
-					individual_alert = Alert(
-						im_filter = alert['im_filter'],
-						role_profile = alert['role_profile'],
-						alert_date = alert['alert_date'],
-						start = alert['start'],
-						end = alert['end'],
-						alert_id = alert['alert_id'],
-						molnix_id = alert['molnix_id'],
-						alert_status = alert['alert_status'],
-						event_name = alert['event_name'],
-						severity = alert['severity'],
-						event_go_id = alert['event_go_id'],
-						event_date = alert['event_date'],
-						country = alert['country'],
-						iso3 = alert['iso3'],
-						region = alert['region'],
-						scope = alert['scope']
-					)
-				except KeyError as e:
-					caused_key = e.args[0]
-					if caused_key == 'scope':
-						try:
-							individual_alert = Alert(
-								im_filter = alert['im_filter'],
-								role_profile = alert['role_profile'],
-								alert_date = alert['alert_date'],
-								start = alert['start'],
-								end = alert['end'],
-								alert_id = alert['alert_id'],
-								molnix_id = alert['molnix_id'],
-								alert_status = alert['alert_status'],
-								event_name = alert['event_name'],
-								severity = alert['severity'],
-								event_go_id = alert['event_go_id'],
-								event_date = alert['event_date'],
-								country = alert['country'],
-								iso3 = alert['iso3'],
-								region = alert['region'],
-								scope = 'MISSING'
-							)
-						except:
-							pass
-					elif caused_key == 'region':
-						try:
-							individual_alert = Alert(
-								im_filter = alert['im_filter'],
-								role_profile = alert['role_profile'],
-								alert_date = alert['alert_date'],
-								start = alert['start'],
-								end = alert['end'],
-								alert_id = alert['alert_id'],
-								molnix_id = alert['molnix_id'],
-								alert_status = alert['alert_status'],
-								event_name = alert['event_name'],
-								severity = alert['severity'],
-								event_go_id = alert['event_go_id'],
-								event_date = alert['event_date'],
-								country = alert['country'],
-								iso3 = alert['iso3'],
-								region = 'MISSING',
-								scope = alert['scope']
-							)
-						except:
-							pass
-					else:
-						try:
-							individual_alert = Alert(
-								im_filter = alert['im_filter'],
-								role_profile = alert['role_profile'],
-								alert_date = alert['alert_date'],
-								start = alert['start'],
-								end = alert['end'],
-								alert_id = alert['alert_id'],
-								molnix_id = alert['molnix_id'],
-								alert_status = alert['alert_status'],
-								event_name = alert['event_name'],
-								severity = alert['severity'],
-								event_go_id = alert['event_go_id'],
-								event_date = alert['event_date'],
-								country = alert['country'],
-								iso3 = alert['iso3'],
-								region = 'MISSING',
-								scope = 'MISSING'
-							)
-						except:
-							pass
-				
-				if alert['im_filter'] == 1:
-					# send IM alerts to the availability channel in SIMS slack
-					try:
-						# convert emergency classification to emoji
-						colors_to_emoji = {'Red': 'a :red_circle: red', 'Orange': 'an :large_orange_circle: orange', 'Yellow': 'a :large_yellow_circle: yellow'}
-						# link to ifrc sharepoint's file on the role profile
-						standard_profiles = {
-							'Information Management Coordinator': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/Ea_YRhCI_IJHkhISEh5zH2YBCUtMAdWUqiC8JH7g1Jj8AQ', 
-							'Humanitarian Information Analysis Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EYUNi8qR395Oq3Ng3SHbsXMBUbS4XdfVw03tECGEb828Nw', 
-							'Primary Data Collection Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/EdB7tgvjH5dApy5PcFNZcx0BzGKQJfS2nP-L3CFKRdr5Ow', 
-							'Mapping and Data Visualization Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/ER92aBZKBpxHrH61MJf4hLEBxwEnqzfqjLVR7cscPlxDKA',
-							'SIMS Remote Coordinator': 'https://go.ifrc.org/deployments/catalogue/infoMgt'
-						}
-						# construct message
-						if alert['scope'] == 'Global':
-							message = '\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n The following Rapid Response profile has been requested for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, based in {}, with a desired start date of {}.\n\nYou can find the standard role profile for this position <{}|here>.'.format(alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
-						if alert['scope'] == 'Regional':
-							message = "\n*New Regional Information Management Surge Alert Released!*\n\n The {} region has released the following Rapid Response surge alert for <https://go.ifrc.org/emergencies/{}|*{}*>, which is {} emergency.\n\n • 1 x *{}*, based in {}, with a desired start date of {}.\n\n*This is a regional alert only,* and is not being triaged globally. This message is for the SIMS Network's situational awareness only.\n\nYou can find the standard role profile for this position <{}|here>.".format(alert['region'], alert['event_go_id'], alert['event_name'], colors_to_emoji[alert['severity']], alert['role_profile'], alert['country'], alert['start'].strftime("%B %d"), standard_profiles[alert['role_profile']])
-						# fire off alert
-						# new_surge_alert(message)
-					# skip if slack api not responsive
-					except Exception as e: 
-						current_app.logger.error('Send IM Surge Alert to Slack failed: {}'.format(e))
-				try:
-					db.session.add(individual_alert)
-					db.session.commit()
-					count_new_records += 1
-				except:
-					pass
-	except Exception as e:
-		current_app.logger.error('Surge Alert GO API Query Failed: {}'.format(e))
-	
-	current_app.logger.info('Surge Alert GO API query finished, logged {} new records.'.format(count_new_records))
+	return None
+
+
+

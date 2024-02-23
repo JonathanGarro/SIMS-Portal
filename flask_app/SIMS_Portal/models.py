@@ -395,29 +395,35 @@ class Alert(db.Model):
 	__tablename__ = 'alert'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	im_filter = db.Column(db.Boolean)
-	role_profile = db.Column(db.String)
-	alert_date = db.Column(db.Date)
-	start = db.Column(db.Date)
-	end = db.Column(db.Date)
-	alert_id = db.Column(db.Integer)
 	molnix_id = db.Column(db.Integer)
+	alert_record_created_at = db.Column(db.DateTime)
+	event = db.Column(db.String)
+	role_profile = db.Column(db.String)
+	rotation = db.Column(db.String)
+	modality = db.Column(db.String)
+	language_required = db.Column(db.String)
+	molnix_status = db.Column(db.String)
 	alert_status = db.Column(db.String)
-	event_name = db.Column(db.String)
-	severity = db.Column(db.String)
-	event_go_id = db.Column(db.Integer)
-	event_date = db.Column(db.Date)
-	country = db.Column(db.String)
-	iso3 = db.Column(db.String)
-	region = db.Column(db.String)
+	opens = db.Column(db.DateTime)
+	start = db.Column(db.DateTime)
+	end_time = db.Column(db.DateTime)
+	sectors = db.Column(db.String)
+	role_tags = db.Column(db.String)
 	scope = db.Column(db.String)
-	appeal_type = db.Column(db.String)
+	im_filter = db.Column(db.Boolean)
+	iso3 = db.Column(db.String)
+	country_name = db.Column(db.String)
+	disaster_type_id = db.Column(db.Integer)
+	disaster_type_name = db.Column(db.String)
+	disaster_go_id = db.Column(db.Integer)
+	ifrc_severity_level_display = db.Column(db.String)
+	alert_id = db.Column(db.Integer)
 	
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 	
 	def __repr__(self):
-		return f"Alert('{self.event_name}','{self.event_go_id}','{self.event_date}','{self.role_profile}','{self.alert_date}','{self.alert_id}','{self.alert_status}','{self.location}')"
+		return f"Alert('{self.event}', '{self.event}')"
 		
 class Availability(db.Model):
 	__tablename__ = 'availability'
