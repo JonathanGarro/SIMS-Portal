@@ -69,7 +69,7 @@ def refresh_surge_alerts_latest():
 	"""
 	
 	try:
-		log_message = f"[INFO] The Surge Alert cron job has started."
+		log_message = f"[INFO] The Surge Alert (Latest) cron job has started."
 		new_log = Log(message=log_message, user_id=0)
 		db.session.add(new_log)
 		db.session.commit()
@@ -230,8 +230,6 @@ def refresh_surge_alerts_latest():
 						db.session.add(new_log)
 						db.session.commit()
 					
-					
-					
 					try:
 						db.session.add(individual_alert)
 						db.session.commit()
@@ -239,19 +237,13 @@ def refresh_surge_alerts_latest():
 						
 						# send IM alerts to availability channel in slack
 						if individual_alert.im_filter == True:
-							log_message = f"SUCCESS - IM Filter check passed"
-							new_log = Log(message=log_message, user_id=0)
-							db.session.add(new_log)
-							db.session.commit()
 							send_im_alert_to_slack(individual_alert)
-						
 						
 					except Exception as e:
 						log_message = f"[ERROR] The refresh_surge_alerts_latest function couldn't add one of the alerts (id={individual_alert.id}) to the database: {e}"
 						new_log = Log(message=log_message, user_id=0)
 						db.session.add(new_log)
 						db.session.commit()
-
 			
 	except Exception as e:
 		log_message = f"[ERROR] The Surge Alert cron job has failed: {e}."
@@ -266,8 +258,202 @@ def refresh_surge_alerts_latest():
 	db.session.commit()	
 
 
-def refresh_surge_alerts():
-	return None
+def refresh_surge_alerts(pages_to_fetch):
+	"""
+	Queries the GO API to get all surge alerts. Unlike the refresh_surge_alerts_latest version which only looks at the most recent page, this one loops through more pages and is thus not suitable or necessary to run frequently. To specify how many pages, use the pages_to_fetch argument with the function. This version also doesn't send alerts to Slack to avoid bombarding that channel with all historical matches. 
+	"""
+	
+	try:
+		log_message = f"[INFO] The Surge Alert (full version) function has started."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+		
+		existing_alerts = db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
+		existing_alert_ids = []
+		existing_statuses = []
+		for alert in existing_alerts:
+			existing_alert_ids.append(alert.alert_id)
+			alert_dict = {}
+			alert_dict['molnix_id'] = alert.alert_id
+			alert_dict['alert_status'] = alert.alert_status
+			existing_statuses.append(alert_dict)
+		
+		url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
+		result_list = []
+		
+		current_page = 1
+		
+		while url and current_page <= pages_to_fetch:
+			response = requests.get(url)
+			data = response.json()
+			results = data.get("results", [])
+		
+			for result in results:
+				molnix_tags = result.get("molnix_tags", [])
+			
+				sectors = []
+				roles = []
+				
+				alert_id = result.get("id", None)
+				molnix_id = result.get("molnix_id", None)
+				alert_record_created_at = result.get("created_at", None)
+				molnix_status = result.get("molnix_status", None)
+				alert_status = result.get("status_display", None)
+				opens = result.get("opens", None)
+				start = result.get("start", None)
+				end = result.get("end", None)
+			
+				modality = None
+				im_filter = False
+			
+				for tag in molnix_tags:
+					groups = tag.get("groups", [])
+			
+					if "SECTOR" in groups:
+						sector = tag.get("description", None)
+						sectors.append(sector)
+			
+					if "ROLES" in groups:
+						role_profile = tag.get("description", None)
+						roles.append(role_profile)
+			
+					if "Modality" in groups:
+						modality = tag.get("name", None)
+					
+					if "ALERT TYPE" in groups:
+						scope = tag.get("name", None).title()
+			
+				im_filter = "Information Management" in sectors
+			
+				language_required = next((tag.get("description", None) for tag in molnix_tags if tag.get("tag_type") == "language"), None)
+				rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in group.get("groups", [])), None)
+			
+				country = result.get("country", {})
+				iso3 = country.get("iso3", None)
+				country_name = country.get("name", None)
+			
+				event = result.get("event", {})
+				disaster_type_id = event.get("dtype", {}).get("id", None)
+				disaster_type_name = event.get("dtype", {}).get("name", None)
+				ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
+				event_name = event.get("name", None)
+				disaster_go_id = event.get("id", None)
+			
+				result_dict = {
+					"molnix_id": molnix_id,
+					"alert_record_created_at": alert_record_created_at,
+					"event": event_name,
+					"role_profile": role_profile,
+					"rotation": rotation,
+					"modality": modality,
+					"language_required": language_required,
+					"molnix_status": molnix_status,
+					"alert_status": alert_status,
+					"opens": opens,
+					"start": start,
+					"end_time": end,
+					"sectors": sectors,
+					"role_tags": roles,
+					"scope": scope,
+					"im_filter": im_filter,
+					"iso3": iso3,
+					"country_name": country_name,
+					"disaster_type_id": disaster_type_id,
+					"disaster_type_name": disaster_type_name,
+					"disaster_go_id": disaster_go_id,
+					"ifrc_severity_level_display": ifrc_severity_level_display,
+					"alert_id": alert_id
+				}
+			
+				result_list.append(result_dict)
+			
+			# flip page for pagination
+			url = data.get("next")
+			current_page += 1
+		
+		count_new_records = 0
+		count_updated_records = 0
+		
+		for result in result_list:
+			
+			# these fields can have multiple values, so strip curly brackets and save as comma-separated strings
+			result['sectors'] = ', '.join(result['sectors'])
+			result['role_tags'] = ', '.join(result['role_tags'])
+			
+			existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
+			
+			if existing_alert:
+				# check if alert_status has changed
+				if existing_alert.alert_status != result['alert_status']:
+					try:
+						# update the existing alert in the database
+						existing_alert.alert_status = result['alert_status']
+						db.session.commit()
+						count_updated_records += 1
+					except Exception as e:
+						log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}: {e}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+			
+			else:
+				# this is a new alert; add it to the database
+				if result['alert_id'] not in existing_alert_ids:
+					try:
+						individual_alert = Alert(
+							molnix_id = result['molnix_id'],
+							alert_record_created_at = result['alert_record_created_at'],
+							event = result['event'],
+							role_profile = result['role_profile'],
+							rotation = result['rotation'],
+							modality = result['modality'],
+							language_required = result['language_required'],
+							molnix_status = result['molnix_status'],
+							alert_status = result['alert_status'],
+							opens = result['opens'],
+							start = result['start'],
+							end_time = result['end_time'],
+							sectors = result['sectors'],
+							role_tags = result['role_tags'],
+							scope = result['scope'],
+							im_filter = result['im_filter'],
+							iso3 = result['iso3'],
+							country_name = result['country_name'],
+							disaster_type_id = result['disaster_type_id'],
+							disaster_type_name = result['disaster_type_name'],
+							disaster_go_id = result['disaster_go_id'],
+							ifrc_severity_level_display = result['ifrc_severity_level_display'],
+							alert_id = result['alert_id']
+						)
+					except Exception as e:
+						log_message = f"[WARNING] The refresh_surge_alerts (full version) function couldn't parse one of the alerts it found in the Surge Alert cron job as it tried to instantiate a new Alert object: {e}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+					
+					try:
+						db.session.add(individual_alert)
+						db.session.commit()
+						count_new_records += 1
+						
+					except Exception as e:
+						log_message = f"[ERROR] The refresh_surge_alerts (full version) function couldn't add one of the alerts (id={individual_alert.id}) to the database: {e}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+			
+	except Exception as e:
+		log_message = f"[ERROR] The Surge Alert (full version) cron job has failed: {e}."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+		send_error_message(log_message)
+	
+	log_message = f"[INFO] The Surge Alert (full version) cron job has finished and logged {count_new_records} new records."
+	new_log = Log(message=log_message, user_id=0)
+	db.session.add(new_log)
+	db.session.commit()	
 
 
 
