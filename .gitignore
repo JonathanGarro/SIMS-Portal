@@ -8,6 +8,9 @@
 
 ### SIMS Portal Specific ###
 site.db
+flask_app/SIMS_Portal/static/data/emergencies_viz.csv
+flask_app/SIMS_Portal/static/data/active_emergencies.csv
+flask_app/SIMS_Portal/static/data/locations.json
 flask_app/SIMS_Portal/static/assets/portfolio/
 flask_app/SIMS_Portal/static/data/backups
 flask_app/SIMS_Portal/vector.toml
