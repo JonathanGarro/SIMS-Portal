@@ -68,6 +68,14 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+	$('#acronyms-compact-datatable').DataTable({
+		order: [[0, 'asc']],
+		lengthChange: false,
+		paging: false,
+	});
+});
+
+$(document).ready(function () {
 	$('#acronyms-datatable').DataTable({
 		order: [[0, 'asc']],
 		lengthChange: false,
