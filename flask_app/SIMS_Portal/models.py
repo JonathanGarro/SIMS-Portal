@@ -69,6 +69,8 @@ class Acronym(db.Model):
 	def_fra = db.Column(db.Text, nullable=True)
 	expl_fra = db.Column(db.Text, nullable=True)
 	relevant_link = db.Column(db.String(), nullable=True)
+	anonymous_submitter_name = db.Column(db.String(), nullable=True)
+	anonymous_submitter_email = db.Column(db.String(), nullable=True)
 	
 	added_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	approved_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
