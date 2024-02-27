@@ -72,7 +72,8 @@ def process_op_review(id):
 		follow_up = form.follow_up.data
 		db.session.query(Review).filter(Review.id == id).update({'follow_up':follow_up, 'status':'Processed'})
 		db.session.commit()
-		return redirect(url_for('main.admin_landing'))
+		flash('Review record successfully processed.', 'success')
+		return redirect(url_for('main.admin_process_reviews'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
