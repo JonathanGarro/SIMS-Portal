@@ -17,3 +17,7 @@ class NewAcronymForm(FlaskForm):
     relevant_link = StringField('Relevant URL (if Applicable)')
     
     submit = SubmitField('Submit Acronym')
+    
+class NewAcronymFormPublic(NewAcronymForm):
+    anonymous_submitter_name = StringField('Your Name', validators=[DataRequired()])
+    anonymous_submitter_email = StringField('Your Email', validators=[DataRequired(), Email()])
