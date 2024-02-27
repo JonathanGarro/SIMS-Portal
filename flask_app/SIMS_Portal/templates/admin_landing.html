@@ -3,51 +3,84 @@
 <div class="container">
 	<div id="hideMe">
 		{% with messages = get_flashed_messages(with_categories=true) %}
-		{% if messages %}
-		{% for category, message in messages %}
-		<div class="mt-4 alert alert-{{ category }}">
-			{{ message }}
-		</div>
-		{% endfor %}
-		{% endif %}
+			   {% if messages %}
+				   {% for category, message in messages %}
+					   <div class="mt-2 alert alert-{{ category }}">
+						   {{ message }} 
+					   </div>
+				   {% endfor %}
+			   {% endif %}
 		{% endwith %}
 	</div>
-	<div class='row my-5'>
-		<div class='d-flex justify-content-between align-items-start'>
-			<div>
-				<h3 class='mb-4 text-danger Montserrat'>Administrator Portal</h3>
-			</div>
-			<div>
-				<a href='/admin'><button class='btn btn-secondary btn-sm'>Admin Backend</button></a> <a href='/manual_refresh'><button class='btn btn-secondary btn-sm'>Manual Refresh</button></a>
-			</div>
+	<div class="row mt-6 mb-5">
+		<div class="col col-md-3 rounded rounded-3 mb-5">
+			<div class="card p-4 bg-danger mt-3 position-sticky" style="top: 15px;">
+				<div class="row">
+					<div>
+						<h5 class="text-light Montserrat mb-3">Admin Controls</h5>
+					<ul class="list-group border-0">
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<div class="text-secondary active-link">
+								<i data-feather="user" class="mr-3"></i>
+								&nbsp Manage Profiles
+							</div>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="award" class="mr-3"></i> 
+								&nbsp Assign Badges
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="upload" class="mr-3"></i> 
+								&nbsp Upload Badges
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="thumbs-up" class="mr-3"></i> 
+								&nbsp Approve Members
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="book-open" class="mr-3"></i> 
+								&nbsp Open Reviews
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="list" class="mr-3"></i> 
+								&nbsp Skills List
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="pen-tool" class="mr-3"></i> 
+								&nbsp Process Acronyms
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="refresh-ccw" class="mr-3"></i> 
+								&nbsp Manual Refresh
+							</a>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="#" class="text-secondary">
+								<i data-feather="settings" class="mr-3"></i> 
+								&nbsp Admin Backend
+							</a>
+						</li>
+					</ul>
+					</div>
+				</div>
+			</div>		
 		</div>
-
-		<ul class="nav nav-tabs px-3" id="adminNav" role="tablist">
-			<li class="nav-item" role="presentation">
-				<button class="nav-link active text-dark fw-bold" id="manage-profiles-tab" data-bs-toggle="tab" data-bs-target="#manage-profiles" type="button" role="tab" aria-controls="manage-profiles" aria-selected="true">Manage Profiles</button>
-			</li>
-			<li class="nav-item" role="presentation">
-				<button class="nav-link text-dark fw-bold" id="badge-assignment-tab" data-bs-toggle="tab" data-bs-target="#badge-assignment" type="button" role="tab" aria-controls="badge-assignment" aria-selected="false">Assign Badge</button>
-			</li>
-			<li class="nav-item" role="presentation">
-				<button class="nav-link text-dark fw-bold" id="pending-members-tab" data-bs-toggle="tab" data-bs-target="#pending-members" type="button" role="tab" aria-controls="pending-members" aria-selected="false">Pending Members {% if pending_users|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{pending_users|length}}</span></button>
-			</li>
-			<li class="nav-item" role="presentation">
-				<button class="nav-link text-dark fw-bold" id="open-reviews-tab" data-bs-toggle="tab" data-bs-target="#open-reviews" type="button" role="tab" aria-controls="open-reviews" aria-selected="false">Open Reviews {% if open_reviews|length > 0 %}<span class="badge rounded-pill bg-danger" id="smallbadge">{% else %}<span class="badge rounded-pill bg-secondary" id="smallbadge">{% endif %} {{open_reviews|length}}</span></button>
-			</li>
-			<li class="nav-item" role="presentation">
-				<button class="nav-link text-dark fw-bold" id="skill-list-tab" data-bs-toggle="tab" data-bs-target="#skill-list" type="button" role="tab" aria-controls="skill-list" aria-selected="false">Edit Skills</button>
-			</li>
-			<li class="nav-item" role="presentation">
-				<button class="nav-link text-dark fw-bold" id="upload-badge-tab" data-bs-toggle="tab" data-bs-target="#upload-badge" type="button" role="tab" aria-controls="upload-badge" aria-selected="false">Upload Badge</button>
-			</li>
-
-		</ul>
-
-		<div class="tab-content" id="adminContent">
-
-			<div class="tab-pane fade show active" id="manage-profiles" role="tabpanel" aria-labelledby="manage-profiles-tab">
-				<br>
+		<div class="col g-5">
+			<div>
+				<h2 class="text-dark Montserrat mb-5">Manage User Profile Types</h2>
 				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
 					{{ badge_form.hidden_tag() }}
 					<div class='row'>
@@ -85,209 +118,11 @@
 						</tbody>
 					</table>
 				</div>
+			
 			</div>
-			<div class="tab-pane fade" id="badge-assignment" role="tabpanel" aria-labelledby="badge-assignment-tab">
-				<br>
-				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
-					{{ badge_form.hidden_tag() }}
-					<div class='row'>
-						<div class='col'>{{ badge_form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
-						<div class='col'>{{ badge_form.badge_name.label(class="form-control-label pb-2 text-danger") }}</div>
-					</div>
-					<div class='row mb-3'>
-						<div class='col'>{{ badge_form.user_name(class="form-control form-control-lg") }} </div>
-						<div class='col'>{{ badge_form.badge_name(class="form-control form-control-lg") }}</div>
-					</div>
-					<div class='row'>
-						<div class='col'>{{ badge_form.assigner_justify.label(class="form-control-label pb-2 text-danger") }} </div>
-					</div>
-					<div class='row mb-3'>
-						<div class='col'>{{ badge_form.assigner_justify(class="form-control form-control-lg") }} </div>
-					</div>
-					<div class='row'>
-						<div class='col'>{{ badge_form.submit_badge(class="btn btn-lg btn-danger w-25") }}</div>
-					</div>
-				</form>
-				<h5 class='text-danger mt-5 Montserrat'>Users with Badges</h5>
-				See the <a href='/badges'>badges index page</a> for a full listing and definition of available badges.
-				<div class='mt-3'>
-					<table class='table grouped-table-rows' id='datatable-assigned-badges' width="100%">
-						<thead>
-							<tr>
-								<th>Member</th>
-								<th>Badges</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for user in assigned_badges %}
-							<tr>
-								<td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
-								<td>&nbsp; &nbsp; {{user.badges}}</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-
-			</div>
-
-			<div class="tab-pane fade" id="pending-members" role="tabpanel" aria-labelledby="pending-members-tab">
-				<br>
-
-				{% if pending_users|length > 0 %}
-				<h5 class='Montserrat text-dark mt-2'>Member Approval Process</h5>
-				<p class='text-secondary'>Before approving a new user's registration, <span class='fw-bold'>use the "Check Slack" link to verify that they have associated the correct Slack ID</span>. This verification is important for ensuring that messages sent to them will be received, and that they did not accidentally (or purposefully) enter someone else's ID during the sign up prcoess.</p>
-
-				<table class='table'>
-					<thead>
-						<tr>
-							<th>Member</th>
-							<th>Status</th>
-							<th>National Society</th>
-							<th>Email</th>
-							<th>Slack</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for user in pending_users %}
-						<tr>
-							<td><a href='/profile/view/{{user.User.id}}'>{{user.User.firstname}} {{user.User.lastname}}</a></td>
-							<td>{{user.User.status}}</td>
-							<td>{{user.NationalSociety.ns_name}}</td>
-							<td>{{user.User.email}}</td>
-							<td><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{user.User.slack_id}}'>Check Slack</a></td>
-							<td class='text-end'><a href='/user/approve/{{user.User.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/user/delete/{{user.User.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-				{% else %}
-				<h3 class='text-secondary mt-4'>No pending members to review</h3>
-				{% endif %}
-
-			</div>
-
-			<div class="tab-pane fade" id="open-reviews" role="tabpanel" aria-labelledby="open-reviews-tab">
-				{% if open_reviews|length > 0 %}
-				<h5 class='text-danger Montserrat mt-5'>Open Operational Review Records</h5>
-				<table class='table mt-3'>
-					<thead>
-						<tr>
-							<th>Emergency</th>
-							<th>Title</th>
-							<th>Type</th>
-							<th>Category</th>
-							<th>Description</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for review in open_reviews %}
-						<tr>
-							<td><a href='/emergency/{{review.Emergency.id}}'><span class='fw-bold'>{{review.Emergency.emergency_name}}</span></a></td>
-							<td>{{review.Review.title}}</td>
-							<td>{{review.Review.type}}</td>
-							<td>{{review.Review.category}}</td>
-							<td>{{review.Review.description|truncate(255, True)}}</td>
-							<td><a href='/operation_review/process/{{review.Review.id}}'><button class='btn btn-secondary'>Process</button></a></td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-				{% else %}
-				<h3 class='text-secondary mt-4'>No open operational review records to process.</h3>
-				{% endif %}
-			</div>
-
-			<div class="tab-pane fade" id="skill-list" role="tabpanel" aria-labelledby="skill-list-tab">
-				<br>
-				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3 border border-3" novalidate>
-					{{ skill_form.hidden_tag() }}
-					<div class='row'>
-						<div class='col-md-5'>{{ skill_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
-						<div class='col-md-5'>{{ skill_form.category.label(class="form-control-label pb-2 text-danger") }}</div>
-						<div class='col'></div>
-					</div>
-					<div class='row'>
-						<div class='col-md-5'>{{ skill_form.name(class="form-control form-control-lg") }} </div>
-						<div class='col-md-5'>{{ skill_form.category(class="form-control form-control-lg") }}</div>
-						<div class='col'>{{ skill_form.submit_skill(class="btn btn-lg btn-outline-danger w-100") }}</div>
-					</div>
-				</form>
-				<br>
-				<table class='table' id='skills-datatable'>
-					<thead>
-						<tr>
-							<th></th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for skill in all_skills %}
-						<tr>
-							<td>{{skill.category}}</td>
-							<td>{{skill.name}}</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-
-			<div class="tab-pane fade" id="upload-badge" role="tabpanel" aria-labelledby="upload-badge-tab">
-				<br>
-				<form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
-					{{ badge_upload_form.hidden_tag() }}
-					<div class='row'>
-						<div class='col'>
-							<div>{{ badge_upload_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
-						</div>
-						<div class='col'>
-							<div>{{ badge_upload_form.file.label(class="form-control-label pb-2 text-danger") }}</div>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col'>
-							<div>{{ badge_upload_form.name(class="form-control form-control-lg") }}</div>
-						</div>
-						<div class='col'>
-							<div><input class="form-control form-control-lg" id="{{ badge_upload_form.file }}" type="file"></div>
-						</div>
-					</div>
-
-					<div class='row'>
-						<div class='col'>
-							<div>{{ badge_upload_form.description.label(class="form-control-label pb-2 text-danger") }}</div>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col'>
-							<div>{{ badge_upload_form.description(class="form-control form-control-lg") }}</div>
-						</div>
-					</div>
-					<div class='row mt-3'>
-						<div>{{ badge_upload_form.limited_edition.label(class="form-control-label pb-2 text-danger") }} &nbsp; {{ badge_upload_form.limited_edition(class="form-check-input") }}</div>
-					</div>
-
-					<div class='col mt-4'>{{ badge_upload_form.upload_badge(class="btn btn-lg btn-danger w-25") }}</div>
-
-				</form>
-				<div class='row my-5'>
-					<div class='col'>
-						<h5 class='text-danger Montserrat'>New Badge Guidelines</h5>
-						<p>In order to keep a unified style across all of the badges that get posted to the portal, you must create new ones using <a href="/static/assets/img/badges/_Badge Template.ai" download="template">this Adobe Illustrator template</a>. Save the file using <span class='fw-bold'>File > Export > Save for Web (Legacy)</span>, making sure to export it as a transparent PNG at 500x500.</p>
-						<br>
-						<iframe width="560" height="315" src="https://www.youtube.com/embed/fw3BLKR8bPs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-					</div>
-					<div class='col'>
-						<img src='/static/assets/img/badges_preview.png'>
-					</div>
-				</div>
-			</div>
+		
 		</div>
-
-
 	</div>
 </div>
-</div>
+
 {% endblock content %}

@@ -91,6 +91,10 @@ p {
 	position: absolute
 }
 
+.active-link {
+	color: #dc3545 !important;
+	font-weight: bold;
+}
 
 .badge-common {
 	color: white;

@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                   {% for category, message in messages %}
+                       <div class="mt-2 alert alert-{{ category }}">
+                           {{ message }} 
+                       </div>
+                   {% endfor %}
+               {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row mt-3 mb-5">
+    <div class="col col-md-3 rounded rounded-3 mb-5">
+        <div class="card p-4 bg-danger mt-5 position-sticky" style="top: 15px;">
+                <div class="row">
+                    <div>
+                        <h5 class="text-light Montserrat mb-3">Admin Controls</h5>
+                    <ul class="list-group border-0">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/manage_profiles" class="text-secondary">
+                                <i data-feather="user" class="mr-3"></i>
+                                &nbsp Manage Profiles
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="admin/assign_badge" class="text-secondary">
+                                <i data-feather="award" class="mr-3"></i> 
+                                &nbsp Assign Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-secondary active-link">
+                                <i data-feather="upload" class="mr-3"></i> 
+                                &nbsp Upload Badges
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/approve_members" class="text-secondary">
+                                <i data-feather="thumbs-up" class="mr-3"></i> 
+                                &nbsp Approve Members
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_reviews" class="text-secondary">
+                                <i data-feather="book-open" class="mr-3"></i> 
+                                &nbsp Open Reviews
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/edit_skills" class="text-secondary">
+                                <i data-feather="list" class="mr-3"></i> 
+                                &nbsp Skills List
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_acronyms" class="text-secondary">
+                                <i data-feather="pen-tool" class="mr-3"></i> 
+                                &nbsp Process Acronyms
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/manual_refresh" class="text-secondary">
+                                <i data-feather="refresh-ccw" class="mr-3"></i> 
+                                &nbsp Manual Refresh
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin" class="text-secondary">
+                                <i data-feather="settings" class="mr-3"></i> 
+                                &nbsp Admin Backend
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>		
+        </div>
+        <div class="col g-5">
+            <div>
+                <h2 class="text-dark Montserrat mb-5">Upload New Badges</h2>
+                <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
+                    {{ badge_upload_form.hidden_tag() }}
+                    <div class='row'>
+                        <div class='col'>
+                            <div>{{ badge_upload_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
+                        </div>
+                        <div class='col'>
+                            <div>{{ badge_upload_form.file.label(class="form-control-label pb-2 text-danger") }}</div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col'>
+                            <div>{{ badge_upload_form.name(class="form-control form-control-lg") }}</div>
+                        </div>
+                        <div class='col'>
+                            <div><input class="form-control form-control-lg" id="{{ badge_upload_form.file }}" type="file"></div>
+                        </div>
+                    </div>
+                
+                    <div class='row'>
+                        <div class='col'>
+                            <div>{{ badge_upload_form.description.label(class="form-control-label pb-2 text-danger") }}</div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col'>
+                            <div>{{ badge_upload_form.description(class="form-control form-control-lg") }}</div>
+                        </div>
+                    </div>
+                    <div class='row mt-3'>
+                        <div>{{ badge_upload_form.limited_edition.label(class="form-control-label pb-2 text-danger") }} &nbsp; {{ badge_upload_form.limited_edition(class="form-check-input") }}</div>
+                    </div>
+                
+                    <div class='col mt-4'>{{ badge_upload_form.upload_badge(class="btn btn-lg btn-danger w-25") }}</div>
+                
+                </form>
+                <div class='row my-5'>
+                    <h5 class='text-danger Montserrat'>New Badge Guidelines</h5>
+                    <p class="mb-5">In order to keep a unified style across all of the badges that get posted to the portal, you must create new ones using <a href="/static/assets/img/badges/_Badge Template.ai" download="template">this Adobe Illustrator template</a>. Save the file using <span class='fw-bold'>File > Export > Save for Web (Legacy)</span>, making sure to export it as a transparent PNG at 500x500.</p>
+                    <br>
+                    <iframe width="560" height="500" src="https://www.youtube.com/embed/fw3BLKR8bPs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

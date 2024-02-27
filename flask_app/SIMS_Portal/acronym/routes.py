@@ -10,8 +10,9 @@ from flask_login import (
     login_user, current_user, logout_user, login_required
 )
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 
-from SIMS_Portal.models import Acronym, User, Log
+from SIMS_Portal.models import Acronym, User, Log, NationalSociety
 from SIMS_Portal.users.utils import send_slack_dm, new_acronym_alert
 from SIMS_Portal import db, login_manager
 from SIMS_Portal.acronym.forms import NewAcronymForm, NewAcronymFormPublic
@@ -155,3 +156,38 @@ def submit_acronym_public():
                     flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
             return redirect(url_for('acronym.submit_acronym/public'))
         return redirect(url_for('portfolios.view_documentation'))
+
+@acronym.route('/acronym/approve/<int:id>', methods=['GET', 'POST'])
+@login_required
+def approve_acronym(id):
+    if current_user.is_admin == 1:
+        db.session.query(Acronym).filter(Acronym.id == id).update({'approved_by':current_user.id})
+        db.session.commit()
+        flash('Acronym has been approved and is now listed for all viewers.', 'success')
+        return redirect(url_for('main.admin_process_acronyms'))
+    else:
+        list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == True).all()
+        return render_template('portal_admins.html', list_admins=list_admins)
+
+@acronym.route('/acronym/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_acronym(id):
+    if current_user.is_admin == 1:
+        acronym_to_delete = db.session.query(Acronym).filter(Acronym.id == id).first()
+        if acronym_to_delete:
+            try:
+                db.session.delete(acronym_to_delete)
+                db.session.commit()
+                flash('Acronym has been deleted.', 'success')
+            except IntegrityError:
+                db.session.rollback()
+                flash('An error occurred while deleting the acronym.', 'danger')
+                
+                log_message = f"[ERROR] User {current_user.id} encountered an error when deleting acronym."
+                new_log = Log(message=log_message, user_id=current_user.id)
+                db.session.add(new_log)
+                db.session.commit()
+                
+                return redirect(url_for('main.admin_process_acronyms'))
+        
+        return redirect(url_for('main.admin_process_acronyms'))
