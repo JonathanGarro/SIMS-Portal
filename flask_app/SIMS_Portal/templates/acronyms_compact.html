@@ -28,32 +28,32 @@
                 </div>
             </div>
         </div>
-        <table class="table table-striped mt-5" id='acronyms-compact-datatable'>
+        <table class="table">
             <thead class="">
                 <tr>
                     <th>
-                        <p>Acronym (English)</p>
+                        <p>Acronym<br>(English)</p>
                     </th>
                     <th>
-                        <p>Definition (English)</p>
+                        <p>Definition<br>(English)</p>
                     </th>
                     <th>
-                        <p>Acronym (Spanish)</p>
+                        <p>Acronym<br>(Spanish)</p>
                     </th>
                     <th>
-                        <p>Definition (Spanish)</p>
+                        <p>Definition<br>(Spanish)</p>
                     </th>
                     <th>
-                        <p>Acronym (French)</p>
+                        <p>Acronym<br>(French)</p>
                     </th>
                     <th>
-                        <p>Definition (French)</p>
+                        <p>Definition<br>(French)</p>
                     </th>
                     <th>
-                        <p>Link</p>
+                        <p>Relevant<br>Link</p>
                     </th>
                     <th>
-                        <p>More Info</p>
+                        <p>Record<br>Permalink</p>
                     </th>
                 </tr>
             </thead>
@@ -78,10 +78,10 @@
                     <td class="align-middle">
                         <p>{% if acronym.def_fra != none %}{{ acronym.def_fra }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
                     </td>
-                    <td class="align-middle">
+                    <td class="align-middle text-center">
                         {% if acronym.relevant_link %}<a href="{{acronym.relevant_link}}"><button type="button" class="btn btn-secondary btn-sm">&#8594;</button></a>{% endif %}
                     </td>
-                    <td class="align-middle">
+                    <td class="align-middle text-center">
                         <a href="/view_acronym/{{acronym.id}}"><button type="button" class="btn btn-secondary btn-sm">&#10065;</button></a>
                     </td>
                 </tr>
