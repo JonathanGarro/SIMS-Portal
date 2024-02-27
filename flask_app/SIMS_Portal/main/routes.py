@@ -115,7 +115,7 @@ def create_badge():
 		db.session.execute(badge)
 		db.session.commit()
 		flash('New badge successfully created!', 'success')
-		return redirect(url_for('main.admin_landing'))
+		return redirect(url_for('main.admin_upload_badges'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
@@ -136,13 +136,13 @@ def admin_manage_profiles():
 			profile_id = profile_form.profiles.data.id
 		except:
 			flash('A profile is required.', 'danger')
-			return redirect(url_for('main.admin_landing'))
+			return redirect(url_for('main.admin_manage_profiles'))
 		tier = profile_form.tier.data 
 		requested_profile_code = str(user_id) + str(profile_id) + str(tier)
 		
 		if tier == '':
 			flash('A tier is required.', 'danger')
-			return redirect(url_for('main.admin_landing'))
+			return redirect(url_for('main.admin_manage_profiles'))
 		
 		# get the user's existing profiles and tiers, generate unique code that concats all three elements
 		users_existing_profiles = db.engine.execute("SELECT user_id, profile_id, tier, CONCAT(user_id, profile_id, tier) AS unique_code FROM user_profile WHERE user_id = {}".format(user_id))
@@ -154,7 +154,7 @@ def admin_manage_profiles():
 		
 		if requested_profile_code in list_to_check:
 			flash('User already has that profile at that tier.', 'danger')
-			return redirect(url_for('main.admin_landing'))
+			return redirect(url_for('main.admin_manage_profiles'))
 		else:
 			return redirect(url_for('users.assign_profiles', user_id=user_id, profile_id=profile_id, tier=tier))
 	else:
