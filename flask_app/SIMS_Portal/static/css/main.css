@@ -242,6 +242,14 @@ p {
 	font-size: 2em;
 }
 
+.custom-modal-size {
+	max-width: 80%; 
+}
+.custom-negative-margin {
+	margin-bottom: -8px;
+}
+
+
 .dataTables_filter {
 	margin-bottom: 20px;
 }
