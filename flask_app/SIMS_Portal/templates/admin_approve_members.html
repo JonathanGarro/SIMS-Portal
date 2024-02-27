@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                   {% for category, message in messages %}
+                       <div class="mt-2 alert alert-{{ category }}">
+                           {{ message }} 
+                       </div>
+                   {% endfor %}
+               {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row mt-3 mb-5">
+    <div class="col col-md-3 rounded rounded-3 mb-5">
+        <div class="card p-4 bg-danger mt-5 position-sticky" style="top: 15px;">
+                <div class="row">
+                    <div>
+                        <h5 class="text-light Montserrat mb-3">Admin Controls</h5>
+                    <ul class="list-group border-0">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/manage_profiles" class="text-secondary">
+                                <i data-feather="user" class="mr-3"></i>
+                                &nbsp Manage Profiles
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/assign_badge" class="text-secondary">
+                                <i data-feather="award" class="mr-3"></i> 
+                                &nbsp Assign Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/upload_badges" class="text-secondary">
+                                <i data-feather="upload" class="mr-3"></i> 
+                                &nbsp Upload Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-secondary active-link">
+                                <i data-feather="thumbs-up" class="mr-3"></i> 
+                                &nbsp Approve Members
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_reviews" class="text-secondary">
+                                <i data-feather="book-open" class="mr-3"></i> 
+                                &nbsp Open Reviews
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/edit_skills" class="text-secondary">
+                                <i data-feather="list" class="mr-3"></i> 
+                                &nbsp Skills List
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_acronyms" class="text-secondary">
+                                <i data-feather="pen-tool" class="mr-3"></i> 
+                                &nbsp Process Acronyms
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/manual_refresh" class="text-secondary">
+                                <i data-feather="refresh-ccw" class="mr-3"></i> 
+                                &nbsp Manual Refresh
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin" class="text-secondary">
+                                <i data-feather="settings" class="mr-3"></i> 
+                                &nbsp Admin Backend
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>		
+        </div>
+        <div class="col g-5">
+            <div>
+                <h2 class="text-dark Montserrat mb-3">Approve New User Registrations</h2>
+                {% if pending_users|length > 0 %}
+                <h5 class='Montserrat text-dark mt-2'>Member Approval Process</h5>
+                <p class='text-dark'>Before approving a new user's registration, <span class='fw-bold'>use the "Check Slack" link to verify that they have associated the correct Slack ID</span>. This verification is important for ensuring that messages sent to them will be received, and that they did not accidentally (or purposefully) enter someone else's ID during the sign up process.</p>
+                
+                <table class='table'>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Status</th>
+                            <th>National Society</th>
+                            <th>Email</th>
+                            <th>Slack</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in pending_users %}
+                        <tr>
+                            <td><a href='/profile/view/{{user.User.id}}'>{{user.User.firstname}} {{user.User.lastname}}</a></td>
+                            <td>{{user.User.status}}</td>
+                            <td>{{user.NationalSociety.ns_name}}</td>
+                            <td>{{user.User.email}}</td>
+                            <td><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{user.User.slack_id}}'>Check Slack</a></td>
+                            <td class='text-end'><a href='/user/approve/{{user.User.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/user/delete/{{user.User.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <h3 class='text-secondary mt-2'>No pending members to review</h3>
+                {% endif %}
+                </div>
+            
+            </div>
+        
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

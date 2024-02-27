@@ -60,13 +60,13 @@
 						{% if current_user.is_authenticated %}
 						
 						{% if current_user.is_admin == 1 %}
-							{% if '/admin_landing' in request.path %}
+							{% if '/admin' in request.path %}
 							<div class="nav-item nav-icon px-2">
 								<span class="nav-link text-light image-with-underline"><img src="{{ url_for('main.static_files', filename='assets/img/admin.svg') }}" data-toggle="tooltip" data-placement="auto" title="Viewing Admin Portal"></span>
 							</div>
 							{% else %}
 							<div class="nav-item nav-icon px-2">
-								<a class="nav-link text-light" href="/admin_landing" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/admin.svg') }}" data-toggle="tooltip" data-placement="auto" title="Admin Portal"></a>
+								<a class="nav-link text-light" href="/admin/manage_profiles" style="font-family: 'Montserrat';"><img src="{{ url_for('main.static_files', filename='assets/img/admin.svg') }}" data-toggle="tooltip" data-placement="auto" title="Admin Portal"></a>
 							</div>
 							{% endif %}
 						{% endif %}
@@ -278,6 +278,17 @@
 			<!-- Copyright -->
 		</footer>
 	</body>
+	<script>feather.replace();</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js" integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/@popperjs/core@2"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/date-1.2.0/rg-1.3.0/sb-1.4.0/sp-2.1.0/datatables.min.js"></script>
+	<script src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
+	<script src="{{url_for('static', filename='js/scripts.js')}}"></script>
 	{% if request.path == '/' %}
 	<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 	<script>
@@ -290,15 +301,4 @@
 		})
 	</script>
 	{% endif %}
-	<script>feather.replace();</script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js" integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://unpkg.com/@popperjs/core@2"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-	<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/date-1.2.0/rg-1.3.0/sb-1.4.0/sp-2.1.0/datatables.min.js"></script>
-	<script src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
-	<script src="{{url_for('static', filename='js/scripts.js')}}"></script>
 </html>

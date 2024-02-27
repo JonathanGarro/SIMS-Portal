@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                   {% for category, message in messages %}
+                       <div class="mt-2 alert alert-{{ category }}">
+                           {{ message }} 
+                       </div>
+                   {% endfor %}
+               {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row mt-3 mb-5">
+    <div class="col col-md-3 rounded rounded-3 mb-5">
+        <div class="card p-4 bg-danger mt-5 position-sticky" style="top: 15px;">
+                <div class="row">
+                    <div>
+                        <h5 class="text-light Montserrat mb-3">Admin Controls</h5>
+                    <ul class="list-group border-0">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/manage_profiles" class="text-secondary">
+                                <i data-feather="user" class="mr-3"></i>
+                                &nbsp Manage Profiles
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/assign_badge" class="text-secondary">
+                                <i data-feather="award" class="mr-3"></i> 
+                                &nbsp Assign Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/upload_badges" class="text-secondary">
+                                <i data-feather="upload" class="mr-3"></i> 
+                                &nbsp Upload Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/approve_members" class="text-secondary">
+                                <i data-feather="thumbs-up" class="mr-3"></i> 
+                                &nbsp Approve Members
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_reviews" class="text-secondary">
+                                <i data-feather="book-open" class="mr-3"></i> 
+                                &nbsp Open Reviews
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/edit_skills" class="text-secondary">
+                                <i data-feather="list" class="mr-3"></i> 
+                                &nbsp Skills List
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-secondary active-link">
+                                <i data-feather="pen-tool" class="mr-3"></i> 
+                                &nbsp Process Acronyms
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/manual_refresh" class="text-secondary">
+                                <i data-feather="refresh-ccw" class="mr-3"></i> 
+                                &nbsp Manual Refresh
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin" class="text-secondary">
+                                <i data-feather="settings" class="mr-3"></i> 
+                                &nbsp Admin Backend
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>		
+        </div>
+        <div class="col g-5">
+            <div>
+                <h2 class="text-dark Montserrat mb-3">Approve New Acronyms</h2>
+                {% if pending_acronyms %}
+                <p class='text-dark'>Users that have logged into the SIMS Portal to save an acronym have their submissions automatically approved. However, if an anonymous user submits an acronym, it has to be manually approved by an administrator. When approving, ensure that the relevant fields have been filled out correctly, and that they provided a legitimate name and email address for attribution. Click on the "View" link to see more details, including translations to other languages.</p>
+                
+                <table class='table'>
+                    <thead>
+                        <tr>
+                            <th>Acronym (English)</th>
+                            <th>Definition (English)</th>
+                            <th>Submitter</th>
+                            <th>Record</th>
+                            <th class='text-end'>Process</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for acronym in pending_acronyms %}
+                        <tr>
+                            <td>{{acronym.acronym_eng}}</td>
+                            <td>{{acronym.def_eng}}</td>
+                            <td><a href="mailto:{{ acronym.anonymous_submitter_email }}">{{acronym.anonymous_submitter_name}}</td>
+                            <td><a href='/view_acronym/{{acronym.id}}'>View</a></td>
+                            <td class='text-end'><a href='/acronym/approve/{{acronym.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/acronym/delete/{{acronym.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <h3 class='text-secondary mt-2'>No acronyms to approve</h3>
+                {% endif %}
+                </div>
+            
+            </div>
+        
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
