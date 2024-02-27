@@ -297,7 +297,7 @@ def assign_profiles(user_id, profile_id, tier):
 			db.session.commit()
 			
 			flash('User has been assigned a new profile.', 'success')
-			return redirect(url_for('main.admin_landing'))
+			return redirect(url_for('main.admin_manage_profiles'))
 		except Exception as e:
 			log_message = f"[ERROR] Error assigning a new profile tier to user {user_id}: {e}."
 			new_log = Log(message=log_message, user_id=current_user.id)
@@ -305,7 +305,7 @@ def assign_profiles(user_id, profile_id, tier):
 			db.session.commit()
 			send_error_message(log_message)
 			
-			return redirect(url_for('main.admin_landing'))
+			return redirect(url_for('main.admin_manage_profiles'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
@@ -646,10 +646,10 @@ def approve_user(id):
 			flash("Account approved.", 'success')
 		except:
 			flash("Error approving user. Check that the user ID exists.")
-		return redirect(url_for('main.admin_landing'))
+		return redirect(url_for('main.admin_approve_members'))
 	elif current_user.is_admin == 1 and check_slack_id.slack_id is None:
 		flash("User needs to have a Slack ID updated on their profile.","danger")
-		return redirect(url_for('main.admin_landing'))
+		return redirect(url_for('main.admin_approve_members'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
@@ -686,7 +686,7 @@ def delete_user(id):
 			
 		except:
 			flash("Error deleting user. Check that the user ID exists.")
-		return redirect(url_for('main.admin_landing'))
+		return redirect(url_for('main.admin_approve_members'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
