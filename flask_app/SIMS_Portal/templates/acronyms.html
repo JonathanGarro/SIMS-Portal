@@ -18,7 +18,7 @@
                 <div class="col-md-6">
                     <div class="">
                         <h3 class="Montserrat">Acronym Index</h3>
-                        <lead>A crowd-sourced listing of common (and not so common!) acronyms used in across the Red Cross Red Crescent Movement, international development, humanitarian affairs, and more. </lead>
+                        <h5 class="Montserrat">View: <span class="text-dark">Regular</span> | <span class="text-danger"><a href="/acronyms/compact">Compact</a></span></h5>
                     </div>
                 </div>
                 <div class="col-md-6 text-end">
@@ -61,7 +61,61 @@
                 {% for acronym in all_acronyms %}
                 <tr>
                     <td class="align-middle text-danger">
-                        <h5>{{ acronym.acronym_eng }}</h5>
+                       <a href="#" data-bs-toggle="modal" data-bs-target="#acronymModal" 
+                          data-acronym-id="{{ acronym.id }}" 
+                          data-acronym-eng="{{ acronym.acronym_eng or '' }}" 
+                          data-acronym-def-eng="{{ acronym.def_eng or '' }}"> 
+                          {{ acronym.acronym_eng }} 
+                       </a>
+                       <div class="modal fade" id="acronymModal" tabindex="-1" aria-labelledby="acronymModalLabel" aria-hidden="true">
+                         <div class="modal-dialog modal-xl">
+                           <div class="modal-content">
+                             <div class="modal-header">
+                               <h5 class="modal-title Montserrat text-dark" id="acronymModalLabel">Details</h5>
+                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                             </div>
+                             <div class="modal-body p-5">
+                                <div class="d-flex justify-content-between mt-4">
+                                    <div id="english">
+                                        <h5 class="text-danger fw-bold custom-negative-margin">Acronym (English)</h5><br>
+                                        <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_eng}}</h3>
+                                    </div>
+                                    {% if acronym.acronym_esp != None %}
+                                    <div id="spanish">
+                                        <h5 class="text-danger fw-bold custom-negative-margin">Acronym (Spanish)</h5><br>
+                                        <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_esp}}</h3>
+                                    </div>
+                                    {% endif %}
+                                    {% if acronym.acronym_fra != None %}
+                                    <div id="french">
+                                        <h5 class="text-danger fw-bold custom-negative-margin">Acronym (French)</h5><br>
+                                        <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_fra}}</h3>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <hr class="mb-5">
+                                
+                                <h5 class="text-danger fw-bold custom-negative-margin">Definition (English)</h5><br>
+                                <h5 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.def_eng}}</h5>
+                                
+                                <h5 class="text-danger fw-bold custom-negative-margin">Explanation</h5><br>
+                                <h5 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.expl_eng}}</h5>
+                                
+                                <h5 class="text-danger fw-bold custom-negative-margin">Acronym</h5><br>
+                                <h5 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_eng}}</h5>
+                                
+                                <h5 class="text-danger fw-bold custom-negative-margin">Acronym</h5><br>
+                                <h5 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_eng}}</h5>
+
+                                
+                               </div>
+                             <div class="modal-footer">
+                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
                     </td>
                     <td class="align-middle">
                         <h5>{{ acronym.def_eng }}</h5>
@@ -90,4 +144,28 @@
         </table>
     </div>
 </div>
+
+
+
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  $('#acronymModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var acronymId = button.data('acronym-id');
+  
+      $.ajax({
+          url: '/get_additional_info/' + acronymId,
+          type: 'GET',
+          success: function(data) {
+              console.log('Data received:', data);
+              $('#additionalInfo').html(data);
+          },
+          error: function() {
+              console.error('Failed to fetch additional information.');
+          }
+      });
+  });
+</script>
+{% endblock scripts %} 

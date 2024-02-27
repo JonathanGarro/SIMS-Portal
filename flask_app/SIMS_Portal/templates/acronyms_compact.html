@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mb-5">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="mt-4 alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row my-5">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="">
+                        <h3 class="Montserrat">Acronym Index</h3>
+                        <h5 class="Montserrat">View: <span class="text-dark">Compact</span> | <a class="text-danger" href="/acronyms">Regular</a></h5>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="">
+                        <a href='/submit_acronym'><button class='btn btn-danger btn-lg float-right'>Add Acronym</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped mt-5" id='acronyms-compact-datatable'>
+            <thead class="">
+                <tr>
+                    <th>
+                        <p>Acronym (English)</p>
+                    </th>
+                    <th>
+                        <p>Definition (English)</p>
+                    </th>
+                    <th>
+                        <p>Acronym (Spanish)</p>
+                    </th>
+                    <th>
+                        <p>Definition (Spanish)</p>
+                    </th>
+                    <th>
+                        <p>Acronym (French)</p>
+                    </th>
+                    <th>
+                        <p>Definition (French)</p>
+                    </th>
+                    <th>
+                        <p>Link</p>
+                    </th>
+                    <th>
+                        <p>More Info</p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for acronym in all_acronyms %}
+                <tr>
+                    <td class="align-middle text-danger">
+                        <p><span class="fw-bold">{{ acronym.acronym_eng }}</span></p>
+                    </td>
+                    <td class="align-middle">
+                        <p>{{ acronym.def_eng }}</p>
+                    </td>
+                    <td class="align-middle">
+                        <p>{% if acronym.acronym_esp != none %}{{ acronym.acronym_esp }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
+                    </td>
+                    <td class="align-middle">
+                        <p>{% if acronym.def_esp != none %}{{ acronym.def_esp }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
+                    </td>
+                    <td class="align-middle">
+                        <p>{% if acronym.acronym_fra != none %}{{ acronym.acronym_fra }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
+                    </td>
+                    <td class="align-middle">
+                        <p>{% if acronym.def_fra != none %}{{ acronym.def_fra }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
+                    </td>
+                    <td class="align-middle">
+                        {% if acronym.relevant_link %}<a href="{{acronym.relevant_link}}"><button type="button" class="btn btn-secondary btn-sm">&#8594;</button></a>{% endif %}
+                    </td>
+                    <td class="align-middle">
+                        <a href="/view_acronym/{{acronym.id}}"><button type="button" class="btn btn-secondary btn-sm">&#10065;</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

@@ -1,284 +1,319 @@
   <style>
-      /* Custom CSS to change accordion header color for "English" section */
-      #acronymForm .accordion-button {
-          background-color: lightgrey !important;
-      }
+    /* custom CSS to change accordion header color for language section */
+    #acronymForm .accordion-button {
+      background-color: lightgrey !important;
+    }
   </style>
 
   {% extends "layout.html" %}
   {% block content %}
   <div class="container mb-5">
-      <div id="hideMe">
-          {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-          {% for category, message in messages %}
-          <div class="mt-4 alert alert-{{ category }}">
-              {{ message }}
-          </div>
-          {% endfor %}
-          {% endif %}
-          {% endwith %}
+    <div id="hideMe">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="mt-4 alert alert-{{ category }}">
+        {{ message }}
       </div>
-      <div class="row mt-5">
-          <div class="col-md-5 pe-5">
-              <h2 class="text-danger pb-4 Montserrat mt-3">Post New Acronym</h2>
-              <h5 class="text-secondary Montserrat mt-4">Add Relevant Data in One or More Languages</h5>
-              <p id="assignment-guidance">Fill out the acronym, the definition, and (optionally) the description and relevant URL.</p>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-5 pe-5">
+        <h2 class="text-danger pb-4 Montserrat mt-3">Post New Acronym</h2>
 
-              <h5 class="text-secondary Montserrat">Multiple Language Support</h5>
-              <p id="assignment-guidance">When possible, add the equivalent acronym and associated data to your submission. Remember, it isn't just the definition that changes in other languages, but the acronym itself. For example, IFRC in English becomes FICR in Spanish.</p>
+        {% if anon_user == True %}
+        <div class="alert alert-warning border border-2 border-warning" role="alert">
+          <span class="fw-bold">Submitting anonymously</span>: You are posting a new acronym as an anonymous user. This means your submission will be placed into a review queue and will not be immediately available on the site. SIMS members can post acronyms and have them post directly to the Portal—please <a href="/submit_acronym/member"><span class="fw-bold">log in</span></a> if you are already a member.
+        </div>
+        {% endif %}
 
-              <h5 class="text-secondary Montserrat mt-4">Final Approval</h5>
-              <p id="assignment-guidance">A SIMS administrator must review all submissions and manually approve them before they get posted. They check for accuracy, possible duplications, and translation.</p>
-          </div>
-          <div class="col pb-4">
-              <form method="POST" action="" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
-                  {{ form.hidden_tag() }}
-                  <fieldset class="form-group">
-                      <div class="accordion mb-3" id="acronymForm">
-                          <div class="accordion-item">
-                              <h2 class="accordion-header" id="english">
-                                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnglish" aria-expanded="true" aria-controls="collapseEnglish">
-                                      <span class="fw-bold text-danger Montserrat">
-                                          <h4>English</h4>
-                                      </span>
-                                  </button>
-                              </h2>
-                              <div id="collapseEnglish" class="accordion-collapse collapse show" aria-labelledby="english" data-bs-parent="#acronymForm">
-                                  <div class="accordion-body">
-                                      <div class='row'>
-                                          <div class="form-group pb-4">
-                                              {{ form.acronym_eng.label(class="form-control-label pb-2 text-danger") }}
+        <h5 class="text-secondary Montserrat mt-4">Add Relevant Data in One or More Languages</h5>
+        <p id="assignment-guidance">Fill out the acronym, the definition, and (optionally) the description and relevant URL.</p>
+
+        <h5 class="text-secondary Montserrat">Multiple Language Support</h5>
+        <p id="assignment-guidance">When possible, add the equivalent acronym and associated data to your submission. Remember, it isn't just the definition that changes in other languages, but the acronym itself. For example, IFRC in English becomes FICR in Spanish.</p>
+
+        <h5 class="text-secondary Montserrat mt-4">Final Approval</h5>
+        <p id="assignment-guidance">A SIMS administrator must review all submissions and manually approve them before they get posted. They check for accuracy, possible duplications, and translation.</p>
+      </div>
+      <div class="col pb-4">
+        <form method="POST" action="" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
+          {{ form.hidden_tag() }}
+          <fieldset class="form-group">
+            <div class="accordion mb-3" id="acronymForm">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="english">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnglish" aria-expanded="true" aria-controls="collapseEnglish">
+                    <span class="fw-bold text-danger Montserrat">
+                      <h4>English</h4>
+                    </span>
+                  </button>
+                </h2>
+                <div id="collapseEnglish" class="accordion-collapse collapse show" aria-labelledby="english" data-bs-parent="#acronymForm">
+                  <div class="accordion-body">
+                    <div class='row'>
+                      <div class="form-group pb-4">
+                        {{ form.acronym_eng.label(class="form-control-label pb-2 text-danger") }}
 
                                 {% if form.acronym_eng.errors %}
-                                              {{ form.acronym_eng(class="form-control form-control-lg is-invalid") }}
-                                              <div class="invalid-feedback">
-                                                  {% for error in form.acronym_eng.errors %}
-                                                  <span>{{ error }}</span>
-                                                  {% endfor %}
-                                              </div>
-                                              {% else %}
-                                              {{ form.acronym_eng(class="form-control form-control-lg") }}
+                        {{ form.acronym_eng(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.acronym_eng.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.acronym_eng(class="form-control form-control-lg") }}
                                 {% endif %}
-                                          </div>
+                      </div>
 
 
-                                          <div class="form-group pb-4">
-                                              {{ form.def_eng.label(class="form-control-label pb-2 text-danger") }}
+                      <div class="form-group pb-4">
+                        {{ form.def_eng.label(class="form-control-label pb-2 text-danger") }}
 
                                     {% if form.def_eng.errors %}
-                                              {{ form.def_eng(class="form-control form-control-lg is-invalid") }}
-                                              <div class="invalid-feedback">
-                                                  {% for error in form.def_eng.errors %}
-                                                  <span>{{ error }}</span>
-                                                  {% endfor %}
-                                              </div>
-                                              {% else %}
-                                              {{ form.def_eng(class="form-control form-control-lg") }}
+                        {{ form.def_eng(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.def_eng.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.def_eng(class="form-control form-control-lg") }}
                                     {% endif %}
-                                          </div>
+                      </div>
 
-                                      </div>
-                                      <div class='row'>
-                                          <div class='col'>
-                                              <div class="form-group pb-4">
-                                                  {{ form.expl_eng.label(class="form-control-label pb-2 text-danger") }}
+                    </div>
+                    <div class='row'>
+                      <div class='col'>
+                        <div class="form-group pb-4">
+                          {{ form.expl_eng.label(class="form-control-label pb-2 text-danger") }}
                                     {% if form.expl_eng.errors %}
-                                                  {{ form.expl_eng(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.expl_eng.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.expl_eng(class="form-control form-control-lg") }}
-                                    {% endif %}
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
+                          {{ form.expl_eng(class="form-control form-control-lg is-invalid") }}
+                          <div class="invalid-feedback">
+                            {% for error in form.expl_eng.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
                           </div>
-                          <div class="accordion-item">
-                              <h2 class="accordion-header" id="spanish">
-                                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpanish" aria-expanded="true" aria-controls="collapseSpanish">
-                                      <span class="fw-bold text-danger Montserrat">
-                                          <h4>Spanish</h4>
-                                      </span>
-                                  </button>
-                              </h2>
-                              <div id="collapseSpanish" class="accordion-collapse collapse" aria-labelledby="spanish" data-bs-parent="#acronymForm">
-                                  <div class="accordion-body">
-                                      <div class='row'>
-                                              <div class="form-group pb-4">
-                                                  {{ form.acronym_esp.label(class="form-control-label pb-2 text-danger") }}
+                          {% else %}
+                          {{ form.expl_eng(class="form-control form-control-lg") }}
+                                    {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="spanish">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpanish" aria-expanded="true" aria-controls="collapseSpanish">
+                    <span class="fw-bold text-danger Montserrat">
+                      <h4>Spanish</h4>
+                    </span>
+                  </button>
+                </h2>
+                <div id="collapseSpanish" class="accordion-collapse collapse" aria-labelledby="spanish" data-bs-parent="#acronymForm">
+                  <div class="accordion-body">
+                    <div class='row'>
+                      <div class="form-group pb-4">
+                        {{ form.acronym_esp.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.acronym_esp.errors %}
-                                                  {{ form.acronym_esp(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.acronym_esp.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.acronym_esp(class="form-control form-control-lg") }}
+                        {{ form.acronym_esp(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.acronym_esp.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.acronym_esp(class="form-control form-control-lg") }}
                                       {% endif %}
-                                              </div>
+                      </div>
 
-                                              <div class="form-group pb-4">
-                                                  {{ form.def_esp.label(class="form-control-label pb-2 text-danger") }}
+                      <div class="form-group pb-4">
+                        {{ form.def_esp.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.def_esp.errors %}
-                                                  {{ form.def_esp(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.def_esp.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.def_esp(class="form-control form-control-lg") }}
+                        {{ form.def_esp(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.def_esp.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.def_esp(class="form-control form-control-lg") }}
                                       {% endif %}
-                                              </div>
-                                      </div>
-                                      <div class='row'>
-                                          <div class='col'>
-                                              <div class="form-group pb-4">
-                                                  {{ form.expl_esp.label(class="form-control-label pb-2 text-danger") }}
+                      </div>
+                    </div>
+                    <div class='row'>
+                      <div class='col'>
+                        <div class="form-group pb-4">
+                          {{ form.expl_esp.label(class="form-control-label pb-2 text-danger") }}
                                       {% if form.expl_esp.errors %}
-                                                  {{ form.expl_esp(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.expl_esp.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.expl_esp(class="form-control form-control-lg") }}
-                                      {% endif %}
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
+                          {{ form.expl_esp(class="form-control form-control-lg is-invalid") }}
+                          <div class="invalid-feedback">
+                            {% for error in form.expl_esp.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
                           </div>
+                          {% else %}
+                          {{ form.expl_esp(class="form-control form-control-lg") }}
+                                      {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                          <div class="accordion-item">
-                              <h2 class="accordion-header" id="french">
-                                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFrench" aria-expanded="true" aria-controls="collapseFrench">
-                                      <span class="fw-bold text-danger Montserrat">
-                                          <h4>French</h4>
-                                      </span>
-                                  </button>
-                              </h2>
-                              <div id="collapseFrench" class="accordion-collapse collapse" aria-labelledby="french" data-bs-parent="#acronymForm">
-                                  <div class="accordion-body">
-                                      <div class='row'>
-                                              <div class="form-group pb-4">
-                                                  {{ form.acronym_fra.label(class="form-control-label pb-2 text-danger") }}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="french">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFrench" aria-expanded="true" aria-controls="collapseFrench">
+                    <span class="fw-bold text-danger Montserrat">
+                      <h4>French</h4>
+                    </span>
+                  </button>
+                </h2>
+                <div id="collapseFrench" class="accordion-collapse collapse" aria-labelledby="french" data-bs-parent="#acronymForm">
+                  <div class="accordion-body">
+                    <div class='row'>
+                      <div class="form-group pb-4">
+                        {{ form.acronym_fra.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.acronym_fra.errors %}
-                                                  {{ form.acronym_fra(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.acronym_fra.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.acronym_fra(class="form-control form-control-lg") }}
+                        {{ form.acronym_fra(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.acronym_fra.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.acronym_fra(class="form-control form-control-lg") }}
                                       {% endif %}
-                                              </div>
-                                              <div class="form-group pb-4">
-                                                  {{ form.def_fra.label(class="form-control-label pb-2 text-danger") }}
+                      </div>
+                      <div class="form-group pb-4">
+                        {{ form.def_fra.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.def_fra.errors %}
-                                                  {{ form.def_fra(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.def_fra.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.def_fra(class="form-control form-control-lg") }}
+                        {{ form.def_fra(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.def_fra.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.def_fra(class="form-control form-control-lg") }}
                                       {% endif %}
-                                              </div>
-                                      </div>
-                                      <div class='row'>
-                                              <div class="form-group pb-4">
-                                                  {{ form.expl_fra.label(class="form-control-label pb-2 text-danger") }}
+                      </div>
+                    </div>
+                    <div class='row'>
+                      <div class="form-group pb-4">
+                        {{ form.expl_fra.label(class="form-control-label pb-2 text-danger") }}
                                       {% if form.expl_fra.errors %}
-                                                  {{ form.expl_fra(class="form-control form-control-lg is-invalid") }}
-                                                  <div class="invalid-feedback">
-                                                      {% for error in form.expl_fra.errors %}
-                                                      <span>{{ error }}</span>
-                                                      {% endfor %}
-                                                  </div>
-                                                  {% else %}
-                                                  {{ form.expl_fra(class="form-control form-control-lg") }}
+                        {{ form.expl_fra(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.expl_fra.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.expl_fra(class="form-control form-control-lg") }}
                                       {% endif %}
-                                              </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
+              <div class="form-group pt-5">
+                {{ form.relevant_link.label(class="form-control-label pb-2 text-secondary") }}
 
-
-
-                          <div class="form-group pt-5">
-                                        {{ form.relevant_link.label(class="form-control-label pb-2 text-secondary") }}
-                          
                             {% if form.relevant_link.errors %}
-                                        {{ form.relevant_link(class="form-control form-control-lg is-invalid") }}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.relevant_link.errors %}
-                                            <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                                        {% else %}
-                                        {{ form.relevant_link(class="form-control form-control-lg") }}
-                            {% endif %}
-                                    </div>
-
-                          {{ form.submit(class="btn btn-danger w-25 mt-5") }}
-                  </fieldset>
-              </form>
-          </div>
-      </div>
-      <div class="row mt-5">
-          <h3 class="Montserrat text-danger mb-4">Latest Acronyms</h3>
-          <table class="table table-striped mt-5" id='acronyms-preview-datatable'>
-              <thead class="">
-                  <tr>
-                      <th>
-                          <h4>Acronym (English)</h4>
-                      </th>
-                      <th>
-                          <h4>Definition (English)</h4>
-                      </th>
-                      <th>
-                          <h4>Added By</h4>
-                      </th>
-                      <th>
-                          <h4>Status</h4>
-                      </th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for acronym in latest_acronyms %}
-                  <tr>
-                      <td class="align-middle fw-bold">{{ acronym.Acronym.acronym_eng }}</td>
-                      <td class="align-middle">
-                          <h5>{{ acronym.Acronym.def_eng }}</h5>
-                      </td>
-                      <td class="align-middle">
-                          <h5>{{ acronym.User.firstname }} {{ acronym.User.lastname }}</h5>
-                      </td>
-                      <td class="align-middle">
-                          <h5>{% if acronym.Acronym.approved_by is none %}<span class="text-danger fw-bold">Pending Approval{% else %} Approved{% endif %}</h5>
-                      </td>
-                  </tr>
+                {{ form.relevant_link(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.relevant_link.errors %}
+                  <span>{{ error }}</span>
                   {% endfor %}
-              </tbody>
-          </table>
+                </div>
+                {% else %}
+                {{ form.relevant_link(class="form-control form-control-lg") }}
+                            {% endif %}
+
+              </div>
+              {% if anon_user == True %}
+              <hr class="text-danger mt-5">
+              <div class="form-group pt-4">
+                {{ form.anonymous_submitter_name.label(class="form-control-label pb-2 text-danger") }}
+              
+                        {% if form.anonymous_submitter_name.errors %}
+                {{ form.anonymous_submitter_name(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.anonymous_submitter_name.errors %}
+                  <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+                {% else %}
+                {{ form.anonymous_submitter_name(class="form-control form-control-lg") }}
+                        {% endif %}
+              </div>
+              <div class="form-group py-4">
+                {{ form.anonymous_submitter_email.label(class="form-control-label pb-2 text-danger") }}
+              
+                        {% if form.anonymous_submitter_email.errors %}
+                {{ form.anonymous_submitter_email(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.anonymous_submitter_email.errors %}
+                  <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+                {% else %}
+                {{ form.anonymous_submitter_email(class="form-control form-control-lg") }}
+                        {% endif %}
+              </div>
+              {% endif %}
+              {{ form.submit(class="btn btn-danger w-25 mt-5") }}
+          </fieldset>
+        </form>
       </div>
+    </div>
+    <div class="row mt-5">
+      <h3 class="Montserrat text-danger mb-4">Latest Acronyms</h3>
+      <table class="table table-striped mt-5" id='acronyms-preview-datatable'>
+        <thead class="">
+          <tr>
+            <th>
+              <h4>Acronym (English)</h4>
+            </th>
+            <th>
+              <h4>Definition (English)</h4>
+            </th>
+            <th>
+              <h4>Added By</h4>
+            </th>
+            <th>
+              <h4>Status</h4>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for acronym in latest_acronyms %}
+          <tr>
+            <td class="align-middle fw-bold">{{ acronym.Acronym.acronym_eng }}</td>
+            <td class="align-middle">
+              <h5>{{ acronym.Acronym.def_eng }}</h5>
+            </td>
+            <td class="align-middle">
+              <h5>{{ acronym.User.firstname }} {{ acronym.User.lastname }}</h5>
+            </td>
+            <td class="align-middle">
+              <h5>{% if acronym.Acronym.approved_by is none %}<span class="text-danger fw-bold">Pending Approval{% else %} Approved{% endif %}</h5>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   {% endblock content %}
