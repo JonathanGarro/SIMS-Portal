@@ -90,6 +90,10 @@ $(document).ready(function () {
 			},
 			{
 				extend: 'csv',
+				filename: function () {
+					// customize the csv file name
+					return "SIMS_Portal_Acronyms";
+				},
 				exportOptions: {
 					columns: [0, 2, 5, 6, 7, 8, 9] 
 				}
