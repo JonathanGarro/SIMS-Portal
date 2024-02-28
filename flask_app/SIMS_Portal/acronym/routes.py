@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from SIMS_Portal.models import Acronym, User, Log, NationalSociety
 from SIMS_Portal.users.utils import send_slack_dm, new_acronym_alert
 from SIMS_Portal import db, login_manager
-from SIMS_Portal.acronym.forms import NewAcronymForm, NewAcronymFormPublic
+from SIMS_Portal.acronym.forms import NewAcronymForm, NewAcronymFormPublic, EditAcronymForm
 
 acronym = Blueprint('acronym', __name__)
 
@@ -23,7 +23,14 @@ acronym = Blueprint('acronym', __name__)
 def acronyms():
     all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).all()
     
-    return render_template('acronyms.html', all_acronyms=all_acronyms)
+    # check if user is admin for edit power
+    user_is_admin = current_user.is_admin
+    
+    # check if user created this acronym
+    user_info = db.session.query(User).filter(User.id == current_user.id).first()
+
+    
+    return render_template('acronyms.html', all_acronyms=all_acronyms, user_is_admin=user_is_admin, user_info=user_info)
 
 @acronym.route('/acronyms/compact')
 def acronyms_compact():
@@ -191,3 +198,53 @@ def delete_acronym(id):
                 return redirect(url_for('main.admin_process_acronyms'))
         
         return redirect(url_for('main.admin_process_acronyms'))
+        
+@acronym.route('/acronym/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_acronym(id):
+    form = EditAcronymForm()
+    acronym_info = db.session.query(Acronym).filter(Acronym.id == id).first()
+    latest_acronyms = db.session.query(Acronym, User).join(User, User.id == Acronym.added_by).order_by(Acronym.id.desc()).limit(10).all()
+    
+    # check for the acronym ID
+    if not acronym_info:
+        abort(404)
+    
+    if form.validate_on_submit():
+        acronym_info.acronym_eng = form.acronym_eng.data
+        acronym_info.def_eng = form.def_eng.data
+        acronym_info.expl_eng = form.expl_eng.data
+        acronym_info.acronym_esp = form.acronym_esp.data
+        acronym_info.def_esp = form.def_esp.data
+        acronym_info.expl_esp = form.expl_esp.data
+        acronym_info.acronym_fra = form.acronym_fra.data
+        acronym_info.def_fra = form.def_fra.data
+        acronym_info.expl_fra = form.expl_fra.data
+        acronym_info.relevant_link = form.relevant_link.data
+        
+        if current_user.is_admin or acronym_info.added_by == current_user.id:
+            db.session.commit()
+            flash('Acronym record updated.', 'success')
+        
+            log_message = f"[INFO] User {current_user.id} edited acronym {acronym_info.id}."
+            new_log = Log(message=log_message, user_id=current_user.id)
+            db.session.add(new_log)
+            db.session.commit()
+            
+            return redirect(url_for('acronym.view_acronym', id=id))
+        else:
+            abort(403)
+        
+        return redirect(url_for('acronym.view_acronym', id=id))
+    elif request.method == 'GET':
+        form.acronym_eng.data = acronym_info.acronym_eng
+        form.def_eng.data = acronym_info.def_eng
+        form.expl_eng.data = acronym_info.expl_eng
+        form.acronym_esp.data = acronym_info.acronym_esp
+        form.def_esp.data = acronym_info.def_esp
+        form.expl_esp.data = acronym_info.expl_esp
+        form.acronym_fra.data = acronym_info.acronym_fra
+        form.def_fra.data = acronym_info.def_fra
+        form.expl_fra.data = acronym_info.expl_fra
+        form.relevant_link.data = acronym_info.relevant_link
+    return render_template('acronym_edit.html', form=form, acronym_info=acronym_info, latest_acronyms=latest_acronyms)
