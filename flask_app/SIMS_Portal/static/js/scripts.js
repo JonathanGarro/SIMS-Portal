@@ -96,7 +96,8 @@ $(document).ready(function () {
 				},
 				exportOptions: {
 					columns: [0, 2, 5, 6, 7, 8, 9] 
-				}
+				},
+				charset: 'utf-8' 
 			},
 		],
 		columns: [
