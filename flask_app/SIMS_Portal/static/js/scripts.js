@@ -80,33 +80,34 @@ $(document).ready(function () {
 		order: [[0, 'asc']],
 		lengthChange: false,
 		autoWidth: true,
-		dom: 'frtipB', // add buttons to the DOM
+		dom: 'frtipB', 
 		buttons: [
 			{
 				extend: 'copy',
 				exportOptions: {
-					columns: [0, 1, 4, 5, 6, 7]
+					columns: [0, 2, 5, 6, 7, 8, 9]
 				}
 			},
 			{
 				extend: 'csv',
 				exportOptions: {
-					columns: [0, 1, 4, 5, 6, 7] 
+					columns: [0, 2, 5, 6, 7, 8, 9] 
 				}
 			},
 		],
 		columns: [
-			null,  
 			null, 
-			{ className: 'text-center' },
-			{ className: 'text-center' },
+			null,
+			null, 
 			null,
 			null,
 			null,
+			null,
+			null, 
 			null
 		],
 		"columnDefs": [
-			{ "targets": [3, 4, 5, 6, 7], "visible": false } 
+			{ "targets": [0, 5, 6, 7, 8, 9], "visible": false } 
 		]
 	});
 });

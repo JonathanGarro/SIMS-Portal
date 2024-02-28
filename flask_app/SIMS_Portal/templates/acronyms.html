@@ -35,10 +35,16 @@
             <h5>Acronym (English)</h5>
           </th>
           <th>
+            <h5>Acronym (English)</h5>
+          </th>
+          <th>
             <h5>Definition (English)</h5>
           </th>
           <th>
             <h5>Link</h5>
+          </th>
+          <th>
+            <h5>More</h5>
           </th>
           <th>
             <h5>Acronym (Spanish)</h5>
@@ -52,11 +58,17 @@
           <th>
             <h5>Definition (French)</h5>
           </th>
+          <th>
+            <h5>Link</h5>
+          </th>
         </tr>
       </thead>
       <tbody>
         {% for acronym in all_acronyms %}
         <tr>
+          <td>
+            {{ acronym.acronym_eng }}
+          </td>
           <td class="align-middle text-danger">
             <a href="#" data-bs-toggle="modal" data-bs-target="#acronymModal{{ acronym.id }}" data-acronym-id="{{ acronym.id }}" data-acronym-eng="{{ acronym.acronym_eng or '' }}" data-acronym-def-eng="{{ acronym.def_eng or '' }}">
               <h5 class="Montserrat">{{ acronym.acronym_eng }}</h5>
@@ -182,6 +194,9 @@
           <td class="align-middle">
             <h5>{{ acronym.def_fra }}</h5>
           </td>
+          <td>
+            {{acronym.relevant_link}}
+          </td>
         </tr>
         {% endfor %}
       </tbody>
@@ -189,27 +204,8 @@
   </div>
 </div>
 
-
-
 {% endblock content %}
 
 {% block scripts %}
-<script>
-  $('#acronymModal').on('show.bs.modal', function(event) {
-    var button = $(event.relatedTarget);
-    var acronymId = button.data('acronym-id');
 
-    $.ajax({
-      url: '/get_additional_info/' + acronymId,
-      type: 'GET',
-      success: function(data) {
-        console.log('Data received:', data);
-        $('#additionalInfo').html(data);
-      },
-      error: function() {
-        console.error('Failed to fetch additional information.');
-      }
-    });
-  });
-</script>
 {% endblock scripts %}
