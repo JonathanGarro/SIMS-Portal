@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, current_app
 from SIMS_Portal import db
+from SIMS_Portal.models import User
 
 errors = Blueprint('errors', __name__)
 
