@@ -106,13 +106,17 @@
     </div>
         <hr class="my-5">
         <div class="row">
-            <div class="col-md-4 mb-3">
-                <h5 class="text-dark Montserrat">Posted by</h5>
-                <h4 class="text-danger Montserrat"><a href="/profile/view/{{acronym_info.User.id}}">{{ acronym_info.User.firstname }} {{ acronym_info.User.lastname }}</a></h4>
+            <div class="col-md-4 mb-1 ">
+                <p class="text-dark fw-bold" style="margin-bottom: 3px">Posted by</p>
+                {% if acronym_info.Acronym.added_by == 63 %}
+                    <p class="text-dark">{{ acronym_info.Acronym.anonymous_submitter_name }}</p>
+                {% else %}
+                    <p class="override-link-color"><a href="/profile/view/{{acronym_info.User.id}}">{{ acronym_info.User.firstname }} {{ acronym_info.User.lastname }}</a></p>
+                {% endif %}
             </div>
             <div class="col">
-                <h5 class="text-dark Montserrat">Added on</h5>
-                <h4 class="text-danger Montserrat">{{ acronym_info.Acronym.date_added.strftime('%B %d, %Y') }}</h4>
+                <p class="text-dark fw-bold" style="margin-bottom: 3px">Added on</p>
+                <p class="text-danger">{{ acronym_info.Acronym.date_added.strftime('%B %d, %Y') }}</p>
             </div>
         </div>
     </div>
