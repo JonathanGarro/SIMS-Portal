@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.1 (Van Ness) - 2024-02-29
+
+## Fixes
+
+- **Acronym Export**: This release contains a minor patch intended to fix how the CSV export, which was previously mapping fields incorrectly and generating errors.
+
 # 1.9.0 (Van Ness) - 2024-02-28
 
 ## New Features
