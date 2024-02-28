@@ -5,6 +5,20 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.0 (Van Ness) - 2024-02-28
+
+## New Features
+
+- **Overhauled Admin Portal**: With additional controls for admins, the page where those utilities were managed was getting cluttered. The new design offers better navigation, and routing now allows for better redirects in Flask after completing a function.
+- **Richer Acronym Management and Views**: A more compact view of the acronym list has been added. On the regular view, a popup window is now available that displays the acronym in various languages (when available) for faster at-a-glance reviews. Admins and the person that created the acronym can also edit the records.
+
+# 1.8.3 (Tenleytown) - 2024-02-26
+
+## Changes
+
+- **Acronym Submission Logic**: Non-logged in users may now submit acronyms anonymously. Their submissions are put into a review queue before posting, while SIMS members that log into the system before submitting will have their submissions directly saved.
+- **Acronym Compact View**: A separate view for seeing all acronyms on a single page has been created for those who want to skim through all available entries.
+
 # 1.8.2 (Tenleytown) - 2024-02-23
 
 ## New Features
