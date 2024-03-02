@@ -61,9 +61,12 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 	$('#acronyms-preview-datatable').DataTable({
-		order: [[0, 'asc']],
+		order: [[0, 'desc']],
 		lengthChange: false,
 		searching: false,
+		columnDefs: [
+			{ targets: [0], visible: false }
+		]
 	});
 });
 
