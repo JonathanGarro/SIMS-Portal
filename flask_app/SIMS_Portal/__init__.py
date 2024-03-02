@@ -21,6 +21,7 @@ import flask_migrate
 import logging
 import os
 import sqlalchemy as sa
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 db = SQLAlchemy()
@@ -88,6 +89,8 @@ def create_app(config_class=Config):
 	babel = Babel(app)
 	Markdown(app)
 	cache.init_app(app)
+	
+	csrf = CSRFProtect(app)
 	
 	# @babel.localeselector
 	# def get_locale():
