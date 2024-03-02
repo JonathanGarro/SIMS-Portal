@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField
 from flask_sqlalchemy import SQLAlchemy
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
@@ -21,6 +21,7 @@ class NewAcronymForm(FlaskForm):
 class NewAcronymFormPublic(NewAcronymForm):
     anonymous_submitter_name = StringField('Your Name', validators=[DataRequired()])
     anonymous_submitter_email = StringField('Your Email', validators=[DataRequired(), Email()])
+    recaptcha = RecaptchaField()
 
 class EditAcronymForm(FlaskForm):
     acronym_eng = StringField('Acronym (English)')
