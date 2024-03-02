@@ -272,7 +272,14 @@
                 {{ form.anonymous_submitter_email(class="form-control form-control-lg") }}
                         {% endif %}
               </div>
+
+              {{ form.recaptcha.label }}
+              {{ form.recaptcha }}
+
               {% endif %}
+              
+
+              
               {{ form.submit(class="btn btn-danger w-25 mt-5") }}
           </fieldset>
         </form>
