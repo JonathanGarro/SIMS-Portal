@@ -128,50 +128,54 @@ def submit_acronym_member():
 @acronym.route('/submit_acronym/public', methods=['GET', 'POST'])
 def submit_acronym_public():
     form = NewAcronymFormPublic()
-    
+
     if request.method == 'GET': 
         latest_acronyms = db.session.query(Acronym, User).join(User, User.id == Acronym.added_by).order_by(Acronym.id.desc()).limit(10).all()
         return render_template('new_acronym.html', title='Submit a New Acronym', form=form, latest_acronyms=latest_acronyms, anon_user=True)
-    else:
-        if form.validate_on_submit():
-            submitter_id = 63 # set to 63 for anonymous users (saves to Clara Barton's account)
-            
-            new_acronym = Acronym(
-                added_by=submitter_id,
-                date_added=datetime.now(),
-                acronym_eng=form.data['acronym_eng'],
-                def_eng=form.data['def_eng'],
-                expl_eng=form.data['expl_eng'],
-                acronym_esp=form.data['acronym_esp'],
-                def_esp=form.data['def_esp'],
-                expl_esp=form.data['expl_esp'],
-                acronym_fra=form.data['acronym_fra'],
-                def_fra=form.data['def_fra'],
-                expl_fra=form.data['expl_fra'],
-                relevant_link=form.data['relevant_link'], 
-                anonymous_submitter_name=form.data['anonymous_submitter_name'],
-                anonymous_submitter_email=form.data['anonymous_submitter_email']
-            )
+    elif request.method == 'POST' and form.validate():
+        # The form is valid, proceed with form data processing
+        submitter_id = 63  # set to 63 for anonymous users (saves to Clara Barton's account)
 
-            db.session.add(new_acronym)
-            db.session.commit()
-            
-            log_message = f"[INFO] An anonymous user has added a new acronym."
-            new_log = Log(message=log_message, user_id=0)
-            db.session.add(new_log)
-            db.session.commit()
-            
-            try:
-                new_acronym_alert(f"A new acronym has been added to the SIMS Portal by {new_acronym.anonymous_submitter_name}: {new_acronym.def_eng}. Since it was submitted by someone that did not log into the Portal, it must be manually approved.")
-            except: 
-                pass
-            flash('New acronym added to review queue.', 'success')
-        else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
-            return redirect(url_for('acronym.submit_acronym/public'))
+        new_acronym = Acronym(
+            added_by=submitter_id,
+            date_added=datetime.now(),
+            acronym_eng=form.acronym_eng.data,
+            def_eng=form.def_eng.data,
+            expl_eng=form.expl_eng.data,
+            acronym_esp=form.acronym_esp.data,
+            def_esp=form.def_esp.data,
+            expl_esp=form.expl_esp.data,
+            acronym_fra=form.acronym_fra.data,
+            def_fra=form.def_fra.data,
+            expl_fra=form.expl_fra.data,
+            relevant_link=form.relevant_link.data,
+            anonymous_submitter_name=form.anonymous_submitter_name.data,
+            anonymous_submitter_email=form.anonymous_submitter_email.data
+        )
+
+        db.session.add(new_acronym)
+        db.session.commit()
+
+        log_message = f"[INFO] An anonymous user has added a new acronym."
+        new_log = Log(message=log_message, user_id=0)
+        db.session.add(new_log)
+        db.session.commit()
+
+        try:
+            new_acronym_alert(f"A new acronym has been added to the SIMS Portal by {new_acronym.anonymous_submitter_name}: {new_acronym.def_eng}. Since it was submitted by someone that did not log into the Portal, it must be manually approved.")
+        except:
+            pass
+
+        flash('New acronym added to review queue.', 'success')
         return redirect(url_for('portfolios.view_documentation'))
+
+    # If form is not valid, flash errors and redirect back to the form
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
+
+    return redirect(url_for('acronym.submit_acronym_public'))
+
 
 @acronym.route('/acronym/approve/<int:id>', methods=['GET', 'POST'])
 @login_required
