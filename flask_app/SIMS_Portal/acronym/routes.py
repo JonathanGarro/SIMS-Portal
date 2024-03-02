@@ -133,7 +133,6 @@ def submit_acronym_public():
         latest_acronyms = db.session.query(Acronym, User).join(User, User.id == Acronym.added_by).order_by(Acronym.id.desc()).limit(10).all()
         return render_template('new_acronym.html', title='Submit a New Acronym', form=form, latest_acronyms=latest_acronyms, anon_user=True)
     elif request.method == 'POST' and form.validate():
-        # The form is valid, proceed with form data processing
         submitter_id = 63  # set to 63 for anonymous users (saves to Clara Barton's account)
 
         new_acronym = Acronym(
@@ -169,7 +168,7 @@ def submit_acronym_public():
         flash('New acronym added to review queue.', 'success')
         return redirect(url_for('portfolios.view_documentation'))
 
-    # If form is not valid, flash errors and redirect back to the form
+    # if form is not valid, flash errors and redirect back to the form
     for field, errors in form.errors.items():
         for error in errors:
             flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
