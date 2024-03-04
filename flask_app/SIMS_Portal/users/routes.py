@@ -126,7 +126,7 @@ def register():
 				db.session.commit()
 				message = "Thank you for registering for the SIMS Portal, {}. Your account has been placed into a queue, and will be approved by a SIMS Governance Committee member. You will be alerted here when that action is taken. In the meantime, you can log into the portal and explore the resources, but you will have limited permissions.".format(form.firstname.data)
 				send_slack_dm(message, form.slack_id.data)
-				new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin_landing|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
+				new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin/approve_members|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
 				flash('Your account has been created.', 'success')
 				
 				log_message = f"[INFO] A new user has registered for the Portal: {user.firstname} {user.lastname}."
