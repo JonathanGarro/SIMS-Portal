@@ -60,6 +60,19 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+	$('#logs-datatable').DataTable({
+		order: [[0, 'desc']],
+		lengthChange: true,
+		searching: true,
+		pageLength: 100,
+		dom: 'frtipB',
+		buttons: [
+			'copy', 'csv'
+		],
+	});
+});
+
+$(document).ready(function () {
 	$('#acronyms-preview-datatable').DataTable({
 		order: [[0, 'desc']],
 		lengthChange: false,
