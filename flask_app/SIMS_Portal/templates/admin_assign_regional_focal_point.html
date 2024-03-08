@@ -26,16 +26,16 @@
                             </a>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="/admin/assign_badge" class="text-secondary">
+                            <div class="text-secondary">
                                 <i data-feather="award" class="mr-3"></i> 
                                 &nbsp Assign Badges
-                            </a>
+                            </div>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="text-secondary active-link">
+                            <a href="/admin/upload_badges" class="text-secondary">
                                 <i data-feather="upload" class="mr-3"></i> 
                                 &nbsp Upload Badges
-                            </div>
+                            </a>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="/admin/approve_members" class="text-secondary">
@@ -62,7 +62,7 @@
                             </a>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="/admin/assign_regional_focal_point" class="text-secondary">
+                            <a href="#" class="text-secondary active-link">
                                 <i data-feather="globe" class="mr-3"></i> 
                                 &nbsp Focal Points
                             </a>
@@ -86,51 +86,45 @@
         </div>
         <div class="col g-5">
             <div>
-                <h2 class="text-dark Montserrat mb-5">Upload New Badges</h2>
+                <h2 class="text-dark Montserrat">Assign IM Focal Points</h2>
+                <p class="mb-5">In order to tag the correct member when a new surge alert is released and sent to the #Availability Slack channel, the system needs to have a defined focal point for the relevant region. Only one person can be listed per region. </p>
                 <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 border border-3 rounded-3" novalidate>
-                    {{ badge_upload_form.hidden_tag() }}
+                    {{ form.hidden_tag() }}
                     <div class='row'>
-                        <div class='col'>
-                            <div>{{ badge_upload_form.name.label(class="form-control-label pb-2 text-danger") }}</div>
-                        </div>
-                        <div class='col'>
-                            <div>{{ badge_upload_form.file.label(class="form-control-label pb-2 text-danger") }}</div>
-                        </div>
+                        <div class='col'>{{ form.user_name.label(class="form-control-label pb-2 text-danger") }}</div>
+                        <div class='col'>{{ form.region.label(class="form-control-label pb-2 text-danger") }}</div>
                     </div>
-                    <div class='row'>
-                        <div class='col'>
-                            <div>{{ badge_upload_form.name(class="form-control form-control-lg") }}</div>
-                        </div>
-                        <div class='col'>
-                            <div><input class="form-control form-control-lg" id="{{ badge_upload_form.file }}" type="file"></div>
-                        </div>
-                    </div>
-                
-                    <div class='row'>
-                        <div class='col'>
-                            <div>{{ badge_upload_form.description.label(class="form-control-label pb-2 text-danger") }}</div>
-                        </div>
+                    <div class='row mb-3'>
+                        <div class='col'>{{ form.user_name(class="form-control form-control-lg") }} </div>
+                        <div class='col'>{{ form.region(class="form-control form-control-lg") }}</div>
                     </div>
                     <div class='row'>
-                        <div class='col'>
-                            <div>{{ badge_upload_form.description(class="form-control form-control-lg") }}</div>
-                        </div>
+                        <div class='col'>{{ form.submit(class="btn btn-lg btn-danger") }}</div>
                     </div>
-                    <div class='row mt-3'>
-                        <div>{{ badge_upload_form.limited_edition.label(class="form-control-label pb-2 text-danger") }} &nbsp; {{ badge_upload_form.limited_edition(class="form-check-input") }}</div>
-                    </div>
-                
-                    <div class='col mt-4'>{{ badge_upload_form.upload_badge(class="btn btn-lg btn-danger w-25") }}</div>
-                
+                    
                 </form>
-                <div class='row my-5'>
-                    <h5 class='text-danger Montserrat'>New Badge Guidelines</h5>
-                    <p class="mb-5">In order to keep a unified style across all of the badges that get posted to the portal, you must create new ones using <a href="/static/assets/img/badges/_Badge Template.ai" download="template">this Adobe Illustrator template</a>. Save the file using <span class='fw-bold'>File > Export > Save for Web (Legacy)</span>, making sure to export it as a transparent PNG at 500x500.</p>
-                    <br>
-                    <iframe width="560" height="500" src="https://www.youtube.com/embed/fw3BLKR8bPs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <h5 class='text-danger mt-5 Montserrat'>Current Focal Points</h5>
+                <div class='mt-3'>
+                    <table class='table'>
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Region</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in current_focal_points %}
+                            <tr>
+                                <td><a href='/profile/view/{{user.User.id}}'>{{user.User.firstname}} {{user.User.lastname}}</a></td>
+                                <td>&nbsp; &nbsp; {{user.Region.name}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                </div>
+            
             </div>
+        
         </div>
     </div>
 </div>
