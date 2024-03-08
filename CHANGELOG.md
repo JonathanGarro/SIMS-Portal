@@ -5,7 +5,11 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
-# 1.9.3 (Van Ness) - TBD
+# 1.9.3 (Van Ness) - 2024-03-08
+
+## New Features
+
+- **Tag Regional IM Focal Point on Availability Messages**: The script that grabs new surge alerts from the GO API and sends them to the Availability channel in the SIMS Slack now tags the Regional IM Focal point, ensuring that conversations about the alert include them. Adding this feature also meant creating another Admin Portal page with the ability to manually assign which member is the current IM focal point for each region.
 
 ## Fixes
 
