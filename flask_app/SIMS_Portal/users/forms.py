@@ -6,7 +6,7 @@ from wtforms import StringField, PasswordField, FileField, SubmitField, BooleanF
 from wtforms_sqlalchemy.fields import QuerySelectField
 from flask_sqlalchemy import SQLAlchemy
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType, Portfolio, Skill, Language, Profile
+from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType, Portfolio, Skill, Language, Profile, Region
 
 class RegistrationForm(FlaskForm):
 	firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=40)])
@@ -81,3 +81,8 @@ class ResetPasswordForm(FlaskForm):
 class UserLocationForm(FlaskForm):
 	location = StringField('Enter City and Country', validators=[DataRequired()])
 	submit = SubmitField('Search')
+
+class RegionalFocalPointForm(FlaskForm):
+	user_name = QuerySelectField('Member', query_factory=lambda: User.query.order_by(User.firstname).filter(User.status == 'Active').all(), get_label='fullname', allow_blank=True)
+	region = QuerySelectField('Region', query_factory=lambda: Region.query.order_by(Region.name).all(), get_label='name', allow_blank=True)
+	submit = SubmitField('Assign Regional Focal Point')
