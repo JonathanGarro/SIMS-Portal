@@ -5,6 +5,18 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.3 (Van Ness) - TBD
+
+## Fixes
+
+- **Fixed Link to Admin Pages**: With the upgraded admin portal, a few links for Slack alerts and banners needed to be updated.
+
+# 1.9.2 (Van Ness) - 2024-03-02
+
+## Changes
+
+- **reCAPTCHA on Public Acronym Form**: Following an attempted SQL-injection attack against the database, I've implemented a reCAPTCHA check on the public version of the acronym submission form and added additional validations. Is it weird that I'm a bit flattered that a hacker found our database worthy of being hacked?
+
 # 1.9.1 (Van Ness) - 2024-02-29
 
 ## Fixes
