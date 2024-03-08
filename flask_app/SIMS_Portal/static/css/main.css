@@ -346,6 +346,18 @@ p {
 	border-bottom: 3px solid black; 
 }
 
+.info { 
+	color: blue; 
+}
+
+.warning { 
+	color: orange; 
+}
+
+.error { 
+	color: red; 
+}
+
 .map {
 	width: 800px;
 	height: 500px;
