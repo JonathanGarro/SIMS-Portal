@@ -1,7 +1,7 @@
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from SIMS_Portal.models import Alert, Log
+from SIMS_Portal.models import Alert, Log, RegionalFocalPoint, User
 from SIMS_Portal.users.utils import new_surge_alert, test_surge_alert
 from SIMS_Portal.main.utils import send_error_message
 from flask_apscheduler import APScheduler
@@ -13,6 +13,33 @@ import logging
 import re
 
 scheduler = APScheduler()
+
+def get_slack_username(user_id):
+	"""
+	In order to tag the correct user on the Slack message sent to the Availability channel, we need to get the user's Slack handle. We don't store that value in the users table, so we need to get it via their Slack ID.
+	"""
+	slack_token = current_app.config['SIMS_PORTAL_SLACK_BOT']	
+	url = f"https://slack.com/api/users.info?user={user_id}"
+	headers = {
+		"Content-type": "application/json",
+		"Authorization": f"Bearer {slack_token}"
+	}
+	response = requests.get(url, headers=headers)
+	
+	if response.status_code != 200:
+		log_message = f"[ERROR] The get_slack_username function failed: {response.status_code}."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+		return None
+	
+	json_response = response.json()
+	
+	if json_response.get("ok"):
+		return json_response.get("user", {}).get("name")
+	else:
+		print(f"Error: {json_response.get('error')}")
+		return None
 
 def calculate_months_difference(start_date, end_date):
 	if isinstance(start_date, str):
@@ -45,6 +72,16 @@ def send_im_alert_to_slack(alert_info):
 	
 	alert_length = calculate_months_difference(alert_info.start, alert_info.end_time)
 	
+	try:
+		regional_focal_point_id = db.session.query(RegionalFocalPoint, User).join(User, User.id == RegionalFocalPoint.focal_point_id).filter(RegionalFocalPoint.regional_id == alert_info.region_id).first()
+		regional_focal_point = get_slack_username(regional_focal_point_id.User.slack_id)
+	except:
+		log_message = f"[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+		regional_focal_point = "Focal Point Missing"
+	
 	# reformat dates for slack message
 	requested_timeframe_start = alert_info.start.strftime("%B %d, %Y")
 	requested_timeframe_end = alert_info.end_time.strftime("%B %d, %Y")
@@ -52,13 +89,13 @@ def send_im_alert_to_slack(alert_info):
 	# construct message depending on these variables
 	if alert_info.scope == 'Global':
 		if alert_info.role_profile == 'SIMS Remote Coordinator':
-			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *SIMS Remote Coordinator* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Note*: SIMS Remote Coordinator positions are remote \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *SIMS Remote Coordinator* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n • *Note*: SIMS Remote Coordinator positions are remote \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
 		
 		else:
-			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
 	
 	if alert_info.scope == 'Regional':
-		message = f'\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+		message = f'\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
 	
 	new_surge_alert(message)
 	# test_surge_alert(message)
@@ -111,7 +148,10 @@ def refresh_surge_alerts_latest():
 		
 			for tag in molnix_tags:
 				groups = tag.get("groups", [])
-		
+				
+				if "REGION" in groups:
+					region_id = tag.get("description", None)
+				
 				if "SECTOR" in groups:
 					sector = tag.get("description", None)
 					sectors.append(sector)
@@ -134,7 +174,16 @@ def refresh_surge_alerts_latest():
 			country = result.get("country", {})
 			iso3 = country.get("iso3", None)
 			country_name = country.get("name", None)
-		
+			
+			# convert region name to ID compatible with GO
+			region_ids_dict = {
+				"Europe Region": 4,
+				"Asia Pacific Region": 3,
+				"Americas Region": 2, 
+				"Africa Region": 1, 
+				"Middle East & North Africa Region": 5
+			}
+			
 			event = result.get("event", {})
 			disaster_type_id = event.get("dtype", {}).get("id", None)
 			disaster_type_name = event.get("dtype", {}).get("name", None)
@@ -165,7 +214,8 @@ def refresh_surge_alerts_latest():
 				"disaster_type_name": disaster_type_name,
 				"disaster_go_id": disaster_go_id,
 				"ifrc_severity_level_display": ifrc_severity_level_display,
-				"alert_id": alert_id
+				"alert_id": alert_id, 
+				"region_id": region_ids_dict.get(region_id, None),
 			}
 		
 			result_list.append(result_dict)
@@ -222,7 +272,8 @@ def refresh_surge_alerts_latest():
 							disaster_type_name = result['disaster_type_name'],
 							disaster_go_id = result['disaster_go_id'],
 							ifrc_severity_level_display = result['ifrc_severity_level_display'],
-							alert_id = result['alert_id']
+							alert_id = result['alert_id'], 
+							region_id = result['region_id']
 						)
 					except Exception as e:
 						log_message = f"[WARNING] The refresh_surge_alerts_latest function couldn't parse one of the alerts it found in the Surge Alert cron job as it tried to instantiate a new Alert object: {e}"
