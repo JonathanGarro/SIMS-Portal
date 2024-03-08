@@ -420,6 +420,7 @@ class Alert(db.Model):
 	disaster_go_id = db.Column(db.Integer)
 	ifrc_severity_level_display = db.Column(db.String)
 	alert_id = db.Column(db.Integer)
+	region_id = db.Column(db.Integer)
 	
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
@@ -439,3 +440,18 @@ class Availability(db.Model):
 	
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
+
+class Region(db.Model):
+	__tablename__ = 'region'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String)
+
+class RegionalFocalPoint(db.Model):
+	__tablename__ = 'regional_focal_point'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	regional_id = db.Column(db.Integer, db.ForeignKey('region.id'), nullable=False)
+	focal_point_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	
+	
