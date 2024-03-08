@@ -116,7 +116,7 @@
                             {% for user in current_focal_points %}
                             <tr>
                                 <td><a href='/profile/view/{{user.User.id}}'>{{user.User.firstname}} {{user.User.lastname}}</a></td>
-                                <td>&nbsp; &nbsp; {{user.Region.name}}</td>
+                                <td>{{user.Region.name}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
