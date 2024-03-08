@@ -24,7 +24,7 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	Assignment, User, Emergency, Alert, user_skill, user_language,
 	user_badge, Skill, Language, NationalSociety, Badge, Story,
-	EmergencyType, Review, user_profile, Profile, Log, Acronym
+	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region
 )
 from SIMS_Portal.main.forms import (
 	MemberSearchForm, EmergencySearchForm, ProductSearchForm,
@@ -39,7 +39,7 @@ from SIMS_Portal.main.utils import (
 	auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler,
 	auto_badge_assigner_old_salt, user_info_by_ns
 )
-from SIMS_Portal.users.forms import AssignProfileTypesForm
+from SIMS_Portal.users.forms import AssignProfileTypesForm, RegionalFocalPointForm
 from SIMS_Portal.users.utils import (
 	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations, 
 	bulk_slack_photo_update
@@ -270,6 +270,45 @@ def admin_process_acronyms():
 	
 	return render_template('admin_process_acronyms.html', pending_acronyms=pending_acronyms)
 
+@main.route('/admin/assign_regional_focal_point', methods=['GET', 'POST'])
+@login_required
+def assign_regional_focal_point():
+	form = RegionalFocalPointForm()
+
+	if request.method == 'GET' and current_user.is_admin == 1:
+		current_focal_points = db.session.query(RegionalFocalPoint, User, Region).join(User, User.id == RegionalFocalPoint.focal_point_id).join(Region, Region.id == RegionalFocalPoint.regional_id).all()
+
+		return render_template('admin_assign_regional_focal_point.html', form=form, current_focal_points=current_focal_points)
+
+	if request.method == 'POST' and current_user.is_admin == 1:
+		if form.validate_on_submit():
+			existing_record = db.session.query(RegionalFocalPoint).filter_by(regional_id=form.region.data.id).first()
+
+			if existing_record:
+				# Update existing record
+				existing_record.focal_point_id = form.user_name.data.id
+				db.session.commit()
+				flash("Successfully updated the regional focal point.", "success")
+			else:
+				# Create a new record
+				regional_focal_point = RegionalFocalPoint(
+					focal_point_id=form.user_name.data.id,
+					regional_id=form.region.data.id
+				)
+				db.session.add(regional_focal_point)
+				db.session.commit()
+				flash("Successfully assigned the regional focal point.", "success")
+
+			new_focal_point_info = db.session.query(User).filter(User.id == form.user_name.data.id).first()
+			log_message = f"[INFO] {new_focal_point_info.firstname} {new_focal_point_info.lastname} has been assigned a regional IM focal point role in the database."
+			new_log = Log(message=log_message, user_id=current_user.id)
+
+			return redirect(url_for('main.assign_regional_focal_point'))
+		else:
+			flash("Error: Focal point ID is None.", "danger")
+
+	return render_template('admin_assign_regional_focal_point.html', form=form)
+
 @main.route('/badge_assignment/<int:user_id>/<int:badge_id>')
 @login_required
 def badge_assignment(user_id, badge_id):
@@ -467,7 +506,7 @@ def manual_refresh(func):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
-		
+		refresh_surge_alerts_latest()
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
