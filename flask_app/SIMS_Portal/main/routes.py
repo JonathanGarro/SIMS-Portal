@@ -15,7 +15,7 @@ from flask_login import (
 	login_user, current_user, logout_user, login_required
 )
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, distinct, desc, asc, select
+from sqlalchemy import func, distinct, desc, asc, select, case
 import boto3
 import botocore
 
@@ -270,6 +270,22 @@ def admin_process_acronyms():
 	
 	return render_template('admin_process_acronyms.html', pending_acronyms=pending_acronyms)
 
+@main.route('/admin/view_logs', methods=['GET', 'POST'])
+@login_required
+def view_logs():
+	if current_user.is_admin == 1:
+		logs = db.session.query(Log, User).join(User, User.id == Log.user_id).order_by(desc(Log.timestamp)).limit(1000).all()
+		
+		for log, user in logs:
+			match = re.search(r'\[(\w+)\]', log.message)
+			if match:
+				log.severity = match.group(1) 
+				log.message = log.message.replace(match.group(0), '')
+
+		return render_template('admin_logs.html', logs=logs)
+	else:
+		abort(403)
+	
 @main.route('/admin/assign_regional_focal_point', methods=['GET', 'POST'])
 @login_required
 def assign_regional_focal_point():
