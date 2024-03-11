@@ -43,7 +43,7 @@ def acronyms():
 
 @acronym.route('/acronyms/compact')
 def acronyms_compact():
-    all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).all()
+    all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).order_by(Acronym.acronym_eng).all()
     
     return render_template('acronyms_compact.html', all_acronyms=all_acronyms)
 
