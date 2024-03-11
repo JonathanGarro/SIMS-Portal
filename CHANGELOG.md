@@ -5,6 +5,17 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.4 (Van Ness) - 2024-03-11
+
+## New Features
+
+- **Activity Logs**: I recently moved logging out of Logtail and created a custom solution with a dedicated table in the database. Access to those logs required connecting to the database directly using database management software. This release makes those logs available in the front end for all administrators.
+- **Regional IM Lead Cards**: The dashboard now shows the five active Regional IM Leads. 
+
+## Fixes
+
+-**Alphabetize Compact Acronyms List**: The compact version of the acronym table is now ordered correctly.
+
 # 1.9.3 (Van Ness) - 2024-03-08
 
 ## New Features
