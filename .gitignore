@@ -5,6 +5,7 @@
 .flaskenv*
 !.env.project
 !.env.vault
+.env.vault
 
 ### SIMS Portal Specific ###
 site.db
