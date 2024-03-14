@@ -5,6 +5,16 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.5 (Van Ness) - 2024-03-14
+
+## New Features
+
+- **Dynamic Regional Surge Email Address**: The regional surge email address is now displayed in alert messages sent to the Availability channel in Slack. For example, Europe regional alerts will now be tagged with surge.europe@ifrc.org.
+
+## Fixes
+
+- **Logging Messages**: Several log message formatters have been corrected. 
+
 # 1.9.4 (Van Ness) - 2024-03-11
 
 ## New Features
