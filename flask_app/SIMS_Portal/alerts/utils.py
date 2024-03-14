@@ -55,6 +55,7 @@ def calculate_months_difference(start_date, end_date):
 
 def send_im_alert_to_slack(alert_info):
 	colors_to_emoji = {'Red': 'a :red_circle: red', 'Orange': 'an :large_orange_circle: orange', 'Yellow': 'a :large_yellow_circle: yellow'}
+	
 	# link to ifrc sharepoint's file on the role profile
 	standard_profiles = {
 		'Information Management Coordinator': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/Ea_YRhCI_IJHkhISEh5zH2YBCUtMAdWUqiC8JH7g1Jj8AQ', 
@@ -63,6 +64,17 @@ def send_im_alert_to_slack(alert_info):
 		'Mapping and Data Visualization Officer': 'https://ifrcorg.sharepoint.com/:b:/s/IFRCSharing/ER92aBZKBpxHrH61MJf4hLEBxwEnqzfqjLVR7cscPlxDKA',
 		'SIMS Remote Coordinator': 'https://go.ifrc.org/deployments/catalogue/infoMgt'
 	}
+	
+	# get regional surge email address for alert message
+	regional_surge_email_lookup = {
+		1: 'surge.africa@ifrc.org',
+		2: 'surge.americas@ifrc.org',
+		3: 'rapidresponse.ap@ifrc.org',
+		4: 'surge.europe@ifrc.org',
+		5: '', # mena doesn't have a generic address
+	}
+	
+	regional_surge_email = regional_surge_email_lookup.get(alert_info.region_id, 'surge@ifrc.org')
 	
 	position_description = standard_profiles.get(alert_info.role_profile, None)
 	if position_description is not None:
@@ -95,7 +107,7 @@ def send_im_alert_to_slack(alert_info):
 			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
 	
 	if alert_info.scope == 'Regional':
-		message = f'\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+		message = f'\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact {regional_surge_email}'
 	
 	new_surge_alert(message)
 	# test_surge_alert(message)
