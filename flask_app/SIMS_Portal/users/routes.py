@@ -638,7 +638,7 @@ def approve_user(id):
 			user = check_slack_id.slack_id
 			send_slack_dm(message, user)
 			
-			log_message = f"[INFO] The registration request for user {current_user.id} has been approved."
+			log_message = f"[INFO] The registration request for user {id} has been approved."
 			new_log = Log(message=log_message, user_id=current_user.id)
 			db.session.add(new_log)
 			db.session.commit()
