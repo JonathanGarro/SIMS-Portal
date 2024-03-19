@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.6 (Van Ness) - 2024-03-19
+
+## Fixes
+
+- **Surge Alert Downloader Fix**: In response to some errors parsing surge alerts from the GO API, I needed to set Molnix tag values to None by default in case the surge desk doesn't correctly fill these in.
+
 # 1.9.5 (Van Ness) - 2024-03-14
 
 ## New Features
