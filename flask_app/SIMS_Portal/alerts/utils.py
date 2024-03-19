@@ -157,7 +157,14 @@ def refresh_surge_alerts_latest():
 		
 			modality = None
 			im_filter = False
-		
+			
+			# predefine these ahead of the for loop in case no value returned
+			region_id = None
+			sector = None
+			role_profile = None 
+			modality = None
+			scope = None
+			
 			for tag in molnix_tags:
 				groups = tag.get("groups", [])
 				
@@ -369,7 +376,14 @@ def refresh_surge_alerts(pages_to_fetch):
 			
 				modality = None
 				im_filter = False
-			
+				
+				# predefine these in case they don't appear in molnix tags
+				region_id = None
+				sector = None
+				role_profile = None 
+				modality = None
+				scope = None
+				
 				for tag in molnix_tags:
 					groups = tag.get("groups", [])
 			
