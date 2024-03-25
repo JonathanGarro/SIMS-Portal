@@ -171,14 +171,14 @@
 						
 						
 						<h3 class="mt-5 ms-3 Montserrat">Regional IM Focal Points</h3>
-						<div class="row row-cols-xxl-5 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 mt-4">
+						<div class="row row-cols-xxl-5 row-cols-lg-5 row-cols-md-4 row-cols-sm-2 row-cols-2 g-4 my-4">
 							{% for lead in regional_im_leads %}
 							<div class="col d-flex align-items-stretch">
 								<a href='/profile/view/{{lead.User.id}}' class='text-dark'>
 									<div class="card portfolio-card">
 										<div class="card-header border-0">
 											<span class="fw-bold">{{ "MENA" if lead.Region.name == "Middle East & North Africa" else lead.Region.name }}
-</span>
+											</span>
 										</div>
 										<img src="/uploads/{{lead.User.image_file}}" class="card-img-top">
 										<div class="card-body d-flex flex-column">
