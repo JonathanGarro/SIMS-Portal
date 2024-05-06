@@ -12,6 +12,7 @@
 - **Spacing Fixes for Firefox**: Fixed spacing of elements in various templates that weren't behaving as expected in Firefox browsers.
 - **Acronym Validation Fix**: When migrating the db, a validation got incorrectly created for the logged-in route. 
 - **Enforce Null Values on Acronym Records**: When posting a new acronym, unused fields (e.g. other languages) were being posted with blanks instead of `NULL`, so a simple conditional has been added.
+- **Remove Length Conditional on Acronym Template**: Related to fix above, the jinja used to display the values from the acronyms in other languages has been adjusted to handle `NULL` values.
 
 # 1.9.6 (Van Ness) - 2024-03-19
 
