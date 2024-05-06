@@ -37,8 +37,6 @@ def acronyms():
         if user_info is not None:
             user_info.id = 0
 
-
-    
     return render_template('acronyms.html', all_acronyms=all_acronyms, user_is_admin=user_is_admin, user_info=user_info)
 
 @acronym.route('/acronyms/compact')
@@ -75,7 +73,6 @@ def submit_acronym():
     else:
         return redirect(url_for('acronym.submit_acronym_member'))
 
-
 @acronym.route('/submit_acronym/member', methods=['GET', 'POST'])
 @login_required
 def submit_acronym_member():
@@ -90,18 +87,18 @@ def submit_acronym_member():
             
             new_acronym = Acronym(
                 added_by=submitter_id.id,
-                approved_by=0, # when user is logged in, set approver to zero for 'system'
+                approved_by=None,
                 date_added=datetime.now(),
-                acronym_eng=form.data['acronym_eng'],
-                def_eng=form.data['def_eng'],
-                expl_eng=form.data['expl_eng'],
-                acronym_esp=form.data['acronym_esp'],
-                def_esp=form.data['def_esp'],
-                expl_esp=form.data['expl_esp'],
-                acronym_fra=form.data['acronym_fra'],
-                def_fra=form.data['def_fra'],
-                expl_fra=form.data['expl_fra'],
-                relevant_link=form.data['relevant_link']
+                acronym_eng=form.data['acronym_eng'] if form.data['acronym_eng'] else None,
+                def_eng=form.data['def_eng'] if form.data['def_eng'] else None,
+                expl_eng=form.data['expl_eng'] if form.data['expl_eng'] else None,
+                acronym_esp=form.data['acronym_esp'] if form.data['acronym_esp'] else None,
+                def_esp=form.data['def_esp'] if form.data['def_esp'] else None,
+                expl_esp=form.data['expl_esp'] if form.data['expl_esp'] else None,
+                acronym_fra=form.data['acronym_fra'] if form.data['acronym_fra'] else None,
+                def_fra=form.data['def_fra'] if form.data['def_fra'] else None,
+                expl_fra=form.data['expl_fra'] if form.data['expl_fra'] else None,
+                relevant_link=form.data['relevant_link'] if form.data['relevant_link'] else None
             )
 
             db.session.add(new_acronym)
@@ -138,18 +135,18 @@ def submit_acronym_public():
         new_acronym = Acronym(
             added_by=submitter_id,
             date_added=datetime.now(),
-            acronym_eng=form.acronym_eng.data,
-            def_eng=form.def_eng.data,
-            expl_eng=form.expl_eng.data,
-            acronym_esp=form.acronym_esp.data,
-            def_esp=form.def_esp.data,
-            expl_esp=form.expl_esp.data,
-            acronym_fra=form.acronym_fra.data,
-            def_fra=form.def_fra.data,
-            expl_fra=form.expl_fra.data,
-            relevant_link=form.relevant_link.data,
-            anonymous_submitter_name=form.anonymous_submitter_name.data,
-            anonymous_submitter_email=form.anonymous_submitter_email.data
+            acronym_eng=form.acronym_eng.data if form.acronym_eng.data else None,
+            def_eng=form.def_eng.data if form.def_eng.data else None,
+            expl_eng=form.expl_eng.data if form.expl_eng.data else None,
+            acronym_esp=form.acronym_esp.data if form.acronym_esp.data else None,
+            def_esp=form.def_esp.data if form.def_esp.data else None,
+            expl_esp=form.expl_esp.data if form.expl_esp.data else None,
+            acronym_fra=form.acronym_fra.data if form.acronym_fra.data else None,
+            def_fra=form.def_fra.data if form.def_fra.data else None,
+            expl_fra=form.expl_fra.data if form.expl_fra.data else None,
+            relevant_link=form.relevant_link.data if form.relevant_link.data else None,
+            anonymous_submitter_name=form.anonymous_submitter_name.data if form.anonymous_submitter_name.data else None,
+            anonymous_submitter_email=form.anonymous_submitter_email.data if form.anonymous_submitter_email.data else None
         )
 
         db.session.add(new_acronym)
