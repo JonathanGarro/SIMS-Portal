@@ -5,6 +5,14 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.7 (Van Ness) - TBD
+
+## Fixes
+
+- **Spacing Fixes for Firefox**: Fixed spacing of elements in various templates that weren't behaving as expected in Firefox browsers.
+- **Acronym Validation Fix**: When migrating the db, a validation got incorrectly created for the logged-in route. 
+- **Enforce Null Values on Acronym Records**: When posting a new acronym, unused fields (e.g. other languages) were being posted with blanks instead of `NULL`, so a simple conditional has been added.
+
 # 1.9.6 (Van Ness) - 2024-03-19
 
 ## Fixes
