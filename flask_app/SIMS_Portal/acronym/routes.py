@@ -87,7 +87,7 @@ def submit_acronym_member():
             
             new_acronym = Acronym(
                 added_by=submitter_id.id,
-                approved_by=None,
+                approved_by=63, # user 63 is clara barton
                 date_added=datetime.now(),
                 acronym_eng=form.data['acronym_eng'] if form.data['acronym_eng'] else None,
                 def_eng=form.data['def_eng'] if form.data['def_eng'] else None,
