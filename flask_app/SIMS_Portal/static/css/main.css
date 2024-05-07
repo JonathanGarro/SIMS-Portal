@@ -24,6 +24,20 @@
 	}
 }
 
+/* custom CSS to fix width for first and third columns of acronym search bar */
+.row [class^="col-"] {
+	flex: 1;
+}
+.row .col-4 {
+	flex: 0 0 auto;
+	width: 30%; 
+}
+.row .col-auto {
+	flex: 0 0 auto;
+	width: auto; 
+}
+/* end custom css for column width */
+
 a {
 	text-decoration: none;
 	color: #df4759
@@ -545,6 +559,12 @@ p {
 .tweet {
   color: #1DA1F2;
   font-weight: bold;
+}
+
+.vertical-center {
+  display: table-cell;
+  height: 100%; 
+  vertical-align: middle;
 }
 
 .wrapper {
