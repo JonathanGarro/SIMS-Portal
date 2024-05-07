@@ -21,7 +21,7 @@ acronym = Blueprint('acronym', __name__)
 
 @acronym.route('/acronyms')
 def acronyms():
-    all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).all()
+    all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).order_by(Acronym.acronym_eng).all()
     
     # check if user is admin for edit power
     try:
@@ -39,11 +39,70 @@ def acronyms():
 
     return render_template('acronyms.html', all_acronyms=all_acronyms, user_is_admin=user_is_admin, user_info=user_info)
 
+@acronym.route('/acronyms/search', methods=['GET'])
+def search_acronyms():
+    search_column = request.args.get('search_column', 'acronym_eng')
+    search_term = request.args.get('search_term', '')
+
+    # get column attribute from acronym model
+    column_attribute = getattr(Acronym, search_column, Acronym.acronym_eng)
+
+    search_results = db.session.query(Acronym).filter(
+        Acronym.approved_by > 0,
+        column_attribute.ilike(f'%{search_term}%')
+    ).order_by(Acronym.acronym_eng).all()
+
+    # check if user is admin for edit power
+    try:
+        user_is_admin = current_user.is_admin
+    except:
+        user_is_admin = False
+
+    user_info = None  # initialize user_info to None
+    try:
+        user_info = db.session.query(User).filter(User.id == current_user.id).first()
+    except AttributeError:
+        # set user_info.id to zero if the attribute error occurs
+        if user_info is not None:
+            user_info.id = 0
+            
+    db_col_name = {
+        'acronym_eng': 'Acronym (English)',
+        'def_eng': 'Definition (English)',
+        'acronym_esp': 'Acrónimo (Español)',
+        'def_esp': 'Definición (Español)',
+        'acronym_fra': 'Acronyme (Français)',
+        'def_fra': 'Définition (Français)'
+    }
+    
+    search_column_display = db_col_name.get(search_column)
+    
+    row_count = db.session.query(Acronym).filter(
+        Acronym.approved_by > 0,
+        column_attribute.ilike(f'%{search_term}%')
+    ).count()
+    
+    return render_template('acronyms_search.html', search_results=search_results, user_is_admin=user_is_admin, user_info=user_info, search_column_display=search_column_display, search_term=search_term, row_count=row_count)
+
 @acronym.route('/acronyms/compact')
 def acronyms_compact():
     all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).order_by(Acronym.acronym_eng).all()
     
-    return render_template('acronyms_compact.html', all_acronyms=all_acronyms)
+    # check if user is admin for edit power
+    try:
+        user_is_admin = current_user.is_admin
+    except:
+        user_is_admin = False
+    
+    user_info = None  # initialize user_info to None
+    try:
+        user_info = db.session.query(User).filter(User.id == current_user.id).first()
+    except AttributeError:
+        # set user_info.id to zero if the attribute error occurs
+        if user_info is not None:
+            user_info.id = 0
+    
+    return render_template('acronyms_compact.html', all_acronyms=all_acronyms, user_info=user_info)
 
 @acronym.route('/view_acronym/<int:id>')
 def view_acronym(id):
