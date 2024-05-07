@@ -5,6 +5,10 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.9.8 (Van Ness) - 2024-05-07
+
+- **More Robust Acronym Search**: As the list of acronyms grows vertically (more records) and horizontally (additional languages and other metadata), it has become unwieldy to search for what you need. The new acronym index landing page offers more granular controls for users.
+
 # 1.9.7 (Van Ness) - 2024-05-06
 
 ## Fixes
