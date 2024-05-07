@@ -116,19 +116,21 @@ $(document).ready(function () {
 				charset: 'utf-8' 
 			},
 		],
-		columns: [
-			null, 
-			null,
-			null, 
-			null,
-			null,
-			null,
-			null,
-			null, 
-			null
-		],
 		"columnDefs": [
-			{ "targets": [0, 5, 6, 7, 8, 9], "visible": false } 
+			{ "targets": [0, 5, 6, 7, 8, 9], "visible": false },
+			{ "orderable": false, "targets": "_all" } 
+		],
+		columns: [
+			null, // Include column 0 in search
+			false, // Include column 1 in search
+			false, // Exclude column 2 from search
+			false, // Exclude column 3 from search
+			false, // Exclude column 4 from search
+			false, // Include column 5 in search
+			false, // Include column 6 in search
+			false, // Include column 7 in search
+			false, // Include column 8 in search
+			false  // Include column 9 in search
 		]
 	});
 });
