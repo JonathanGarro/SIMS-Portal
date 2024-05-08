@@ -259,16 +259,16 @@ def edit_acronym(id):
         abort(404)
     
     if form.validate_on_submit():
-        acronym_info.acronym_eng = form.acronym_eng.data
-        acronym_info.def_eng = form.def_eng.data
-        acronym_info.expl_eng = form.expl_eng.data
-        acronym_info.acronym_esp = form.acronym_esp.data
-        acronym_info.def_esp = form.def_esp.data
-        acronym_info.expl_esp = form.expl_esp.data
-        acronym_info.acronym_fra = form.acronym_fra.data
-        acronym_info.def_fra = form.def_fra.data
-        acronym_info.expl_fra = form.expl_fra.data
-        acronym_info.relevant_link = form.relevant_link.data
+        acronym_info.acronym_eng = form.acronym_eng.data if form.acronym_eng.data else None
+        acronym_info.def_eng = form.def_eng.data if form.def_eng.data else None
+        acronym_info.expl_eng = form.expl_eng.data if form.expl_eng.data else None
+        acronym_info.acronym_esp = form.acronym_esp.data if form.acronym_esp.data else None
+        acronym_info.def_esp = form.def_esp.data if form.def_esp.data else None
+        acronym_info.expl_esp = form.expl_esp.data if form.expl_esp.data else None
+        acronym_info.acronym_fra = form.acronym_fra.data if form.acronym_fra.data else None
+        acronym_info.def_fra = form.def_fra.data if form.def_fra.data else None
+        acronym_info.expl_fra = form.expl_fra.data if form.expl_fra.data else None
+        acronym_info.relevant_link = form.relevant_link.data if form.relevant_link.data else None
         
         if current_user.is_admin or acronym_info.added_by == current_user.id:
             db.session.commit()
