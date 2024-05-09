@@ -5,7 +5,21 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.8.9 (Van Ness) - TBD
+
+## New Features
+
+- **Pagination for Acronyms**: The acronym index now has pagination to limit the load time. 
+- **Single Page Search for Acronyms**: Rather than have to return to the acronym landing page to adjust a search, users can now run new searches directly from the results page.
+
+## Fixes
+
+- **NULL Values for Edited Acronyms**: Fix an issue where updating an acronym would insert blanks instead of NULLs, which was causing issues on the template.
+- **Adjust Acronym Edit Submit Button**: The Bootstrap class was incorrectly limiting the size of the button and cutting off the text.
+
 # 1.9.8 (Van Ness) - 2024-05-07
+
+## New Features
 
 - **More Robust Acronym Search**: As the list of acronyms grows vertically (more records) and horizontally (additional languages and other metadata), it has become unwieldy to search for what you need. The new acronym index landing page offers more granular controls for users.
 
