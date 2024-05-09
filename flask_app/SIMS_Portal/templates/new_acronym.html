@@ -285,42 +285,5 @@
         </form>
       </div>
     </div>
-    <div class="row mt-5">
-      <h3 class="Montserrat text-danger mb-4">Latest Acronyms</h3>
-      <table class="table table-striped mt-5" id='acronyms-preview-datatable'>
-        <thead class="">
-          <tr>
-            <th>
-              <h4>Acronym (English)</h4>
-            </th>
-            <th>
-              <h4>Definition (English)</h4>
-            </th>
-            <th>
-              <h4>Added By</h4>
-            </th>
-            <th>
-              <h4>Status</h4>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for acronym in latest_acronyms %}
-          <tr>
-            <td class="align-middle fw-bold">{{ acronym.Acronym.acronym_eng }}</td>
-            <td class="align-middle">
-              <h5>{{ acronym.Acronym.def_eng }}</h5>
-            </td>
-            <td class="align-middle">
-              <h5>{{ acronym.User.firstname }} {{ acronym.User.lastname }}</h5>
-            </td>
-            <td class="align-middle">
-              <h5>{% if acronym.Acronym.approved_by is none %}<span class="text-danger fw-bold">Pending Approval{% else %} Approved{% endif %}</h5>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
   </div>
   {% endblock content %}
