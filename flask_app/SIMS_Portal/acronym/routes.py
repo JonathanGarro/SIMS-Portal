@@ -155,7 +155,7 @@ def submit_acronym_member():
                 new_acronym_alert(f"A new acronym has been added to the SIMS Portal: {new_acronym.def_eng}. It was added by a logged-in SIMS member ({user_info.firstname} {user_info.lastname}), and is therefore approved and available in the acronym list. If it isn't correct, log into the Portal and edit or delete it.")
             except: 
                 pass
-            flash('New acronym added to review queue.', 'success')
+            flash('New acronym added.', 'success')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
