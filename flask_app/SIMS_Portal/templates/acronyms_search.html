@@ -68,7 +68,7 @@
                     <tr>
                         <td class="align-middle text-danger">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#acronymModal{{ acronym.id }}" data-acronym-id="{{ acronym.id }}" data-acronym-eng="{{ acronym.acronym_eng or '' }}" data-acronym-def-eng="{{ acronym.def_eng or '' }}">
-                                <h5 class="Montserrat">{{ acronym.acronym_eng }}</h5>
+                                <span class="Montserrat">{{ acronym.acronym_eng }}</span>
                             </a>
                             <div class="modal fade" id="acronymModal{{ acronym.id }}" tabindex="-1" aria-labelledby="acronymModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl">
@@ -171,14 +171,14 @@
                             </div>
                         </td>
                         <td class="align-middle">
-                            <p>{{ acronym.def_eng }}</p>
+                            <span>{{ acronym.def_eng }}</span>
                         </td>
                         <td class="align-middle">
-                            <p>{% if acronym.acronym_esp != none %}{{ acronym.acronym_esp }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
+                            <span>{% if acronym.acronym_esp != none %}{{ acronym.acronym_esp }}{% else %} <span class="text-secondary">-</span> {% endif %}</span>
                         </td>
 
                         <td class="align-middle">
-                            <p>{% if acronym.acronym_fra != none %}{{ acronym.acronym_fra }}{% else %} <span class="text-secondary">-</span> {% endif %}</p>
+                            <span>{% if acronym.acronym_fra != none %}{{ acronym.acronym_fra }}{% else %} <span class="text-secondary">-</span> {% endif %}</span>
                         </td>
                     </tr>
                     {% endfor %}
