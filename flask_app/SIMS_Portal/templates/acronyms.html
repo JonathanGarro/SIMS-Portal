@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="container">
-            <div class="pb-5">
+            <div class="py-5">
                 <form method="GET" action="{{ url_for('acronym.search_acronyms') }}" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
                     <div class="row">
                         <div class="col-4">
@@ -70,111 +70,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for acronym in all_acronyms %}
+                    {% for acronym in paginated_acronyms.items %}
                     <tr>
                         <td class="align-middle text-danger">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#acronymModal{{ acronym.id }}" data-acronym-id="{{ acronym.id }}" data-acronym-eng="{{ acronym.acronym_eng or '' }}" data-acronym-def-eng="{{ acronym.def_eng or '' }}">
-                                <span class="Montserrat">{{ acronym.acronym_eng }}</span>
-                            </a>
-                            <div class="modal fade" id="acronymModal{{ acronym.id }}" tabindex="-1" aria-labelledby="acronymModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-xl">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title Montserrat text-dark" id="acronymModalLabel">Acronym Details</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body p-5">
-                                            <div class="d-flex justify-content-between mt-4">
-                                                <div id="english" style="flex: 1; padding-right: 20px">
-                                                    <h2 class="text-danger fw-bold custom-negative-margin">English</h2><br>
-                                                    <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_eng}}</h3>
-                                                </div>
-                                                {% if acronym.acronym_esp != None %}
-                                                <div id="spanish" style="flex: 1; padding-right: 20px">
-                                                    <h2 class="text-danger fw-bold custom-negative-margin">Español</h2><br>
-                                                    <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_esp}}</h3>
-                                                </div>
-                                                {% endif %}
-                                                {% if acronym.acronym_fra != None %}
-                                                <div id="french" style="flex: 1; padding-right: 20px">
-                                                    <h2 class="text-danger fw-bold custom-negative-margin">Française</h2><br>
-                                                    <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_fra}}</h3>
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
-                                            <hr class="mb-5">
-                                            <div class="d-flex justify-content-between mt-4">
-                                                <div id="english_def" style="flex: 1; padding-right: 20px">
-                                                    <h5 class="text-danger fw-bold custom-negative-margin">Definition</h5><br>
-                                                    <p class="text-dark mb-5" id="acronymEng">{{acronym.def_eng}}</p>
-                                                </div>
-                                                {% if acronym.def_esp != None %}
-                                                <div id="spanish_def" style="flex: 1; padding-right: 20px">
-                                                    <h5 class="text-danger fw-bold custom-negative-margin">Definición</h5><br>
-                                                    <p class="text-dark mb-5" id="acronymEng">{{acronym.def_esp}}</p>
-                                                </div>
-                                                {% endif %}
-                                                {% if acronym.def_fra != None %}
-                                                <div id="french_def" style="flex: 1; padding-right: 20px">
-                                                    <h5 class="text-danger fw-bold custom-negative-margin">Définition</h5><br>
-                                                    <p class="text-dark mb-5" id="acronymEng">{{acronym.def_fra}}</p>
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
-                                            {% if acronym.expl_eng %}
-                                            <hr class="mb-5">
-                                            {% endif %}
-                                            <div class="d-flex justify-content-between mt-4">
-                                                {% if acronym.expl_eng %}
-                                                <div id="english_def" style="flex: 1; padding-right: 20px">
-                                                    <h5 class="text-danger fw-bold custom-negative-margin">Explanation</h5><br>
-                                                    <p class="text-dark mb-5" id="acronymEng">{{acronym.expl_eng}}</p>
-                                                </div>
-                                                {% endif %}
-                                                {% if acronym.expl_esp != None %}
-                                                <div id="spanish_def" style="flex: 1; padding-right: 20px">
-                                                    <h5 class="text-danger fw-bold custom-negative-margin">Explicación</h5><br>
-                                                    <p class="text-dark mb-5" id="acronymEng">{{acronym.expl_esp}}</p>
-                                                </div>
-                                                {% endif %}
-                                                {% if acronym.expl_fra != None %}
-                                                <div id="french_def" style="flex: 1; padding-right: 20px">
-                                                    <h5 class="text-danger fw-bold custom-negative-margin">Explication</h5><br>
-                                                    <p class="text-dark mb-5" id="acronymEng">{{acronym.expl_fra}}</p>
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            {% if user_is_admin or user_info.id == acronym.added_by %}
-                                            <div class="text-end">
-                                                <a href="/acronym/edit/{{acronym.id}}">
-                                                    <button type="button" class="btn btn-dark">Edit Acronym</button>
-                                                </a>
-                                            </div>
-                                            {% endif %}
-                                            {% if acronym.relevant_link %}
-                                            <div class="text-end">
-                                                <a href="{{acronym.relevant_link}}">
-                                                    <button type="button" class="btn btn-dark">Relevant Link</button>
-                                                </a>
-                                            </div>
-                                            {% endif %}
-                                            <div class="text-end">
-                                                <a href="/view_acronym/{{acronym.id}}">
-                                                    <button type="button" class="btn btn-secondary">Permalink</button>
-                                                </a>
-                                            </div>
-                                            <div class="text-end">
-                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <span class="Montserrat">{{ acronym.acronym_eng }}</span>
                         </td>
                         <td class="align-middle">
                             <span>{{ acronym.def_eng }}</span>
@@ -182,7 +81,6 @@
                         <td class="align-middle">
                             <span>{% if acronym.acronym_esp != none %}{{ acronym.acronym_esp }}{% else %} <span class="text-secondary">-</span> {% endif %}</span>
                         </td>
-
                         <td class="align-middle">
                             <span>{% if acronym.acronym_fra != none %}{{ acronym.acronym_fra }}{% else %} <span class="text-secondary">-</span> {% endif %}</span>
                         </td>
@@ -190,6 +88,47 @@
                     {% endfor %}
                 </tbody>
             </table>
+            
+            {% if paginated_acronyms.pages > 1 %}
+            <div class="d-flex justify-content-end">
+            <nav aria-label="Pagination">
+                <ul class="pagination">
+                    {% if paginated_acronyms.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('acronym.acronyms', page=paginated_acronyms.prev_num) }}">&laquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;</span>
+                    </li>
+                    {% endif %}
+            
+                    {% for page_num in paginated_acronyms.iter_pages() %}
+                    {% if page_num %}
+                    <li class="page-item{% if page_num == paginated_acronyms.page %} active{% endif %}">
+                        <a class="page-link" href="{{ url_for('acronym.acronyms', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+            
+                    {% if paginated_acronyms.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('acronym.acronyms', page=paginated_acronyms.next_num) }}">&raquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            </div>
+            {% endif %}
+            
         </div>
     </div>
 </div>

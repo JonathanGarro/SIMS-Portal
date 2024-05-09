@@ -19,9 +19,11 @@ from SIMS_Portal.acronym.forms import NewAcronymForm, NewAcronymFormPublic, Edit
 
 acronym = Blueprint('acronym', __name__)
 
-@acronym.route('/acronyms')
+@acronym.route('/acronyms', methods=['GET'])
 def acronyms():
-    all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).order_by(Acronym.acronym_eng).all()
+    page = request.args.get('page', 1, type=int)
+    all_acronyms = db.session.query(Acronym).filter(Acronym.approved_by > 0).order_by(Acronym.acronym_eng)
+    paginated_acronyms = all_acronyms.paginate(page=page, per_page=100)
     
     # check if user is admin for edit power
     try:
@@ -37,7 +39,7 @@ def acronyms():
         if user_info is not None:
             user_info.id = 0
 
-    return render_template('acronyms.html', all_acronyms=all_acronyms, user_is_admin=user_is_admin, user_info=user_info)
+    return render_template('acronyms.html', paginated_acronyms=paginated_acronyms, user_is_admin=user_is_admin, user_info=user_info)
 
 @acronym.route('/acronyms/search', methods=['GET'])
 def search_acronyms():
