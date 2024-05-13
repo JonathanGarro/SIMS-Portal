@@ -182,26 +182,11 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 	$('#alert-table').DataTable({
-		order: [[8, 'desc']],
 		dom: 'frtipB',
 		buttons: [
 			'copy', 'csv'
 		],
-		columnDefs: [{
-			target: 6,
-			visible: false,
-			searchable: true,
-		},
-		{
-			target: 7, 
-			visible: false,
-			searchable: true
-		},
-		{
-			target: 8, 
-			visible: false,
-			searchable: true
-		}],
+		
 		
 	});
 });
@@ -304,13 +289,23 @@ $(document).ready(function() {
 	});
 });
 
-
+$(document).ready(function() {
+	$('#datatable-active-emergencies').DataTable( {
+		order: [[0, 'asc']],
+		"bLengthChange": false,
+		"searching": false,
+		"paging": false,
+		"info": false,
+	} );
+} );
 
 $(document).ready(function() {
 	$('#datatable-active-assignments').DataTable( {
 		order: [[0, 'asc']],
 		"bLengthChange": false,
 		"searching": false,
+		"paging": false,
+		"info": false,
 	} );
 } );
 

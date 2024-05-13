@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 from flask import (
@@ -22,7 +22,7 @@ import botocore
 from SIMS_Portal import db, cache
 from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
-	Assignment, User, Emergency, Alert, user_skill, user_language,
+	Assignment, User, Emergency, Alert, user_skill, user_language, Portfolio,
 	user_badge, Skill, Language, NationalSociety, Badge, Story,
 	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region
 )
@@ -451,27 +451,52 @@ def dashboard():
 	
 	todays_date = datetime.today()
 	
-	assignments_by_emergency = db.engine.execute("SELECT emergency_name, COUNT(*) as count_assignments FROM emergency JOIN assignment ON assignment.emergency_id = emergency.id WHERE assignment.assignment_status <> 'Removed' GROUP BY emergency_name")
-	data_dict_assignments = [x._asdict() for x in assignments_by_emergency]
+	assignments_by_emergency = db.session.query(Emergency.emergency_name, func.count()).\
+	join(Assignment, Assignment.emergency_id == Emergency.id).\
+	filter(Assignment.assignment_status != 'Removed').\
+	group_by(Emergency.emergency_name).all()
+	
+	data_dict_assignments = [{'emergency_name': name, 'count_assignments': count} for name, count in assignments_by_emergency]
 	labels_for_assignment = [row['emergency_name'] for row in data_dict_assignments]
 	values_for_assignment = [row['count_assignments'] for row in data_dict_assignments]
 	
 	pending_user_check = db.session.query(User).filter(User.status == 'Pending').all()
 	
-	products_by_emergency = db.engine.execute("SELECT emergency_name , COUNT(*) as count_products FROM emergency JOIN portfolio ON portfolio.emergency_id = emergency.id WHERE portfolio.product_status <> 'Removed' GROUP BY emergency_name")
-	data_dict_products = [y._asdict() for y in products_by_emergency]
+	products_by_emergency = db.session.query(Emergency.emergency_name, func.count()).\
+		join(Portfolio, Portfolio.emergency_id == Emergency.id).\
+		filter(Portfolio.product_status != 'Removed').\
+		group_by(Emergency.emergency_name).all()
+	
+	data_dict_products = [{'emergency_name': name, 'count_products': count} for name, count in products_by_emergency]
 	labels_for_product = [row['emergency_name'] for row in data_dict_products]
 	values_for_product = [row['count_products'] for row in data_dict_products]
 	
 	count_active_assignments = db.session.query(Assignment, User, Emergency).join(User, User.id==Assignment.user_id).join(Emergency, Emergency.id==Assignment.emergency_id).filter(Assignment.assignment_status=='Active', Assignment.end_date>todays_date).count()
+	
 	active_assignments = db.session.query(Assignment, User, Emergency, NationalSociety).join(User, User.id==Assignment.user_id).join(Emergency, Emergency.id==Assignment.emergency_id).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(Assignment.assignment_status=='Active', Assignment.role != 'Remote IM Support', Assignment.end_date>todays_date).order_by(Emergency.emergency_name, Assignment.end_date).all()
 
-	most_recent_emergencies = db.session.query(Emergency).order_by(Emergency.created_at.desc()).limit(7).all()
-	most_recent_members = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.status == 'Active').order_by(User.created_at.desc()).limit(7).all()
+	count_active_remote_supporters = db.session.query(func.count()).select_from(Emergency).join(Assignment).filter(
+		Emergency.emergency_status == 'Active',
+		Assignment.assignment_status != 'Removed'
+	).scalar()
+	
+	# filter open alerts to only show last 90 days
+	ninety_days_ago = datetime.now() - timedelta(days=90)
+	count_active_IM_alerts = db.session.query(func.count()).filter(
+		Alert.im_filter == True,
+		Alert.alert_status == 'Open',
+		Alert.alert_record_created_at >= ninety_days_ago
+	).scalar()
+	
+	list_active_IM_alerts = db.session.query(Alert).filter(
+		Alert.im_filter == True,
+		Alert.alert_status == 'Open',
+		Alert.alert_record_created_at >= ninety_days_ago
+	).all()
 	
 	surge_alerts = db.session.query(Alert).filter(Alert.im_filter==True).all()
 	
-	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, most_recent_emergencies=most_recent_emergencies, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, most_recent_members=most_recent_members, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads)
+	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, count_active_IM_alerts=count_active_IM_alerts, list_active_IM_alerts=list_active_IM_alerts)
 
 @main.route('/role_profile/<type>')
 def view_role_profile(type):
@@ -525,7 +550,7 @@ def manual_refresh(func):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
-		refresh_surge_alerts_latest()
+		refresh_surge_alerts(10)
 		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
