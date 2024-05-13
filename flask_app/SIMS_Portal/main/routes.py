@@ -571,6 +571,24 @@ def view_national_society(ns_id):
 	
 	return render_template('national_society_view.html', ns_members=ns_members, ns_info=ns_info, active_ns_member_count=active_ns_member_count)
 
+@main.route('/get_active_emergencies')
+def get_active_emergencies():
+	"""Feeds the dashboard map's active emergency data"""
+	
+	emergencies_data = db.session.query(Emergency, NationalSociety)\
+		.join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id)\
+		.filter(Emergency.emergency_status == 'Active').all()
+	
+	emergencies_list = []
+	for emergency, national_society in emergencies_data:
+		emergency_dict = {
+			'iso3': national_society.iso3,
+			'count': 1,  
+		}
+		emergencies_list.append(emergency_dict)
+	
+	return jsonify(emergencies_list)
+
 @main.route('/uploads/<path:name>')
 def download_file(name):
     s3 = boto3.resource('s3')
