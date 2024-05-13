@@ -24,19 +24,7 @@
 	}
 }
 
-/* custom CSS to fix width for first and third columns of acronym search bar */
-.row [class^="col-"] {
-	flex: 1;
-}
-.row .col-4 {
-	flex: 0 0 auto;
-	width: 30%; 
-}
-.row .col-auto {
-	flex: 0 0 auto;
-	width: auto; 
-}
-/* end custom css for column width */
+
 
 a {
 	text-decoration: none;
