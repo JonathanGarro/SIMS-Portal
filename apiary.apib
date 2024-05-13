@@ -1,6 +1,3 @@
-FORMAT: 1A
-HOST: https://rcrcsims.org/api
-
 # SIMS Portal
 
 Surge Information Management Support (SIMS) is a global network of Information Management specialists who support IFRC emergency response operations by providing a variety of services and products. Key areas of technical support include geospatial analysis, web-based and static data visualization, mobile data collection, scenario planning, and much more.
@@ -43,7 +40,6 @@ Surge Information Management Support (SIMS) is a global network of Information M
     ]
     ```
 
-
 ## Portfolio [/portfolio{?emergency_id}]
 
 ### Get Approved Products by Emergency [GET]
@@ -69,7 +65,7 @@ Approved products are those that have been verified for external sharing by a SI
         }
     ]
     ```
-    
+
 ## Emergencies [/emergencies{?status,emergency_id,iso3}]
 
 ### Get Emergencies [GET]
@@ -95,13 +91,9 @@ SIMS only maintains records of emergencies for which the network has been activa
     ```
     [
         {
-            "emergency_name": "Bangladesh Floods"
-            "activation_details": "In August 2017, heavy monsoon rains above the seasonal average severely impacted the riverine region of India, Nepal,
-Bhutan and Bangladesh which resulted in intense flooding in almost two- thirds of Bangladesh. According to the National
-Disaster Response Coordination Centre (NDRCC) report on 20 August 2017, around 6.9 million people were affected,
-approximately 593,247 houses and 650,000 hectares crops were damaged. The death toll reported was 114 people and
-297,254 people were displaced.",
-            "assignment_count": 8
+            "emergency_name": "Bangladesh Floods",
+            "activation_details": "In August 2017, heavy monsoon rains above the seasonal average severely impacted the riverine region of India, Nepal, Bhutan and Bangladesh which resulted in intense flooding in almost two-thirds of Bangladesh. According to the National Disaster Response Coordination Centre (NDRCC) report on 20 August 2017, around 6.9 million people were affected, approximately 593,247 houses and 650,000 hectares crops were damaged. The death toll reported was 114 people and 297,254 people were displaced.",
+            "assignment_count": 8,
             "country_name": "Bangladesh",
             "emergency_type": "Floods",
             "go_emergency_id": 14,
@@ -111,69 +103,49 @@ approximately 593,247 houses and 650,000 hectares crops were damaged. The death 
         }
     ]
     ```
-    
-## Portfolio [/portfolio{?emergency_id}]
-    
-### Get Approved Products by Emergency [GET]
 
-Approved products are those that have been verified for external sharing by a SIMS Remote Coordinator for that emergency. This endpoint requires the `emergency_id`, which corresponds to the relevant emergency page in the [IFRC GO Platform](go.ifrc.org). Available attributes include:
+## Acronyms [/acronyms/api/search{?search_column,search_term}]
+        
+### Search Acronyms [GET]
 
-- `title`: String
-- `type`: String
-- `description`: String
-- `image_file`: String
+The SIMS Portal manages an index of acronyms in multiple languages. Users can access it through the web at rcrcsims.org/acronyms, or query the database directly.
+
+- `acronym_eng`: String
+- `def_eng`: String
+- `acronym_esp`: String
+- `def_esp`: String
+- `acronym_fra`: String
+- `def_fra`: String
+- `link`: String
 
 + Parameters
-    + emergency_id (integer, required) - The GO Platform emergency ID
-    
+    + search_column (string, required) - Type of column to search by. Possible values are:
+        - `acronym_eng`: English Acronym
+        - `acronym_esp`: Spanish Acronym
+        - `acronym_fra`: French Acronym
+        - `def_eng`: English Definition
+        - `def_esp`: Spanish Definition
+        - `def_fra`: French Definition
+    + search_term (string, required) - The term you are searching for. Whatever string you use will only be searched for within the `search_column` you specified
+
 + Response 200 (application/json)
     ```
     [
         {
-            "description": "A map showing the direction of refugees and returnees fleeing the Sudan Crisis. The field needed a representation of the overall trend of movement across the border, as well as where people were congregating. This was produced as part of a suite of PMER outputs for usage in the Operational Strategy, Emergency Appeal, and more.",
-            "image_file": "portfolio_cover_images/Map-user17-cb80965e096f0bec.png",
-            "title": "Chad Displacement Map",
-            "type": "Map"
+            "acronym_eng": "IFRC", 
+            "acronym_esp": "FICR", 
+            "acronym_fra": "FICR", 
+            "def_eng": "The International Federation of Red Cross and Red Crescent Societies", 
+            "def_esp": "La Federación Internacional de Sociedades de la Cruz Roja y de la Media Luna Roja", 
+            "def_fra": "La Fédération internationale des sociétés de la Croix-Rouge et du Croissant-Rouge"
+        }, 
+        {
+            "acronym_eng": "IFRC GO", 
+            "acronym_esp": "FICR GO", 
+            "acronym_fra": "FICR GO", 
+            "def_eng": "The International Federation of Red Cross and Red Crescent Societies GO Platform", 
+            "def_esp": null, 
+            "def_fra": null
         }
     ]
     ```
-    
-# Acronyms [/acronyms/api/search{?search_column,search_term}]
-    
-    ## Search Acronyms [GET]
-    
-    The SIMS Portal manages an index of acronyms in multiple languages. Users can access it through the web at rcrcsims.org/acronyms, or query the database directly.
-    
-    + Parameters
-        + search_column (string, required) - Type of column to search by. Possible values are:
-            - `acronym_eng`: English Acronym
-            - `acronym_esp`: Spanish Acronym
-            - `acronym_fra`: French Acronym
-            - `def_eng`: English Definition
-            - `def_esp`: Spanish Definition
-            - `def_fra`: French Definition
-        + search_term (string, required) - The term you are searching for. Whatever string you use will only be searched for within the `search_column` you specified
-    
-    + Response 200 (application/json)
-        ```
-        [
-            {
-                "acronym_eng": "IFRC", 
-                "acronym_esp": "FICR", 
-                "acronym_fra": "FICR", 
-                "def_eng": "The International Federation of Red Cross and Red Crescent Societies", 
-                "def_esp": "La Federación Internacional de Sociedades de la Cruz Roja y de la Media Luna Roja", 
-                "def_fra": "La Fédération internationale des sociétés de la Croix-Rouge et du Croissant-Rouge"
-            }, 
-            {
-                "acronym_eng": "IFRC GO", 
-                "acronym_esp": "FICR GO", 
-                "acronym_fra": "FICR GO", 
-                "def_eng": "The International Federation of Red Cross and Red Crescent Societies GO Platform", 
-                "def_esp": null, 
-                "def_fra": null
-            }
-        ]
-        ```
-
-
