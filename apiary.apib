@@ -176,3 +176,41 @@ The SIMS Portal manages an index of acronyms in multiple languages. Users can ac
       ]
 
     ```
+    
+# Acronyms [/acronyms/api/search]
+    
+## Search Acronyms [GET]
+
+The SIMS Portal manages an index of acronyms in multiple languages. Users can access it through the web at rcrcsims.org/acronyms, or query the database directly.
+
++ Parameters
+    + search_column (string, required) - Type of column to search by. Possible values are:
+        - `acronym_eng`: English Acronym
+        - `acronym_esp`: Spanish Acronym
+        - `acronym_fra`: French Acronym
+        - `def_eng`: English Definition
+        - `def_esp`: Spanish Definition
+        - `def_fra`: French Definition
+    + search_term (string, required) - The term you are searching for. Whatever string you use will only be searched for within the `search_column` you specified
+
++ Response 200 (application/json)
+    ```
+    [
+        {
+          "acronym_eng": "IFRC", 
+          "acronym_esp": FICR, 
+          "acronym_fra": FICR, 
+          "def_eng": "The International Federation of Red Cross and Red Crescent Societies", 
+          "def_esp": "La Federación Internacional de Sociedades de la Cruz Roja y de la Media Luna Roja", 
+          "def_fra": "La Fédération internationale des sociétés de la Croix-Rouge et du Croissant-Rouge"
+        }, 
+        {
+          "acronym_eng": "IFRC GO", 
+          "acronym_esp": "FICR GO", 
+          "acronym_fra": "FICR GO", 
+          "def_eng": "The International Federation of Red Cross and Red Crescent Societies GO Platform", 
+          "def_esp": null, 
+          "def_fra": null
+        }
+      ]
+    ```
