@@ -5,7 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
-# 1.8.9 (Van Ness) - TBD
+1.10.0 (Woodley Park) - 2024-05-13
+
+## New Features
+
+- **Overhauled Dashboard**: The dashboard users see when they first log into the system has been rebuilt. The map and widgets have been updated and the queries that power them have been re-written for better performance. The IM surge alerts now only show open positions, and the tables summarizing currently activated coordinators has been reformatted. 
+
+# 1.9.9 (Van Ness) - 2024-05-09
 
 ## New Features
 
