@@ -86,6 +86,34 @@ def search_acronyms():
     
     return render_template('acronyms_search.html', search_results=search_results, user_is_admin=user_is_admin, user_info=user_info, search_column_display=search_column_display, search_term=search_term, row_count=row_count)
 
+@acronym.route('/acronyms/api/search', methods=['GET'])
+def search_acronyms_api():
+    search_column = request.args.get('search_column', 'acronym_eng')
+    search_term = request.args.get('search_term', '')
+
+    # get column attribute from acronym model
+    column_attribute = getattr(Acronym, search_column, Acronym.acronym_eng)
+
+    search_results = db.session.query(Acronym).filter(
+        Acronym.approved_by > 0,
+        column_attribute.ilike(f'%{search_term}%')
+    ).order_by(Acronym.acronym_eng).all()
+
+    # convert search results to json
+    results = []
+    for result in search_results:
+        results.append({
+            'acronym_eng': result.acronym_eng,
+            'def_eng': result.def_eng,
+            'acronym_esp': result.acronym_esp,
+            'def_esp': result.def_esp,
+            'acronym_fra': result.acronym_fra,
+            'def_fra': result.def_fra, 
+            'link': result.relevant_link
+        })
+
+    return jsonify(results=results)
+
 @acronym.route('/view_acronym/<int:id>')
 def view_acronym(id):
     try:
