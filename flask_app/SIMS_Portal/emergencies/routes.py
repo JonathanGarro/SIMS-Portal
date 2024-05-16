@@ -27,7 +27,7 @@ from SIMS_Portal.emergencies.forms import (
 )
 from SIMS_Portal.emergencies.utils import (
 	update_response_locations, update_active_response_locations,
-	get_trello_tasks, emergency_availability_chart_data
+	get_trello_tasks, emergency_availability_chart_data, create_response_channel
 )
 from SIMS_Portal.assignments.utils import aggregate_availability
 from SIMS_Portal.learnings.utils import request_learnings
@@ -54,13 +54,30 @@ def new_emergency():
 			emergency_glide=form.emergency_glide.data, 
 			emergency_go_id=form.emergency_go_id.data, 
 			activation_details=form.activation_details.data, 
-			slack_channel=form.slack_channel.data, 
-			dropbox_url=form.dropbox_url.data, 
-			trello_url=form.trello_url.data
+			slack_channel=form.slack_channel.data or None, 
+			dropbox_url=form.dropbox_url.data or None, 
+			trello_url=form.trello_url.data or None
 		)
 		db.session.add(emergency)
 		db.session.commit()
 		
+		# default to false
+		show_slack_modal = False
+		
+		# generate a new slack channel if user did not specify it
+		try:
+			if emergency.slack_channel is None:
+				emergency.slack_channel = create_response_channel(emergency.emergency_location_id, emergency.emergency_type_id)
+				db.session.commit()
+				
+				# override and set to true if system generates slack channel
+				show_slack_modal = True
+		except Exception as e:
+			log_message = f"[Error] new_emergency() function attempted to save the auto-generated Slack channel ID to the new emergency record but failed: {e}."
+			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(new_log)
+			db.session.commit()
+
 		# run updates to csvs that hold data for visualizations
 		update_response_locations()
 		update_active_response_locations()
@@ -72,7 +89,8 @@ def new_emergency():
 		
 		flash('New emergency successfully created.', 'success')
 		
-		return redirect(url_for('main.dashboard'))
+		
+		return redirect(url_for('emergencies.view_emergency', id=emergency.id, show_slack_modal=show_slack_modal))
 	try:
 		# try to get the latest emergencies from the GO API
 		latest_emergencies = Emergency.get_latest_go_emergencies()
@@ -273,6 +291,12 @@ def view_emergency(id):
 				available_days_of_week.append(date)
 		availability.dates = available_days_of_week
 	
+	# check if the show_slack_modal parameter is in the URL
+	show_slack_modal = request.args.get('show_slack_modal', False)
+	
+	# convert the string 'True' or 'False' to boolean
+	show_slack_modal = show_slack_modal == 'True'
+	
 	return render_template(
 		'emergency.html', 
 		title='Emergency View', 
@@ -304,7 +328,8 @@ def view_emergency(id):
 		quick_action=quick_action,
 		quick_action_id=quick_action_id,
 		available_supporter_current_week_list=available_supporter_current_week_list,
-		available_supporter_next_week_list=available_supporter_next_week_list
+		available_supporter_next_week_list=available_supporter_next_week_list, 
+		show_slack_modal=show_slack_modal
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])

@@ -12,6 +12,14 @@
 			{% endif %}
 		{% endwith %}
 	</div>
+
+	{% if show_slack_modal == True %}
+	<div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		The SIMS Portal has automatically generated a new Slack channel for this event. You can <a href='https://sims-ifrc.slack.com/archives/{{emergency_info.Emergency.slack_channel}}'>access it here</a>.
+	</div>
+	{% endif %}
+	
 	<div class="row my-5">
 		<div class="col col-lg-4 mb-3 min-width-custom">
 			<div class="card p-4 bg-dark">
@@ -194,7 +202,7 @@
 					{% if emergency_info.Emergency.slack_channel == None or emergency_info.Emergency.slack_channel == '' %}
 					<div class="col" align="center"><img src="/static/assets/img/icons/slack.png" height="50px" alt='Tool Icon Slack Not Linked'></div>
 					{% else %}
-					<div class="col" align="center"><a href='https://slack.com/app_redirect?channel={{emergency_info.Emergency.slack_channel}}'><img src="/static/assets/img/icons/slack-selected.png" height="50px" alt='Tool Icon Slack Linked'></a></div>
+					<div class="col" align="center"><a href='https://sims-ifrc.slack.com/archives/{{emergency_info.Emergency.slack_channel}}'><img src="/static/assets/img/icons/slack-selected.png" height="50px" alt='Tool Icon Slack Linked'></a></div>
 					{% endif %}
 					{% if emergency_info.Emergency.dropbox_url == None or emergency_info.Emergency.dropbox_url == '' %}
 					<div class="col" align="center"><img src="/static/assets/img/icons/dropbox.png" height="50px" alt='Tool Icon Dropbox Not Linked'></div>

@@ -1,9 +1,11 @@
 from collections import Counter
 from datetime import datetime, timedelta, date
 from flask import url_for, current_app, flash, redirect
+from flask_login import current_user
 from SIMS_Portal import db
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety
+from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Log
 from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 import ast
 import csv
 import logging
@@ -12,6 +14,34 @@ import os
 import pandas as pd
 import re
 import requests
+
+def create_response_channel(location, disaster_type):
+	
+	# grab iso3 and year for channel name constructor
+	iso3 = db.session.query(NationalSociety.iso3).filter(NationalSociety.ns_go_id == location).scalar().lower()
+	current_year = datetime.now().year
+	emergency_type = db.session.query(EmergencyType.emergency_type_name).filter(EmergencyType.emergency_type_go_id == disaster_type).scalar().lower()
+	
+	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
+	
+	try:
+
+		response = client.conversations_create(
+			name=f'{current_year}_{iso3}_{emergency_type}',
+			is_private=False  
+		)
+		log_message = f"[Info] create_response_channel() successfully ran and created channel {response['channel']['id']}."
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
+		return response['channel']['id']
+		
+	except SlackApiError as e:
+		log_message = f"[Error] create_response_channel() utility failed: {e}. It tried to create a channel called: {current_year}_{iso3}_{emergency_type}"
+		new_log = Log(message=log_message, user_id=current_user.id)
+		db.session.add(new_log)
+		db.session.commit()
 
 def update_response_locations():
 	"""
