@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.10.1 (Cleveland Park) - 2024-05-16
+
+## New Features
+
+- **Slack Channel Generator**: When a user creates a new emergency, the system will now automatically generate a new Slack channel for the activation. 
+
 # 1.10.0 (Cleveland Park) - 2024-05-13
 
 ## New Features
