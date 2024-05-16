@@ -1,5 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
@@ -42,9 +40,6 @@
 					</li>
 					<li class="nav-item" role="presentation">
 						<button class="nav-link" id="surge-alerts-tab" data-bs-toggle="pill" data-bs-target="#surge-alerts" type="button" role="tab" aria-controls="surge-alerts" aria-selected="false">Open IM Alerts</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="data-overview-tab" data-bs-toggle="pill" data-bs-target="#data-overview" type="button" role="tab" aria-controls="data-overview" aria-selected="false">Data Overview</button>
 					</li>
 				</ul>
 			</div>
@@ -281,123 +276,7 @@
 					</table>
 				</div>
 			</div>
-			<div class="tab-pane fade" id="data-overview" role="tabpanel" aria-labelledby="data-overview-tab">
-				<div class='mt-1'>
-					<ul class="nav nav-tabs" id="dashboardNav" role="tablist">
-						<li class="nav-item" role="presentation">
-							<button class="nav-link active text-danger" id="assignments-emergency-tab" data-bs-toggle="tab" data-bs-target="#assignments-emergency" type="button" role="tab" aria-controls="assignments-emergency" aria-selected="true">Assignments by Emergency</button>
-						</li>
-
-						<li class="nav-item" role="presentation">
-							<button class="nav-link text-danger" id="products-emergency-tab" data-bs-toggle="tab" data-bs-target="#products-emergency" type="button" role="tab" aria-controls="products-emergency" aria-selected="false">Products by Emergency</button>
-						</li>
-
-					</ul>
-					<div class="tab-content" id="dashboardContent">
-
-						<div class="tab-pane fade show active" id="assignments-emergency" role="tabpanel" aria-labelledby="assignments-emergency-tab">
-							<br>
-							<canvas id='barChartAssignments'></canvas>
-							<script>
-								var ctx = document.getElementById('barChartAssignments').getContext('2d');
-								var lineChart = new Chart(ctx, {
-									type: 'bar',
-									data: {
-										labels: {
-											{
-												labels_for_assignment | safe
-											}
-										},
-										datasets: [{
-											label: "Assignments by Emergency, All Time",
-											data: {
-												{
-													values_for_assignment | safe
-												}
-											},
-											fill: true,
-											backgroundColor: "#dc3545"
-										}]
-									},
-									options: {
-										responsive: true,
-										indexAxis: 'y',
-										scales: {
-											y: {
-												ticks: {
-													stepSize: 1
-												},
-												grid: {
-													display: false
-												}
-
-											},
-											x: {
-												grid: {
-													display: false
-												}
-											}
-
-										}
-									}
-								})
-							</script>
-
-						</div>
-						<div class="tab-pane fade" id="products-emergency" role="tabpanel" aria-labelledby="products-emergency-tab">
-							<br>
-							<canvas id='barChartProducts'></canvas>
-							<script>
-								var ctx = document.getElementById('barChartProducts').getContext('2d');
-								var lineChart = new Chart(ctx, {
-									type: 'bar',
-									data: {
-										labels: {
-											{
-												labels_for_product | safe
-											}
-										},
-										datasets: [{
-											label: "Products by Emergency, All Time",
-											data: {
-												{
-													values_for_product | safe
-												}
-											},
-											fill: true,
-											backgroundColor: "#dc3545"
-										}]
-									},
-									options: {
-										responsive: true,
-										indexAxis: 'y',
-										scales: {
-											y: {
-												ticks: {
-													stepSize: 1
-												},
-												grid: {
-													display: false
-												}
-
-											},
-											x: {
-												grid: {
-													display: false
-												}
-											}
-
-										}
-									}
-								})
-							</script>
-
-						</div>
-					</div>
-				</div>
-			</div>
 		</div>
-
 	</div>
 </div>
 </div>
