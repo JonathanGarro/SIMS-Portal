@@ -5,6 +5,24 @@ from datetime import datetime, timedelta
 from slack_sdk import WebClient
 
 def send_slack_availability_request(disaster_id, slack_channel):
+    """
+    Sends an availability request message to a specified Slack channel for a given disaster event.
+    
+    Parameters:
+    disaster_id (int): The unique identifier for the emergency in the db.
+    slack_channel (str): The ID of the Slack channel where the request should be sent.
+    
+    Returns:
+    None
+    
+    Raises:
+    ValueError: If the disaster_id or slack_channel is invalid or empty.
+    SlackAPIError: If there is an issue sending the message to Slack.
+    
+    Example:
+    send_slack_availability_request(79, "C073DGZUUKZ")
+    """
+    
     client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
     link = current_app.config['ROOT_URL'] + '/availability/report/' + str(disaster_id)
     try:
@@ -16,6 +34,29 @@ def send_slack_availability_request(disaster_id, slack_channel):
         current_app.logger.error('send_slack_availability_request failed: {}'.format(e))
 
 def get_dates_current_and_next_week():
+    """
+    Generates a list of dates for the current week and the next week, starting from today.
+    
+    The function calculates the start of the current week (Monday) and the start of the next week,
+    then generates a list of dates from the current week start to the end of the next week.
+    Each date is formatted in a readable string format.
+    
+    Returns:
+    List[Tuple[datetime.date, str]]: A list of tuples where each tuple contains a date object and
+                                     its corresponding readable string format.
+    
+    Example:
+    dates = get_dates_current_and_next_week()
+    for date, readable in dates:
+        print(f"Date: {date}, Readable: {readable}")
+    
+    Output:
+    Date: 2024-05-20, Readable: Monday, May 20
+    Date: 2024-05-21, Readable: Tuesday, May 21
+    ...
+    Date: 2024-06-02, Readable: Sunday, June 2
+    """
+    
     today = datetime.now().date()
     current_week_start = today - timedelta(days=today.weekday())
     next_week_start = current_week_start + timedelta(days=7)
@@ -35,6 +76,27 @@ def get_dates_current_and_next_week():
     return zip_dates
     
 def get_dates_current_week():
+    """
+    Generates a list of readable date strings for the remaining days of the current week, starting from today.
+    
+    The function calculates the current day of the week and determines the remaining days in the week.
+    It then generates a list of date objects for these remaining days and converts them into readable string formats.
+    
+    Returns:
+    List[str]: A list of readable date strings for the remaining days of the current week.
+    
+    Example:
+    dates = get_dates_current_week()
+    for readable_date in dates:
+        print(readable_date)
+    
+    Output:
+    Monday, May 20
+    Tuesday, May 21
+    ...
+    Sunday, May 26
+    """
+    
     today = datetime.today()
     current_weekday = today.weekday()
     days_in_week = 7
