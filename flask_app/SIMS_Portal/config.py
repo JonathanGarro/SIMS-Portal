@@ -35,3 +35,4 @@ class Config:
 	STATIC_FOLDER = 'static'
 	RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
 	RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
+	GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
