@@ -583,51 +583,63 @@ def reset_request():
 	list_slack_ids = []
 	for id in valid_slack_ids:
 		list_slack_ids.append(id.slack_id)
+
 	if form.validate_on_submit():
 		user = User.query.filter(User.slack_id == form.slack_id.data).first()
-		if form.slack_id.data in list_slack_ids:
-			send_reset_slack(user)
-			# log if user is resetting password, pass if using the forgot password route
-			try:
-				log_message = f"[INFO] User {current_user.id} has requested a password reset."
-				new_log = Log(message=log_message, user_id=current_user.id)
-				db.session.add(new_log)
-				db.session.commit()
-			except: 
-				pass
+		if user is None:
+			# user not found, flash message and return
+			flash("That Slack ID does not match any existing users. Contact a Portal administrator if you continue having issues locating your ID.", 'danger')
+			return redirect('/reset_password')
+
+		if user.is_active:  
+			send_reset_slack(user) 
+			log_message = f"[INFO] User {user.id} (Slack ID: {user.slack_id}) has requested a password reset."
+			new_log = Log(message=log_message, user_id=user.id)
+			db.session.add(new_log)
+			db.session.commit()
 			flash('A Slack message has been sent with instructions to reset your password.', 'info')
 			return redirect(url_for('users.login'))
 		else:
-			flash("That Slack ID does not match any existing users. Contact a Portal administrator if you continue having issues locating your ID.", 'danger')
-			
-			log_message = f"[WARNING] Password reset was requested by {current_user.id} but the system could not find the requested Slack ID."
-			new_log = Log(message=log_message, user_id=current_user.id)
-			db.session.add(new_log)
-			db.session.commit()
-			send_error_message(log_message)
-			
+			# user account inactive, flash message and return
+			flash('Your account is currently inactive. Please contact a Portal administrator to activate your account.', 'warning')
 			return redirect('/reset_password')
+
 	elif request.method == 'GET':
 		if current_user.is_authenticated:
 			form.slack_id.data = current_user.slack_id
 		else:
 			form.slack_id.data = ''
 	return render_template('reset_request.html', title='Reset Password', form=form)
-	
+
 @users.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_token(token):
 	user = User.verify_reset_token(token)
 	if user is None:
 		flash('That is an invalid or expired token.', 'warning')
 		return redirect(url_for('users.reset_request'))
+
 	form = ResetPasswordForm()
+	new_log = None 
 	if form.validate_on_submit():
-		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-		user.password = hashed_password
-		db.session.commit()
-		flash('Your password has been reset.', 'success')
-		return redirect(url_for('users.login'))
+		try:
+			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+			user.password = hashed_password
+			db.session.commit()
+			
+			flash('Your password has been reset. Please login with your new password.', 'success')
+			return redirect(url_for('users.login'))
+			
+		except Exception as e:
+			log_message = f"[Error] The reset_token() route failed: {e}"
+			new_log = Log(message=log_message, user_id=63)
+			db.session.rollback()
+		finally:
+			if new_log:  # check if new_log has been assigned a value
+				db.session.add(new_log)
+				db.session.commit()
+
 	return render_template('reset_token.html', title='Reset Password', form=form)
+
 
 @users.route('/user/approve/<int:id>', methods=['GET', 'POST'])
 @login_required
