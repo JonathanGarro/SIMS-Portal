@@ -13,6 +13,7 @@ from flask_mail import Message
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, and_, Integer, text, func
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm.attributes import flag_modified
 
 from SIMS_Portal import db, bcrypt
 from SIMS_Portal.models import (
@@ -31,7 +32,7 @@ from SIMS_Portal.users.utils import (
 	update_member_locations, update_robots_txt
 )
 from SIMS_Portal.portfolios.utils import get_full_portfolio
-from SIMS_Portal.users.utils import download_profile_photo
+from SIMS_Portal.users.utils import download_profile_photo, invite_user_to_github
 from SIMS_Portal.main.utils import send_error_message
 
 users = Blueprint('users', __name__)
@@ -383,6 +384,9 @@ def update_profile():
 			update_robots_txt(current_user.id, disallow=True)
 		else:
 			update_robots_txt(current_user.id, disallow=False)
+		
+		if form.github.data:
+			invite_user_to_github(form.github.data)
 
 		# look for new skills added in the edit page
 		for skill_name in form.skills.data:

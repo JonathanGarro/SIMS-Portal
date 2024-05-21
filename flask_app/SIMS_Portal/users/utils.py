@@ -3,7 +3,7 @@ from flask import url_for, current_app, flash, redirect, session
 from PIL import Image
 from flask_mail import Message
 from SIMS_Portal import db, cache
-from SIMS_Portal.models import User, NationalSociety, user_language, Language, Assignment, user_profile, Profile, user_skill, Skill, Emergency
+from SIMS_Portal.models import User, NationalSociety, user_language, Language, Assignment, user_profile, Profile, user_skill, Skill, Emergency, Log
 from slack_sdk import WebClient
 import os
 import secrets
@@ -284,3 +284,47 @@ def update_robots_txt(user_id, disallow=True):
 		current_app.logger.info('User {} has updated their search engine settings on robots.txt'.format(user_id))
 	else:
 		current_app.logger.info('A new robots.txt rule as has been added for user {}'.format(user_id))
+
+def invite_user_to_github(username):
+	"""
+	Invites a user to join the SIMS GitHub organization.
+	
+	Parameters:
+		username (str): The GitHub username of the user to be invited.
+	
+	Returns:
+		bool: True if the user was successfully invited to the organization, False otherwise.
+	
+	Note:
+		This function requires a personal access token with 'admin:org' scope
+		to authenticate with the GitHub API. Ensure that the token used has
+		sufficient permissions to add users to the organization.
+	
+	Example:
+		>>> invite_user_to_github('example_user')
+		True
+	"""
+	
+	github_base_url = 'https://api.github.com'
+	org_name = 'Surge-Information-Management-Support'
+	access_token = current_app.config['GITHUB_TOKEN']
+	
+	headers = {
+		'Authorization': f'token {access_token}',
+		'Accept': 'application/vnd.github.v3+json'
+	}
+	
+	url = f'{github_base_url}/orgs/{org_name}/memberships/{username}'
+	response = requests.put(url, headers=headers)
+	if response.status_code == 200:
+		log_message = f"[Info] GitHub user {username} was invited to join the SIMS GitHub organization."
+		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+		db.session.add(new_log)
+		db.session.commit()
+		return True 
+	else:
+		log_message = f"[Error] invite_user_to_github() function ran for user {username} but encountered an error: {response.status_code} | {response.text}."
+		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+		db.session.add(new_log)
+		db.session.commit()
+		return False  
