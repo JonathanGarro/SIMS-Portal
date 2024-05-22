@@ -251,7 +251,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 	$('#datatable-member-assignments').DataTable( {
-		order: [[2, 'asc']],
+		order: [[2, 'desc']],
 		"bLengthChange": false,
 		"searching": false,
 	} );
