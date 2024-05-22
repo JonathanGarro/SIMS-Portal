@@ -123,8 +123,10 @@ def view_assignment(id):
 def edit_assignment(id):
 	assignment_info = db.session.query(Assignment, User, Emergency).join(User).join(Emergency).filter(Assignment.id == id).first()
 	form = UpdateAssignmentForm(role=assignment_info.Assignment.role, start_date=assignment_info.Assignment.start_date, end_date=assignment_info.Assignment.end_date, assignment_details=assignment_info.Assignment.assignment_details, hours=assignment_info.Assignment.hours)
+	
 	# get basic info about this assignment
 	this_assignment = db.session.query(Assignment).filter(Assignment.id==id).first()
+	
 	if form.validate_on_submit():
 		this_assignment.role = form.role.data
 		this_assignment.start_date = form.start_date.data
@@ -134,7 +136,7 @@ def edit_assignment(id):
 		db.session.commit()
 		flash('Assignment record updated!', 'success')
 		
-		log_message = f"[INFO] User {current_user.id} created an assignment for {assignment.user_id}."
+		log_message = f"[INFO] User {current_user.id} edited an assignment for {this_assignment.user_id}."
 		new_log = Log(message=log_message, user_id=current_user.id)
 		db.session.add(new_log)
 		db.session.commit()
