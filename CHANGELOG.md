@@ -5,6 +5,27 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.0 (Woodley Park) - 2024-05-24
+
+## New Features
+
+- **Automatic Member Status Management**: As the SIMS network grows and additional accounts are created, making sure that the Portal is reflecting an accurate picture of active users has become increasingly important. A weekly cron job runs to look for users that have not logged in for six months and sends them a Slack message alerting them to the fact that their account will be marked as Inactive if they don't log into the Portal in the next seven days. When logging back into the system, the clock resets. If the system had been marked as Inactive, their status will be updated back to Active once they log back in.
+
+## Fixes
+
+- **CSRF Validation for Availability**: Forms were previously not being protected when transmitting data for individual availability reporting on emergency pages. I've implemented cross-site request forgery (CSRF) prevention similar to other forms in the Portal to prevent malicious requests.
+
+# 1.10.3 (Cleveland Park) - 2024-05-23
+
+## Changes
+
+- **Ops Supported Table Sorting**: The Operations Supported table on member profiles now sorts by the start date of the assignment in descending order.
+
+## Fixes
+
+- **Assignment Edit Bug**: The logger for assignment edits was crashing when a user tried to edit certain types of assignments. The referenced variable has been fixed.
+- **Password Reset Bug**: Resetting a password (for users that have not logged in) was crashing due to a similar logging issue as the above.
+
 # 1.10.2 (Cleveland Park) - 2024-05-21
 
 ## New Features
