@@ -30,7 +30,7 @@ from SIMS_Portal.users.forms import (
 from SIMS_Portal.users.utils import (
 	save_picture, new_user_slack_alert, send_slack_dm,
 	check_valid_slack_ids, send_reset_slack, search_location,
-	update_member_locations, update_robots_txt
+	update_member_locations, update_robots_txt, set_user_active
 )
 from SIMS_Portal.portfolios.utils import get_full_portfolio
 from SIMS_Portal.users.utils import download_profile_photo, invite_user_to_github
@@ -164,6 +164,16 @@ def login():
 	if form.validate_on_submit():
 		user = User.query.filter_by(email=form.email.data).first()
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
+			
+			# reset user to active if they were previously inactive
+			if user.status == 'Inactive':
+				set_user_active(user.id)
+				log_message = f"[INFO] User {user.id} was marked as active after logging back in."
+				new_log = Log(message=log_message, user_id=user.id)
+				db.session.add(new_log)
+				db.session.commit()
+				flash('Your account has been converted back to active!', 'success')
+			
 			login_user(user, remember=form.remember.data)
 			next_page = request.args.get('next')
 			
