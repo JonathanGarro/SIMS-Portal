@@ -13,13 +13,14 @@ from flask_mail import Message
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, and_, Integer, text, func
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm.attributes import flag_modified
 
 from SIMS_Portal import db, bcrypt
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Portfolio,
 	EmergencyType, Skill, Language, user_skill, user_language,
-	Badge, Alert, user_badge, Profile, user_profile, Log
+	Badge, Alert, user_badge, Profile, user_profile, Log, user_language
 )
 from SIMS_Portal.users.forms import (
 	RegistrationForm, LoginForm, UpdateAccountForm,
@@ -68,23 +69,36 @@ def inactive_members():
 @users.route('/members/all') 
 @login_required
 def members_all(): 
-	members = db.session.execute("""
-		SELECT u.id, u.firstname, u.lastname, u.status, u.email, u.job_title, u.slack_id, u.ns_id,
-			   u.image_file, ns.ns_name, pg_catalog.string_agg(DISTINCT l.name, ', ') as languages,
-			   pg_catalog.string_agg(DISTINCT s.name, ', ') as skills,
-			   pg_catalog.string_agg(DISTINCT p.name, ', ') as profiles
-		FROM "user" u
-		JOIN nationalsociety ns ON ns.ns_go_id = u.ns_id
-		LEFT JOIN user_language ul ON ul.user_id = u.id
-		LEFT JOIN language l ON l.id = ul.language_id
-		LEFT JOIN user_profile up ON up.user_id = u.id
-		LEFT JOIN profile p ON p.id = up.profile_id
-		LEFT JOIN user_skill us ON us.user_id = u.id
-		LEFT JOIN skill s ON s.id = us.skill_id
-		WHERE u.status = 'Active' OR u.status = 'Inactive'
-		GROUP BY u.id, ns.ns_name
-		ORDER BY u.firstname
-	""")
+	language_alias = aliased(Language)
+	skill_alias = aliased(Skill)
+	profile_alias = aliased(Profile)
+	
+	members = db.session.query(
+		User.id,
+		User.firstname,
+		User.lastname,
+		User.status,
+		User.email,
+		User.job_title,
+		User.slack_id,
+		User.ns_id,
+		User.image_file,
+		NationalSociety.ns_name,
+		func.string_agg(func.distinct(Language.name), ', ').label('languages'),
+		func.string_agg(func.distinct(Skill.name), ', ').label('skills'),
+		func.string_agg(func.distinct(Profile.name), ', ').label('profiles')
+	).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id
+	).outerjoin(user_language, user_language.c.user_id == User.id
+	).outerjoin(Language, Language.id == user_language.c.language_id
+	).outerjoin(user_profile, user_profile.c.user_id == User.id
+	).outerjoin(Profile, Profile.id == user_profile.c.profile_id
+	).outerjoin(user_skill, user_skill.c.user_id == User.id
+	).outerjoin(Skill, Skill.id == user_skill.c.skill_id
+	).filter(User.status.in_(['Active', 'Inactive'])
+	).group_by(User.id, NationalSociety.ns_name
+	).order_by(User.firstname
+	).all()
+	
 	return render_template('members_all.html', members=members)
 
 @users.route('/register', methods=['GET', 'POST'])
