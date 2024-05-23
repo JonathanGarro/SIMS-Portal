@@ -642,10 +642,18 @@ def alert_inactive_members():
 		db.session.commit()
 
 def set_user_inactive(user_id):
-	log_message = f"[Info] Running set_user_inactive."
-	new_log = Log(message=log_message, user_id=63)
-	db.session.add(new_log)
-	db.session.commit()
+	"""
+	Marks a user as inactive and logs this action in the database.
+	
+	This function updates the status of the user with the given user_id to 'Inactive'
+	and logs the action. If the user is not found, it logs an error message.
+	
+	Args:
+		user_id (int): The ID of the user to be marked as inactive.
+	
+	Returns:
+		User: The updated User object if the user was found and updated, otherwise None.
+	"""
 	
 	inactive_user = db.session.query(User).filter(User.id == user_id).first()
 	if inactive_user:
@@ -665,17 +673,30 @@ def set_user_inactive(user_id):
 	return inactive_user
 
 def set_user_active(user_id):
+	"""
+	Marks a user as active and logs this action in the database.
+	
+	This function updates the status of the user with the given user_id to 'Active'
+	and logs the action. If the user is not found, it logs an error message.
+	
+	Args:
+		user_id (int): The ID of the user to be marked as active.
+	
+	Returns:
+		User: The updated User object if the user was found and updated, otherwise None.
+	"""
+	
 	active_user = db.session.query(User).filter(User.id == user_id).first()
-	if active_user:
-		active_user.status = 'Inactive'
+	if active_user.status == 'Inactive':
+		active_user.status = 'Active'
 		db.session.commit()
 		
-		log_message = f"[Info] User {active_user.id} has been automatically marked as inactive."
+		log_message = f"[Info] User {active_user.id} has been automatically marked as active."
 		new_log = Log(message=log_message, user_id=active_user.id)
 		db.session.add(new_log)
 		db.session.commit()
 	else:
-		log_message = f"[Error] set_user_inactive() failed to set user {active_user.id} as inactive."
+		log_message = f"[Error] set_user_inactive() failed to set user {active_user.id} as active."
 		new_log = Log(message=log_message, user_id=active_user.id)
 		db.session.add(new_log)
 		db.session.commit()
