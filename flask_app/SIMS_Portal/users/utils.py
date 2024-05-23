@@ -140,17 +140,35 @@ def send_slack_dm(message, user):
 		This will send the message "Hello there!" to the Slack user with the ID "U12345678".
 	"""
 	
+	log_message = f"[INFO] send_slack_dm() triggered for user {user}."
+	new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+	db.session.add(new_log)
+	db.session.commit()
+	
 	slack_token = current_app.config['SIMS_PORTAL_SLACK_BOT']
 	data = {
 			'token': slack_token,
-			'channel': user,    # User's Slack ID
+			'channel': user,
 			'as_user': True,
 			'text': message
 	}
 	try:
-		requests.post(url='https://slack.com/api/chat.postMessage', data=data)
+		response = requests.post(url='https://slack.com/api/chat.postMessage', data=data)
+		response_data = response.json()
+		if not response_data.get('ok'):
+			log_message = f"[ERROR] send_slack_dm() failed: {response_data.get('error')}"
+			new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+			db.session.add(new_log)
+			db.session.commit()
+			return False
+		return True
 	except Exception as e:
-		current_app.logger.error('send_slack_dm failed: {}'.format(e))
+		log_message = f"[ERROR] send_slack_dm() failed: {e}."
+		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+		db.session.add(new_log)
+		db.session.commit()
+		return False
+
 
 @cache.cached(timeout=120)
 def get_valid_slack_ids():
@@ -567,13 +585,13 @@ def invite_user_to_github(username):
 	url = f'{github_base_url}/orgs/{org_name}/memberships/{username}'
 	response = requests.put(url, headers=headers)
 	if response.status_code == 200:
-		log_message = f"[Info] GitHub user {username} was invited to join the SIMS GitHub organization."
+		log_message = f"[INFO] GitHub user {username} was invited to join the SIMS GitHub organization."
 		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
 		db.session.add(new_log)
 		db.session.commit()
 		return True 
 	else:
-		log_message = f"[Error] invite_user_to_github() function ran for user {username} but encountered an error: {response.status_code} | {response.text}."
+		log_message = f"[ERROR] invite_user_to_github() function ran for user {username} but encountered an error: {response.status_code} | {response.text}."
 		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
 		db.session.add(new_log)
 		db.session.commit()
@@ -612,7 +630,8 @@ def process_inactive_members():
 		Log.timestamp,
 		Log.message,
 		User.firstname,
-		User.lastname
+		User.lastname, 
+		User.slack_id
 	).join(
 		User, User.id == Log.user_id
 	).join(
@@ -627,7 +646,18 @@ def process_inactive_members():
 	for member in to_be_marked_inactive:
 		set_user_inactive(member.user_id)
 		message = f"Hi, {member.firstname}! Your account on the SIMS Portal has been automatically marked as Inactive because it has been more than six months since you last logged in. If you'd like to update it to be Active again, just <https://www.rcrcsims.org/login|login>."
-		send_slack_dm(message, member.user_id)
+		try:
+			success = send_slack_dm(message, member.slack_id)
+		except Exception as e:
+			log_message = f"[ERROR] Failed to send Slack DM to user {member.user_id}: {e}."
+			new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+			db.session.add(new_log)
+			db.session.commit()
+	
+	log_message = f"[INFO] process_inactive_members() function ran."
+	new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+	db.session.add(new_log)
+	db.session.commit()
 	
 	return to_be_marked_inactive
 
@@ -678,17 +708,13 @@ def alert_inactive_members():
 	"""
 	try:
 		potentially_inactive_members = audit_inactive_members()
-		messages = []
 		
 		for member in potentially_inactive_members:
-			message = f"Hi there, {member.firstname} {member.lastname}! I wanted to let you know that it's been six months since you last logged into the SIMS Portal. *If you would like to remain listed as an Active member of SIMS*, please log into the <https://www.rcrcsims.org/login|SIMS Portal>. No further action is required after logging in.\n\nRegular audits of our member list helps keep various elements inside the application running smoothly and reduces server overhead."
-			messages.append(Log(message=message, user_id=63)) # save message as Clara Barton
-		
-		db.session.add_all(messages)
-		db.session.commit()
+			message = f"Hi there, {member.firstname}! I wanted to let you know that it's been six months since you last logged into the SIMS Portal. *If you would like to remain listed as an Active member of SIMS*, please log into the <https://www.rcrcsims.org/login|SIMS Portal>. No further action is required after logging in.\n\nRegular audits of our member list helps keep various elements inside the application running smoothly and reduces server overhead."
+			send_slack_dm(message, member.slack_id)
 		
 	except Exception as e:
-		log_message = f"[Error] alert_inactive_members() function encountered an error: {e}."
+		log_message = f"[ERROR] alert_inactive_members() function encountered an error: {e}."
 		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
 		db.session.add(new_log)
 		db.session.commit()
@@ -712,12 +738,12 @@ def set_user_inactive(user_id):
 		inactive_user.status = 'Inactive'
 		db.session.commit()
 		
-		log_message = f"[Info] User {inactive_user.id} has been automatically marked as inactive."
+		log_message = f"[INFO] User {inactive_user.id} has been automatically marked as inactive."
 		new_log = Log(message=log_message, user_id=inactive_user.id)
 		db.session.add(new_log)
 		db.session.commit()
 	else:
-		log_message = f"[Error] set_user_inactive() failed to set user {inactive_user.id} as inactive."
+		log_message = f"[ERROR] set_user_inactive() failed to set user {inactive_user.id} as inactive."
 		new_log = Log(message=log_message, user_id=inactive_user.id)
 		db.session.add(new_log)
 		db.session.commit()
@@ -743,12 +769,12 @@ def set_user_active(user_id):
 		active_user.status = 'Active'
 		db.session.commit()
 		
-		log_message = f"[Info] User {active_user.id} has been automatically marked as active."
+		log_message = f"[INFO] User {active_user.id} has been automatically marked as active."
 		new_log = Log(message=log_message, user_id=active_user.id)
 		db.session.add(new_log)
 		db.session.commit()
 	else:
-		log_message = f"[Error] set_user_inactive() failed to set user {active_user.id} as active."
+		log_message = f"[ERROR] set_user_inactive() failed to set user {active_user.id} as active."
 		new_log = Log(message=log_message, user_id=active_user.id)
 		db.session.add(new_log)
 		db.session.commit()
