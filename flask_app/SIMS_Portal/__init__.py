@@ -150,6 +150,13 @@ def create_app(config_class=Config):
 				
 				alert_inactive_members()
 		
+		@scheduler.task('cron', id='run_process_inactive_members', day_of_week='tue', hour=9, timezone='America/New_York')
+		def run_process_inactive_members():
+			with scheduler.app.app_context():
+				from SIMS_Portal.users.utils import process_inactive_members
+				
+				process_inactive_members()
+		
 		# scheduler to automatically ping all associated members to active disasters to request availability
 		# @scheduler.task('cron', id='request_availability', week='*', day_of_week='mon', hour=8)
 		# def run_request_availability():
