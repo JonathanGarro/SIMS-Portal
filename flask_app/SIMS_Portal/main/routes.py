@@ -42,7 +42,7 @@ from SIMS_Portal.main.utils import (
 from SIMS_Portal.users.forms import AssignProfileTypesForm, RegionalFocalPointForm
 from SIMS_Portal.users.utils import (
 	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations, 
-	bulk_slack_photo_update
+	bulk_slack_photo_update, process_inactive_members, audit_inactive_members, process_inactive_members
 )
 from SIMS_Portal.alerts.utils import (
 	refresh_surge_alerts, refresh_surge_alerts_latest
@@ -547,16 +547,6 @@ def manual_refresh(func):
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@main.route('/staging')
-def staging():
-	if current_user.is_admin == 1:
-		refresh_surge_alerts(10)
-		return render_template('visualization.html')
-	else:
-		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
-		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
-		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
-
 @main.route('/get_ns_member_location_data')
 def get_ns_member_location_data():
 	active_national_societies = db.session.query(
@@ -634,3 +624,13 @@ def static_files(filename):
 	cache_timeout = 3600 
 	
 	return send_from_directory(app.config['STATIC_FOLDER'], filename, cache_timeout=cache_timeout)
+	
+@main.route('/staging')
+def staging():
+	if current_user.is_admin == 1:
+		
+		return render_template('visualization.html')
+	else:
+		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
+		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
