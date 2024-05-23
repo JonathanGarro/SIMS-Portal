@@ -5,6 +5,7 @@ from flask_mail import Message
 from SIMS_Portal import db, cache
 from SIMS_Portal.models import User, NationalSociety, user_language, Language, Assignment, user_profile, Profile, user_skill, Skill, Emergency, Log
 from slack_sdk import WebClient
+from datetime import datetime, timedelta
 import os
 import secrets
 import tempfile
@@ -13,6 +14,9 @@ import http.client, urllib.parse
 import json
 import logging
 from io import BytesIO
+from sqlalchemy import select, func, Column, Integer, String, DateTime, outerjoin
+from sqlalchemy.orm import aliased
+
 
 def save_picture(form_picture):
 	"""
@@ -573,4 +577,107 @@ def invite_user_to_github(username):
 		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
 		db.session.add(new_log)
 		db.session.commit()
-		return False  
+		return False
+		
+def audit_inactive_members():
+	"""
+	Retrieve the latest login activity of members who have been inactive for more than six months.
+
+	Returns:
+		list: A list of tuples containing the user_id, timestamp of the last login, message of the last login,
+			  first name, and last name of the inactive members.
+
+	Notes:
+		This function queries the database to find members who have been inactive for more than six months
+		based on their last login timestamp. It retrieves the latest login activity for each member and
+		returns the relevant information.
+	"""
+	six_months_ago = datetime.now() - timedelta(days=180)
+	
+	subquery = db.session.query(
+		Log.user_id,
+		func.max(Log.timestamp).label('max_timestamp')
+	).filter(
+		Log.message.like('%logged in%')
+	).group_by(Log.user_id).subquery()
+	
+	latest_logins = db.session.query(
+		Log.user_id,
+		Log.timestamp,
+		Log.message,
+		User.firstname,
+		User.lastname
+	).join(
+		User, User.id == Log.user_id
+	).join(
+		subquery,
+		(Log.user_id == subquery.c.user_id) &
+		(Log.timestamp == subquery.c.max_timestamp)
+	).filter(
+		Log.timestamp < six_months_ago,
+		User.status == 'Active'
+	).all()
+	
+	return latest_logins
+		
+def alert_inactive_members():
+	"""
+	Alert members who have been inactive for more than six months by logging a message.
+	"""
+	try:
+		potentially_inactive_members = audit_inactive_members()
+		messages = []
+		
+		for member in potentially_inactive_members:
+			message = f"Hi there, {member.firstname} {member.lastname}! I wanted to let you know that it's been six months since you last logged into the SIMS Portal. *If you would like to remain listed as an Active member of SIMS*, please log into the <https://www.rcrcsims.org/login|SIMS Portal>. No further action is required after logging in.\n\nRegular audits of our member list helps keep various elements inside the application running smoothly and reduces server overhead."
+			messages.append(Log(message=message, user_id=63)) # save message as Clara Barton
+		
+		db.session.add_all(messages)
+		db.session.commit()
+		
+	except Exception as e:
+		log_message = f"[Error] alert_inactive_members() function encountered an error: {e}."
+		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
+		db.session.add(new_log)
+		db.session.commit()
+
+def set_user_inactive(user_id):
+	log_message = f"[Info] Running set_user_inactive."
+	new_log = Log(message=log_message, user_id=63)
+	db.session.add(new_log)
+	db.session.commit()
+	
+	inactive_user = db.session.query(User).filter(User.id == user_id).first()
+	if inactive_user:
+		inactive_user.status = 'Inactive'
+		db.session.commit()
+		
+		log_message = f"[Info] User {inactive_user.id} has been automatically marked as inactive."
+		new_log = Log(message=log_message, user_id=inactive_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+	else:
+		log_message = f"[Error] set_user_inactive() failed to set user {inactive_user.id} as inactive."
+		new_log = Log(message=log_message, user_id=inactive_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
+	return inactive_user
+
+def set_user_active(user_id):
+	active_user = db.session.query(User).filter(User.id == user_id).first()
+	if active_user:
+		active_user.status = 'Inactive'
+		db.session.commit()
+		
+		log_message = f"[Info] User {active_user.id} has been automatically marked as inactive."
+		new_log = Log(message=log_message, user_id=active_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+	else:
+		log_message = f"[Error] set_user_inactive() failed to set user {active_user.id} as inactive."
+		new_log = Log(message=log_message, user_id=active_user.id)
+		db.session.add(new_log)
+		db.session.commit()
+		
+	return active_user
