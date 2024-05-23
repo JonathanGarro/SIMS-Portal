@@ -9,7 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text, insert
 
 from SIMS_Portal import db
-from SIMS_Portal.models import Availability, Emergency, User
+from SIMS_Portal.models import Availability, Emergency, User, Log
+from SIMS_Portal.availability.forms import AvailabilityForm
 from SIMS_Portal.availability.utils import (
     get_dates_current_and_next_week, get_dates_current_week,
     get_dates_next_week
@@ -56,23 +57,64 @@ def view_availability(user_id, emergency_id):
     
     return render_template('availability_view.html', user_info=user_info, emergency_info=emergency_info, available_dates=available_dates, this_user=this_user)
 
-
 @availability.route('/availability/report/<int:disaster_id>', methods=['GET', 'POST'])
 @login_required
-def report_availability(disaster_id):
+def report_availability(disaster_id):    
+    form = AvailabilityForm()
+    if form.validate_on_submit():
+        # handle form submission
+        return handle_availability_submission(form, disaster_id, week_offset=0)
     disaster_info = db.session.query(Emergency).filter(Emergency.id == disaster_id).first()
     readable_dates = get_dates_current_week()
     report_type = 'current_week'
-    return render_template('/assignment_availability.html', readable_dates=readable_dates, disaster_info=disaster_info, report_type=report_type)
+    return render_template('assignment_availability.html', form=form, readable_dates=readable_dates, disaster_info=disaster_info, report_type=report_type)
 
 @availability.route('/availability/report/next_week/<int:disaster_id>', methods=['GET', 'POST'])
 @login_required
 def report_availability_next_week(disaster_id):
+    form = AvailabilityForm()
+    if form.validate_on_submit():
+        # handle form submission
+        return handle_availability_submission(form, disaster_id, week_offset=1)
     disaster_info = db.session.query(Emergency).filter(Emergency.id == disaster_id).first()
     readable_dates = get_dates_next_week()
     report_type = 'next_week'
-    return render_template('/assignment_availability.html', readable_dates=readable_dates, disaster_info=disaster_info, report_type=report_type)
+    return render_template('assignment_availability.html', form=form, readable_dates=readable_dates, disaster_info=disaster_info, report_type=report_type)
     
+def handle_availability_submission(form, disaster_id, week_offset):
+    user_info = db.session.query(User).filter(User.id == current_user.id).first()
+    response = form.available.data
+    response_formatted = "{}".format(response)
+    
+    # create year-week_number stamp to establish timeframe
+    week_number = datetime.today().isocalendar()[1] + week_offset
+    year = datetime.today().year
+    timeframe = f"{year}-{week_number}"
+    
+    existing_user_availability = db.session.query(Availability).filter(
+        Availability.user_id == current_user.id,
+        Availability.emergency_id == disaster_id,
+        Availability.timeframe == timeframe
+    ).first()
+    
+    # delete existing record for this timeframe if exists
+    if existing_user_availability:
+        db.session.delete(existing_user_availability)
+        db.session.commit()
+        
+    availability = Availability(
+        dates=response_formatted,
+        user_id=current_user.id,
+        emergency_id=disaster_id,
+        timeframe=timeframe
+    )
+    db.session.add(availability)
+    db.session.commit()
+    
+    flash('Thank you for updating your availability for this emergency!', 'success')
+    
+    return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))
+
 @availability.route('/availability/result/<int:disaster_id>', methods=['GET', 'POST'])
 @login_required
 def availability_result(disaster_id):

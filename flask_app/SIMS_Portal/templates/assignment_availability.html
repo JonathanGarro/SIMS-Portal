@@ -26,6 +26,7 @@
 		<div class="col mx-4">
 				{% if report_type == 'current_week' %}
 				<form method="POST" action='/availability/result/{{disaster_info.id}}'>
+					{{ form.hidden_tag() }}
 					<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
 					{% for date in readable_dates %}
 					<label>
@@ -38,6 +39,7 @@
 				</form>
 				{% else %}
 				<form method="POST" action='/availability/result/next_week/{{disaster_info.id}}'>
+					{{ form.hidden_tag() }}
 					<input type='hidden' name='availability_id' value='{{availability_id}}'><br>
 					{% for date in readable_dates %}
 					<label>
