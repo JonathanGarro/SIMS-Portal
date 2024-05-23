@@ -578,7 +578,59 @@ def invite_user_to_github(username):
 		db.session.add(new_log)
 		db.session.commit()
 		return False
-		
+
+def process_inactive_members():
+	"""
+	Identify and process inactive members who have not logged in for over six and a half months.
+	The extra two weeks after the six month mark gives users two weeks (and two Slack alert messages)
+		to log in before having this function mark them as inactive.
+	
+	This function performs the following steps:
+	1. Calculates the date six and a half months ago from the current date.
+	2. Creates a subquery to find the most recent login timestamp for each user.
+	3. Queries the database to find users whose:
+		a. Last login is before the calculated date.
+		b. Status is currently marked as 'Active'.
+	4. Iterates through the identified inactive members and marks them as inactive using the set_user_inactive() function.
+	
+	Returns:
+		List of members that have been processed and marked as inactive, including their user IDs,
+		last login timestamps, login messages, first names, and last names.
+	"""
+	
+	six_and_a_half_months_ago = datetime.now() - timedelta(days=194)
+	
+	subquery = db.session.query(
+		Log.user_id,
+		func.max(Log.timestamp).label('max_timestamp')
+	).filter(
+		Log.message.like('%logged in%')
+	).group_by(Log.user_id).subquery()
+	
+	to_be_marked_inactive = db.session.query(
+		Log.user_id,
+		Log.timestamp,
+		Log.message,
+		User.firstname,
+		User.lastname
+	).join(
+		User, User.id == Log.user_id
+	).join(
+		subquery,
+		(Log.user_id == subquery.c.user_id) &
+		(Log.timestamp == subquery.c.max_timestamp)
+	).filter(
+		Log.timestamp < six_and_a_half_months_ago,
+		User.status == 'Active'
+	).all()
+	
+	for member in to_be_marked_inactive:
+		set_user_inactive(member.user_id)
+		message = f"Hi, {member.firstname}! Your account on the SIMS Portal has been automatically marked as Inactive because it has been more than six months since you last logged in. If you'd like to update it to be Active again, just <https://www.rcrcsims.org/login|login>."
+		send_slack_dm(message, member.user_id)
+	
+	return to_be_marked_inactive
+
 def audit_inactive_members():
 	"""
 	Retrieve the latest login activity of members who have been inactive for more than six months.
