@@ -67,8 +67,9 @@ def save_picture(form_picture):
 
 def send_reset_slack(user):
 	token = user.get_reset_token()
+	user_email = user.email
 	reset_link = url_for("users.reset_token", token=token, _external=True)
-	msg = "Looks like you requested a password reset. *If you did not request this, simply ignore this message.* Otherwise, follow the directions on the page <{}|linked here>.".format(reset_link)
+	msg = "Looks like you requested a password reset. *If you did not request this, simply ignore this message.* Otherwise, follow the directions on the page <{}|linked here>.\n\nAs a reminder, your email to use when logging in is *{}* (case sensitive).".format(reset_link, user_email)
 	send_slack_dm(msg, user.slack_id)
 
 def new_user_slack_alert(message):
@@ -688,7 +689,8 @@ def audit_inactive_members():
 		Log.timestamp,
 		Log.message,
 		User.firstname,
-		User.lastname
+		User.lastname,
+		User.slack_id
 	).join(
 		User, User.id == Log.user_id
 	).join(
@@ -704,7 +706,7 @@ def audit_inactive_members():
 		
 def alert_inactive_members():
 	"""
-	Alert members who have been inactive for more than six months by logging a message.
+	Alert members who have been inactive for more than six months by sending a Slack message.
 	"""
 	try:
 		potentially_inactive_members = audit_inactive_members()
