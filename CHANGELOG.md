@@ -7,6 +7,10 @@
 
 # 1.11.1 (Woodley Park) - 2024-06-05
 
+## New Features
+
+- **Include Email Information in Password Reset**: Some folks weren't able to login after resetting their password because they were using the wrong email, so the Slack message with the link to reset the password now includes their registered email for their reference.
+
 ## Fixes
 
 - **Audit Member Cron Fix**: The trigger to send Slack alerts to members that are potentially inactive was missing a Slack ID.
