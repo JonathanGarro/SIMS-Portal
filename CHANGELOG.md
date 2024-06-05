@@ -5,6 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.1 (Woodley Park) - 2024-06-05
+
+## Fixes
+
+- **Audit Member Cron Fix**: The trigger to send Slack alerts to members that are potentially inactive was missing a Slack ID.
+- **Spacing on IM Alert Page**: Things were a little squished at the bottom of the page when the table grew to include more than a couple rows.
+
 # 1.11.0 (Woodley Park) - 2024-05-24
 
 ## New Features
