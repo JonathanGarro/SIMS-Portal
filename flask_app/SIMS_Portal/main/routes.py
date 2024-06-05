@@ -42,7 +42,7 @@ from SIMS_Portal.main.utils import (
 from SIMS_Portal.users.forms import AssignProfileTypesForm, RegionalFocalPointForm
 from SIMS_Portal.users.utils import (
 	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations, 
-	bulk_slack_photo_update, process_inactive_members, audit_inactive_members, process_inactive_members
+	bulk_slack_photo_update, process_inactive_members, audit_inactive_members, process_inactive_members, alert_inactive_members
 )
 from SIMS_Portal.alerts.utils import (
 	refresh_surge_alerts, refresh_surge_alerts_latest
