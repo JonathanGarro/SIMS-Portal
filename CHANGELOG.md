@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.2 (Woodley Park) - 2024-06-11
+
+## Fixes
+
+- **Inactive Member Pagination**: Following rollout of automatic management of inactive users, a bug was spotted on the nav links that allow you to flip through pages.
+
 # 1.11.1 (Woodley Park) - 2024-06-05
 
 ## New Features
