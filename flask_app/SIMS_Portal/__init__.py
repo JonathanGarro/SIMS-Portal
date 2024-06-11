@@ -156,15 +156,6 @@ def create_app(config_class=Config):
 				from SIMS_Portal.users.utils import process_inactive_members
 				
 				process_inactive_members()
-		
-		# scheduler to automatically ping all associated members to active disasters to request availability
-		# @scheduler.task('cron', id='request_availability', week='*', day_of_week='mon', hour=8)
-		# def run_request_availability():
-		# 	with scheduler.app.app_context():
-		# 		from SIMS_Portal.availability.utils import request_availability_updates
-		# 		from SIMS_Portal.main.utils import heartbeats
-		# 		request_availability_updates()
-		# 		heartbeats('request_availability', 'https://uptime.betterstack.com/api/v1/heartbeat/5WUSoe7kqnkKxQVLr1iKTFuq')
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
