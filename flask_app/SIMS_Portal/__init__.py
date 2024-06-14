@@ -11,7 +11,6 @@ from flask_caching import Cache
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy, inspect
-from flask_talisman import Talisman
 from flaskext.markdown import Markdown
 from logging.config import dictConfig
 from logging.handlers import RotatingFileHandler
@@ -33,7 +32,6 @@ login_manager = LoginManager()
 login_manager.login_view = 'users.login' 
 login_manager.login_message_category = 'danger'
 cache = Cache()
-talisman = Talisman()
 
 def init_logging():
     dictConfig({
@@ -95,64 +93,6 @@ def create_app(config_class=Config):
 	
 	csrf = CSRFProtect(app)
 	
-	csp = {
-		'default-src': ["'self'"],
-		'img-src': ["'self'", 'data:', 'https://www.google.com', 'https://www.gstatic.com'],
-		'script-src': [
-			"'self'", 
-			"'unsafe-inline'", 
-			'https://cdn.jsdelivr.net', 
-			'https://d3js.org', 
-			'https://unpkg.com', 
-			'https://www.google.com', 
-			'https://www.googletagmanager.com', 
-			'https://cdnjs.cloudflare.com', 
-			'https://ajax.googleapis.com', 
-			'https://maxcdn.bootstrapcdn.com',
-			'https://cdn.datatables.net',
-			'https://www.gstatic.com',
-			'https://cdn.jsdelivr.net/npm/typed.js@2.0.12'
-		],
-		'style-src': [
-			"'self'", 
-			"'unsafe-inline'", 
-			'https://cdn.jsdelivr.net', 
-			'https://fonts.googleapis.com', 
-			'https://cdn.datatables.net', 
-			'https://maxcdn.bootstrapcdn.com'
-		],
-		'font-src': [
-			"'self'", 
-			'https://fonts.googleapis.com', 
-			'https://fonts.gstatic.com', 
-			'https://cdn.jsdelivr.net',
-			'https://maxcdn.bootstrapcdn.com',
-			'data:'
-		],
-		'connect-src': [
-			"'self'", 
-			'https://www.google-analytics.com',
-			'https://www.gstatic.com'
-		]
-	}
-	
-	# apply talisman with CSP policy
-	talisman.init_app(app, content_security_policy=csp, strict_transport_security=True, frame_options='DENY')
-	
-	@app.after_request
-	def set_security_headers(response):
-		response.headers['X-Content-Type-Options'] = 'nosniff'
-		response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-		return response
-	
-	# set cookie options
-	@app.after_request
-	def set_cookie_options(response):
-		for cookie in response.headers.getlist('Set-Cookie'):
-			if 'SameSite' not in cookie:
-				response.headers.add('Set-Cookie', f'{cookie}; SameSite=None; Secure')
-		return response
-	
 	# logging
 	if not app.debug:
 		if not os.path.exists('logs'):
@@ -211,10 +151,6 @@ def create_app(config_class=Config):
 				from SIMS_Portal.users.utils import process_inactive_members
 				
 				process_inactive_members()
-	
-	@app.route('/health')
-	def health_check():
-		return 'OK', 200
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
