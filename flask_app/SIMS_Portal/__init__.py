@@ -96,24 +96,60 @@ def create_app(config_class=Config):
 	
 	csp = {
 		'default-src': ["'self'"],
-		'img-src': ["'self'", 'data:'],
-		'script-src': ["'self'", "'unsafe-inline'"], 
-		'style-src': ["'self'", "'unsafe-inline'"], 
+		'img-src': ["'self'", 'data:', 'https://www.google.com', 'https://www.gstatic.com'],
+		'script-src': [
+			"'self'", 
+			"'unsafe-inline'", 
+			'https://cdn.jsdelivr.net', 
+			'https://d3js.org', 
+			'https://unpkg.com', 
+			'https://www.google.com', 
+			'https://www.googletagmanager.com', 
+			'https://cdnjs.cloudflare.com', 
+			'https://ajax.googleapis.com', 
+			'https://maxcdn.bootstrapcdn.com',
+			'https://cdn.datatables.net',
+			'https://www.gstatic.com',
+			'https://cdn.jsdelivr.net/npm/typed.js@2.0.12'
+		],
+		'style-src': [
+			"'self'", 
+			"'unsafe-inline'", 
+			'https://cdn.jsdelivr.net', 
+			'https://fonts.googleapis.com', 
+			'https://cdn.datatables.net', 
+			'https://maxcdn.bootstrapcdn.com'
+		],
+		'font-src': [
+			"'self'", 
+			'https://fonts.googleapis.com', 
+			'https://fonts.gstatic.com', 
+			'https://cdn.jsdelivr.net',
+			'https://maxcdn.bootstrapcdn.com',
+			'data:'
+		],
+		'connect-src': [
+			"'self'", 
+			'https://www.google-analytics.com',
+			'https://www.gstatic.com'
+		]
 	}
 	
 	# apply talisman with CSP policy
-	talisman = Talisman(
-		app,
-		content_security_policy=csp,
-		strict_transport_security=True,
-		frame_options='DENY',
-		content_type_options='nosniff'
-	)
+	Talisman(app, content_security_policy=csp, strict_transport_security=True, frame_options='DENY')
 	
-	@app.before_request
-	def add_cache_control_header():
-		response = request.make_response()
+	@app.after_request
+	def set_security_headers(response):
+		response.headers['X-Content-Type-Options'] = 'nosniff'
 		response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+		return response
+	
+	# set cookie options
+	@app.after_request
+	def set_cookie_options(response):
+		for cookie in response.headers.getlist('Set-Cookie'):
+			if 'SameSite' not in cookie:
+				response.headers.add('Set-Cookie', f'{cookie}; SameSite=None; Secure')
 		return response
 	
 	# logging
