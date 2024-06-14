@@ -5,6 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.3 (Woodley Park) - 2024-06-14
+
+## Fixes
+
+- **Add Headers**: In order to comply with AmRC IT security requirements, a number of changes were made to how headers load. Added headers for content security policy, strict transport security, x-frame options, x-content type options, and cache-controls.
+- **Remove Extra JS**: An unused JavaScript function was previously raising console error messages.
+
 # 1.11.2 (Woodley Park) - 2024-06-11
 
 ## Fixes
