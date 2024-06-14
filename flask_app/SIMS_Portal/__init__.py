@@ -11,6 +11,7 @@ from flask_caching import Cache
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy, inspect
+from flask_talisman import Talisman
 from flaskext.markdown import Markdown
 from logging.config import dictConfig
 from logging.handlers import RotatingFileHandler
@@ -93,10 +94,27 @@ def create_app(config_class=Config):
 	
 	csrf = CSRFProtect(app)
 	
-	# @babel.localeselector
-	# def get_locale():
-	# 	user_lang = request.accept_languages.best_match(app.config['LANGUAGES'])
-	# 	return request.accept_languages.best_match(app.config['LANGUAGES'])
+	csp = {
+		'default-src': ["'self'"],
+		'img-src': ["'self'", 'data:'],
+		'script-src': ["'self'", "'unsafe-inline'"], 
+		'style-src': ["'self'", "'unsafe-inline'"], 
+	}
+	
+	# apply talisman with CSP policy
+	talisman = Talisman(
+		app,
+		content_security_policy=csp,
+		strict_transport_security=True,
+		frame_options='DENY',
+		content_type_options='nosniff'
+	)
+	
+	@app.before_request
+	def add_cache_control_header():
+		response = request.make_response()
+		response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+		return response
 	
 	# logging
 	if not app.debug:
