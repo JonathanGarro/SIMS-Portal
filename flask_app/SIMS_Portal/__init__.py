@@ -33,6 +33,7 @@ login_manager = LoginManager()
 login_manager.login_view = 'users.login' 
 login_manager.login_message_category = 'danger'
 cache = Cache()
+talisman = Talisman()
 
 def init_logging():
     dictConfig({
@@ -136,7 +137,7 @@ def create_app(config_class=Config):
 	}
 	
 	# apply talisman with CSP policy
-	Talisman(app, content_security_policy=csp, strict_transport_security=True, frame_options='DENY')
+	talisman.init_app(app, content_security_policy=csp, strict_transport_security=True, frame_options='DENY')
 	
 	@app.after_request
 	def set_security_headers(response):
@@ -210,6 +211,10 @@ def create_app(config_class=Config):
 				from SIMS_Portal.users.utils import process_inactive_members
 				
 				process_inactive_members()
+	
+	@app.route('/health')
+	def health_check():
+		return 'OK', 200
 	
 	from SIMS_Portal.main.routes import main
 	from SIMS_Portal.assignments.routes import assignments
