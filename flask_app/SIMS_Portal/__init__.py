@@ -1,7 +1,7 @@
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime	
 from dotenv import load_dotenv
-from flask import Flask, redirect, url_for, request, render_template
+from flask import Flask, redirect, url_for, request, render_template, Response
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_apscheduler import APScheduler
@@ -92,6 +92,23 @@ def create_app(config_class=Config):
 	cache.init_app(app)
 	
 	csrf = CSRFProtect(app)
+	
+	@app.after_request
+	def apply_caching(response):
+		response.headers["Content-Security-Policy"] = (
+			"default-src 'self'; "
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://d3js.org https://unpkg.com https://www.google.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net https://www.gstatic.com https://cdn.jsdelivr.net/npm/typed.js@2.0.12; "
+			"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net; "
+			"img-src 'self' data: https://www.google.com https://www.gstatic.com; "
+			"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net data:;"
+		)
+		response.headers["X-Content-Type-Options"] = "nosniff"
+		response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+		return response
+	
+	@app.route('/health', methods=['GET'])
+	def health_check():
+		return 'OK', 200
 	
 	# logging
 	if not app.debug:
