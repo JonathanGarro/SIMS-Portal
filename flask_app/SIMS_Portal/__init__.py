@@ -93,7 +93,6 @@ def create_app(config_class=Config):
 	
 	csrf = CSRFProtect(app)
 	
-	def apply_caching(app):
 	@app.after_request
 	def add_caching_headers(response):
 		response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
