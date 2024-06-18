@@ -93,17 +93,21 @@ def create_app(config_class=Config):
 	
 	csrf = CSRFProtect(app)
 	
+	def apply_caching(app):
 	@app.after_request
-	def apply_caching(response):
+	def add_caching_headers(response):
+		response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+		response.headers["X-Content-Type-Options"] = "nosniff"
+		response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+		response.headers["X-Frame-Options"] = "DENY"
 		response.headers["Content-Security-Policy"] = (
 			"default-src 'self'; "
-			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://d3js.org https://unpkg.com https://www.google.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net https://www.gstatic.com https://cdn.jsdelivr.net/npm/typed.js@2.0.12; "
-			"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net; "
 			"img-src 'self' data: https://www.google.com https://www.gstatic.com; "
-			"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net data:;"
+			"script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://d3js.org https://unpkg.com https://www.google.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net https://www.gstatic.com; "
+			"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com; "
+			"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com data:; "
+			"connect-src 'self' https://www.google-analytics.com https://www.gstatic.com"
 		)
-		response.headers["X-Content-Type-Options"] = "nosniff"
-		response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
 		return response
 	
 	@app.route('/health', methods=['GET'])
