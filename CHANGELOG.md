@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.4 (Woodley Park) - 2024-06-18
+
+## Fixes
+
+- **Change Header Config**: The *Add Headers* fix in the 1.11.3 release was not sufficient for IT, so I implemented a new function with `@app.after_request` that runs inside the application factory on startup.
+
 # 1.11.3 (Woodley Park) - 2024-06-14
 
 ## Fixes
