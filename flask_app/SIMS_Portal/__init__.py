@@ -93,6 +93,26 @@ def create_app(config_class=Config):
 	
 	csrf = CSRFProtect(app)
 	
+def create_app(config_class=Config):
+	app = Flask(__name__)
+	app.config.from_object(Config)
+	app.config['MAX_CONTENT_LENGTH'] = 75 * 1000 * 1000
+	
+	db.init_app(app)
+	migrate.init_app(app, db)
+	
+	# send build_ns_dropdown() data to context_processor for use in layout.html
+	app.context_processor(build_ns_dropdown)
+	
+	bcrypt.init_app(app)
+	login_manager.init_app(app)
+	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
+	babel = Babel(app)
+	Markdown(app)
+	cache.init_app(app)
+	
+	csrf = CSRFProtect(app)
+	
 	@app.after_request
 	def add_caching_headers(response):
 		response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
@@ -102,10 +122,13 @@ def create_app(config_class=Config):
 		response.headers["Content-Security-Policy"] = (
 			"default-src 'self'; "
 			"img-src 'self' data: https://www.google.com https://www.gstatic.com; "
-			"script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://d3js.org https://unpkg.com https://www.google.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net https://www.gstatic.com; "
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://d3js.org https://unpkg.com https://www.google.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net https://www.gstatic.com; "
 			"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com; "
 			"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com data:; "
-			"connect-src 'self' https://www.google-analytics.com https://www.gstatic.com"
+			"connect-src 'self' https://www.google-analytics.com https://www.gstatic.com; "
+			"frame-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net; "
+			"child-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net; "
+			"object-src 'none';"
 		)
 		return response
 	
