@@ -94,20 +94,70 @@ def send_im_alert_to_slack(alert_info):
 		db.session.commit()
 		regional_focal_point = "Focal Point Missing"
 	
-	# reformat dates for slack message
-	requested_timeframe_start = alert_info.start.strftime("%B %d, %Y")
-	requested_timeframe_end = alert_info.end_time.strftime("%B %d, %Y")
+	# Check and reformat dates for slack message
+	if alert_info.start and alert_info.end:
+		requested_timeframe_start = alert_info.start.strftime("%B %d, %Y")
+		requested_timeframe_end = alert_info.end.strftime("%B %d, %Y")
+		timeframe_message = f'{requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months)'
+	else:
+		timeframe_message = "Start and/or end date information missing in API. Please contact the regional focal point for information on the timeframe."
 	
-	# construct message depending on these variables
+	# Construct message depending on these variables
 	if alert_info.scope == 'Global':
 		if alert_info.role_profile == 'SIMS Remote Coordinator':
-			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *SIMS Remote Coordinator* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n • *Note*: SIMS Remote Coordinator positions are remote \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
-		
+			message = f'''
+			\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n 
+			A surge alert for a *SIMS Remote Coordinator* has been released for the 
+			<https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is 
+			{colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n 
+			• *Role*: 1 x {alert_info.role_profile} \n\n 
+			• *Rotation*: {alert_info.rotation} \n\n 
+			• *Language requirements*: {alert_info.language_required} \n\n 
+			• *Modality*: {alert_info.modality} \n\n 
+			• *Requested timeframe*: {timeframe_message} \n\n 
+			• {position_description_link} \n\n 
+			• *Regional Focal Point*: <@{regional_focal_point}> \n\n 
+			• *Note*: SIMS Remote Coordinator positions are remote \n\n 
+			Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the 
+			IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact 
+			surge@ifrc.org
+			'''
 		else:
-			message = f'\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org'
+			message = f'''
+			\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n 
+			A surge alert for a *{alert_info.role_profile}* has been released for the 
+			<https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is 
+			{colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n 
+			• *Role*: 1 x {alert_info.role_profile} \n\n 
+			• *Rotation*: {alert_info.rotation} \n\n 
+			• *Language requirements*: {alert_info.language_required} \n\n 
+			• *Modality*: {alert_info.modality} \n\n 
+			• *Requested timeframe*: {timeframe_message} \n\n 
+			• {position_description_link} \n\n 
+			• *Regional Focal Point*: <@{regional_focal_point}> \n\n
+			Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the 
+			IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact 
+			surge@ifrc.org
+			'''
 	
 	if alert_info.scope == 'Regional':
-		message = f'\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {requested_timeframe_start} - {requested_timeframe_end} ({alert_length} months) \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\nPlease follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact {regional_surge_email}'
+		message = f'''
+		\n *New Regional Information Management Surge Alert Released!* \n\n 
+		A regional surge alert for a *{alert_info.role_profile}* has been released for the 
+		<https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is 
+		{colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and 
+		this message is for situational awareness only. \n\n 
+		• *Role*: 1 x {alert_info.role_profile} \n\n 
+		• *Rotation*: {alert_info.rotation} \n\n 
+		• *Language requirements*: {alert_info.language_required} \n\n 
+		• *Modality*: {alert_info.modality} \n\n 
+		• *Requested timeframe*: {timeframe_message} \n\n 
+		• {position_description_link} \n\n 
+		• *Regional Focal Point*: <@{regional_focal_point}> \n\n
+		Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the 
+		IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact 
+		{regional_surge_email}
+		'''
 	
 	new_surge_alert(message)
 	# test_surge_alert(message)
