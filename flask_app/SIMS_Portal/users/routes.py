@@ -409,8 +409,11 @@ def update_profile():
 		else:
 			update_robots_txt(current_user.id, disallow=False)
 		
-		if form.github.data:
+		if form.github.data != current_user.github:
+			current_user.github = form.github.data
 			invite_user_to_github(form.github.data)
+		else:
+			current_user.github = form.github.data
 
 		# look for new skills added in the edit page
 		for skill_name in form.skills.data:
