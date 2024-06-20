@@ -267,7 +267,13 @@
 								<td class="align-middle">{{alert.country_name}}</td>
 								<td class="align-middle">{{alert.ifrc_severity_level_display}}</td>
 								<td class="align-middle">{{alert.scope}}</td>
-								<td class="align-middle">{{alert.start.strftime('%b %d, %Y')}}</td>
+								<td class="align-middle">
+									{% if alert.start %}
+										{{ alert.start.strftime('%b %d, %Y') }}
+									{% else %}
+										No Date
+									{% endif %}
+								</td>
 								<td class="align-middle"><a href="https://rrms.ifrc.org/positions/show/{{alert.molnix_id}}">View</a></td>
 
 							</tr>
