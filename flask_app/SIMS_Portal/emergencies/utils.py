@@ -22,6 +22,9 @@ def create_response_channel(location, disaster_type):
 	current_year = datetime.now().year
 	emergency_type = db.session.query(EmergencyType.emergency_type_name).filter(EmergencyType.emergency_type_go_id == disaster_type).scalar().lower()
 	
+	# substitute underscores for spaces in emergency_type
+	emergency_type = emergency_type.replace(' ', '_')
+	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	
 	try:
