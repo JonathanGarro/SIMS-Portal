@@ -485,16 +485,18 @@ def dashboard():
 	count_active_IM_alerts = db.session.query(func.count()).filter(
 		Alert.im_filter == True,
 		Alert.alert_status == 'Open',
-		Alert.alert_record_created_at >= ninety_days_ago
+		Alert.alert_record_created_at >= ninety_days_ago, 
+		Alert.end_time.isnot(None)
 	).scalar()
 	
 	list_active_IM_alerts = db.session.query(Alert).filter(
 		Alert.im_filter == True,
 		Alert.alert_status == 'Open',
-		Alert.alert_record_created_at >= ninety_days_ago
+		Alert.alert_record_created_at >= ninety_days_ago,
+		Alert.end_time.isnot(None)
 	).all()
 	
-	surge_alerts = db.session.query(Alert).filter(Alert.im_filter==True).all()
+	surge_alerts = db.session.query(Alert).filter(Alert.im_filter == True).all()
 	
 	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, count_active_IM_alerts=count_active_IM_alerts, list_active_IM_alerts=list_active_IM_alerts)
 
