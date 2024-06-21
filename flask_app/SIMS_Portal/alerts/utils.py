@@ -159,16 +159,24 @@ def send_im_alert_to_slack(alert_info):
 		{regional_surge_email}
 		'''
 	
-	# new_surge_alert(message)
-	test_surge_alert(message)
+	new_surge_alert(message)
+	# test_surge_alert(message)
 
 def refresh_surge_alerts_latest():
 	"""
 	Queries the GO API to get the latest surge alerts. This version of the function only looks at the latest page in the results. If this function is run daily, that should catch all alerts that come out. To run the same version of this function but loop through all pages, use the `refresh_surge_alerts()` function available in this same utility file.
 	"""
+	count_new_records = 0
+	count_updated_records = 0
+	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
 	
 	try:
 		log_message = f"[INFO] The Surge Alert (Latest) cron job has started."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+	
+		log_message = f"[INFO] Fetching existing alerts from the database."
 		new_log = Log(message=log_message, user_id=0)
 		db.session.add(new_log)
 		db.session.commit()
@@ -182,11 +190,20 @@ def refresh_surge_alerts_latest():
 			alert_dict['molnix_id'] = alert.alert_id
 			alert_dict['alert_status'] = alert.alert_status
 			existing_statuses.append(alert_dict)
+	
+		log_message = f"[INFO] Making API request to {url}."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
 		
-		url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
 		result_list = []
 		
 		response = requests.get(url)
+		log_message = f"[INFO] API request successful, processing response."
+		new_log = Log(message=log_message, user_id=0)
+		db.session.add(new_log)
+		db.session.commit()
+	
 		data = response.json()
 		results = data.get("results", [])
 		
@@ -208,7 +225,6 @@ def refresh_surge_alerts_latest():
 			modality = None
 			im_filter = False
 			
-			# predefine these ahead of the for loop in case no value returned
 			region_id = None
 			sector = None
 			role_profile = None 
@@ -244,7 +260,6 @@ def refresh_surge_alerts_latest():
 			iso3 = country.get("iso3", None)
 			country_name = country.get("name", None)
 			
-			# convert region name to ID compatible with GO
 			region_ids_dict = {
 				"Europe Region": 4,
 				"Asia Pacific Region": 3,
@@ -289,25 +304,23 @@ def refresh_surge_alerts_latest():
 		
 			result_list.append(result_dict)
 		
-		count_new_records = 0
-		count_updated_records = 0
-		
 		for result in result_list:
 			
-			# these fields can have multiple values, so strip curly brackets and save as comma-separated strings
 			result['sectors'] = ', '.join(result['sectors'])
 			result['role_tags'] = ', '.join(result['role_tags'])
 			
 			existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
 			
 			if existing_alert:
-				# check if alert_status has changed
 				if existing_alert.alert_status != result['alert_status']:
 					try:
-						# update the existing alert in the database
 						existing_alert.alert_status = result['alert_status']
 						db.session.commit()
 						count_updated_records += 1
+						log_message = f"[INFO] Updated alert_status for alert_id {result['alert_id']}."
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
 					except Exception as e:
 						log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}: {e}"
 						new_log = Log(message=log_message, user_id=0)
@@ -315,7 +328,6 @@ def refresh_surge_alerts_latest():
 						db.session.commit()
 			
 			else:
-				# this is a new alert; add it to the database
 				if result['alert_id'] not in existing_alert_ids:
 					try:
 						individual_alert = Alert(
@@ -354,8 +366,11 @@ def refresh_surge_alerts_latest():
 						db.session.add(individual_alert)
 						db.session.commit()
 						count_new_records += 1
+						log_message = f"[INFO] Added new alert with alert_id {individual_alert.alert_id}."
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
 						
-						# send IM alerts to availability channel in slack
 						if individual_alert.im_filter == True:
 							send_im_alert_to_slack(individual_alert)
 						
@@ -364,7 +379,7 @@ def refresh_surge_alerts_latest():
 						new_log = Log(message=log_message, user_id=0)
 						db.session.add(new_log)
 						db.session.commit()
-			
+	
 	except Exception as e:
 		log_message = f"[ERROR] The Surge Alert cron job has failed: {e}."
 		new_log = Log(message=log_message, user_id=0)
@@ -375,7 +390,7 @@ def refresh_surge_alerts_latest():
 	log_message = f"[INFO] The Surge Alert cron job has finished and logged {count_new_records} new records."
 	new_log = Log(message=log_message, user_id=0)
 	db.session.add(new_log)
-	db.session.commit()	
+	db.session.commit()
 
 
 def refresh_surge_alerts(pages_to_fetch):
