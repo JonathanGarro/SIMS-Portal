@@ -33,7 +33,7 @@ def create_response_channel(location, disaster_type):
 			name=f'{current_year}_{iso3}_{emergency_type}',
 			is_private=False  
 		)
-		log_message = f"[Info] create_response_channel() successfully ran and created channel {response['channel']['id']}."
+		log_message = f"[INFO] create_response_channel() successfully ran and created channel {response['channel']['id']}."
 		new_log = Log(message=log_message, user_id=current_user.id)
 		db.session.add(new_log)
 		db.session.commit()
