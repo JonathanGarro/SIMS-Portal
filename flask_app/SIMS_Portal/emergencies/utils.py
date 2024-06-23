@@ -28,7 +28,6 @@ def create_response_channel(location, disaster_type):
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	
 	try:
-
 		response = client.conversations_create(
 			name=f'{current_year}_{iso3}_{emergency_type}',
 			is_private=False  
