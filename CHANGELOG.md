@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.5 (Woodley Park) - 2024-06-23
+
+## Fixes
+
+- **Primary Key for Emergency Type**: The database had an issue with the `emergencytype` table, where certain elements of the application were accidentally set up to reference the GO type ID rather than the SIMS Portal's primary key for the table. These two columns have been brought into alignment to avoid conflicts (e.g. "Population Movement" has both a primary key and a `go_emergency_type_id` of 5.)
+
 # 1.11.4 (Woodley Park) - 2024-06-18
 
 ## Fixes
