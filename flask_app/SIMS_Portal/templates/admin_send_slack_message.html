@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                   {% for category, message in messages %}
+                       <div class="mt-2 alert alert-{{ category }}">
+                           {{ message }} 
+                       </div>
+                   {% endfor %}
+               {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row mt-3 mb-5">
+        <div class="col col-md-3 rounded rounded-3 mb-5">
+            <div class="card p-4 bg-danger mt-5 position-sticky" style="top: 15px;">
+                <div class="row">
+                    <div>
+                        <h5 class="text-light Montserrat mb-3">Admin Controls</h5>
+                    <ul class="list-group border-0">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/manage_profiles" class="text-secondary">
+                                <i data-feather="user" class="mr-3"></i>
+                                &nbsp Manage Profiles
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-secondary">
+                                <i data-feather="award" class="mr-3"></i> 
+                                &nbsp Assign Badges
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/upload_badges" class="text-secondary">
+                                <i data-feather="upload" class="mr-3"></i> 
+                                &nbsp Upload Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/approve_members" class="text-secondary">
+                                <i data-feather="thumbs-up" class="mr-3"></i> 
+                                &nbsp Approve Members
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_reviews" class="text-secondary">
+                                <i data-feather="book-open" class="mr-3"></i> 
+                                &nbsp Open Reviews
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/edit_skills" class="text-secondary">
+                                <i data-feather="list" class="mr-3"></i> 
+                                &nbsp Skills List
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_acronyms" class="text-secondary">
+                                <i data-feather="pen-tool" class="mr-3"></i> 
+                                &nbsp Process Acronyms
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/assign_regional_focal_point" class="text-secondary">
+                                <i data-feather="globe" class="mr-3"></i> 
+                                &nbsp Focal Points
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/view_logs" class="text-secondary">
+                                <i data-feather="activity" class="mr-3"></i> 
+                                &nbsp Activity Logs
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-secondary active-link">
+                                <i data-feather="slack" class="mr-3"></i> 
+                                &nbsp Slack Message
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/manual_refresh" class="text-secondary">
+                                <i data-feather="refresh-ccw" class="mr-3"></i> 
+                                &nbsp Manual Refresh
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin" class="text-secondary">
+                                <i data-feather="settings" class="mr-3"></i> 
+                                &nbsp Admin Backend
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>		
+        </div>
+        <div class="col g-5">
+            <h2 class="text-dark Montserrat mb-5">Send Slack Message</h2>
+            <form action="" method="POST" enctype="multipart/form-data" class="bg-light text-light p-4 rounded-3 border border-3" novalidate>
+                {{ message_form.hidden_tag() }}
+                <div class='row'>
+                    <div class='col-md-5'>{{ message_form.user_slack.label(class="form-control-label pb-2 text-danger") }}</div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-5'>{{ message_form.user_slack(class="form-control form-control-lg") }} </div>
+                </div>
+                <div class='row mt-3'>
+                    <div class='col'>{{ message_form.message.label(class="form-control-label pb-2 text-danger") }}</div>
+                </div>
+                <div class='row'>
+                    <div class='col'>{{ message_form.message(class="form-control form-control-lg") }} </div>
+                </div>
+                <div class='row mt-5'>
+                   <div class='col'>{{ message_form.submit(class="btn btn-lg btn-outline-danger") }}</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
