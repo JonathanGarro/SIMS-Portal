@@ -5,11 +5,21 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.11.7 (Woodley Park) - TBD
+
+## New Features
+
+- **Manual Slack Message Sender**: Admins can now use the Portal to send Slack messages to individual users. Messages come from the SIMS Portal Slack user.
+
+## Fixes
+
+- **Outerjoin for Logs**: The logs for administrators was not returning all rows because of a limited left join with the Users table, so I converted that to an outer join.
+
 # 1.11.6 (Woodley Park) - 2024-06-23
 
 ## Fixes
 
-- **Migrate Flag Images to S3**: The header solution introduced in 1.11.3 were blocking the flag CDN that loads a thumbnail on emergency pages. I couldn't fix this with additional whitelisting of domains in that header solution, so I [downloaded the flags](https://gist.github.com/JonathanGarro/3e9e36f9a4455a8acb2a6e949b2f42c9) and moved them into AWS S3, and reconfigured the emergency page to load from that bucket.
+- **Migrate Flag Images to S3**: The header solution introduced in 1.11.3 was blocking the flag CDN that loads a thumbnail on emergency pages. I couldn't fix this with additional whitelisting of domains in that header solution, so I [downloaded the flags](https://gist.github.com/JonathanGarro/3e9e36f9a4455a8acb2a6e949b2f42c9) and moved them into AWS S3, and reconfigured the emergency page to load from that bucket.
 
 # 1.11.5 (Woodley Park) - 2024-06-23
 
