@@ -127,7 +127,7 @@ def send_im_alert_to_slack(alert_info):
 		
 	except Exception as e:
 		log_message = f"[WARNING] send_im_alert_to_slack() failed: {e}"
-		new_log = Log(message=log_message, user_id=0)
+		new_log = Log(message=log_message, user_id=63) # send message as Clara Barton
 		db.session.add(new_log)
 		db.session.commit()
 
