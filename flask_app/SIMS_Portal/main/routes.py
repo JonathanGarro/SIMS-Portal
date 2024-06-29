@@ -29,7 +29,7 @@ from SIMS_Portal.models import (
 from SIMS_Portal.main.forms import (
 	MemberSearchForm, EmergencySearchForm, ProductSearchForm,
 	BadgeAssignmentForm, SkillCreatorForm, BadgeAssignmentViaSIMSCoForm,
-	NewBadgeUploadForm
+	NewBadgeUploadForm, ManualSlackMessage
 )
 from SIMS_Portal.main.utils import (
 	fetch_slack_channels, check_sims_co, save_new_badge,
@@ -54,7 +54,6 @@ from SIMS_Portal.emergencies.utils import (
 from SIMS_Portal.availability.utils import (
 	send_slack_availability_request, request_availability_updates
 )
-
 
 main = Blueprint('main', __name__)
 
@@ -119,6 +118,29 @@ def create_badge():
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+
+@main.route('/admin/send_slack_message', methods=['GET', 'POST'])
+@login_required
+def send_manual_slack_message():
+	message_form = ManualSlackMessage()
+	if request.method == 'GET' and current_user.is_admin == 1:
+		return render_template('admin_send_slack_message.html', message_form=message_form)
+	
+	if request.method == 'POST' and current_user.is_admin == 1:
+		if message_form.validate_on_submit():
+			message = message_form.message.data
+			selected_user = message_form.user_slack.data
+			if selected_user:
+				user_slack_id = selected_user.slack_id
+				send_slack_dm(message, user_slack_id)
+				flash('Message sent!', 'success')
+				return redirect(url_for('main.send_manual_slack_message'))
+			else:
+				flash('Please select a valid user.', 'danger')
+		else:
+			flash('Invalid form. Please check your inputs.', 'danger')
+	
+	return render_template('admin_send_slack_message.html', message_form=message_form)
 
 @main.route('/admin/manage_profiles', methods=['GET', 'POST'])
 @login_required
@@ -274,7 +296,7 @@ def admin_process_acronyms():
 @login_required
 def view_logs():
 	if current_user.is_admin == 1:
-		logs = db.session.query(Log, User).join(User, User.id == Log.user_id).order_by(desc(Log.timestamp)).limit(1000).all()
+		logs = db.session.query(Log, User).outerjoin(User, User.id == Log.user_id).order_by(desc(Log.timestamp)).limit(1000).all()
 		
 		for log, user in logs:
 			match = re.search(r'\[(\w+)\]', log.message)
