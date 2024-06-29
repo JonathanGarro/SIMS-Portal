@@ -62,7 +62,7 @@
                             </a>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="admin/assign_regional_focal_point" class="text-secondary">
+                            <a href="/admin/assign_regional_focal_point" class="text-secondary">
                                 <i data-feather="globe" class="mr-3"></i> 
                                 &nbsp Focal Points
                             </a>
@@ -71,6 +71,12 @@
                             <a href="#" class="text-secondary active-link">
                                 <i data-feather="activity" class="mr-3"></i> 
                                 &nbsp Activity Logs
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/send_slack_message" class="text-secondary">
+                                <i data-feather="slack" class="mr-3"></i> 
+                                &nbsp Slack Message
                             </a>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -108,7 +114,13 @@
                             {% for log, user in logs %}
                             <tr>
                                 <td>{{log.timestamp}}</td>
-                                <td><a href='/profile/view/{{user.id}}'>{{user.firstname}} {{user.lastname}}</a></td>
+                                <td>
+                                  {% if user is none or user.id == 0 or user.id == 63 %}
+                                    System Process
+                                  {% else %}
+                                    <a href='/profile/view/{{ user.id }}'>{{ user.firstname }} {{ user.lastname }}</a>
+                                  {% endif %}
+                                </td>
                                 <td>{{log.message}}</td>
                                 <td><span class="{{ log.severity.lower() }}">{{ log.severity }}</span></td>
                             </tr>
