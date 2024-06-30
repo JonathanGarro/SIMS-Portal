@@ -32,7 +32,6 @@
 	<title>SIMS</title>
 </head>
 
-
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YMC00C35S"></script>
 <script>
@@ -212,71 +211,69 @@
 				{% endif %}
 		</header>
 
-		{% block content %}{% endblock %}
-		<br><br>
-		<section class="">
-			<footer class="bg-body-tertiary" style="background-color: #404040">
-				<div class="container p-4">
-					<div class="row">
-						<div class="row">
-							<div class="col-lg-6 col-md-12 mb-4 mb-md-0 mt-3">
-								<h5 class="text-uppercase text-light Montserrat">The SIMS Network</h5>
-								<p class="text-light">
-									Surge Information Management Support (SIMS) is a global network of Information Management specialists who support IFRC emergency response operations by providing a variety of services and products.
-								</p>
-							</div>
-							<div class="col-lg-3 col-md-6 mb-4 mb-md-0 mt-3">
-								<h5 class="text-uppercase text-white Montserrat">Portal Information</h5>
-								<ul class="list-unstyled mb-0">
-									<li><a href="https://sims-portal.betteruptime.com/" class="text-white">Site Status</a></li>
-									<li><a href="https://github.com/JonathanGarro/SIMS-Portal" class="text-white">Source Code</a></li>
-									<li><a href="https://github.com/JonathanGarro/SIMS-Portal/blob/main/CHANGELOG.md" class="text-white">Release Notes</a></li>
-									<li><a href="https://simsportal.docs.apiary.io/" class="text-white">API Documentation</a></li>
-								</ul>
-							</div>
-							<div class="col-lg-3 col-md-6 mb-4 mb-md-0 mt-3">
-								<h5 class="text-uppercase Montserrat"> &nbsp; </h5>
-								<ul class="list-unstyled">
-									<li><a href="https://rcrcsims.org/portal_admins" class="text-white">Site Admins</a></li>
-									<li><a href="https://rcrcsims.org/privacy" class="text-white">Privacy Policy</a></li>
-									<li><a href="https://rcrcsims.org/acronyms" class="text-white">Acronyms</a></li>
-									<li><a href="https://rcrcsims.org/documentation" class="text-white">SIMS Guides</a></li>
-								</ul>
-							</div>
-						</div>
+		<main class="flex-grow-1">
+			{% block content %}{% endblock %}
+		</main>
+
+		<footer class="mt-auto bg-body-tertiary" style="background-color: #404040;">
+			<div class="container p-4">
+				<div class="row">
+					<div class="col-lg-6 col-md-12 mb-4 mb-md-0 mt-3">
+						<h5 class="text-uppercase text-light Montserrat">The SIMS Network</h5>
+						<p class="text-light">
+							Surge Information Management Support (SIMS) is a global network of Information Management specialists who support IFRC emergency response operations by providing a variety of services and products.
+						</p>
+					</div>
+					<div class="col-lg-3 col-md-6 mb-4 mb-md-0 mt-3">
+						<h5 class="text-uppercase text-white Montserrat">Portal Information</h5>
+						<ul class="list-unstyled mb-0">
+							<li><a href="https://sims-portal.betteruptime.com/" class="text-white">Site Status</a></li>
+							<li><a href="https://github.com/JonathanGarro/SIMS-Portal" class="text-white">Source Code</a></li>
+							<li><a href="https://github.com/JonathanGarro/SIMS-Portal/blob/main/CHANGELOG.md" class="text-white">Release Notes</a></li>
+							<li><a href="https://simsportal.docs.apiary.io/" class="text-white">API Documentation</a></li>
+						</ul>
+					</div>
+					<div class="col-lg-3 col-md-6 mb-4 mb-md-0 mt-3">
+						<h5 class="text-uppercase Montserrat"> &nbsp; </h5>
+						<ul class="list-unstyled">
+							<li><a href="https://rcrcsims.org/portal_admins" class="text-white">Site Admins</a></li>
+							<li><a href="https://rcrcsims.org/privacy" class="text-white">Privacy Policy</a></li>
+							<li><a href="https://rcrcsims.org/acronyms" class="text-white">Acronyms</a></li>
+							<li><a href="https://rcrcsims.org/documentation" class="text-white">SIMS Guides</a></li>
+						</ul>
 					</div>
 				</div>
-				<div class="text-center p-3 text-small text-light" style="background-color: rgba(0, 0, 0, 0.2);">
-					The SIMS Portal is built and maintained by <a href="https://rcrcsims.org/profile/view/1">Jonathan Garro</a> of the American Red Cross and licensed under <a class="text-light fw-bold" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">(CC BY-NC-SA 4.0)</a>
-				</div>
-			</footer>
-		</section>
-	</body>
+			</div>
+			<div class="text-center p-3 text-small text-light" style="background-color: rgba(0, 0, 0, 0.2);">
+				The SIMS Portal is built and maintained by <a href="https://rcrcsims.org/profile/view/1" class="text-light">Jonathan Garro</a> of the American Red Cross and licensed under <a class="text-light fw-bold" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">(CC BY-NC-SA 4.0)</a>
+			</div>
+		</footer>
 
-	<script>
-		feather.replace();
-	</script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js" integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://unpkg.com/@popperjs/core@2"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-	<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/date-1.2.0/rg-1.3.0/sb-1.4.0/sp-2.1.0/datatables.min.js"></script>
-	<script src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
-	<script src="{{url_for('static', filename='js/scripts.js')}}"></script>
-	{% if request.path == '/' %}
-	<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-	<script>
-		var typed = new Typed(".typed", {
-			strings: [, "affected area basemaps.", "achievement infographics.", "mobile data collection.", "data analysis.", "dashboard creation.", "web visualizations."],
-			typeSpeed: 20,
-			backSpeed: 50,
-			backDelay: 1500,
-			loop: true
-		})
-	</script>
-	{% endif %}
+		<script>
+			feather.replace();
+		</script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js" integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/@popperjs/core@2"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/date-1.2.0/rg-1.3.0/sb-1.4.0/sp-2.1.0/datatables.min.js"></script>
+		<script src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
+		<script src="{{url_for('static', filename='js/scripts.js')}}"></script>
+		{% if request.path == '/' %}
+		<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+		<script>
+			var typed = new Typed(".typed", {
+				strings: [, "affected area basemaps.", "achievement infographics.", "mobile data collection.", "data analysis.", "dashboard creation.", "web visualizations."],
+				typeSpeed: 20,
+				backSpeed: 50,
+				backDelay: 1500,
+				loop: true
+			})
+		</script>
+		{% endif %}
+</body>
 
 </html>
