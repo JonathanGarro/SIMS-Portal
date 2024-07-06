@@ -6,8 +6,26 @@ import logging
 
 def request_learnings(dis_id):
     """
-    Takes in a disaster ID and sends all remote supporters a link to their learning form
+    Request learning feedback from remote IM support assignments for a given disaster.
+    
+    Queries the database for remote IM support assignments related to a specific disaster ID.
+    It sends a Slack direct message to each user associated with these assignments, requesting them to provide
+    learning feedback via a provided link.
+    
+    Parameters:
+    dis_id (int): The ID of the disaster for which to request learning feedback.
+    
+    Returns:
+    None
+    
+    Side Effects:
+    - Sends Slack direct messages to users requesting feedback.
+    - Logs errors to the current application's logger if any occur during message sending.
+    
+    Raises:
+    None
     """
+    
     emergency_remote_assignments = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id, Assignment.role == 'Remote IM Support').with_entities(Assignment.id, User.id, User.slack_id, User.firstname, Emergency.id, Emergency.emergency_name).all()
     
     # reference the tuples returned by sql, reference first result, then relevant keys

@@ -12,6 +12,26 @@ from sqlalchemy.orm import aliased
 import requests
 
 def send_error_message(message):
+	"""
+	Send an error message to a specific Slack channel.
+	
+	Uses the Slack API to send a given error message to a predefined Slack channel.
+	It logs an error if the message fails to send.
+	
+	Parameters:
+	message (str): The error message to be sent to the Slack channel.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Sends a message to a Slack channel.
+	- Logs errors to the current application's logger if the message fails to send.
+	
+	Raises:
+	None
+	"""
+	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
 		result = client.chat_postMessage(
@@ -22,6 +42,35 @@ def send_error_message(message):
 		current_app.logger.error('new_acronym_alert Slack message failed: {}'.format(e))
 
 def user_info_by_ns(ns_id):
+	"""
+	Retrieve user information for a specific National Society.
+	
+	Queries the database to get information about users associated with a specific National Society.
+	It returns a list of dictionaries with user details, including profile tiers for various skills.
+	
+	Parameters:
+	ns_id (int): The ID of the National Society for which to retrieve user information.
+	
+	Returns:
+	list: A list of dictionaries, each containing the following keys:
+		- id (int): The user's ID.
+		- firstname (str): The user's first name.
+		- lastname (str): The user's last name.
+		- status (str): The user's status.
+		- geospatial (str or None): The user's tier for geospatial skills.
+		- webviz (str or None): The user's tier for web visualization skills.
+		- infodes (str or None): The user's tier for information design skills.
+		- datatrans (str or None): The user's tier for data transformation skills.
+		- datacollect (str or None): The user's tier for data collection skills.
+		- remoteco (str or None): The user's tier for remote coordination skills.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	query_text = text(
 		"""
 		SELECT u.id, u.firstname, u.lastname, u.status,
@@ -46,6 +95,28 @@ def user_info_by_ns(ns_id):
 	return processed_results
 
 def get_ns_list():
+	"""
+	Retrieve a list of National Societies.
+	
+	Queries the database to get a list of National Societies, excluding those with names containing 'IFRC'.
+	It returns a list of tuples with distinct National Society IDs, names, and country names, sorted by country name.
+	
+	Parameters:
+	None
+	
+	Returns:
+	list: A list of tuples, each containing the following elements:
+		- ns_go_id (int): The ID of the National Society.
+		- ns_name (str): The name of the National Society.
+		- country_name (str): The name of the country where the National Society is located.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	ns_query = select([distinct(NationalSociety.ns_go_id), NationalSociety.ns_name, NationalSociety.country_name]) \
 		.join(User, NationalSociety.ns_go_id == User.ns_id) \
 		.filter(~NationalSociety.ns_name.like('%IFRC%')) \
@@ -57,7 +128,7 @@ def get_ns_list():
 
 def heartbeats(name, url):
 	"""
-	fires off GET requests to betterstack/logtail to serve as heartbeats for cron job monitoring
+	Fires off GET requests to betterstack/logtail to serve as heartbeats for cron job monitoring
 	"""
 	response = requests.get(url)
 	
@@ -69,6 +140,29 @@ def heartbeats(name, url):
 		return "Request failed"
 
 def fetch_slack_channels():
+	"""
+	Fetch and return information about public, non-archived Slack channels.
+	
+	Uses the Slack API to retrieve a list of conversations (channels) from Slack. It filters out private
+	and archived channels, and returns a list of dictionaries with relevant information about each channel.
+	
+	Parameters:
+	None
+	
+	Returns:
+	list: A list of dictionaries, each containing the following keys:
+		- id (str): The ID of the Slack channel.
+		- channel_name (str): The name of the Slack channel.
+		- count_members (int): The number of members in the Slack channel.
+		- purpose (str): The purpose of the Slack channel.
+	
+	Side Effects:
+	- Logs errors to the current application's logger if any occur during the API call.
+	
+	Raises:
+	None
+	"""
+	
 	token = current_app.config['SIMS_PORTAL_SLACK_BOT']
 	client = WebClient(token=token)
 	logger = logging.getLogger(__name__)
@@ -109,7 +203,25 @@ def fetch_slack_channels():
 	return output
 
 def generate_new_response_map():
-	"""Gets full list of countries where SIMS has responded, and writes results to a CSV stored in the static folder."""
+	"""
+	Generate a CSV file containing a list of countries where SIMS has responded.
+	
+	Queries the database to retrieve a count of emergencies by country (identified by ISO3 codes) where 
+	SIMS has responded, excluding those with a status of 'Removed'. It writes the results to a CSV file stored in the 
+	static folder for visualization purposes.
+	
+	Parameters:
+	None
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Writes data to a CSV file at "SIMS_Portal/static/data/emergencies_viz.csv".
+	
+	Raises:
+	None
+	"""
 	
 	all_emergencies = db.engine.execute("SELECT iso3, COUNT(*) as count FROM emergency JOIN nationalsociety WHERE emergency.emergency_location_id = nationalsociety.ns_go_id AND emergency_status <> 'Removed' GROUP BY iso3")
 		
@@ -122,8 +234,24 @@ def generate_new_response_map():
 
 def check_sims_co(emergency_id):
 	"""
-	Takes in an emergency id record and verifies that the current user is listed as a SIMS Remove Coordinator for that record in order to allow additional permission sets.
+	Check if the current user is a SIMS Remote Coordinator for a given emergency.
+	
+	Queries the database to find all SIMS Remote Coordinators assigned to a specific emergency.
+	It then checks if the current user is among those coordinators and returns a boolean value.
+	
+	Parameters:
+	emergency_id (int): The ID of the emergency to check for SIMS Remote Coordinators.
+	
+	Returns:
+	bool: True if the current user is a SIMS Remote Coordinator for the given emergency, False otherwise.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
 	"""
+	
 	sims_co_ids = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == emergency_id, Assignment.role == 'SIMS Remote Coordinator').all()
 	sims_co_list = []
 	for coordinator in sims_co_ids:
@@ -136,6 +264,26 @@ def check_sims_co(emergency_id):
 	return user_is_sims_co
 
 def save_new_badge(file, name):
+	"""
+	Save a new badge file to an S3 bucket and return the file path.
+	
+	Takes an uploaded file and a name, processes the file name to a standardized format,
+	uploads the file to an S3 bucket, and returns the file path.
+	
+	Parameters:
+	file (FileStorage): The file object to be uploaded.
+	name (str): The name to be used for the file, which will be formatted and included in the file path.
+	
+	Returns:
+	str: The file path where the file is saved in the S3 bucket.
+	
+	Side Effects:
+	- Uploads the file to the specified S3 bucket.
+	
+	Raises:
+	None
+	"""
+	
 	filename, file_ext = os.path.splitext(file.filename)
 	filename = name.title().replace(' ','-')
 	file_merged = filename + file_ext
@@ -234,7 +382,6 @@ def auto_badge_assigner_self_promoter():
 			User.id
 		).all()
 		
-		# users_with_skills = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(skill.name, ', ') as skill_names, GROUP_CONCAT(skill.id, ', ') as skill_ids FROM user JOIN user_skill ON user.id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id GROUP BY user.id")
 		existing_self_promoter_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 4")
 		
 		list_user_ids_with_self_promoter = []
@@ -257,7 +404,6 @@ def auto_badge_assigner_polyglot():
 	try:
 		users_with_languages = db.session.query(User.id.label('user_id'), User.firstname, User.lastname, func.string_agg(Language.id.cast(String), ', ').label('languages')).join(user_language, User.id == user_language.c.user_id).join(Language, Language.id == user_language.c.language_id).group_by(User.id).all()
 		
-		# users_with_languages = db.engine.execute("SELECT user.id AS user_id, firstname, lastname, GROUP_CONCAT(language.id, ', ') as languages FROM user JOIN user_language ON user_language.user_id = user.id JOIN language ON language.id = user_language.language_id GROUP BY user_id")
 		existing_polyglot_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 1")
 		
 		list_users_with_languages = []
@@ -359,8 +505,6 @@ def auto_badge_assigner_edward_tufte():
 			
 		users_eligible_for_edward_tufte = db.session.query(User.id, User.firstname, User.lastname, Portfolio.type, func.count().label('total')).join(Portfolio, Portfolio.creator_id == User.id).filter(Portfolio.product_status == 'Approved').filter(Portfolio.type == 'Infographic').group_by(User.id, Portfolio.type).having(func.count() >= 5).all()
 		
-		# users_eligible_for_edward_tufte = db.engine.execute("SELECT user.id, firstname, lastname, type, count(*) as count FROM user JOIN portfolio ON portfolio.creator_id = user.id WHERE product_status = 'Approved' AND type = 'Infographic' GROUP BY user.id HAVING count >= 5")
-		
 		list_users_eligible_for_edward_tufte = []
 		for user in users_eligible_for_edward_tufte:
 			if user.id not in list_user_ids_with_edward_tufte:
@@ -383,8 +527,6 @@ def auto_badge_assigner_world_traveler():
 			list_user_ids_with_world_traveler.append(user.user_id)
 	
 		users_eligible_for_world_traveler = db.session.query(User.id, User.firstname, User.lastname, func.count(func.distinct(NationalSociety.country_name)).label('count_countries')).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).join(NationalSociety, NationalSociety.id == Emergency.id).group_by(User.id, User.firstname, User.lastname).having(func.count(func.distinct(NationalSociety.country_name)) > 4).all()
-		
-		# users_eligible_for_world_traveler = db.engine.execute("SELECT user.id, firstname, lastname, count(distinct country_name) as count_countries FROM User JOIN Assignment ON Assignment.user_id = User.id JOIN Emergency ON Emergency.id = Assignment.emergency_id JOIN nationalsociety ON nationalsociety.ns_go_id = emergency.emergency_location_id GROUP BY user.id HAVING count_countries > 4")
 	
 		for user in users_eligible_for_world_traveler:
 			if user.id not in list_user_ids_with_world_traveler:
@@ -407,8 +549,6 @@ def auto_badge_assigner_old_salt():
 			list_user_ids_with_old_salt.append(user.user_id)
 		
 		users_eligible_for_old_salt = db.session.query(Assignment.id, User.id, User.firstname, User.lastname, func.count().label('count')).join(User, User.id == Assignment.user_id).filter(Assignment.role == 'SIMS Remote Coordinator').group_by(Assignment.id, User.id, User.firstname, User.lastname).having(func.count() > 2).all()
-		
-		# users_eligible_for_old_salt = db.engine.execute("SELECT assignment.id, user.id, firstname, lastname, count(*) as count FROM assignment JOIN user ON user.id = assignment.user_id WHERE role = 'SIMS Remote Coordinator' GROUP BY user.id HAVING count > 2")
 		
 		for user in users_eligible_for_old_salt:
 			if user.id not in list_user_ids_with_old_salt:
