@@ -66,6 +66,25 @@ def save_picture(form_picture):
 	return picture_path
 
 def send_reset_slack(user):
+	"""
+	Send a password reset message to a user via Slack.
+	
+	Generates a password reset token for the given user, constructs a reset link,
+	and sends a direct message to the user's Slack ID with instructions for resetting their password.
+	
+	Parameters:
+	user (User): The user object for whom the password reset is being requested.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Sends a direct message to the user's Slack account with a password reset link and instructions.
+	
+	Raises:
+	None
+	"""
+	
 	token = user.get_reset_token()
 	user_email = user.email
 	reset_link = url_for("users.reset_token", token=token, _external=True)
@@ -73,6 +92,26 @@ def send_reset_slack(user):
 	send_slack_dm(msg, user.slack_id)
 
 def new_user_slack_alert(message):
+	"""
+	Send a new user alert message to the SIMS Portal channel.
+	
+	Cses the Slack API to send a given message to a predefined Slack channel.
+	It logs an error if the message fails to send.
+	
+	Parameters:
+	message (str): The alert message to be sent to the Slack channel.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Sends a message to a Slack channel.
+	- Logs errors to the current application's logger if the message fails to send.
+	
+	Raises:
+	None
+	"""
+	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
 		result = client.chat_postMessage(
@@ -83,6 +122,26 @@ def new_user_slack_alert(message):
 		current_app.logger.error('new_user_slack_alert Slack message failed: {}'.format(e))
 
 def new_surge_alert(message):
+	"""
+	Send a surge alert message to the availability channel.
+	
+	Uses the Slack API to send a given surge alert message to a predefined Slack channel.
+	It logs an error if the message fails to send.
+	
+	Parameters:
+	message (str): The surge alert message to be sent to the Slack channel.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Sends a message to a Slack channel.
+	- Logs errors to the current application's logger if the message fails to send.
+	
+	Raises:
+	None
+	"""
+	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
 		result = client.chat_postMessage(
@@ -93,6 +152,26 @@ def new_surge_alert(message):
 		current_app.logger.error('new_surge_alert Slack message failed: {}'.format(e))
 
 def test_surge_alert(message):
+	"""
+	Send a test surge alert message to the SIMS Portal channel.
+	
+	Uses the Slack API to send a given surge alert message to a predefined Slack channel.
+	It logs an error if the message fails to send.
+	
+	Parameters:
+	message (str): The surge alert message to be sent to the Slack channel.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Sends a message to a Slack channel.
+	- Logs errors to the current application's logger if the message fails to send.
+	
+	Raises:
+	None
+	"""
+	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
 		result = client.chat_postMessage(
@@ -103,6 +182,26 @@ def test_surge_alert(message):
 		current_app.logger.error('new_surge_alert Slack message failed: {}'.format(e))
 
 def new_acronym_alert(message):
+	"""
+	Send an alert that someone posted a new acronym.
+	
+	Uses the Slack API to send a notification about a new acronym to the SIMS Portal channel.
+	It logs an error if the message fails to send.
+	
+	Parameters:
+	message (str): The surge alert message to be sent to the Slack channel.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Sends a message to a Slack channel.
+	- Logs errors to the current application's logger if the message fails to send.
+	
+	Raises:
+	None
+	"""
+	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
 		result = client.chat_postMessage(
@@ -113,6 +212,28 @@ def new_acronym_alert(message):
 		current_app.logger.error('new_acronym_alert Slack message failed: {}'.format(e))
 
 def rem_cos_search():
+	"""
+	Retrieve a list of active SIMS Remote Coordinators for active emergencies.
+	
+	Queries the database to find all active SIMS Remote Coordinators who are assigned to active emergencies.
+	It returns a list of tuples containing assignment, user, and emergency details.
+	
+	Parameters:
+	None
+	
+	Returns:
+	list: A list of tuples, each containing:
+		- Assignment: The assignment details of the SIMS Remote Coordinator.
+		- User: The user details of the SIMS Remote Coordinator.
+		- Emergency: The emergency details to which the SIMS Remote Coordinator is assigned.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	with app.app_context():
 		active_SIMS_cos = db.session.query(Assignment, User, Emergency).join(User, User.id == Assignment.user_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.emergency_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').all()
 
@@ -216,6 +337,24 @@ def get_valid_slack_ids():
 	return users_store
 
 def check_valid_slack_ids(id):
+	"""
+	Check if a given Slack ID is valid.
+	
+	Retrieves a list of valid Slack IDs and checks if the provided ID is in the list.
+	
+	Parameters:
+	id (str): The Slack ID to be validated.
+	
+	Returns:
+	bool: True if the ID is valid, False otherwise.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	users_store = get_valid_slack_ids()
 		
 	if id in users_store:
