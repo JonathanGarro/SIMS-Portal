@@ -16,6 +16,26 @@ import re
 import requests
 
 def create_response_channel(location, disaster_type):
+	"""
+	Create a Slack response channel for a given location and disaster type.
+	
+	Constructs a channel name using the location's ISO3 code, the current year, and the disaster type.
+	It then creates a public Slack channel with this name and logs the operation's success or failure.
+	
+	Parameters:
+	location (int): The location ID (National Society Go ID) for which the channel is created.
+	disaster_type (int): The disaster type ID (Emergency Type Go ID) for which the channel is created.
+	
+	Returns:
+	str: The ID of the created Slack channel if successful.
+	
+	Side Effects:
+	- Creates a new public Slack channel.
+	- Logs success or error messages to the database.
+	
+	Raises:
+	None
+	"""
 	
 	# grab iso3 and year for channel name constructor
 	iso3 = db.session.query(NationalSociety.iso3).filter(NationalSociety.ns_go_id == location).scalar().lower()
@@ -47,8 +67,25 @@ def create_response_channel(location, disaster_type):
 
 def update_response_locations():
 	"""
-	Updates a CSV file with all countries' ISO3 codes and the count of emergencies to which SIMS has responded there.
+	Update the response locations and save the data to a CSV file.
+	
+	Queries the database to get the count of emergencies for each location (identified by ISO3 codes),
+	aggregates this data, and saves it to a CSV file for visualization purposes.
+	
+	Parameters:
+	None
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Writes data to a CSV file at "SIMS_Portal/static/data/emergencies_viz.csv".
+	- Logs the success of the function to the current application's logger.
+	
+	Raises:
+	None
 	"""
+	
 	response_locations = db.engine.execute("SELECT iso3, count(*) AS count_location FROM nationalsociety JOIN emergency ON emergency_location_id = nationalsociety.ns_go_id GROUP BY iso3")
 	
 	list_of_location_dicts = []
@@ -69,8 +106,25 @@ def update_response_locations():
 	
 def update_active_response_locations():
 	"""
-	Updates a CSV file with all countries' ISO3 codes of active emergencies to which SIMS is currently responding.
+	Update the active response locations and save the data to a CSV file.
+	
+	Queries the database to get all active emergencies and their corresponding locations (identified by ISO3 codes),
+	aggregates this data, and saves it to a CSV file for visualization purposes.
+	
+	Parameters:
+	None
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Writes data to a CSV file at "SIMS_Portal/static/data/active_emergencies.csv".
+	- Logs the success of the function to the current application's logger.
+	
+	Raises:
+	None
 	"""
+	
 	active_response_locations = db.engine.execute("SELECT * FROM emergency JOIN nationalsociety ON nationalsociety.ns_go_id = emergency.emergency_location_id WHERE emergency.emergency_status = 'Active'")
 	
 	list_of_location_dicts = []
@@ -91,8 +145,30 @@ def update_active_response_locations():
 	
 def get_trello_tasks(trello_board_url):
 	"""
-	Takes in a Trello board URL, isolates the Board ID, queries Trello for lists on that board called "To Do", then returns info for those cards.
+	Retrieve tasks from a Trello board's "To Do" list.
+	
+	Extracts the board ID from the given Trello board URL, queries the Trello API to get the "To Do" list ID,
+	and then fetches all cards (tasks) on that list. It returns a list of dictionaries with relevant information about each card.
+	
+	Parameters:
+	trello_board_url (str): The URL of the Trello board from which to retrieve tasks.
+	
+	Returns:
+	list: A list of dictionaries, each containing information about a card on the "To Do" list:
+		- card_name (str): The name of the card.
+		- card_id (str): The ID of the card.
+		- url (str): The URL of the card.
+		- desc (str): The description of the card.
+		- latest_activity (str): The date of the latest activity on the card (YYYY-MM-DD).
+		- due (str or None): The due date of the card, if any (YYYY-MM-DD), otherwise None.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
 	"""
+	
 	# isolate board ID from URL
 	board_id = trello_board_url.split('/')[4]
 	# insert board ID into query URL to grab all lists and their IDs from that board
@@ -153,6 +229,27 @@ def get_trello_tasks(trello_board_url):
 	return card_info_list
 
 def emergency_availability_chart_data(dis_id):
+	"""
+	Generate chart data for emergency availability for the current week.
+	
+	Retrieves and processes availability data for a given disaster ID, calculates the frequency
+	of available dates for the current week, and formats the data for chart visualization.
+	
+	Parameters:
+	dis_id (int): The ID of the disaster for which to generate availability chart data.
+	
+	Returns:
+	tuple: A tuple containing:
+		- formatted_week_dates (list of str): A list of date strings representing each day of the current week.
+		- frequency_count (list of int): A list of counts of availability for each corresponding date.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	current_year = datetime.now().year
 	current_week = datetime.today().isocalendar()[1]
 	year_week = f"{current_year}-{current_week}"
