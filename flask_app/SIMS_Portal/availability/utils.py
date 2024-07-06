@@ -115,6 +115,25 @@ def get_dates_current_week():
     return readable_dates
 
 def get_dates_next_week():
+    """
+    Get readable dates for the next week starting from the upcoming Monday.
+    
+    Calculates the dates for the next week, starting from the upcoming Monday, and returns a list of
+    these dates in a readable string format.
+    
+    Parameters:
+    None
+    
+    Returns:
+    list: A list of strings representing the dates of the next week in the format "Day, Month Day".
+    
+    Side Effects:
+    None
+    
+    Raises:
+    None
+    """
+    
     today = datetime.today()
     
     # find the next Monday
@@ -132,6 +151,26 @@ def get_dates_next_week():
     return readable_dates
     
 def request_availability_updates():
+    """
+    Request availability updates for active disasters.
+    
+    This function queries the database for active disasters and sends a Slack availability request for each disaster.
+    It logs the success or failure of each request.
+    
+    Parameters:
+    None
+    
+    Returns:
+    list: A list of active disaster objects.
+    
+    Side Effects:
+    - Sends Slack availability requests for each active disaster.
+    - Logs success and error messages.
+    
+    Raises:
+    None
+    """
+    
     active_disasters = db.session.query(Emergency).filter(Emergency.emergency_status == 'Active').all()
     
     for disaster in active_disasters:
