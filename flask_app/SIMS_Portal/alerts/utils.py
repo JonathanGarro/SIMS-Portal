@@ -16,8 +16,25 @@ scheduler = APScheduler()
 
 def get_slack_username(user_id):
 	"""
-	In order to tag the correct user on the Slack message sent to the Availability channel, we need to get the user's Slack handle. We don't store that value in the users table, so we need to get it via their Slack ID.
+	Retrieve the Slack username for a given user ID.
+	
+	We don't store that value in the users table, so we need to get it via their Slack ID.
+	Uses the Slack API to get user information based on the provided user ID. 
+	It returns the username if the API call is successful, or logs an error and returns None otherwise.
+	
+	Parameters:
+	user_id (str): The Slack user ID for which to retrieve the username.
+	
+	Returns:
+	str: The Slack username if successful, or None if an error occurs.
+	
+	Side Effects:
+	Logs an error message to the database if the API call fails.
+	
+	Raises:
+	None
 	"""
+	
 	slack_token = current_app.config['SIMS_PORTAL_SLACK_BOT']	
 	url = f"https://slack.com/api/users.info?user={user_id}"
 	headers = {
@@ -54,6 +71,37 @@ def calculate_months_difference(start_date, end_date):
 	return months_difference
 
 def send_im_alert_to_slack(alert_info):
+	"""
+	Send an Information Management (IM) alert message to Slack.
+	
+	Constructs and sends a formatted alert message to Slack based on the provided alert information.
+	The alert can be either global or regional and includes various details such as role profile, event, rotation,
+	language requirements, modality, timeframe, and regional focal point.
+	
+	Parameters:
+	alert_info (object): An object containing alert information, including:
+		- region_id (int): The ID of the region.
+		- role_profile (str): The role profile for the alert.
+		- start (datetime): The start date of the alert.
+		- end_time (datetime): The end date of the alert.
+		- scope (str): The scope of the alert ('Global' or 'Regional').
+		- disaster_go_id (int): The ID of the disaster.
+		- event (str): The name of the event.
+		- ifrc_severity_level_display (str): The severity level of the event.
+		- rotation (str): The rotation details for the role.
+		- language_required (str): The language requirements for the role.
+		- modality (str): The modality of the role.
+		- molnix_id (int): The ID of the alert in the IFRC Rapid Response Management System (RRMS).
+	
+	Returns:
+	None
+	
+	Side Effects:
+	Logs a warning message to the database if an error occurs.
+	
+	Raises:
+	None
+	"""
 	try:
 		colors_to_emoji = {
 			'Red': 'a :red_circle: red',
@@ -133,7 +181,25 @@ def send_im_alert_to_slack(alert_info):
 
 def refresh_surge_alerts_latest():
 	"""
-	Queries the GO API to get the latest surge alerts. This version of the function only looks at the latest page in the results. If this function is run daily, that should catch all alerts that come out. To run the same version of this function but loop through all pages, use the `refresh_surge_alerts()` function available in this same utility file.
+	Refresh and update the latest surge alerts from the GO Admin API.
+	
+	This function fetches the latest surge alert data from the GO Admin API, processes the data, and updates the
+	local database with new or modified alerts. It logs the process and handles any errors that occur during the 
+	execution. This version of the function only looks at the latest page in the results. If this function is run daily, that should catch all alerts that come out. To run the same version of this function but loop through all pages, use the `refresh_surge_alerts()` function available in this same utility file.
+	
+	Parameters:
+	None
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Logs information and errors to the database.
+	- Updates existing alert records or adds new ones to the database.
+	- Sends IM alerts to Slack if applicable.
+	
+	Raises:
+	None
 	"""
 	count_new_records = 0
 	count_updated_records = 0
@@ -348,10 +414,27 @@ def refresh_surge_alerts_latest():
 	db.session.add(new_log)
 	db.session.commit()
 
-
 def refresh_surge_alerts(pages_to_fetch):
 	"""
-	Queries the GO API to get all surge alerts. Unlike the refresh_surge_alerts_latest version which only looks at the most recent page, this one loops through more pages and is thus not suitable or necessary to run frequently. To specify how many pages, use the pages_to_fetch argument with the function. This version also doesn't send alerts to Slack to avoid bombarding that channel with all historical matches. 
+	Refresh and update surge alerts from the GO Admin API, fetching a specified number of pages.
+	
+	Retrieves surge alert data from the GO Admin API, processes the data, and updates the local database
+	with new or modified alerts. It handles pagination to fetch multiple pages of results and logs the process 
+	details and errors.
+	
+	Parameters:
+	pages_to_fetch (int): The number of pages to fetch from the API.
+	
+	Returns:
+	None
+	
+	Side Effects:
+	- Logs information and errors to the database.
+	- Updates existing alert records or adds new ones to the database.
+	- Sends error messages if necessary.
+	
+	Raises:
+	None
 	"""
 	
 	try:
