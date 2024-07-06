@@ -5,7 +5,28 @@ from datetime import datetime, timedelta
 import json
 
 def aggregate_availability(dis_id):
-	"""Takes in a disaster ID and returns all reported availability as aggregated list then structures the data for front end visualization"""
+	"""
+	Aggregate and structure availability data for a given disaster ID.
+	
+	Retrieves availability data from the database based on the provided disaster ID, aggregates
+	the data, and structures it for front-end visualization. It processes the data to count occurrences of 
+	availability dates and formats them for better readability.
+	
+	Parameters:
+	dis_id (int): The ID of the disaster for which to aggregate availability data.
+	
+	Returns:
+	tuple: A tuple containing:
+		- values (list): A list of counts of availability dates.
+		- labels (list): A list of formatted date labels corresponding to the availability counts.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	# get data from db
 	data = db.session.query(Assignment, Emergency).join(Emergency, Emergency.id == Assignment.emergency_id).with_entities(Assignment.availability).filter(Emergency.id == dis_id, Assignment.availability != None, Assignment.assignment_status != 'Removed').all()
 	
@@ -39,6 +60,27 @@ def aggregate_availability(dis_id):
 	return values, labels
 
 def get_dates_current_and_next_week():
+	"""
+	Get dates for the current and next week starting from today.
+	
+	This function calculates the dates for the current week starting from today and the entire next week.
+	It returns a zip object containing tuples of date objects and their corresponding readable string formats.
+	
+	Parameters:
+	None
+	
+	Returns:
+	zip: A zip object containing tuples of:
+		- dates (list of date): Date objects for the current and next week.
+		- readable_dates (list of str): Readable string formats of the corresponding dates.
+	
+	Side Effects:
+	None
+	
+	Raises:
+	None
+	"""
+	
 	today = datetime.now().date()
 	current_week_start = today - timedelta(days=today.weekday())
 	next_week_start = current_week_start + timedelta(days=7)
