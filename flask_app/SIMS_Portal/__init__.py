@@ -72,26 +72,6 @@ class AdminView(ModelView):
 	
 	def inaccessible_callback(self, name, **kwargs):
 		return render_template('errors/403.html'), 403
-
-def create_app(config_class=Config):
-	app = Flask(__name__)
-	app.config.from_object(Config)
-	app.config['MAX_CONTENT_LENGTH'] = 75 * 1000 * 1000
-
-	db.init_app(app)
-	migrate.init_app(app, db)
-	
-	# send build_ns_dropdown() data to context_processor for use in layout.html
-	app.context_processor(build_ns_dropdown)
-	
-	bcrypt.init_app(app)
-	login_manager.init_app(app)
-	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
-	babel = Babel(app)
-	Markdown(app)
-	cache.init_app(app)
-	
-	csrf = CSRFProtect(app)
 	
 def create_app(config_class=Config):
 	app = Flask(__name__)
