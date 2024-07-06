@@ -9,6 +9,27 @@ import boto3
 from PIL import Image
 	
 def save_header(form_header):
+	"""
+	Save a header image to an S3 bucket after resizing it.
+	
+	Generates a unique filename for the uploaded header image, resizes the image to a maximum size of 1300x650 pixels,
+	saves it to a temporary file, uploads it to an S3 bucket, and returns the file path.
+	
+	Parameters:
+	form_header (FileStorage): The image file to be uploaded.
+	
+	Returns:
+	str: The file path where the image is saved in the S3 bucket.
+	
+	Side Effects:
+	- Saves the resized image to a temporary file before uploading it to S3.
+	- Uploads the image file to a specified S3 bucket.
+	- Adjusts file extension to '.jpg' if it is '.jpeg'.
+	
+	Raises:
+	None
+	"""
+	
 	random_hex = secrets.token_hex(8)
 	filename, file_ext = os.path.splitext(form_header.filename)
 	if file_ext.lower() == '.jpeg':
