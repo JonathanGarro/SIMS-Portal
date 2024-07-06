@@ -5,16 +5,21 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
-# 1.11.8 (Woodley Park) - TBD
+# 1.11.9 (Woodley Park) - 2024-07-06
 
 ## Changes
 
-- **New Footer Layout**: The footer on all pages has been adjusted with more relevant links and information.
 - **Add Docstrings**: In order to make the application's code more readable for collaborators, I've added more docstrings to utility functions.
 
 ## Fixes
 
 - **Availability Alert Spacing**: The Slack message that is sent to the Availability channel was not being properly formatted with markdown when the alert role was SIMS Remote Coordinator.
+
+# 1.11.8 (Woodley Park) - 2024-06-30
+
+## Changes
+
+- **New Footer Layout**: The footer on all pages has been adjusted with more relevant links and information.
 
 # 1.11.7 (Woodley Park) - 2024-06-29
 
