@@ -137,6 +137,7 @@ def send_im_alert_to_slack(alert_info):
 		
 		alert_length = calculate_months_difference(alert_info.start, alert_info.end_time)
 		
+		# lookup regional IM coordinator
 		try:
 			regional_focal_point_id = db.session.query(RegionalFocalPoint, User).join(User, User.id == RegionalFocalPoint.focal_point_id).filter(RegionalFocalPoint.regional_id == alert_info.region_id).first()
 			regional_focal_point = get_slack_username(regional_focal_point_id.User.slack_id)
@@ -147,7 +148,7 @@ def send_im_alert_to_slack(alert_info):
 			db.session.commit()
 			regional_focal_point = "Focal Point Missing"
 		
-		# Check and reformat dates for slack message
+		# check and reformat dates for slack message
 		if alert_info.start and alert_info.end_time:
 			requested_timeframe_start = alert_info.start.strftime("%B %d, %Y")
 			requested_timeframe_end = alert_info.end_time.strftime("%B %d, %Y")
