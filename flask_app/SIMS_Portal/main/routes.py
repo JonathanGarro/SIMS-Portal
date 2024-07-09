@@ -24,7 +24,8 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	Assignment, User, Emergency, Alert, user_skill, user_language, Portfolio,
 	user_badge, Skill, Language, NationalSociety, Badge, Story,
-	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region
+	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region,
+	Task
 )
 from SIMS_Portal.main.forms import (
 	MemberSearchForm, EmergencySearchForm, ProductSearchForm,
@@ -54,6 +55,8 @@ from SIMS_Portal.emergencies.utils import (
 from SIMS_Portal.availability.utils import (
 	send_slack_availability_request, request_availability_updates
 )
+
+from SIMS_Portal.tasks.utils import get_issues
 
 main = Blueprint('main', __name__)
 
@@ -652,8 +655,10 @@ def static_files(filename):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
+		# issues_list = get_issues('2024-bra-floods')
+		issues_list = db.session.query(Task).filter(Task.repo == '2024-bra-floods').all()
 		
-		return render_template('visualization.html')
+		return render_template('visualization.html', issues_list=issues_list)
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
