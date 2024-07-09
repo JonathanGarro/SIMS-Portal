@@ -28,7 +28,7 @@ def get_repos():
         page += 1
     
     return repos
-    
+
 def get_issues(repo_name):
     """
     Fetches issues from the specified SIMS GitHub repository and updates or inserts them into the database.
@@ -42,7 +42,7 @@ def get_issues(repo_name):
         repo_name (str): The name of the repository to fetch issues from.
     
     Returns:
-        None
+        list: A list of dictionaries representing the issues that were added or updated.
     """
     
     ACCESS_TOKEN = os.environ.get('GITHUB_TOKEN')
@@ -54,10 +54,11 @@ def get_issues(repo_name):
         'Accept': 'application/vnd.github.v3+json'
     }
     
-    # state=all ensures issues with closed states still come through
     url = f'https://api.github.com/repos/{ORGANIZATION}/{REPO}/issues?state=all'
     
     response = requests.get(url, headers=headers)
+    
+    issues_processed = []
     
     if response.status_code == 200:
         issues = response.json()
@@ -78,6 +79,16 @@ def get_issues(repo_name):
                 )
                 db.session.add(task)
                 new_count += 1
+                issues_processed.append({
+                    'task_id': task.task_id,
+                    'repo': task.repo,
+                    'name': task.name,
+                    'state': task.state,
+                    'created_by_gh': task.created_by_gh,
+                    'url': task.url,
+                    'assignees_gh': task.assignees_gh,
+                    'created_at': task.created_at
+                })
             else:
                 fields_to_check = {
                     'repo': repo_name,
@@ -98,6 +109,17 @@ def get_issues(repo_name):
                 if updated:
                     task.date_modified = datetime.utcnow()
                     updated_count += 1
+                    issues_processed.append({
+                        'task_id': task.task_id,
+                        'repo': task.repo,
+                        'name': task.name,
+                        'state': task.state,
+                        'created_by_gh': task.created_by_gh,
+                        'url': task.url,
+                        'assignees_gh': task.assignees_gh,
+                        'created_at': task.created_at,
+                        'date_modified': task.date_modified
+                    })
         
         db.session.commit()
         
@@ -111,4 +133,4 @@ def get_issues(repo_name):
         db.session.add(new_log)
         db.session.commit()
     
-    return None
+    return issues_processed
