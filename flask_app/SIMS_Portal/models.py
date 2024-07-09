@@ -61,7 +61,7 @@ class Task(db.Model):
 	date_modified = db.Column(db.DateTime, onupdate=func.now())
 	
 	def __repr__(self):
-		return f"Task({self.id}, {self.name}, {self.state}"
+		return f"Task({self.id}, {self.name}, {self.state})"
 	
 class Log(db.Model):
 	__tablename__ = 'log'
