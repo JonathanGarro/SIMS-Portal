@@ -155,6 +155,21 @@ def get_issues(repo_name):
     return issues_processed
     
 def refresh_all_active_githubs():
+    """
+    Refreshes GitHub issues for all active emergencies and logs the process.
+    
+    Queries the database for all emergencies with a status of 'Active'.
+    For each active emergency, it attempts to refresh the GitHub issues by calling the
+    `get_issues` function with the emergency's GitHub repository. It logs the success
+    or failure of each refresh attempt.
+    
+    If an exception occurs during the refresh of a specific emergency's GitHub issues,
+    the exception is caught, and an error message is logged.
+    
+    Returns:
+        None
+    """
+    
     active_emergencies = db.session.query(Emergency).filter(Emergency.emergency_status == 'Active').all()
     
     for active_emergency in active_emergencies:
