@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.0 (Dupont Circle) - 2024-07-10
+
+## New Features
+
+- **GitHub Integration**: Following the change to Trello's terms of service, SIMS decided to experiment with alternative kanban solutions. We piloted GitHub projects, and have found it to be a solid option. I've added a number of integrations with the service, including the ability to read GitHub issues directly from the Portal. New members to the SIMS organization on GitHub can be automatically added by updating their profile page with their GitHub username.
+
 # 1.11.9 (Woodley Park) - 2024-07-06
 
 ## Changes
