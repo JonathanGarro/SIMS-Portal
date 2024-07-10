@@ -1,7 +1,8 @@
 from SIMS_Portal import db
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from SIMS_Portal.models import User, Task, Log
+from sqlalchemy.orm import joinedload
+from SIMS_Portal.models import User, Task, Log, Emergency
 from datetime import datetime
 import os
 import requests
@@ -28,21 +29,17 @@ def get_repos():
         page += 1
     
     return repos
-
+    
 def get_issues(repo_name):
     """
     Fetches issues from the specified SIMS GitHub repository and updates or inserts them into the database.
-    
-    Retrieves all issues (both open and closed) from the specified GitHub repository 
-    within the 'Surge-Information-Management-Support' organization. It then checks if each issue 
-    already exists in the database based on the GitHub issue ID (task_id). If an issue does not exist, 
-    it inserts a new record. If the issue exists, it updates the record if any fields have changed.
+    Deletes issues from the database if they no longer exist in the GitHub repository.
     
     Args:
         repo_name (str): The name of the repository to fetch issues from.
     
     Returns:
-        list: A list of dictionaries representing the issues that were added or updated.
+        list: A list of dictionaries representing the issues that were added, updated, or deleted.
     """
     
     ACCESS_TOKEN = os.environ.get('GITHUB_TOKEN')
@@ -64,6 +61,12 @@ def get_issues(repo_name):
         issues = response.json()
         new_count = 0
         updated_count = 0
+        deleted_count = 0
+        
+        existing_task_ids = set(task.task_id for task in Task.query.filter(Task.repo == repo_name).all())
+        github_task_ids = set(issue['number'] for issue in issues)
+        
+        # Process each issue from GitHub
         for issue in issues:
             task = Task.query.filter(Task.task_id == issue['number']).first()
             if task is None:
@@ -121,9 +124,25 @@ def get_issues(repo_name):
                         'date_modified': task.date_modified
                     })
         
+        # Delete issues from the database that are no longer on GitHub
+        for task_id in existing_task_ids - github_task_ids:
+            task_to_delete = Task.query.filter(Task.task_id == task_id).first()
+            db.session.delete(task_to_delete)
+            deleted_count += 1
+            issues_processed.append({
+                'task_id': task_to_delete.task_id,
+                'repo': task_to_delete.repo,
+                'name': task_to_delete.name,
+                'state': 'deleted',
+                'created_by_gh': task_to_delete.created_by_gh,
+                'url': task_to_delete.url,
+                'assignees_gh': task_to_delete.assignees_gh,
+                'created_at': task_to_delete.created_at
+            })
+        
         db.session.commit()
         
-        log_message = f"[INFO] The get_issues() function ran successfully. New records added: {new_count}. Records updated: {updated_count}."
+        log_message = f"[INFO] The get_issues() function ran successfully. New records added: {new_count}. Records updated: {updated_count}. Records deleted: {deleted_count}."
         new_log = Log(message=log_message, user_id=0)
         db.session.add(new_log)
         db.session.commit()
@@ -134,3 +153,21 @@ def get_issues(repo_name):
         db.session.commit()
     
     return issues_processed
+    
+def refresh_all_active_githubs():
+    active_emergencies = db.session.query(Emergency).filter(Emergency.emergency_status == 'Active').all()
+    
+    for active_emergency in active_emergencies:
+        try:
+            get_issues(active_emergency.github_repo)
+            log_message = f"[INFO] The refresh_all_active_githubs() ran get_issues() and was successful for {active_emergency.emergency_name}"
+            new_log = Log(message=log_message, user_id=0)
+            db.session.add(new_log)
+            db.session.commit()
+        except Exception as e:
+            log_message = f"[ERROR] The refresh_all_active_githubs() ran get_issues() and failed successful for {active_emergency.emergency_name}: {e}"
+            new_log = Log(message=log_message, user_id=0)
+            db.session.add(new_log)
+            db.session.commit()
+    
+    return None
