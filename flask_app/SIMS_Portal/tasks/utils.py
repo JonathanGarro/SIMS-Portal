@@ -124,7 +124,7 @@ def get_issues(repo_name):
                         'date_modified': task.date_modified
                     })
         
-        # Delete issues from the database that are no longer on GitHub
+        # delete issues from the database that are no longer on GitHub
         for task_id in existing_task_ids - github_task_ids:
             task_to_delete = Task.query.filter(Task.task_id == task_id).first()
             db.session.delete(task_to_delete)
