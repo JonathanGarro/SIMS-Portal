@@ -3,23 +3,28 @@
 <div class="container">
 	<div class="row my-5">
 		<div class="col col-md-4">
-			<h4 class="text-secondary mb-1 Montserrat">Editing</h4>
-			<h2 class="text-danger mb-4 Montserrat">{{emergency_info.emergency_name}}</h2>
-
-				<h5 class="text-secondary Montserrat">Emergency Name</h5>
+			<h4 class="text-secondary mb-1">Create New</h4>
+			<h3 class="mb-3 text-danger mb-5 Montserrat">Emergency Record</h3>
+				<h5 class="text-danger Montserrat">Emergency Name</h5>
 				<p id="sidebar-guidance">Use the same name as what you see on the GO Platform. If no record exists yet on GO, use a simple name for now and edit this record later.</p>
-
-				<h5 class="text-secondary Montserrat">Affected Country</h5>
+			
+				<h5 class="text-danger Montserrat">Affected Country</h5>
 				<p id="sidebar-guidance">The SIMS portal does not currently feature a many-to-many feature on locations. For emergencies that cover multiple countries, select the most affected.</p>
-
-				<h5 class="text-secondary Montserrat">Emergency Type</h5>
-				<p id="sidebar-guidance">Match the type seen on the GO Platform. </p>
-
-				<h5 class="text-secondary Montserrat">Glide Number</h5>
+			
+				<h5 class="text-danger Montserrat">Emergency Type</h5>
+				<p id="sidebar-guidance">Match the type seen on the GO Platform.</p>
+			
+				<h5 class="text-danger Montserrat">Glide Number</h5>
 				<p id="sidebar-guidance">The GLIDE number is a unique identifier that helps connect data in this portal with external sources. See <a href="https://glidenumber.net/" class='text-danger'> the system's site</a> for more information.</p>
-
-				<h5 class="text-secondary Montserrat">Activation Details</h5>
+			
+				<h5 class="text-danger Montserrat">GO ID Number</h5>
+				<p id="sidebar-guidance">GO ID numbers are four digits. See the table below the form on this page for recent GO emergencies.</p>
+			
+				<h5 class="text-danger Montserrat">Activation Details</h5>
 				<p id="sidebar-guidance">Provide a brief overview of the decision to activate SIMS for this emergency, including any preliminary IM surge alerts that the network triaged.</p>
+			
+				<h5 class="text-secondary Montserrat">Slack, Dropbox and GitHub (Optional)</h5>
+				<p id="sidebar-guidance">Get the ID and URLs for these services. See <a href='https://learn-sims.org/sims-remote-coordination/managing-tasks-with-github-projects/'>this article</a> in the help section of the SIMS Portal for more info.</p>
 
 		</div>
 	
@@ -126,7 +131,7 @@
 				<div class="row">
 					<div class="col">
 						<div class="form-group pb-4">
-							{{ form.slack_channel.label(class="form-control-label pb-2 text-danger") }}
+							{{ form.slack_channel.label(class="form-control-label pb-2 text-secondary") }}
 							
 							{% if form.slack_channel.errors %}
 								{{ form.slack_channel(class="form-control form-control-lg is-invalid") }}
@@ -142,7 +147,7 @@
 					</div>
 					<div class="col">
 						<div class="form-group pb-4">
-							{{ form.dropbox_url.label(class="form-control-label pb-2 text-danger") }}
+							{{ form.dropbox_url.label(class="form-control-label pb-2 text-secondary") }}
 							
 							{% if form.dropbox_url.errors %}
 								{{ form.dropbox_url(class="form-control form-control-lg is-invalid") }}
@@ -158,17 +163,17 @@
 					</div>
 					<div class="col">
 						<div class="form-group pb-4">
-							{{ form.trello_url.label(class="form-control-label pb-2 text-danger") }}
+							{{ form.github_repo.label(class="form-control-label pb-2 text-secondary") }}
 							
-							{% if form.trello_url.errors %}
-								{{ form.trello_url(class="form-control form-control-lg is-invalid") }}
+							{% if form.github_repo.errors %}
+								{{ form.github_repo(class="form-control form-control-lg is-invalid") }}
 									<div class="invalid-feedback">
-										{% for error in form.trello_url.errors %}
+										{% for error in form.github_repo.errors %}
 											<span>{{ error }}</span>
 										{% endfor %}
 									</div>
 							{% else %}
-								{{ form.trello_url(class="form-control form-control-lg") }}
+								{{ form.github_repo(class="form-control form-control-lg") }}
 							{% endif %}
 						</div>
 					</div>

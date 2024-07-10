@@ -16,7 +16,7 @@ class NewEmergencyForm(FlaskForm):
 	activation_details = TextAreaField('SIMS Activation Details', validators=[DataRequired()])
 	slack_channel = StringField('Slack Channel ID')
 	dropbox_url = StringField('Dropbox URL')
-	trello_url = StringField('Trello URL')
+	github_repo = StringField('GitHub Repo')
 	submit = SubmitField('Create Emergency')
 	
 class UpdateEmergencyForm(FlaskForm):
@@ -28,5 +28,5 @@ class UpdateEmergencyForm(FlaskForm):
 	activation_details = TextAreaField('SIMS Activation Details')
 	slack_channel = StringField('Slack Channel ID')
 	dropbox_url = StringField('Dropbox URL')
-	trello_url = StringField('Trello URL')
+	github_repo = StringField('GitHub Repo')
 	submit = SubmitField('Update Emergency')

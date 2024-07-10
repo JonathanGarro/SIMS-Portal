@@ -20,7 +20,7 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety,
 	EmergencyType, Alert, Portfolio, Story,
-	Learning, Review, Availability, Log
+	Learning, Review, Availability, Log, Task
 )
 from SIMS_Portal.emergencies.forms import (
 	NewEmergencyForm, UpdateEmergencyForm
@@ -30,7 +30,9 @@ from SIMS_Portal.emergencies.utils import (
 	get_trello_tasks, emergency_availability_chart_data, create_response_channel
 )
 from SIMS_Portal.assignments.utils import aggregate_availability
+from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.learnings.utils import request_learnings
+from SIMS_Portal.tasks.utils import get_issues
 
 
 emergencies = Blueprint('emergencies', __name__)
@@ -56,7 +58,7 @@ def new_emergency():
 			activation_details=form.activation_details.data, 
 			slack_channel=form.slack_channel.data or None, 
 			dropbox_url=form.dropbox_url.data or None, 
-			trello_url=form.trello_url.data or None
+			github_repo=form.github_repo.data or None
 		)
 		db.session.add(emergency)
 		db.session.commit()
@@ -88,7 +90,6 @@ def new_emergency():
 		db.session.commit()
 		
 		flash('New emergency successfully created.', 'success')
-		
 		
 		return redirect(url_for('emergencies.view_emergency', id=emergency.id, show_slack_modal=show_slack_modal))
 	try:
@@ -297,6 +298,25 @@ def view_emergency(id):
 	# convert the string 'True' or 'False' to boolean
 	show_slack_modal = show_slack_modal == 'True'
 	
+	repo_name = emergency_info.Emergency.github_repo
+	issues_list = (
+		db.session.query(Task, User)
+		.join(User, User.github == Task.assignees_gh)
+		.filter(Task.repo == repo_name)
+		.distinct(Task.id)
+		.all()
+	)
+	
+	task_counts = (
+		db.session.query(User.github, func.count(Task.id).label('task_count'))
+		.join(Task, User.github == Task.assignees_gh)
+		.filter(Task.repo == repo_name)
+		.group_by(User.github)
+		.all()
+	)
+	
+	task_counts_dict = {github: count for github, count in task_counts}
+	
 	return render_template(
 		'emergency.html', 
 		title='Emergency View', 
@@ -329,7 +349,9 @@ def view_emergency(id):
 		quick_action_id=quick_action_id,
 		available_supporter_current_week_list=available_supporter_current_week_list,
 		available_supporter_next_week_list=available_supporter_next_week_list, 
-		show_slack_modal=show_slack_modal
+		show_slack_modal=show_slack_modal,
+		task_counts_dict=task_counts_dict,
+		issues_list=issues_list
 	)
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
@@ -356,7 +378,7 @@ def edit_emergency(id):
 		emergency_info.activation_details = form.activation_details.data
 		emergency_info.slack_channel = form.slack_channel.data
 		emergency_info.dropbox_url = form.dropbox_url.data
-		emergency_info.trello_url = form.trello_url.data
+		emergency_info.github_repo = form.github_repo.data
 		db.session.commit()
 		flash('Emergency record updated!', 'success')
 		
@@ -373,8 +395,21 @@ def edit_emergency(id):
 		form.activation_details.data = emergency_info.activation_details
 		form.slack_channel.data = emergency_info.slack_channel
 		form.dropbox_url.data = emergency_info.dropbox_url
-		form.trello_url.data = emergency_info.trello_url
+		form.github_repo.data = emergency_info.github_repo
 	return render_template('emergency_edit.html', form=form, emergency_info=emergency_info)
+
+@emergencies.route('/emergency/refresh_github/<int:id>')
+@login_required
+def refresh_emergency_github(id):
+	user_is_sims_co = check_sims_co(id)
+	if current_user.is_admin == True or user_is_sims_co:
+		emergency_github_repo = db.session.query(Emergency).filter(Emergency.id == id).first()
+		get_issues(emergency_github_repo.github_repo)
+		flash('Sync with GitHub issues for this emergency successful.', 'success')
+		return redirect(url_for('emergencies.view_emergency', id=id))
+	else:
+		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @emergencies.route('/emergency/gantt/<int:id>')
 @login_required

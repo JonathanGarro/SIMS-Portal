@@ -44,6 +44,25 @@ user_workinggroup = db.Table('user_workinggroup',
 	db.Column('workinggroup_id', db.Integer, db.ForeignKey('workinggroup.id'))
 )
 
+class Task(db.Model):
+	__tablename__ = 'task'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	task_id = db.Column(db.Integer) # github issue id
+	repo = db.Column(db.String(100))
+	name = db.Column(db.String(500))
+	state = db.Column(db.String(10))
+	created_by_gh = db.Column(db.String(100)) # github name of creator
+	url = db.Column(db.String(500))
+	assignees_gh = db.Column(db.String(500), nullable=True) # list of github names of people assigned
+	created_at = db.Column(db.DateTime)
+	
+	date_added = db.Column(db.DateTime, server_default=func.now())
+	date_modified = db.Column(db.DateTime, onupdate=func.now())
+	
+	def __repr__(self):
+		return f"Task({self.id}, {self.name}, {self.state})"
+	
 class Log(db.Model):
 	__tablename__ = 'log'
 	
@@ -321,6 +340,7 @@ class Emergency(db.Model):
 	slack_channel = db.Column(db.String)
 	dropbox_url = db.Column(db.String)
 	trello_url = db.Column(db.String)
+	github_repo = db.Column(db.String)
 	
 	emergency_type_id = db.Column(db.Integer, db.ForeignKey('emergencytype.id'))
 	

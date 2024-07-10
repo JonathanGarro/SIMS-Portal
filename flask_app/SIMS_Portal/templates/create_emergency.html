@@ -23,8 +23,8 @@
 				<h5 class="text-danger Montserrat">Activation Details</h5>
 				<p id="sidebar-guidance">Provide a brief overview of the decision to activate SIMS for this emergency, including any preliminary IM surge alerts that the network triaged.</p>
 
-				<h5 class="text-secondary Montserrat">Slack, Dropbox and Trello (Optional)</h5>
-				<p id="sidebar-guidance">Get the ID and URLs for these services. See <a href='/resources/sims_portal#logging-emergencies'>this article</a> in the help section of the SIMS Portal for more info.</p>
+				<h5 class="text-secondary Montserrat">Slack, Dropbox and GitHub (Optional)</h5>
+				<p id="sidebar-guidance">Get the ID and URLs for these services. See <a href='https://learn-sims.org/sims-remote-coordination/managing-tasks-with-github-projects/'>this article</a> in the help section of the SIMS Portal for more info.</p>
 		</div>
 
 	<div class="col ps-5">
@@ -158,17 +158,17 @@
 				</div>
 				<div class="col">
 					<div class="form-group pb-4">
-						{{ form.trello_url.label(class="form-control-label pb-2 text-secondary") }}
+						{{ form.github_repo.label(class="form-control-label pb-2 text-secondary") }}
 						
-						{% if form.trello_url.errors %}
-							{{ form.trello_url(class="form-control form-control-lg is-invalid") }}
+						{% if form.github_repo.errors %}
+							{{ form.github_repo(class="form-control form-control-lg is-invalid") }}
 								<div class="invalid-feedback">
-									{% for error in form.trello_url.errors %}
+									{% for error in form.github_repo.errors %}
 										<span>{{ error }}</span>
 									{% endfor %}
 								</div>
 						{% else %}
-							{{ form.trello_url(class="form-control form-control-lg") }}
+							{{ form.github_repo(class="form-control form-control-lg") }}
 						{% endif %}
 					</div>
 				</div>

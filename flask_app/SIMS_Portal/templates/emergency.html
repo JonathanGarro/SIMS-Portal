@@ -209,10 +209,10 @@
 					{% else %}
 					<div class="col" align="center"><a href='{{emergency_info.Emergency.dropbox_url}}'><img src="/static/assets/img/icons/dropbox-selected.png" height="50px" alt='Tool Icon Dropbox Linked'></a></div>
 					{% endif %}
-					{% if emergency_info.Emergency.trello_url == None or emergency_info.Emergency.trello_url == '' %}
-					<div class="col" align="center"><img src="/static/assets/img/icons/trello.png" height="50px" alt='Tool Icon Trello Not Linked'></div>
+					{% if emergency_info.Emergency.github_repo == None or emergency_info.Emergency.github_repo == '' %}
+					<div class="col" align="center"><img src="/static/assets/img/icons/gh.png" height="50px" alt='Tool Icon GitHub Repo Not Linked'></div>
 					{% else %}
-					<div class="col" align="center"><a href='{{emergency_info.Emergency.trello_url}}'><img src="/static/assets/img/icons/trello-selected.png" height="50px" alt='Tool Icon Trello Linked'></a></div>
+					<div class="col" align="center"><a href='https://github.com/Surge-Information-Management-Support/{{emergency_info.Emergency.github_repo}}'><img src="/static/assets/img/icons/gh-selected.png" height="50px" alt='Tool Icon GitHub Linked'></a></div>
 					{% endif %}
 				</div>
 				<div class='row mt-5'>
@@ -263,6 +263,11 @@
 				{% if to_do_trello %}
 				<li class="nav-item" role="presentation">
 					<button class="nav-link" id="trello-tab" data-bs-toggle="pill" data-bs-target="#trello" type="button" role="tab" aria-controls="trello" aria-selected="false"><span class="badge rounded-pill bg-secondary" style="font-size:1rem;">{{count_cards}}</span> Trello Tasks</button>
+				</li>
+				{% endif %}
+				{% if issues_list %}
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="issues-tab" data-bs-toggle="pill" data-bs-target="#issues" type="button" role="tab" aria-controls="issues" aria-selected="false"><span class="badge rounded-pill bg-secondary" style="font-size:1rem;">{{issues_list|length}}</span> GitHub Issues</button>
 				</li>
 				{% endif %}
 			</ul>
@@ -459,12 +464,46 @@
 					{% endfor %}
 				</tbody>
 			</table>
-
 			</div>
-			
 		</div>
-			
+		<div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
 		
+		<table class='table table-striped table-hover' id='datatable-trello'>
+			<thead>
+				<tr>
+					<th>Status</th>
+					<th>Task Name</th>
+					<th>Assigned</th>
+					<th>Created</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for issue in issues_list %}
+				<tr>
+					<td class='text-center align-middle'>{% if issue.Task.state == 'open' %}<i data-feather="clock" style="color: green"></i>{% else %}<i data-feather="check-circle" style="color: grey"></i>{% endif %}</td>
+					<td class='align-middle h5 Montserrat'><a href="{{issue.Task.url}}">{{issue.Task.name}}</a></td>
+					<td class='align-middle Montserrat'><a href="/profile/view/{{issue.User.id}}">{{issue.User.firstname}} {{issue.User.lastname}}</a></td>
+					<td>{{ issue.Task.created_at.strftime('%B %d, %Y') }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		
+		<div class="d-flex justify-content-between align-items-center mt-3">
+			<div class="d-inline-flex align-items-start border border-1 p-2 pe-3">
+				<div class="me-5"><i data-feather="clock" style="color: green"></i> &nbsp; Open</div>
+				<div><i data-feather="check-circle" style="color: grey"></i> &nbsp; Closed</div>
+			</div>
+			<div>
+				{% if user_info.is_admin == True or user_is_sims_co %}
+				<button class="btn btn-danger">
+					<a href="/emergency/refresh_github/{{emergency_info.Emergency.id}}" class="text-decoration-none text-white">Refresh</a>
+				</button>
+				{% endif %}
+			</div>
+		</div>
+		
+		</div>
 		<div class="tab-pane fade" id="learning" role="tabpanel" aria-labelledby="learning-tab">
 			<div class="d-flex align-items-start">
 				<div>

@@ -378,7 +378,7 @@ def view_all_user_profiles(user_id):
 def update_profile():
 	form = UpdateAccountForm()
 	try:
-		ns_association = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.id==current_user.id).with_entities(NationalSociety.ns_name).first()[0]	
+		ns_association = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.id==current_user.id).with_entities(NationalSociety.ns_name).first()[0]    
 	except:
 		ns_association = 'None'
 	if form.validate_on_submit():
@@ -397,7 +397,6 @@ def update_profile():
 		current_user.bio = form.bio.data
 		current_user.twitter = form.twitter.data
 		current_user.slack_id = form.slack_id.data
-		current_user.github = form.github.data
 		current_user.linked_in = form.linked_in.data
 		current_user.messaging_number_country_code = form.messaging_number_country_code.data
 		current_user.messaging_number = form.messaging_number.data
@@ -409,6 +408,7 @@ def update_profile():
 		else:
 			update_robots_txt(current_user.id, disallow=False)
 		
+		# Check for GitHub username update before setting current_user.github
 		if form.github.data != current_user.github:
 			current_user.github = form.github.data
 			invite_user_to_github(form.github.data)

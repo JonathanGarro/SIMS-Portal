@@ -15,6 +15,7 @@ from flask_login import (
 	login_user, current_user, logout_user, login_required
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import select, and_, literal_column
 from sqlalchemy import func, distinct, desc, asc, select, case
 import boto3
 import botocore
@@ -24,7 +25,8 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	Assignment, User, Emergency, Alert, user_skill, user_language, Portfolio,
 	user_badge, Skill, Language, NationalSociety, Badge, Story,
-	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region
+	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region,
+	Task
 )
 from SIMS_Portal.main.forms import (
 	MemberSearchForm, EmergencySearchForm, ProductSearchForm,
@@ -54,6 +56,8 @@ from SIMS_Portal.emergencies.utils import (
 from SIMS_Portal.availability.utils import (
 	send_slack_availability_request, request_availability_updates
 )
+
+from SIMS_Portal.tasks.utils import get_issues, refresh_all_active_githubs
 
 main = Blueprint('main', __name__)
 
@@ -652,6 +656,8 @@ def static_files(filename):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
+		get_issues('2024-bra-floods')
+
 		
 		return render_template('visualization.html')
 	else:
