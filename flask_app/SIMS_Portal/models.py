@@ -340,6 +340,7 @@ class Emergency(db.Model):
 	slack_channel = db.Column(db.String)
 	dropbox_url = db.Column(db.String)
 	trello_url = db.Column(db.String)
+	github_repo = db.Column(db.String)
 	
 	emergency_type_id = db.Column(db.Integer, db.ForeignKey('emergencytype.id'))
 	
