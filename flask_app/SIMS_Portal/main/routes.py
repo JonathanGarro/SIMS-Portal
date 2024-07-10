@@ -15,6 +15,7 @@ from flask_login import (
 	login_user, current_user, logout_user, login_required
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import select, and_, literal_column
 from sqlalchemy import func, distinct, desc, asc, select, case
 import boto3
 import botocore
@@ -56,7 +57,7 @@ from SIMS_Portal.availability.utils import (
 	send_slack_availability_request, request_availability_updates
 )
 
-from SIMS_Portal.tasks.utils import get_issues
+from SIMS_Portal.tasks.utils import get_issues, refresh_all_active_githubs
 
 main = Blueprint('main', __name__)
 
@@ -655,10 +656,10 @@ def static_files(filename):
 @main.route('/staging')
 def staging():
 	if current_user.is_admin == 1:
-		# issues_list = get_issues('2024-bra-floods')
-		issues_list = db.session.query(Task).filter(Task.repo == '2024-bra-floods').all()
+		get_issues('2024-bra-floods')
+
 		
-		return render_template('visualization.html', issues_list=issues_list)
+		return render_template('visualization.html')
 	else:
 		current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
 		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
