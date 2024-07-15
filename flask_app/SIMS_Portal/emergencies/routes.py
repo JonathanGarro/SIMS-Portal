@@ -301,11 +301,21 @@ def view_emergency(id):
 	# get issues from github	
 	repo_name = emergency_info.Emergency.github_repo
 	user_alias = aliased(User)
+	
 	issues_list = (
-		db.session.query(Task, user_alias)
-		.outerjoin(user_alias, user_alias.github == Task.assignees_gh)
+		db.session.query(
+			Task.id.label("task_id"),
+			Task.name.label("task_name"),
+			Task.state.label("task_state"),
+			Task.url.label("task_url"),
+			Task.created_at.label("task_created_at"),
+			func.coalesce(user_alias.firstname, "No User Assigned").label("user_firstname"),
+			func.coalesce(user_alias.lastname, "").label("user_lastname"),
+			user_alias.id.label("user_id")
+		)
+		.outerjoin(user_alias, and_(user_alias.github == Task.assignees_gh, Task.assignees_gh != None, Task.assignees_gh != ''))
 		.filter(Task.repo == repo_name)
-		.distinct(Task.id)
+		.distinct(Task.id, user_alias.github)
 		.all()
 	)
 	

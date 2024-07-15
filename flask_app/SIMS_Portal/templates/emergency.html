@@ -12,7 +12,6 @@
 			{% endif %}
 		{% endwith %}
 	</div>
-
 	{% if show_slack_modal == True %}
 	<div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
 		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -474,30 +473,28 @@
 					<th>Status</th>
 					<th>Task Name</th>
 					<th>Assigned</th>
-					<th>Created</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for task, user in issues_list %}
+				{% for issue in issues_list %}
 				<tr>
 					<td class='text-center align-middle'>
-						{% if task.state == 'open' %}
+						{% if issue.task_state == 'open' %}
 							<i data-feather="clock" style="color: green"></i>
 						{% else %}
 							<i data-feather="check-circle" style="color: grey"></i>
 						{% endif %}
 					</td>
 					<td class='align-middle h5 Montserrat'>
-						<a href="{{ task.url }}">{{ task.name }}</a>
+						<a href="{{ issue.task_url }}">{{ issue.task_name }}</a>
 					</td>
 					<td class='align-middle Montserrat'>
-						{% if user %}
-							<a href="/profile/view/{{ user.id }}">{{ user.firstname }} {{ user.lastname }}</a>
+						{% if issue.user_id %}
+							<a href="/profile/view/{{ issue.user_id }}">{{ issue.user_firstname }} {{ issue.user_lastname }}</a>
 						{% else %}
 							No User Assigned
 						{% endif %}
 					</td>
-					<td>{{ task.created_at.strftime('%B %d, %Y') }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
