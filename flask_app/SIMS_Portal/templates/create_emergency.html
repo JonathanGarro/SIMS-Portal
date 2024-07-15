@@ -23,8 +23,6 @@
 				<h5 class="text-danger Montserrat">Activation Details</h5>
 				<p id="sidebar-guidance">Provide a brief overview of the decision to activate SIMS for this emergency, including any preliminary IM surge alerts that the network triaged.</p>
 
-				<h5 class="text-secondary Montserrat">Slack, Dropbox and GitHub (Optional)</h5>
-				<p id="sidebar-guidance">Get the ID and URLs for these services. See <a href='https://learn-sims.org/sims-remote-coordination/managing-tasks-with-github-projects/'>this article</a> in the help section of the SIMS Portal for more info.</p>
 		</div>
 
 	<div class="col ps-5">
@@ -123,56 +121,7 @@
 					{{ form.activation_details(class="form-control form-control-lg") }}
 				{% endif %}
 			</div>
-			<div class="row">
-				<div class="col">
-					<div class="form-group pb-4">
-						{{ form.slack_channel.label(class="form-control-label pb-2 text-secondary") }}
-						
-						{% if form.slack_channel.errors %}
-							{{ form.slack_channel(class="form-control form-control-lg is-invalid") }}
-								<div class="invalid-feedback">
-									{% for error in form.slack_channel.errors %}
-										<span>{{ error }}</span>
-									{% endfor %}
-								</div>
-						{% else %}
-							{{ form.slack_channel(class="form-control form-control-lg") }}
-						{% endif %}
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group pb-4">
-						{{ form.dropbox_url.label(class="form-control-label pb-2 text-secondary") }}
-						
-						{% if form.dropbox_url.errors %}
-							{{ form.dropbox_url(class="form-control form-control-lg is-invalid") }}
-								<div class="invalid-feedback">
-									{% for error in form.dropbox_url.errors %}
-										<span>{{ error }}</span>
-									{% endfor %}
-								</div>
-						{% else %}
-							{{ form.dropbox_url(class="form-control form-control-lg") }}
-						{% endif %}
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group pb-4">
-						{{ form.github_repo.label(class="form-control-label pb-2 text-secondary") }}
-						
-						{% if form.github_repo.errors %}
-							{{ form.github_repo(class="form-control form-control-lg is-invalid") }}
-								<div class="invalid-feedback">
-									{% for error in form.github_repo.errors %}
-										<span>{{ error }}</span>
-									{% endfor %}
-								</div>
-						{% else %}
-							{{ form.github_repo(class="form-control form-control-lg") }}
-						{% endif %}
-					</div>
-				</div>
-			</div>
+
 		{{ form.submit(class="btn btn-outline-danger mt-3") }}
 		
 		</form>
