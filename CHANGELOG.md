@@ -5,6 +5,17 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.1 (Dupont Circle) - TBD
+
+## Changes
+
+- **Remove Tool Linkage from Emergency Creation Form**: Since the Portal generates a Slack channel, I've removed the fields asking for a Dropbox, Slack, and GitHub link when creating the emergency. When ready to link Dropbox and GitHub, use the `Edit Emergency` form.
+- **Reorder Emergency List**: Sort the `All Emergencies` view by record creation date in descending order (most recent emergencies at the top of the table).
+
+## Fixes
+
+- **Correct Join for GitHub Issues**: The join in SQLAlchemy to connect the tasks from GitHub to the associated user has been fixed to prevent the system from hallucinating when an issue on the project board has not yet been assigned.
+
 # 1.12.0 (Dupont Circle) - 2024-07-10
 
 ## New Features
