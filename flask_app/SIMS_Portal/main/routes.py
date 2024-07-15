@@ -50,8 +50,7 @@ from SIMS_Portal.alerts.utils import (
 	refresh_surge_alerts, refresh_surge_alerts_latest
 )
 from SIMS_Portal.emergencies.utils import (
-	update_response_locations, update_active_response_locations,
-	get_trello_tasks
+	update_response_locations, update_active_response_locations
 )
 from SIMS_Portal.availability.utils import (
 	send_slack_availability_request, request_availability_updates
