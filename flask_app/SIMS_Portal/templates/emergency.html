@@ -478,12 +478,26 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for issue in issues_list %}
+				{% for task, user in issues_list %}
 				<tr>
-					<td class='text-center align-middle'>{% if issue.Task.state == 'open' %}<i data-feather="clock" style="color: green"></i>{% else %}<i data-feather="check-circle" style="color: grey"></i>{% endif %}</td>
-					<td class='align-middle h5 Montserrat'><a href="{{issue.Task.url}}">{{issue.Task.name}}</a></td>
-					<td class='align-middle Montserrat'><a href="/profile/view/{{issue.User.id}}">{{issue.User.firstname}} {{issue.User.lastname}}</a></td>
-					<td>{{ issue.Task.created_at.strftime('%B %d, %Y') }}</td>
+					<td class='text-center align-middle'>
+						{% if task.state == 'open' %}
+							<i data-feather="clock" style="color: green"></i>
+						{% else %}
+							<i data-feather="check-circle" style="color: grey"></i>
+						{% endif %}
+					</td>
+					<td class='align-middle h5 Montserrat'>
+						<a href="{{ task.url }}">{{ task.name }}</a>
+					</td>
+					<td class='align-middle Montserrat'>
+						{% if user %}
+							<a href="/profile/view/{{ user.id }}">{{ user.firstname }} {{ user.lastname }}</a>
+						{% else %}
+							No User Assigned
+						{% endif %}
+					</td>
+					<td>{{ task.created_at.strftime('%B %d, %Y') }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
