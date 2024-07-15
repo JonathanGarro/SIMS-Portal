@@ -58,6 +58,14 @@ $(document).ready(function () {
 		order: [[0, 'asc']],
 	});
 });
+$(document).ready(function () {
+	$('#emergencyDatatable').DataTable({
+		order: [[5, 'desc']],
+		columnDefs: [
+			{ targets: [5], visible: false }
+		]
+	});
+});
 
 $(document).ready(function () {
 	$('#logs-datatable').DataTable({
