@@ -27,7 +27,7 @@ from SIMS_Portal.emergencies.forms import (
 )
 from SIMS_Portal.emergencies.utils import (
 	update_response_locations, update_active_response_locations,
-	get_trello_tasks, emergency_availability_chart_data, create_response_channel
+	emergency_availability_chart_data, create_response_channel
 )
 from SIMS_Portal.assignments.utils import aggregate_availability
 from SIMS_Portal.main.utils import check_sims_co
@@ -298,15 +298,18 @@ def view_emergency(id):
 	# convert the string 'True' or 'False' to boolean
 	show_slack_modal = show_slack_modal == 'True'
 	
+	# get issues from github	
 	repo_name = emergency_info.Emergency.github_repo
+	user_alias = aliased(User)
 	issues_list = (
-		db.session.query(Task, User)
-		.join(User, User.github == Task.assignees_gh)
+		db.session.query(Task, user_alias)
+		.outerjoin(user_alias, user_alias.github == Task.assignees_gh)
 		.filter(Task.repo == repo_name)
 		.distinct(Task.id)
 		.all()
 	)
 	
+	# count issues from github
 	task_counts = (
 		db.session.query(User.github, func.count(Task.id).label('task_count'))
 		.join(Task, User.github == Task.assignees_gh)
@@ -315,6 +318,7 @@ def view_emergency(id):
 		.all()
 	)
 	
+	# convert task_counts to dict
 	task_counts_dict = {github: count for github, count in task_counts}
 	
 	return render_template(
