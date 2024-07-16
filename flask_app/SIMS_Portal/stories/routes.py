@@ -59,15 +59,13 @@ def view_story(emergency_id):
 @stories.route('/story/create/<int:emergency_id>', methods=["GET", "POST"])
 @login_required
 def create_story(emergency_id): 
+	user_is_sims_co = check_sims_co(emergency_id)
 	form = NewStoryForm()
 	check_existing = db.session.query(Story).filter(Story.emergency_id == emergency_id).all()
 	if check_existing:
 		flash('A story already exists for this emergency', 'danger')
 		return redirect(url_for('emergencies.view_emergency', id=emergency_id))
-	if current_user.is_admin == 0:
-		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
-		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
-	if request.method == 'POST' and current_user.is_admin == 1:
+	if request.method == 'POST' and (current_user.is_admin == 1 or user_is_sims_co):
 		if form.validate_on_submit():
 			if form.header_image.data:
 				header_file = save_header(form.header_image.data)
@@ -78,6 +76,9 @@ def create_story(emergency_id):
 			db.session.commit()
 			flash('New story added!', 'success')
 			return redirect(url_for('stories.view_story', emergency_id = emergency_id))
+	elif current_user.is_admin == 0 and not user_is_sims_co:
+		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 	else:
 		emergency_name = db.session.query().with_entities(Emergency.emergency_name).filter(Emergency.id == emergency_id).first()
 		return render_template('story_create.html', form=form, emergency_name=emergency_name)
