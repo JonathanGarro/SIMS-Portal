@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.1-b (Dupont Circle) - 2024-07-16
+
+## Changes
+
+- **Database Cleanup**: This supplemental update focused on cleaning up data in the production database. In order to get the `Reorder Emergency List` update to work, the `created_at` date for each emergency needed to be changed to reflect when the emergency happened rather than the same date when the migration initially happened.
+
 # 1.12.1 (Dupont Circle) - 2024-07-15
 
 ## Changes
