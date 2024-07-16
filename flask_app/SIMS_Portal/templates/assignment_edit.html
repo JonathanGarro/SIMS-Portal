@@ -6,15 +6,14 @@
 			<h4 class="text-secondary mb-1 Montserrat">Edit Existing</h4>
 			<h2 class="text-danger mb-4 Montserrat">Assignment</h2>
 
-				<h5 class="text-danger Montserrat">Role Type</h5>
-				<p id="sidebar-guidance">Use "Remote IM Support" for any non-deployed volunteer support being provided (except for SIMS Coordinators, which have their own option).</p>
+			<h5 class="text-danger Montserrat">Role Type</h5>
+			<p id="sidebar-guidance">Use "Remote IM Support" for any non-deployed volunteer support being provided (except for SIMS Coordinators, which have their own option).</p>
 
+			<h5 class="text-secondary Montserrat">Assignment Description</h5>
+			<p id="sidebar-guidance">Provide general overview of assignment. Mention if this is a second/third round, what this person is doing, where they deployed (if applicable), etc.</p>
 
-				<h5 class="text-secondary Montserrat">Assignment Description</h5>
-				<p id="sidebar-guidance">Provide general overview of assignment. Mention if this is a second/third round, what this person is doing, where they deployed (if applicable), etc.</p>
-
-				<h5 class="text-secondary Montserrat">Estimated Hours of Support</h5>
-				<p id="sidebar-guidance">In order to quantify our collective contribution to an operation, the Portal can track hours of support provided by each Remote Supporter. Enter the estimated number of hours, as a whole number, that were spent supporting this emergency operation.</p>
+			<h5 class="text-secondary Montserrat">Estimated Hours of Support</h5>
+			<p id="sidebar-guidance">In order to quantify our collective contribution to an operation, the Portal can track hours of support provided by each Remote Supporter. Enter the estimated number of hours, as a whole number, that were spent supporting this emergency operation.</p>
 
 		</div>
 		<div class="col">
@@ -22,45 +21,60 @@
 				{{ form.hidden_tag() }}
 				<div class="row">
 					<h4 class="text-danger pb-3 Montserrat">{{assignment_info.User.firstname}}'s Assignment Details</h4>
-
 					<div class="col">
 						<div class="form-group pb-4">
 							{{ form.role.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.role.errors %}
-								{{ form.role(class="form-control form-control-lg is-invalid") }}
+								{{ form.role(class="form-control form-control-lg is-invalid", id="role-select") }}
 									<div class="invalid-feedback">
 										{% for error in form.role.errors %}
 											<span>{{ error }}</span>
 										{% endfor %}
 									</div>
 							{% else %}
-								{{ form.role(class="form-control form-control-lg") }}
+								{{ form.role(class="form-control form-control-lg", id="role-select") }}
 							{% endif %}
 						</div>
 					</div>
 				</div>
+				
+				<div class="row" id="assignment-dates" style="display: none;">
 					<div class="row">
-
-						<div class="col">
+						<div class="col-6">
 							<div class="form-group pb-4">
-								{{ form.assignment_details.label(class="form-control-label pb-2 text-secondary") }}
-								
-								{% if form.assignment_details.errors %}
-									{{ form.assignment_details(class="form-control form-control-lg is-invalid") }}
-										<div class="invalid-feedback">
-											{% for error in form.assignment_details.errors %}
-												<span>{{ error }}</span>
-											{% endfor %}
-										</div>
-								{% else %}
-									{{ form.assignment_details(class="form-control form-control-lg") }}
-								{% endif %}
+								{{ form.start_date.label(class="form-control-label pb-2 text-secondary") }}
+								{{ form.start_date(class="form-control form-control-lg", type="date") }}
 							</div>
 						</div>
+						<div class="col-6">
+							<div class="form-group pb-4">
+								{{ form.end_date.label(class="form-control-label pb-2 text-secondary") }}
+								{{ form.end_date(class="form-control form-control-lg", type="date") }}
+							</div>
 						</div>
-					<div class="row">
-					
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col">
+						<div class="form-group pb-4">
+							{{ form.assignment_details.label(class="form-control-label pb-2 text-secondary") }}
+							
+							{% if form.assignment_details.errors %}
+								{{ form.assignment_details(class="form-control form-control-lg is-invalid") }}
+									<div class="invalid-feedback">
+										{% for error in form.assignment_details.errors %}
+											<span>{{ error }}</span>
+										{% endfor %}
+									</div>
+							{% else %}
+								{{ form.assignment_details(class="form-control form-control-lg") }}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row">
 					<div class="col">
 						<div class="form-group pb-4">
 							{{ form.hours.label(class="form-control-label pb-2 text-secondary") }}
@@ -77,10 +91,33 @@
 							{% endif %}
 						</div>
 					</div>
-					</div>
+				</div>
 				{{ form.submit(class="btn btn-outline-danger") }}
 			</form>
 		</div>
 	</div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+	var roleSelect = document.getElementById("role-select");
+	var assignmentDatesDiv = document.getElementById("assignment-dates");
+
+	function checkRoleValue() {
+	  var selectedValue = roleSelect.value;
+	  if (selectedValue !== 'Remote IM Support') {
+		assignmentDatesDiv.style.display = "block";
+	  } else {
+		assignmentDatesDiv.style.display = "none";
+	  }
+	}
+
+	// Check the role value on page load
+	checkRoleValue();
+
+	// Add event listener for change event
+	roleSelect.addEventListener("change", checkRoleValue);
+  });
+</script>
+
 {% endblock content %}
