@@ -90,7 +90,10 @@ class Acronym(db.Model):
 	relevant_link = db.Column(db.String(), nullable=True)
 	anonymous_submitter_name = db.Column(db.String(), nullable=True)
 	anonymous_submitter_email = db.Column(db.String(), nullable=True)
+	scope = db.Column(db.Text, nullable=True)
+	field = db.Column(db.Text, nullable=True)
 	
+	associated_ns = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
 	added_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	approved_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 	
@@ -169,12 +172,10 @@ class NationalSociety(db.Model):
 	iso3 = db.Column(db.String(3))
 	
 	users = db.relationship('User', backref='national_society', lazy=True)
+	acronyms = db.relationship('Acronym', backref='national_society', lazy=True)
 	
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
-
-	def __repr__(self):
-		return f"NationalSociety('{self.ns_name}','{self.country_name}','{self.ns_go_id}'"
 
 class User(db.Model, UserMixin):
 	__tablename__ = 'user'
