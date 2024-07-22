@@ -227,7 +227,40 @@
                   </div>
                 </div>
               </div>
-
+              <div class="row">
+                <div class="col">
+                  <div class="form-group pt-4">
+                    {{ form.scope.label(class="form-control-label pb-2 text-danger") }}
+                  
+                            {% if form.scope.errors %}
+                    {{ form.scope(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.scope.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.scope(class="form-control form-control-lg") }}
+                            {% endif %}
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group pt-4">
+                    {{ form.associated_ns.label(class="form-control-label pb-2 text-secondary") }}
+                  
+                            {% if form.associated_ns.errors %}
+                    {{ form.associated_ns(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.associated_ns.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.associated_ns(class="form-control form-control-lg") }}
+                            {% endif %}
+                  </div>
+                </div>
+              </div>
               <div class="form-group pt-5">
                 {{ form.relevant_link.label(class="form-control-label pb-2 text-secondary") }}
 
@@ -241,7 +274,6 @@
                 {% else %}
                 {{ form.relevant_link(class="form-control form-control-lg") }}
                             {% endif %}
-
               </div>
               {% if anon_user == True %}
               <hr class="text-danger mt-5">

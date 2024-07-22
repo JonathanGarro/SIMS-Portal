@@ -5,6 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.2 (Dupont Circle) - TBD
+
+## Changes
+
+- **SIMS Remote Coordinator Story Posting**: Previously, a SIMS Portal admin would have to create the emergency response story, but this permission has been extended to any SIMS Remote Coordinators for the operation.
+- **Edit Assignment Dates**: For assignments whose role type is anything other than Remote IM Supporter, a start and end date are required. Previously, users couldn't update that field once it was reported during the assignment creation process, but now admins and SIMS Remote Coordinators can update that field directly in the front end.
+
 # 1.12.1-b (Dupont Circle) - 2024-07-16
 
 ## Changes

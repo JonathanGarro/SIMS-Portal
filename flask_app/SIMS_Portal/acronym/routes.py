@@ -158,16 +158,19 @@ def submit_acronym_member():
                 added_by=submitter_id.id,
                 approved_by=63, # user 63 is clara barton
                 date_added=datetime.now(),
-                acronym_eng=form.data['acronym_eng'] if form.data['acronym_eng'] else None,
-                def_eng=form.data['def_eng'] if form.data['def_eng'] else None,
-                expl_eng=form.data['expl_eng'] if form.data['expl_eng'] else None,
-                acronym_esp=form.data['acronym_esp'] if form.data['acronym_esp'] else None,
-                def_esp=form.data['def_esp'] if form.data['def_esp'] else None,
-                expl_esp=form.data['expl_esp'] if form.data['expl_esp'] else None,
-                acronym_fra=form.data['acronym_fra'] if form.data['acronym_fra'] else None,
-                def_fra=form.data['def_fra'] if form.data['def_fra'] else None,
-                expl_fra=form.data['expl_fra'] if form.data['expl_fra'] else None,
-                relevant_link=form.data['relevant_link'] if form.data['relevant_link'] else None
+                acronym_eng=form.acronym_eng.data if form.acronym_eng.data else None,
+                def_eng=form.def_eng.data if form.def_eng.data else None,
+                expl_eng=form.expl_eng.data if form.expl_eng.data else None,
+                acronym_esp=form.acronym_esp.data if form.acronym_esp.data else None,
+                def_esp=form.def_esp.data if form.def_esp.data else None,
+                expl_esp=form.expl_esp.data if form.expl_esp.data else None,
+                acronym_fra=form.acronym_fra.data if form.acronym_fra.data else None,
+                def_fra=form.def_fra.data if form.def_fra.data else None,
+                expl_fra=form.expl_fra.data if form.expl_fra.data else None,
+                relevant_link=form.relevant_link.data if form.relevant_link.data else None,
+                scope=form.scope.data if form.scope.data else None,
+                field=form.field.data if form.field.data else None,
+                associated_ns=form.associated_ns.data.ns_go_id if form.associated_ns.data.ns_go_id else None
             )
 
             db.session.add(new_acronym)
@@ -200,39 +203,47 @@ def submit_acronym_public():
         return render_template('new_acronym.html', title='Submit a New Acronym', form=form, latest_acronyms=latest_acronyms, anon_user=True)
     elif request.method == 'POST' and form.validate():
         submitter_id = 63  # set to 63 for anonymous users (saves to Clara Barton's account)
-
-        new_acronym = Acronym(
-            added_by=submitter_id,
-            date_added=datetime.now(),
-            acronym_eng=form.acronym_eng.data if form.acronym_eng.data else None,
-            def_eng=form.def_eng.data if form.def_eng.data else None,
-            expl_eng=form.expl_eng.data if form.expl_eng.data else None,
-            acronym_esp=form.acronym_esp.data if form.acronym_esp.data else None,
-            def_esp=form.def_esp.data if form.def_esp.data else None,
-            expl_esp=form.expl_esp.data if form.expl_esp.data else None,
-            acronym_fra=form.acronym_fra.data if form.acronym_fra.data else None,
-            def_fra=form.def_fra.data if form.def_fra.data else None,
-            expl_fra=form.expl_fra.data if form.expl_fra.data else None,
-            relevant_link=form.relevant_link.data if form.relevant_link.data else None,
-            anonymous_submitter_name=form.anonymous_submitter_name.data if form.anonymous_submitter_name.data else None,
-            anonymous_submitter_email=form.anonymous_submitter_email.data if form.anonymous_submitter_email.data else None
-        )
-
-        db.session.add(new_acronym)
-        db.session.commit()
-
-        log_message = f"[INFO] An anonymous user has added a new acronym."
-        new_log = Log(message=log_message, user_id=0)
-        db.session.add(new_log)
-        db.session.commit()
-
         try:
-            new_acronym_alert(f"A new acronym has been added to the SIMS Portal by {new_acronym.anonymous_submitter_name}: {new_acronym.def_eng}. Since it was submitted by someone that did not log into the Portal, it must be manually approved.")
-        except:
-            pass
-
-        flash('New acronym added to review queue.', 'success')
-        return redirect(url_for('portfolios.view_documentation'))
+            new_acronym = Acronym(
+                added_by=submitter_id,
+                date_added=datetime.now(),
+                acronym_eng=form.acronym_eng.data if form.acronym_eng.data else None,
+                def_eng=form.def_eng.data if form.def_eng.data else None,
+                expl_eng=form.expl_eng.data if form.expl_eng.data else None,
+                acronym_esp=form.acronym_esp.data if form.acronym_esp.data else None,
+                def_esp=form.def_esp.data if form.def_esp.data else None,
+                expl_esp=form.expl_esp.data if form.expl_esp.data else None,
+                acronym_fra=form.acronym_fra.data if form.acronym_fra.data else None,
+                def_fra=form.def_fra.data if form.def_fra.data else None,
+                expl_fra=form.expl_fra.data if form.expl_fra.data else None,
+                relevant_link=form.relevant_link.data if form.relevant_link.data else None,
+                scope=form.scope.data if form.scope.data else None,
+                field=form.field.data if form.field.data else None,
+                associated_ns=form.associated_ns.data.ns_go_id if form.associated_ns.data.ns_go_id else None,
+                anonymous_submitter_name=form.anonymous_submitter_name.data if form.anonymous_submitter_name.data else None,
+                anonymous_submitter_email=form.anonymous_submitter_email.data if form.anonymous_submitter_email.data else None
+            )
+    
+            db.session.add(new_acronym)
+            db.session.commit()
+    
+            log_message = f"[INFO] An anonymous user has added a new acronym."
+            new_log = Log(message=log_message, user_id=0)
+            db.session.add(new_log)
+            db.session.commit()
+    
+            try:
+                new_acronym_alert(f"A new acronym has been added to the SIMS Portal by {new_acronym.anonymous_submitter_name}: {new_acronym.def_eng}. Since it was submitted by someone that did not log into the Portal, it must be manually approved.")
+            except:
+                pass
+    
+            flash('New acronym added to review queue.', 'success')
+            return redirect(url_for('acronym.acronyms'))
+        except Exception as e: 
+            log_message = f"[WARNING] An error occurred while adding a public acronym: {e}."
+            new_log = Log(message=log_message, user_id=0)
+            db.session.add(new_log)
+            db.session.commit()
 
     # if form is not valid, flash errors and redirect back to the form
     for field, errors in form.errors.items():
@@ -280,11 +291,10 @@ def delete_acronym(id):
 @acronym.route('/acronym/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_acronym(id):
-    form = EditAcronymForm()
     acronym_info = db.session.query(Acronym).filter(Acronym.id == id).first()
-    latest_acronyms = db.session.query(Acronym, User).join(User, User.id == Acronym.added_by).order_by(Acronym.id.desc()).limit(10).all()
-    
-    # check for the acronym ID
+    form = EditAcronymForm(obj=acronym_info)  # Initialize form with acronym_info data
+
+    # Check for the acronym ID
     if not acronym_info:
         abort(404)
     
@@ -299,6 +309,9 @@ def edit_acronym(id):
         acronym_info.def_fra = form.def_fra.data if form.def_fra.data else None
         acronym_info.expl_fra = form.expl_fra.data if form.expl_fra.data else None
         acronym_info.relevant_link = form.relevant_link.data if form.relevant_link.data else None
+        acronym_info.scope = form.scope.data if form.scope.data else None
+        acronym_info.field = form.field.data if form.field.data else None
+        acronym_info.associated_ns = form.associated_ns.data.ns_go_id if form.associated_ns.data else None
         
         if current_user.is_admin or acronym_info.added_by == current_user.id:
             db.session.commit()
@@ -325,4 +338,8 @@ def edit_acronym(id):
         form.def_fra.data = acronym_info.def_fra
         form.expl_fra.data = acronym_info.expl_fra
         form.relevant_link.data = acronym_info.relevant_link
-    return render_template('acronym_edit.html', form=form, acronym_info=acronym_info, latest_acronyms=latest_acronyms)
+        form.scope.data = acronym_info.scope
+        form.field.data = acronym_info.field
+        form.associated_ns.data = db.session.query(NationalSociety).filter(NationalSociety.ns_go_id == acronym_info.associated_ns).first()
+    
+    return render_template('acronym_edit.html', form=form, acronym_info=acronym_info)
