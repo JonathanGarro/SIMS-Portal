@@ -14,7 +14,6 @@ from flask_sqlalchemy import SQLAlchemy, inspect
 from flaskext.markdown import Markdown
 from logging.config import dictConfig
 from logging.handlers import RotatingFileHandler
-from logtail import LogtailHandler
 from SIMS_Portal.config import Config
 import babel
 import flask_migrate
@@ -32,24 +31,6 @@ login_manager = LoginManager()
 login_manager.login_view = 'users.login' 
 login_manager.login_message_category = 'danger'
 cache = Cache()
-
-# def init_logging():
-# 	dictConfig({
-# 		'version': 1,
-# 		'handlers': {
-# 				"console": {
-# 						"class": "logging.StreamHandler",
-# 				},
-# 				"logtail": {
-# 						"class": "logtail.LogtailHandler",
-# 						"source_token": os.environ.get('LOGTAIL_SOURCE_TOKEN'),
-# 						"flush_interval": 60,
-# 						"buffer_capacity": 1000,
-# 				},
-# 		},
-# 		"root": {"level": "INFO", "handlers": ["logtail", "console"]},
-# 	})
-# init_logging()
 
 from SIMS_Portal import models
 from SIMS_Portal.main.utils import get_ns_list
@@ -126,8 +107,7 @@ def create_app(config_class=Config):
 		file_handler.setLevel(logging.INFO)
 		app.logger.addHandler(file_handler)
 		
-		logtail_handler = logging.getLogger().handlers[1]
-		app.logger.addHandler(logtail_handler)
+		
 		
 		app.logger.setLevel(logging.INFO)
 		app.logger.info('SIMS Portal Started Up')
@@ -214,15 +194,5 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(NationalSociety, db.session))
 	admin.add_view(AdminView(Badge, db.session))
 	admin.add_view(AdminView(Documentation, db.session))
-	
-	# with app.app_context():
-	# 	inspector = inspect(db.engine)
-	# 	if not inspector.has_table("alembic_version") and inspector.has_table("user"):
-	# 		# for DBs created pre-migrations, skip initial migration
-	# 		flask_migrate.stamp(revision="17e65488bd11")
-	# 	flask_migrate.upgrade()
-	# 
-	# # required to reinit logging after flask_migrate
-	# init_logging()
 	
 	return app
