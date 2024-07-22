@@ -230,30 +230,23 @@ def admin_upload_badges():
 		assigned_badges = db.engine.execute('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname')
 		return render_template('admin_upload_badge.html', badge_upload_form=badge_upload_form)
 	
-	elif request.method == 'POST':
-		if badge_upload_form.name.data and badge_upload_form.file.data and current_user.is_admin == 1:
-			if badge_upload_form.limited_edition.data == True:
-				is_limited_edition = 1
-			else:
-				is_limited_edition = 0
-			file = save_new_badge(badge_upload_form.file.data, badge_upload_form.name.data)
-			badge = Badge(
-				name = badge_upload_form.name.data.title(), 
-				badge_url = file, 
-				limited_edition = is_limited_edition,
-				description = badge_upload_form.description.data
-			)
-			db.session.add(badge)
-			db.session.commit()
-			current_app.logger.info('A new badge called {} has been added to the Portal by User-{}.'.format(badge.name, current_user.id))
-			flash('New badge successfully created!', 'success')
-			return redirect(url_for('main.admin_upload_badges'))
+	elif request.method == 'POST' and badge_upload_form.name.data and current_user.is_admin == 1:
+		if badge_upload_form.limited_edition.data == True:
+			is_limited_edition = 1
 		else:
-			flash('Could not add badge. Please make sure you have filled out the form correctly.', 'danger')
-			return redirect(url_for('main.admin_upload_badges'))
-	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
-		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+			is_limited_edition = 0
+		file = save_new_badge(badge_upload_form.file.data, badge_upload_form.name.data)
+		badge = Badge(
+			name = badge_upload_form.name.data.title(), 
+			badge_url = file, 
+			limited_edition = is_limited_edition,
+			description = badge_upload_form.description.data
+		)
+		db.session.add(badge)
+		db.session.commit()
+		current_app.logger.info('A new badge called {} has been added to the Portal by User-{}.'.format(badge.name, current_user.id))
+		flash('New badge successfully created!', 'success')
+		return redirect(url_for('main.admin_upload_badges'))
 
 @main.route('/admin/approve_members', methods=['GET', 'POST'])
 @login_required
