@@ -68,6 +68,7 @@ def create_app(config_class=Config):
 	csrf = CSRFProtect(app)
 	
 	# these headers are part of a compliance requirement for AmRC hosting on AWS
+	# see https://learn-sims.org/portal-documentation/adding-and-updating-security-headers/
 	@app.after_request
 	def add_caching_headers(response):
 		response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
