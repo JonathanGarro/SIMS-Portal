@@ -1,7 +1,5 @@
-from apscheduler.triggers.cron import CronTrigger
-from datetime import datetime	
 from dotenv import load_dotenv
-from flask import Flask, redirect, url_for, request, render_template, Response
+from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_apscheduler import APScheduler
@@ -10,25 +8,20 @@ from flask_bcrypt import Bcrypt
 from flask_caching import Cache
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy, inspect
+from flask_sqlalchemy import SQLAlchemy
 from flaskext.markdown import Markdown
-from logging.config import dictConfig
 from logging.handlers import RotatingFileHandler
 from SIMS_Portal.config import Config
-import babel
-import flask_migrate
 import logging
 import os
-import sqlalchemy as sa
 from flask_wtf.csrf import CSRFProtect
-from pytz import timezone
 
 load_dotenv()
 db = SQLAlchemy()
 migrate = Migrate()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = 'users.login' 
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'danger'
 cache = Cache()
 
@@ -106,9 +99,6 @@ def create_app(config_class=Config):
 		file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
 		file_handler.setLevel(logging.INFO)
 		app.logger.addHandler(file_handler)
-		
-		
-		
 		app.logger.setLevel(logging.INFO)
 		app.logger.info('SIMS Portal Started Up')
 	
