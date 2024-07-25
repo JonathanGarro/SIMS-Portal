@@ -184,7 +184,7 @@ def refresh_surge_alerts_latest():
 	"""
 	Refresh and update the latest surge alerts from the GO Admin API.
 	
-	This function fetches the latest surge alert data from the GO Admin API, processes the data, and updates the
+	Fetches the latest surge alert data from the GO Admin API, processes the data, and updates the
 	local database with new or modified alerts. It logs the process and handles any errors that occur during the 
 	execution. This version of the function only looks at the latest page in the results. If this function is run daily, that should catch all alerts that come out. To run the same version of this function but loop through all pages, use the `refresh_surge_alerts()` function available in this same utility file.
 	
@@ -202,6 +202,7 @@ def refresh_surge_alerts_latest():
 	Raises:
 	None
 	"""
+
 	count_new_records = 0
 	count_updated_records = 0
 	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
