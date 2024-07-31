@@ -154,6 +154,9 @@ def submit_acronym_member():
         if form.validate_on_submit():
             submitter_id = User.query.filter(User.id==current_user.id).first()
             
+            associated_ns = form.associated_ns.data
+            associated_ns_go_id = associated_ns.ns_go_id if associated_ns is not None and hasattr(associated_ns, 'ns_go_id') else None
+            
             new_acronym = Acronym(
                 added_by=submitter_id.id,
                 approved_by=63, # user 63 is clara barton
@@ -170,7 +173,7 @@ def submit_acronym_member():
                 relevant_link=form.relevant_link.data if form.relevant_link.data else None,
                 scope=form.scope.data if form.scope.data else None,
                 field=form.field.data if form.field.data else None,
-                associated_ns=form.associated_ns.data.ns_go_id if form.associated_ns.data.ns_go_id else None
+                associated_ns=associated_ns_go_id
             )
 
             db.session.add(new_acronym)
@@ -182,7 +185,7 @@ def submit_acronym_member():
             db.session.commit()
             
             try:
-                user_info = db.session.query(User).filter(User.id == current_user.id)
+                user_info = db.session.query(User).filter(User.id == current_user.id).first()
                 new_acronym_alert(f"A new acronym has been added to the SIMS Portal: {new_acronym.def_eng}. It was added by a logged-in SIMS member ({user_info.firstname} {user_info.lastname}), and is therefore approved and available in the acronym list. If it isn't correct, log into the Portal and edit or delete it.")
             except: 
                 pass
