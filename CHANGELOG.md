@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.3 (Dupont Circle) - 2024-07-31
+
+## Fixes
+
+- **Fix New Acronym Submission Form**: There was an issue where not using the optional NS dropdown was causing errors in certain situations. This was reported in issue [126](https://github.com/JonathanGarro/SIMS-Portal/issues/126).
+
 # 1.12.2 (Dupont Circle) - 2024-07-22
 
 ## Changes
