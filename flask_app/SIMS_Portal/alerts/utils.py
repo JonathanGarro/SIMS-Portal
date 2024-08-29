@@ -286,8 +286,8 @@ def refresh_surge_alerts_latest():
 			rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in group.get("groups", [])), None)
 	
 			country = result.get("country", {})
-			iso3 = country.get("iso3", None)
-			country_name = country.get("name", None)
+			iso3 = country.get("iso3", None) if country else None
+			country_name = country.get("name", None) if country else None
 	
 			region_ids_dict = {
 				"Europe Region": 4,
