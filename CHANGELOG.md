@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.4 (Dupont Circle) - 2024-08-29
+
+## Fixes
+
+- **Exception Handling on Surge Alert Locations**: Further exception handling has been added to the surge alert syncing function to account for poor data hygiene from the surge desk.
+
 # 1.12.3 (Dupont Circle) - 2024-07-31
 
 ## Fixes
