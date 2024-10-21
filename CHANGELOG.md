@@ -5,6 +5,12 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.12.5 (Dupont Circle) - 2024-10-21
+
+## Fixes
+
+- **Add Map Update Function on App Startup**: The map on the landing page now gets updated on app startup to avoid having to manually refresh on new deployments.
+
 # 1.12.4 (Dupont Circle) - 2024-08-29
 
 ## Fixes
