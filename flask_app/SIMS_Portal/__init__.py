@@ -186,4 +186,9 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Badge, db.session))
 	admin.add_view(AdminView(Documentation, db.session))
 	
+	# run function to populate globe animation each time the app spins up
+	with app.app_context():
+		from SIMS_Portal.users.utils import update_member_locations
+		update_member_locations()
+	
 	return app
