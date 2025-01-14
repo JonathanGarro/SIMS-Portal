@@ -121,7 +121,7 @@ def create_app(config_class=Config):
 		@scheduler.task('cron', id='run_auto_badge_assigners', hour='17')
 		def run_auto_badge_assigners():
 			with scheduler.app.app_context():
-				from SIMS_Portal.main.utils import heartbeats, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_world_traveler, auto_badge_assigner_edward_tufte, auto_badge_assigner_old_salt
+				from SIMS_Portal.main.utils import heartbeats, auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage, auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot, auto_badge_assigner_autobiographer, auto_badge_assigner_world_traveler, auto_badge_assigner_edward_tufte, auto_badge_assigner_old_salt, auto_badge_assigner_eratosthenes, auto_badge_assigner_super_scholar, auto_badge_assigner_teaching_moment
 				
 				auto_badge_assigner_maiden_voyage()
 				auto_badge_assigner_big_wig()
@@ -131,6 +131,9 @@ def create_app(config_class=Config):
 				auto_badge_assigner_edward_tufte()
 				auto_badge_assigner_world_traveler()
 				auto_badge_assigner_old_salt()
+				auto_badge_assigner_eratosthenes()
+				auto_badge_assigner_super_scholar()
+				auto_badge_assigner_teaching_moment()
 				heartbeats('run_auto_badge_assigners', 'https://uptime.betterstack.com/api/v1/heartbeat/QWvz7BCEoLnpKeCFMFbK3d2a')
 		
 		@scheduler.task('cron', id='run_set_user_inactive', day_of_week='thu', hour=9, timezone='America/New_York')

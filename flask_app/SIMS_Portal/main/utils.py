@@ -3,7 +3,7 @@ import logging
 import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge, user_skill, user_language, user_profile, Skill, Language, Profile, Portfolio
+from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge, user_skill, user_language, user_profile, Skill, Language, Profile, Portfolio, Documentation
 from SIMS_Portal import db
 from flask_login import current_user
 import boto3
@@ -557,3 +557,93 @@ def auto_badge_assigner_old_salt():
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Old Salt Auto-Assign Failed: {}'.format(e))
+
+def auto_badge_assigner_eratosthenes():
+	"""
+	Checks for users writing up 5 or more guides for the learning site and assign the Eratosthenes badge if they don't already have it.
+	"""
+	try:
+		current_app.logger.info('Eratosthenes Auto-Assign Ran')
+		existing_eratosthenes_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 18")
+		
+		list_user_ids_with_eratosthenes = []
+		for user in existing_eratosthenes_badges:
+			list_user_ids_with_eratosthenes.append(user.user_id)
+		
+		users_eligible_for_eratosthenes = db.session.query(
+            User.id, User.firstname, User.lastname, func.count().label('count')
+        ).join(
+            Documentation, Documentation.author_id == User.id
+        ).group_by(
+            User.id, User.firstname, User.lastname
+        ).having(
+            func.count() > 4
+        ).all()
+
+		for user in users_eligible_for_eratosthenes:
+			if user.id not in list_user_ids_with_eratosthenes:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 18, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Eratosthenes Auto-Assign Failed: {}'.format(e))
+
+def auto_badge_assigner_super_scholar():
+	"""
+	Checks for users writing up 3 or more guides for the learning site and assign the Super Scholar badge if they don't already have it.
+	"""
+	try:
+		current_app.logger.info('Super Scholar Auto-Assign Ran')
+		existing_super_scholar_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 8")
+		
+		list_user_ids_with_super_scholar = []
+		for user in existing_super_scholar_badges:
+			list_user_ids_with_super_scholar.append(user.user_id)
+		
+		users_eligible_for_super_scholar = db.session.query(
+			User.id, User.firstname, User.lastname, func.count().label('count')
+		).join(
+			Documentation, Documentation.author_id == User.id
+		).group_by(
+			User.id, User.firstname, User.lastname
+		).having(
+			func.count() > 2
+		).all()
+
+		for user in users_eligible_for_super_scholar:
+			if user.id not in list_user_ids_with_super_scholar:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 8, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Super Scholar Auto-Assign Failed: {}'.format(e))	
+
+def auto_badge_assigner_teaching_moment():
+	"""
+	Checks for users writing up 1 or more guides for the learning site and assign the Teaching Moment badge if they don't already have it.
+	"""
+	try:
+		current_app.logger.info('Teaching Moment Auto-Assign Ran')
+		existing_teaching_moment_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 6")
+		
+		list_user_ids_with_teaching_moment = []
+		for user in existing_teaching_moment_badges:
+			list_user_ids_with_teaching_moment.append(user.user_id)
+		
+		users_eligible_for_teaching_moment = db.session.query(
+			User.id, User.firstname, User.lastname, func.count().label('count')
+		).join(
+			Documentation, Documentation.author_id == User.id
+		).group_by(
+			User.id, User.firstname, User.lastname
+		).having(
+			func.count() > 0
+		).all()
+
+		for user in users_eligible_for_teaching_moment:
+			if user.id not in list_user_ids_with_teaching_moment:
+				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 6, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
+				db.session.execute(new_badge)
+		db.session.commit()
+	except Exception as e:
+		current_app.logger.error('Teaching Moment Auto-Assign Failed: {}'.format(e))

@@ -39,7 +39,8 @@ from SIMS_Portal.main.utils import (
 	auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot,
 	auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades,
 	auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler,
-	auto_badge_assigner_old_salt, user_info_by_ns
+	auto_badge_assigner_old_salt, auto_badge_assigner_eratosthenes,
+	auto_badge_assigner_super_scholar, auto_badge_assigner_teaching_moment, user_info_by_ns
 )
 from SIMS_Portal.users.forms import AssignProfileTypesForm, RegionalFocalPointForm
 from SIMS_Portal.users.utils import (
