@@ -181,8 +181,11 @@
 										</div>
 									</div>
 								</li>
-
-
+								{% if '/about' in request.path %}
+								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">About</button></li>
+								{% else %}
+								<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="/about">About</a></li>
+								{% endif %}
 								{% if '/emergencies/all' in request.path %}
 								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Emergencies</button></li>
 								{% else %}
