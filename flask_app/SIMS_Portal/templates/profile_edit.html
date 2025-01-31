@@ -168,21 +168,19 @@
 				</div>
 				
 				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group pb-4">
-							{{ form.twitter.label(class="form-control-label pb-2 text-secondary") }}
-							
-							{% if form.twitter.errors %}
-								{{ form.twitter(class="form-control form-control-lg is-invalid") }}
-									<div class="invalid-feedback">
-										{% for error in form.twitter.errors %}
-											<span>{{ error }}</span>
-										{% endfor %}
-									</div>
-							{% else %}
-								{{ form.twitter(class="form-control form-control-lg") }}
-							{% endif %}
-						</div>
+					<div class="form-group pb-4">
+						{{ form.linked_in.label(class="form-control-label pb-2 text-secondary") }} <span class='text-secondary' tabindex="0" data-toggle="tooltip" title="Get your ID by going to your profile on LinkedIn and take everything after 'linkedin.com/in/'. For example, 'linkedin.com/in/YOUR-ID-HERE'">ⓘ</span>
+						
+						{% if form.linked_in.errors %}
+							{{ form.linked_in(class="form-control form-control-lg is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.linked_in.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+							{{ form.linked_in(class="form-control form-control-lg") }}
+						{% endif %}
 					</div>
 					<div class="col">
 						<div class="form-group pb-4">
@@ -199,28 +197,6 @@
 								{{ form.github(class="form-control form-control-lg") }}
 							{% endif %}
 						</div>
-					</div>
-				</div>
-				
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group pb-4">
-							{{ form.linked_in.label(class="form-control-label pb-2 text-secondary") }} <span class='text-secondary' tabindex="0" data-toggle="tooltip" title="Get your ID by going to your profile on LinkedIn and take everything after 'linkedin.com/in/'. For example, 'linkedin.com/in/YOUR-ID-HERE'">ⓘ</span>
-							
-							{% if form.linked_in.errors %}
-								{{ form.linked_in(class="form-control form-control-lg is-invalid") }}
-									<div class="invalid-feedback">
-										{% for error in form.linked_in.errors %}
-											<span>{{ error }}</span>
-										{% endfor %}
-									</div>
-							{% else %}
-								{{ form.linked_in(class="form-control form-control-lg") }}
-							{% endif %}
-						</div>
-					</div>
-					<div class="col">
-						
 					</div>
 				</div>
 				
