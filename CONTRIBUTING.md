@@ -66,6 +66,34 @@ _Note that this process will likely change as the number of contributors grows a
 	- The import attempt should appear as an entry in the "Processes" tab for the database. If it failed, you can click the icon in the column before the PID column to "View details" and troubleshoot.
 	- If successful you can test by finding the icon in the top nav bar for the "Query Tool", opening it, and running something like `SELECT * from nationalsociety`. It should show the table contents in the "Data Output" pane. After typing `SELECT * FROM ` (with a trailing space), you can press Control+Space to select from a popup menu of autocomplete suggestions.
 
+## Populating the Local Database (Dump and Restore)
+The following steps utilize the [pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html) feature to back up an AWS database and restore it to your local PostgreSQL instance for development purposes.
+- Create a `.env` file inside the `flask_app` folder with the following values. While there are other entries, these two are sufficient to start the portal. 
+
+
+	```
+	SECRET_KEY='SUPER_SECRET_KEY'
+	SQLALCHEMY_DATABASE_URI='postgresql://simsportal:simsportal@host.docker.internal/simsportal'
+	```
+	**Note:** host.docker.internal is used for Docker Desktop on Windows. Use the relevant IP address or hostname depending on your operating system.	
+- Obtain the AWS PostgreSQL database connection string from Jonathan or the SIMS Portal development team.
+- After running `docker compose up -d`, the PostgreSQL container should be up and running. You might notice that the web app hasn't started due to database connection errors, but this is normal. The web app will start once all steps are completed and the Docker containers are restarted.
+- Exec into the PostgreSQL Docker container and run the following command:
+
+	`pg_dump -h [AWS development db host address] -U simsportal -d simsportal -W -F c -b -v -f /var/sims-aws-dev-bkp.dump`
+- In the password prompt, enter the password from the AWS DB connection string.
+- The database should be dumped to the specified location. Next, run the following command to restore the dump:
+
+
+	`pg_restore -c -U simsportal -d simsportal /var/sims-aws-dev-bkp.dump`
+- This should restore the database to your local PostgreSQL container.
+
+	**Note:** You may encounter some error messages during the restore process, but the tables should be successfully restored in the local database.
+
+- Run `docker compose up -d --build` to rebuild the containers and ensure the web app container is up and running.
+
+- Finally, open your browser and navigate to http://localhost:5001/ (or the port specified in your `docker-compose.yml` file). The SIMS portal should load.
+
 ## Managing Docker
 
 - When you make changes and want to view them, you'll need to stop the Docker container and rebuild it. 
