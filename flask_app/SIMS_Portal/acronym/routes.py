@@ -199,25 +199,6 @@ def view_acronym(id):
 
     return render_template('view_acronym.html', acronym_info=acronym_info, similar_matches=similar_matches)
 
-@acronym.route('/submit_acronym')
-def submit_acronym():
-    """
-    Handle the submission of acronyms by routing users to the appropriate submission function based on their authentication status.
-    
-    There are two ways to submit acronyms:
-    1. As a logged-in member: If the user is authenticated, they are redirected to the member-specific acronym submission function.
-    2. As an anonymous visitor: If the user is not authenticated, they are redirected to the public (anonymous) acronym submission function.
-    
-    Returns:
-        Response: A redirect to either the 'submit_acronym_member' function for authenticated users or 
-                  the 'submit_acronym_public' function for anonymous visitors.
-    """
-    
-    if not current_user.is_authenticated:
-        return redirect(url_for('acronym.submit_acronym_public'))
-    else:
-        return redirect(url_for('acronym.submit_acronym_member'))
-
 @acronym.route('/submit_acronym/member', methods=['GET', 'POST'])
 @login_required
 def submit_acronym_member():
@@ -300,100 +281,8 @@ def submit_acronym_member():
             for field, errors in form.errors.items():
                 for error in errors:
                     flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
-            return redirect(url_for('acronym.submit_acronym'))
-        return redirect(url_for('acronym.submit_acronym'))
-
-@acronym.route('/submit_acronym/public', methods=['GET', 'POST'])
-def submit_acronym_public():
-    """
-    Handle the submission of a new acronym by an anonymous user.
-    
-    Function allows non-authenticated (anonymous) users to submit a new acronym. It supports both 
-    GET and POST requests:
-    
-    - GET request:
-        Renders the form for submitting a new acronym. Additionally, retrieves and displays the 
-        10 most recent acronyms submitted by users.
-    
-    - POST request:
-        Processes the acronym submission form. If the form is valid, a new acronym is created in 
-        the database with the submission credited to a placeholder account (user ID 63, representing 
-        Clara Barton). The acronym is not automatically approved and is queued for review. After the 
-        acronym is added, a log entry is created, and an alert is generated to notify administrators 
-        of the new submission.
-    
-    Parameters:
-        None (the function relies on form data submitted by the user).
-    
-    Returns:
-        Response:
-            - For GET requests: Renders the 'new_acronym.html' template with the form and latest acronyms.
-            - For POST requests:
-                - On success: Redirects to the acronym list page with a success message indicating that 
-                              the acronym has been added to the review queue.
-                - On failure: Logs the error, flashes an error message, and redirects back to the form.
-    
-    Exceptions:
-        - The function logs any errors encountered during the submission process and flashes error 
-          messages for form validation failures.
-        - Attempts to send an acronym alert email, but passes silently on failure.
-    """
-    
-    form = NewAcronymFormPublic()
-
-    if request.method == 'GET': 
-        latest_acronyms = db.session.query(Acronym, User).join(User, User.id == Acronym.added_by).order_by(Acronym.id.desc()).limit(10).all()
-        return render_template('new_acronym.html', title='Submit a New Acronym', form=form, latest_acronyms=latest_acronyms, anon_user=True)
-    elif request.method == 'POST' and form.validate():
-        submitter_id = 63  # set to 63 for anonymous users (saves to Clara Barton's account)
-        try:
-            new_acronym = Acronym(
-                added_by=submitter_id,
-                date_added=datetime.now(),
-                acronym_eng=form.acronym_eng.data if form.acronym_eng.data else None,
-                def_eng=form.def_eng.data if form.def_eng.data else None,
-                expl_eng=form.expl_eng.data if form.expl_eng.data else None,
-                acronym_esp=form.acronym_esp.data if form.acronym_esp.data else None,
-                def_esp=form.def_esp.data if form.def_esp.data else None,
-                expl_esp=form.expl_esp.data if form.expl_esp.data else None,
-                acronym_fra=form.acronym_fra.data if form.acronym_fra.data else None,
-                def_fra=form.def_fra.data if form.def_fra.data else None,
-                expl_fra=form.expl_fra.data if form.expl_fra.data else None,
-                relevant_link=form.relevant_link.data if form.relevant_link.data else None,
-                scope=form.scope.data if form.scope.data else None,
-                field=form.field.data if form.field.data else None,
-                associated_ns=form.associated_ns.data.ns_go_id if form.associated_ns.data.ns_go_id else None,
-                anonymous_submitter_name=form.anonymous_submitter_name.data if form.anonymous_submitter_name.data else None,
-                anonymous_submitter_email=form.anonymous_submitter_email.data if form.anonymous_submitter_email.data else None
-            )
-    
-            db.session.add(new_acronym)
-            db.session.commit()
-    
-            log_message = f"[INFO] An anonymous user has added a new acronym."
-            new_log = Log(message=log_message, user_id=0)
-            db.session.add(new_log)
-            db.session.commit()
-    
-            try:
-                new_acronym_alert(f"A new acronym has been added to the SIMS Portal by {new_acronym.anonymous_submitter_name}: {new_acronym.def_eng}. Since it was submitted by someone that did not log into the Portal, it must be manually approved.")
-            except:
-                pass
-    
-            flash('New acronym added to review queue.', 'success')
-            return redirect(url_for('acronym.acronyms'))
-        except Exception as e: 
-            log_message = f"[WARNING] An error occurred while adding a public acronym: {e}."
-            new_log = Log(message=log_message, user_id=0)
-            db.session.add(new_log)
-            db.session.commit()
-
-    # if form is not valid, flash errors and redirect back to the form
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
-
-    return redirect(url_for('acronym.submit_acronym_public'))
+            return redirect(url_for('acronym.submit_acronym_member'))
+        return redirect(url_for('acronym.submit_acronym_member'))
 
 @acronym.route('/acronym/approve/<int:id>', methods=['GET', 'POST'])
 @login_required
