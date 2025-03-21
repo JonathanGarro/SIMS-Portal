@@ -485,8 +485,8 @@ def refresh_surge_alerts_latest():
 							db.session.add(new_log)
 							db.session.commit()
 		
-							# if individual_alert.im_filter:
-							# 	send_im_alert_to_slack(individual_alert)
+							if individual_alert.im_filter:
+								send_im_alert_to_slack(individual_alert)
 		
 						except Exception as e:
 							db.session.rollback()
