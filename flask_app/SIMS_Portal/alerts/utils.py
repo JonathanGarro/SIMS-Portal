@@ -124,7 +124,7 @@ def send_im_alert_to_slack(alert_info):
 			2: 'surge.americas@ifrc.org',
 			3: 'rapidresponse.ap@ifrc.org',
 			4: 'surge.europe@ifrc.org',
-			5: '', # mena doesn't have a generic address
+			5: 'surge.mena@ifrc.org', 
 		}
 		
 		regional_surge_email = regional_surge_email_lookup.get(alert_info.region_id, 'surge@ifrc.org')
