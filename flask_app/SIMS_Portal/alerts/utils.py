@@ -124,7 +124,7 @@ def send_im_alert_to_slack(alert_info):
 			2: 'surge.americas@ifrc.org',
 			3: 'rapidresponse.ap@ifrc.org',
 			4: 'surge.europe@ifrc.org',
-			5: '', # mena doesn't have a generic address
+			5: 'surge.mena@ifrc.org', 
 		}
 		
 		regional_surge_email = regional_surge_email_lookup.get(alert_info.region_id, 'surge@ifrc.org')
@@ -202,7 +202,6 @@ def refresh_surge_alerts_latest():
 	Raises:
 	None
 	"""
-
 	count_new_records = 0
 	count_updated_records = 0
 	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
@@ -228,6 +227,8 @@ def refresh_surge_alerts_latest():
 		db.session.commit()
 	
 		response = requests.get(url)
+		response.raise_for_status()  # Raise an exception for HTTP errors
+		
 		log_message = f"[INFO] API request successful, processing response."
 		new_log = Log(message=log_message, user_id=0)
 		db.session.add(new_log)
@@ -235,173 +236,271 @@ def refresh_surge_alerts_latest():
 	
 		data = response.json()
 		results = data.get("results", [])
+		
+		if not results:
+			log_message = f"[WARNING] No results were returned from the API."
+			new_log = Log(message=log_message, user_id=0)
+			db.session.add(new_log)
+			db.session.commit()
 	
 		result_list = []
-		for result in results:
-			molnix_tags = result.get("molnix_tags", [])
-	
-			sectors = []
-			roles = []
-	
-			alert_id = result.get("id", None)
-			molnix_id = result.get("molnix_id", None)
-			alert_record_created_at = result.get("created_at", None)
-			molnix_status = result.get("molnix_status", None)
-			alert_status = result.get("status_display", None)
-			opens = result.get("opens", None)
-			start = result.get("start", None)
-			end = result.get("end", None)
-	
-			modality = None
-			im_filter = False
-	
-			region_id = None
-			sector = None
-			role_profile = None
-			scope = None
-	
-			for tag in molnix_tags:
-				groups = tag.get("groups", [])
-	
-				if "REGION" in groups:
-					region_id = tag.get("description", None)
-	
-				if "SECTOR" in groups:
-					sector = tag.get("description", None)
-					sectors.append(sector)
-	
-				if "ROLES" in groups:
-					role_profile = tag.get("description", None)
-					roles.append(role_profile)
-	
-				if "Modality" in groups:
-					modality = tag.get("name", None)
-	
-				if "ALERT TYPE" in groups:
-					scope = tag.get("name", None).title()
-	
-			im_filter = "Information Management" in sectors
-	
-			language_required = next((tag.get("description", None) for tag in molnix_tags if tag.get("tag_type") == "language"), None)
-			rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in group.get("groups", [])), None)
-	
-			country = result.get("country", {})
-			iso3 = country.get("iso3", None) if country else None
-			country_name = country.get("name", None) if country else None
-	
-			region_ids_dict = {
-				"Europe Region": 4,
-				"Asia Pacific Region": 3,
-				"Americas Region": 2,
-				"Africa Region": 1,
-				"Middle East & North Africa Region": 5
-			}
-	
-			event = result.get("event", {})
-			disaster_type_id = event.get("dtype", {}).get("id", None)
-			disaster_type_name = event.get("dtype", {}).get("name", None)
-			ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
-			event_name = event.get("name", None)
-			disaster_go_id = event.get("id", None)
-	
-			result_dict = {
-				"molnix_id": molnix_id,
-				"alert_record_created_at": alert_record_created_at,
-				"event": event_name,
-				"role_profile": role_profile,
-				"rotation": rotation,
-				"modality": modality,
-				"language_required": language_required,
-				"molnix_status": molnix_status,
-				"alert_status": alert_status,
-				"opens": opens,
-				"start": start,
-				"end_time": end,
-				"sectors": sectors,
-				"role_tags": roles,
-				"scope": scope,
-				"im_filter": im_filter,
-				"iso3": iso3,
-				"country_name": country_name,
-				"disaster_type_id": disaster_type_id,
-				"disaster_type_name": disaster_type_name,
-				"disaster_go_id": disaster_go_id,
-				"ifrc_severity_level_display": ifrc_severity_level_display,
-				"alert_id": alert_id,
-				"region_id": region_ids_dict.get(region_id, None),
-			}
-	
-			result_list.append(result_dict)
+		for index, result in enumerate(results):
+			try:
+				current_molnix_id = result.get("molnix_id", "Unknown")
+				
+				log_message = f"[INFO] Processing alert with molnix_id: {current_molnix_id} (index: {index})"
+				new_log = Log(message=log_message, user_id=0)
+				db.session.add(new_log)
+				db.session.commit()
+				
+				molnix_tags = result.get("molnix_tags", [])
+				if molnix_tags is None:
+					molnix_tags = []
+					log_message = f"[WARNING] molnix_tags is None for molnix_id: {current_molnix_id}"
+					new_log = Log(message=log_message, user_id=0)
+					db.session.add(new_log)
+					db.session.commit()
+		
+				sectors = []
+				roles = []
+		
+				alert_id = result.get("id", None)
+				molnix_id = result.get("molnix_id", None)
+				alert_record_created_at = result.get("created_at", None)
+				molnix_status = result.get("molnix_status", None)
+				alert_status = result.get("status_display", None)
+				opens = result.get("opens", None)
+				start = result.get("start", None)
+				end = result.get("end", None)
+		
+				modality = None
+				im_filter = False
+		
+				region_id = None
+				sector = None
+				role_profile = None
+				scope = None
+		
+				for tag in molnix_tags:
+					groups = tag.get("groups", [])
+					if groups is None:
+						groups = []
+						tag_description = tag.get("description", "Unknown")
+						log_message = f"[WARNING] groups is None for tag: {tag_description} in molnix_id: {current_molnix_id}"
+						new_log = Log(message=log_message, user_id=0)
+						db.session.add(new_log)
+						db.session.commit()
+		
+					if "REGION" in groups:
+						region_id = tag.get("description", None)
+		
+					if "SECTOR" in groups:
+						sector = tag.get("description", None)
+						if sector:
+							sectors.append(sector)
+		
+					if "ROLES" in groups:
+						role_profile = tag.get("description", None)
+						if role_profile:
+							roles.append(role_profile)
+		
+					if "Modality" in groups:
+						modality = tag.get("name", None)
+		
+					if "ALERT TYPE" in groups:
+						scope_name = tag.get("name")
+						if scope_name:
+							scope = scope_name.title()
+		
+				im_filter = "Information Management" in sectors
+		
+				language_required = None
+				rotation = None
+				
+				# Safely find language required
+				for tag in molnix_tags:
+					if tag.get("tag_type") == "language":
+						language_required = tag.get("description", None)
+						break
+						
+				# Safely find rotation
+				for tag in molnix_tags:
+					tag_groups = tag.get("groups", [])
+					if tag_groups and "rotation" in tag_groups:
+						rotation = tag.get("name", None)
+						break
+		
+				country = result.get("country", {})
+				if country is None:
+					country = {}
+					log_message = f"[WARNING] country is None for molnix_id: {current_molnix_id}"
+					new_log = Log(message=log_message, user_id=0)
+					db.session.add(new_log)
+					db.session.commit()
+					
+				iso3 = country.get("iso3", None)
+				country_name = country.get("name", None)
+		
+				region_ids_dict = {
+					"Europe Region": 4,
+					"Asia Pacific Region": 3,
+					"Americas Region": 2,
+					"Africa Region": 1,
+					"Middle East & North Africa Region": 5
+				}
+		
+				event = result.get("event", {})
+				if event is None:
+					event = {}
+					log_message = f"[WARNING] event is None for molnix_id: {current_molnix_id}"
+					new_log = Log(message=log_message, user_id=0)
+					db.session.add(new_log)
+					db.session.commit()
+					
+				dtype = event.get("dtype", {})
+				if dtype is None:
+					dtype = {}
+					log_message = f"[WARNING] dtype is None for molnix_id: {current_molnix_id}"
+					new_log = Log(message=log_message, user_id=0)
+					db.session.add(new_log)
+					db.session.commit()
+					
+				disaster_type_id = dtype.get("id", None)
+				disaster_type_name = dtype.get("name", None)
+				ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
+				event_name = event.get("name", None)
+				disaster_go_id = event.get("id", None)
+		
+				result_dict = {
+					"molnix_id": molnix_id,
+					"alert_record_created_at": alert_record_created_at,
+					"event": event_name,
+					"role_profile": role_profile,
+					"rotation": rotation,
+					"modality": modality,
+					"language_required": language_required,
+					"molnix_status": molnix_status,
+					"alert_status": alert_status,
+					"opens": opens,
+					"start": start,
+					"end_time": end,
+					"sectors": sectors,
+					"role_tags": roles,
+					"scope": scope,
+					"im_filter": im_filter,
+					"iso3": iso3,
+					"country_name": country_name,
+					"disaster_type_id": disaster_type_id,
+					"disaster_type_name": disaster_type_name,
+					"disaster_go_id": disaster_go_id,
+					"ifrc_severity_level_display": ifrc_severity_level_display,
+					"alert_id": alert_id,
+					"region_id": region_ids_dict.get(region_id, None),
+				}
+		
+				result_list.append(result_dict)
+				
+			except Exception as e:
+				current_molnix_id = result.get("molnix_id", "Unknown")
+				log_message = f"[ERROR] Error processing alert with molnix_id: {current_molnix_id}, error: {str(e)}"
+				new_log = Log(message=log_message, user_id=0)
+				db.session.add(new_log)
+				db.session.commit()
+				continue
 	
 		for result in result_list:
-			result['sectors'] = ', '.join(result['sectors'])
-			result['role_tags'] = ', '.join(result['role_tags'])
-	
-			existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
-	
-			if existing_alert:
-				if existing_alert.alert_status != result['alert_status']:
-					try:
-						existing_alert.alert_status = result['alert_status']
-						db.session.commit()
-						count_updated_records += 1
-						log_message = f"[INFO] Updated alert_status for alert_id {result['alert_id']}."
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
-					except Exception as e:
-						db.session.rollback()
-						log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}: {e}"
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
-	
-			else:
-				if result['alert_id'] not in existing_alert_ids:
-					try:
-						individual_alert = Alert(
-							molnix_id=result['molnix_id'],
-							alert_record_created_at=result['alert_record_created_at'],
-							event=result['event'],
-							role_profile=result['role_profile'],
-							rotation=result['rotation'],
-							modality=result['modality'],
-							language_required=result['language_required'],
-							molnix_status=result['molnix_status'],
-							alert_status=result['alert_status'],
-							opens=result['opens'],
-							start=result['start'],
-							end_time=result['end_time'],
-							sectors=result['sectors'],
-							role_tags=result['role_tags'],
-							scope=result['scope'],
-							im_filter=result['im_filter'],
-							iso3=result['iso3'],
-							country_name=result['country_name'],
-							disaster_type_id=result['disaster_type_id'],
-							disaster_type_name=result['disaster_type_name'],
-							disaster_go_id=result['disaster_go_id'],
-							ifrc_severity_level_display=result['ifrc_severity_level_display'],
-							alert_id=result['alert_id'],
-							region_id=result['region_id']
-						)
-						db.session.add(individual_alert)
-						db.session.commit()
-						count_new_records += 1
-						log_message = f"[INFO] Added new alert with alert_id {individual_alert.alert_id}."
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
-	
-						if individual_alert.im_filter:
-							send_im_alert_to_slack(individual_alert)
-	
-					except Exception as e:
-						db.session.rollback()
-						log_message = f"[ERROR] The refresh_surge_alerts_latest function couldn't add one of the alerts (alert_id={result['alert_id']}) to the database: {e}"
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
+			try:
+				current_molnix_id = result.get('molnix_id', 'Unknown')
+				current_alert_id = result.get('alert_id', 'Unknown')
+				
+				# Handle potential None values in lists
+				sectors = result.get('sectors', [])
+				if sectors is None:
+					sectors = []
+				
+				role_tags = result.get('role_tags', [])
+				if role_tags is None:
+					role_tags = []
+				
+				# Join the sectors and role_tags if they are lists
+				if isinstance(sectors, list):
+					result['sectors'] = ', '.join(sectors)
+				
+				if isinstance(role_tags, list):
+					result['role_tags'] = ', '.join(role_tags)
+		
+				existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
+		
+				if existing_alert:
+					if existing_alert.alert_status != result['alert_status']:
+						try:
+							existing_alert.alert_status = result['alert_status']
+							db.session.commit()
+							count_updated_records += 1
+							log_message = f"[INFO] Updated alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}."
+							new_log = Log(message=log_message, user_id=0)
+							db.session.add(new_log)
+							db.session.commit()
+						except Exception as e:
+							db.session.rollback()
+							log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}: {e}"
+							new_log = Log(message=log_message, user_id=0)
+							db.session.add(new_log)
+							db.session.commit()
+		
+				else:
+					if result['alert_id'] not in existing_alert_ids:
+						try:
+							individual_alert = Alert(
+								molnix_id=result['molnix_id'],
+								alert_record_created_at=result['alert_record_created_at'],
+								event=result['event'],
+								role_profile=result['role_profile'],
+								rotation=result['rotation'],
+								modality=result['modality'],
+								language_required=result['language_required'],
+								molnix_status=result['molnix_status'],
+								alert_status=result['alert_status'],
+								opens=result['opens'],
+								start=result['start'],
+								end_time=result['end_time'],
+								sectors=result['sectors'],
+								role_tags=result['role_tags'],
+								scope=result['scope'],
+								im_filter=result['im_filter'],
+								iso3=result['iso3'],
+								country_name=result['country_name'],
+								disaster_type_id=result['disaster_type_id'],
+								disaster_type_name=result['disaster_type_name'],
+								disaster_go_id=result['disaster_go_id'],
+								ifrc_severity_level_display=result['ifrc_severity_level_display'],
+								alert_id=result['alert_id'],
+								region_id=result['region_id']
+							)
+							db.session.add(individual_alert)
+							db.session.commit()
+							count_new_records += 1
+							log_message = f"[INFO] Added new alert with alert_id {individual_alert.alert_id}, molnix_id: {current_molnix_id}."
+							new_log = Log(message=log_message, user_id=0)
+							db.session.add(new_log)
+							db.session.commit()
+		
+							if individual_alert.im_filter:
+								send_im_alert_to_slack(individual_alert)
+		
+						except Exception as e:
+							db.session.rollback()
+							log_message = f"[ERROR] Couldn't add alert (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}) to the database: {e}"
+							new_log = Log(message=log_message, user_id=0)
+							db.session.add(new_log)
+							db.session.commit()
+							
+			except Exception as e:
+				current_molnix_id = result.get('molnix_id', 'Unknown')
+				log_message = f"[ERROR] Error processing result with molnix_id: {current_molnix_id}, error: {str(e)}"
+				new_log = Log(message=log_message, user_id=0)
+				db.session.add(new_log)
+				db.session.commit()
 	
 	except Exception as e:
 		db.session.rollback()
@@ -411,7 +510,7 @@ def refresh_surge_alerts_latest():
 		db.session.commit()
 		send_error_message(log_message)
 	
-	log_message = f"[INFO] The Surge Alert cron job has finished and logged {count_new_records} new records."
+	log_message = f"[INFO] The Surge Alert cron job has finished. Added {count_new_records} new records and updated {count_updated_records} records."
 	new_log = Log(message=log_message, user_id=0)
 	db.session.add(new_log)
 	db.session.commit()
