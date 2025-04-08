@@ -11,6 +11,9 @@ import math
 import requests
 import logging
 import re
+import time
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
+from requests.exceptions import RequestException
 
 scheduler = APScheduler()
 
@@ -202,64 +205,135 @@ def refresh_surge_alerts_latest():
 	Raises:
 	None
 	"""
+		
 	count_new_records = 0
 	count_updated_records = 0
 	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
 	
+	# helper function for safe database logging
+	def safe_log(message, user_id=0, max_retries=3, retry_delay=2):
+		for attempt in range(max_retries):
+			try:
+				new_log = Log(message=message, user_id=user_id)
+				db.session.add(new_log)
+				db.session.commit()
+				return True
+			except OperationalError as e:
+				if "SSL SYSCALL error" in str(e) or "connection" in str(e).lower():
+					if attempt < max_retries - 1:
+						time.sleep(retry_delay)
+						# Try to reconnect to the database
+						try:
+							db.session.rollback()
+							db.engine.dispose()
+						except:
+							pass
+					else:
+						# log to stdout/stderr as a last resort
+						print(f"DATABASE CONNECTION ERROR: {str(e)}")
+						print(f"Failed to log message: {message}")
+						return False
+				else:
+					# for other operational errors retry then give up
+					if attempt == 0:
+						time.sleep(retry_delay)
+						db.session.rollback()
+					else:
+						print(f"DATABASE ERROR: {str(e)}")
+						print(f"Failed to log message: {message}")
+						return False
+			except SQLAlchemyError as e:
+				db.session.rollback()
+				print(f"SQL ERROR: {str(e)}")
+				print(f"Failed to log message: {message}")
+				return False
+			except Exception as e:
+				db.session.rollback()
+				print(f"UNEXPECTED ERROR DURING LOGGING: {str(e)}")
+				print(f"Failed to log message: {message}")
+				return False
+	
 	try:
-		log_message = f"[INFO] The Surge Alert (Latest) cron job has started."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
+		# start job and log message with fallback to print if db logging fails
+		start_message = f"[INFO] The Surge Alert (Latest) cron job has started."
+		if not safe_log(start_message):
+			# If we can't even log to the database, send an error alert
+			send_error_message(f"Database connection error in Surge Alert cron job. Unable to log to database.")
+			
+		try:
+			safe_log(f"[INFO] Fetching existing alerts from the database.")
+			
+			# try to get existing alerts with retry logic
+			max_db_retries = 3
+			for db_attempt in range(max_db_retries):
+				try:
+					existing_alerts = db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
+					existing_alert_ids = {alert.alert_id for alert in existing_alerts}
+					existing_statuses = {alert.alert_id: alert.alert_status for alert in existing_alerts}
+					break
+				except OperationalError as e:
+					if "SSL SYSCALL error" in str(e) or "connection" in str(e).lower():
+						if db_attempt < max_db_retries - 1:
+							safe_log(f"[WARNING] Database connection issue, retrying... ({db_attempt + 1}/{max_db_retries})")
+							time.sleep(2)
+							try:
+								db.session.rollback()
+								db.engine.dispose()
+							except:
+								pass
+						else:
+							raise
+					else:
+						raise
+		except Exception as db_error:
+			safe_log(f"[ERROR] Failed to fetch existing alerts: {str(db_error)}")
+			existing_alerts = []
+			existing_alert_ids = set()
+			existing_statuses = {}
 	
-		log_message = f"[INFO] Fetching existing alerts from the database."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
+		safe_log(f"[INFO] Making API request to {url}.")
 	
-		existing_alerts = db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
-		existing_alert_ids = {alert.alert_id for alert in existing_alerts}
-		existing_statuses = {alert.alert_id: alert.alert_status for alert in existing_alerts}
-	
-		log_message = f"[INFO] Making API request to {url}."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
-	
-		response = requests.get(url)
-		response.raise_for_status()  # Raise an exception for HTTP errors
+		# retry logic for API requests
+		max_api_retries = 3
+		api_retry_delay = 2
 		
-		log_message = f"[INFO] API request successful, processing response."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
-	
-		data = response.json()
-		results = data.get("results", [])
+		for api_attempt in range(max_api_retries):
+			try:
+				response = requests.get(url, timeout=30)
+				response.raise_for_status()
+				break
+			except RequestException as e:
+				if api_attempt < max_api_retries - 1:
+					safe_log(f"[WARNING] API request failed, retrying ({api_attempt + 1}/{max_api_retries}): {str(e)}")
+					time.sleep(api_retry_delay)
+				else:
+					safe_log(f"[ERROR] API request failed after {max_api_retries} attempts: {str(e)}")
+					raise
 		
-		if not results:
-			log_message = f"[WARNING] No results were returned from the API."
-			new_log = Log(message=log_message, user_id=0)
-			db.session.add(new_log)
-			db.session.commit()
+		safe_log(f"[INFO] API request successful, processing response.")
+	
+		try:
+			data = response.json()
+			results = data.get("results", [])
+			
+			if not results:
+				safe_log(f"[WARNING] No results were returned from the API.")
+		except ValueError as e:
+			safe_log(f"[ERROR] Failed to parse API response as JSON: {str(e)}")
+			safe_log(f"[DEBUG] Response content preview: {response.text[:200]}...")
+			raise
 	
 		result_list = []
 		for index, result in enumerate(results):
 			try:
 				current_molnix_id = result.get("molnix_id", "Unknown")
 				
-				log_message = f"[INFO] Processing alert with molnix_id: {current_molnix_id} (index: {index})"
-				new_log = Log(message=log_message, user_id=0)
-				db.session.add(new_log)
-				db.session.commit()
+				safe_log(f"[INFO] Processing alert with molnix_id: {current_molnix_id} (index: {index})")
 				
 				molnix_tags = result.get("molnix_tags", [])
 				if molnix_tags is None:
 					molnix_tags = []
-					log_message = f"[WARNING] molnix_tags is None for molnix_id: {current_molnix_id}"
-					new_log = Log(message=log_message, user_id=0)
-					db.session.add(new_log)
-					db.session.commit()
+					safe_log(f"[WARNING] molnix_tags is None for molnix_id: {current_molnix_id}")
 		
 				sectors = []
 				roles = []
@@ -286,10 +360,7 @@ def refresh_surge_alerts_latest():
 					if groups is None:
 						groups = []
 						tag_description = tag.get("description", "Unknown")
-						log_message = f"[WARNING] groups is None for tag: {tag_description} in molnix_id: {current_molnix_id}"
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
+						safe_log(f"[WARNING] groups is None for tag: {tag_description} in molnix_id: {current_molnix_id}")
 		
 					if "REGION" in groups:
 						region_id = tag.get("description", None)
@@ -317,13 +388,13 @@ def refresh_surge_alerts_latest():
 				language_required = None
 				rotation = None
 				
-				# Safely find language required
+				# safely find language required
 				for tag in molnix_tags:
 					if tag.get("tag_type") == "language":
 						language_required = tag.get("description", None)
 						break
 						
-				# Safely find rotation
+				# safely find rotation
 				for tag in molnix_tags:
 					tag_groups = tag.get("groups", [])
 					if tag_groups and "rotation" in tag_groups:
@@ -333,10 +404,7 @@ def refresh_surge_alerts_latest():
 				country = result.get("country", {})
 				if country is None:
 					country = {}
-					log_message = f"[WARNING] country is None for molnix_id: {current_molnix_id}"
-					new_log = Log(message=log_message, user_id=0)
-					db.session.add(new_log)
-					db.session.commit()
+					safe_log(f"[WARNING] country is None for molnix_id: {current_molnix_id}")
 					
 				iso3 = country.get("iso3", None)
 				country_name = country.get("name", None)
@@ -352,18 +420,12 @@ def refresh_surge_alerts_latest():
 				event = result.get("event", {})
 				if event is None:
 					event = {}
-					log_message = f"[WARNING] event is None for molnix_id: {current_molnix_id}"
-					new_log = Log(message=log_message, user_id=0)
-					db.session.add(new_log)
-					db.session.commit()
+					safe_log(f"[WARNING] event is None for molnix_id: {current_molnix_id}")
 					
 				dtype = event.get("dtype", {})
 				if dtype is None:
 					dtype = {}
-					log_message = f"[WARNING] dtype is None for molnix_id: {current_molnix_id}"
-					new_log = Log(message=log_message, user_id=0)
-					db.session.add(new_log)
-					db.session.commit()
+					safe_log(f"[WARNING] dtype is None for molnix_id: {current_molnix_id}")
 					
 				disaster_type_id = dtype.get("id", None)
 				disaster_type_name = dtype.get("name", None)
@@ -402,10 +464,7 @@ def refresh_surge_alerts_latest():
 				
 			except Exception as e:
 				current_molnix_id = result.get("molnix_id", "Unknown")
-				log_message = f"[ERROR] Error processing alert with molnix_id: {current_molnix_id}, error: {str(e)}"
-				new_log = Log(message=log_message, user_id=0)
-				db.session.add(new_log)
-				db.session.commit()
+				safe_log(f"[ERROR] Error processing alert with molnix_id: {current_molnix_id}, error: {str(e)}")
 				continue
 	
 		for result in result_list:
@@ -413,7 +472,7 @@ def refresh_surge_alerts_latest():
 				current_molnix_id = result.get('molnix_id', 'Unknown')
 				current_alert_id = result.get('alert_id', 'Unknown')
 				
-				# Handle potential None values in lists
+				# handle potential None values in lists
 				sectors = result.get('sectors', [])
 				if sectors is None:
 					sectors = []
@@ -422,7 +481,7 @@ def refresh_surge_alerts_latest():
 				if role_tags is None:
 					role_tags = []
 				
-				# Join the sectors and role_tags if they are lists
+				# join sectors and role_tags if they are lists
 				if isinstance(sectors, list):
 					result['sectors'] = ', '.join(sectors)
 				
@@ -437,16 +496,10 @@ def refresh_surge_alerts_latest():
 							existing_alert.alert_status = result['alert_status']
 							db.session.commit()
 							count_updated_records += 1
-							log_message = f"[INFO] Updated alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}."
-							new_log = Log(message=log_message, user_id=0)
-							db.session.add(new_log)
-							db.session.commit()
+							safe_log(f"[INFO] Updated alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
 						except Exception as e:
 							db.session.rollback()
-							log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}: {e}"
-							new_log = Log(message=log_message, user_id=0)
-							db.session.add(new_log)
-							db.session.commit()
+							safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}: {e}")
 		
 				else:
 					if result['alert_id'] not in existing_alert_ids:
@@ -480,40 +533,39 @@ def refresh_surge_alerts_latest():
 							db.session.add(individual_alert)
 							db.session.commit()
 							count_new_records += 1
-							log_message = f"[INFO] Added new alert with alert_id {individual_alert.alert_id}, molnix_id: {current_molnix_id}."
-							new_log = Log(message=log_message, user_id=0)
-							db.session.add(new_log)
-							db.session.commit()
+							safe_log(f"[INFO] Added new alert with alert_id {individual_alert.alert_id}, molnix_id: {current_molnix_id}.")
 		
 							if individual_alert.im_filter:
 								send_im_alert_to_slack(individual_alert)
 		
 						except Exception as e:
 							db.session.rollback()
-							log_message = f"[ERROR] Couldn't add alert (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}) to the database: {e}"
-							new_log = Log(message=log_message, user_id=0)
-							db.session.add(new_log)
-							db.session.commit()
+							safe_log(f"[ERROR] Couldn't add alert (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}) to the database: {e}")
 							
 			except Exception as e:
 				current_molnix_id = result.get('molnix_id', 'Unknown')
-				log_message = f"[ERROR] Error processing result with molnix_id: {current_molnix_id}, error: {str(e)}"
-				new_log = Log(message=log_message, user_id=0)
-				db.session.add(new_log)
-				db.session.commit()
+				safe_log(f"[ERROR] Error processing result with molnix_id: {current_molnix_id}, error: {str(e)}")
 	
 	except Exception as e:
-		db.session.rollback()
-		log_message = f"[ERROR] The Surge Alert cron job has failed: {e}."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
-		send_error_message(log_message)
-	
-	log_message = f"[INFO] The Surge Alert cron job has finished. Added {count_new_records} new records and updated {count_updated_records} records."
-	new_log = Log(message=log_message, user_id=0)
-	db.session.add(new_log)
-	db.session.commit()
+		try:
+			db.session.rollback()
+		except:
+			pass
+		
+		error_message = f"[ERROR] The Surge Alert cron job has failed: {e}."
+		try:
+			safe_log(error_message)
+		except:
+			print(error_message)
+		
+		send_error_message(error_message)
+	finally:
+		try:
+			completion_message = f"[INFO] The Surge Alert cron job has finished. Added {count_new_records} new records and updated {count_updated_records} records."
+			safe_log(completion_message)
+		except Exception as final_e:
+			print(f"Failed to log completion message: {str(final_e)}")
+			send_error_message(f"Failed to log completion of Surge Alert cron job: {str(final_e)}")
 
 def refresh_surge_alerts(pages_to_fetch):
 	"""
