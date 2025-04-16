@@ -23,7 +23,9 @@
                 </div>
                 <div class="col-md-6 text-end">
                     <div class="">
-                        <a href='/submit_acronym'><button class='btn btn-danger btn-lg float-right'>Add Acronym</button></a>
+                        {% if user_info is not none and user_info.id > 0 %}
+                        <a href='/submit_acronym/member'><button class='btn btn-danger btn-lg float-right'>Add Acronym</button></a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
