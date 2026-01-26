@@ -20,10 +20,11 @@ from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety,
 	EmergencyType, Alert, Portfolio, Story,
-	Learning, Review, Availability, Log, Task
+	Learning, Review, Availability, Log, Task,
+	AssignmentChecklist, Checklist
 )
 from SIMS_Portal.emergencies.forms import (
-	NewEmergencyForm, UpdateEmergencyForm
+	NewEmergencyForm, UpdateEmergencyForm, UpdateEmergenyChecklistForm
 )
 from SIMS_Portal.emergencies.utils import (
 	update_response_locations, update_active_response_locations,
@@ -41,7 +42,7 @@ emergencies = Blueprint('emergencies', __name__)
 @login_required
 def view_all_emergencies():
 	emergencies = db.session.query(Emergency, Assignment, NationalSociety, EmergencyType).join(Assignment, Assignment.id == Emergency.id, isouter=True).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id, isouter=True).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id, isouter=True).filter(Emergency.emergency_status != "Removed").all()
-	
+
 	return render_template('emergencies_all.html', emergencies=emergencies)
 
 @emergencies.route('/emergency/new', methods=['GET', 'POST'])
@@ -50,28 +51,28 @@ def new_emergency():
 	form = NewEmergencyForm()
 	if form.validate_on_submit():
 		emergency = Emergency(
-			emergency_name=form.emergency_name.data, 
-			emergency_location_id=form.emergency_location_id.data.ns_go_id, 
-			emergency_type_id=form.emergency_type_id.data.emergency_type_go_id, 
-			emergency_glide=form.emergency_glide.data, 
-			emergency_go_id=form.emergency_go_id.data, 
-			activation_details=form.activation_details.data, 
-			slack_channel=form.slack_channel.data or None, 
-			dropbox_url=form.dropbox_url.data or None, 
+			emergency_name=form.emergency_name.data,
+			emergency_location_id=form.emergency_location_id.data.ns_go_id,
+			emergency_type_id=form.emergency_type_id.data.emergency_type_go_id,
+			emergency_glide=form.emergency_glide.data,
+			emergency_go_id=form.emergency_go_id.data,
+			activation_details=form.activation_details.data,
+			slack_channel=form.slack_channel.data or None,
+			dropbox_url=form.dropbox_url.data or None,
 			github_repo=form.github_repo.data or None
 		)
 		db.session.add(emergency)
 		db.session.commit()
-		
+
 		# default to false
 		show_slack_modal = False
-		
+
 		# generate a new slack channel if user did not specify it
 		try:
 			if emergency.slack_channel is None:
 				emergency.slack_channel = create_response_channel(emergency.emergency_location_id, emergency.emergency_type_id)
 				db.session.commit()
-				
+
 				# override and set to true if system generates slack channel
 				show_slack_modal = True
 		except Exception as e:
@@ -83,14 +84,14 @@ def new_emergency():
 		# run updates to csvs that hold data for visualizations
 		update_response_locations()
 		update_active_response_locations()
-		
+
 		log_message = f"[INFO] User {current_user.id} created emergency record: {emergency.emergency_name}."
 		new_log = Log(message=log_message, user_id=current_user.id)
 		db.session.add(new_log)
 		db.session.commit()
-		
+
 		flash('New emergency successfully created.', 'success')
-		
+
 		return redirect(url_for('emergencies.view_emergency', id=emergency.id, show_slack_modal=show_slack_modal))
 	try:
 		# try to get the latest emergencies from the GO API
@@ -105,14 +106,14 @@ def new_emergency():
 def view_emergency(id):
 	# get user info for various filtering
 	user_info = db.session.query(User).filter(User.id == current_user.id).first()
-	
+
 	# build availability chart
 	week_dates, frequency_count = emergency_availability_chart_data(id)
 	if frequency_count == [0, 0, 0, 0, 0, 0, 0]:
 		kill_chart = True
 	else:
 		kill_chart = False
-	
+
 	# get IDs of all this emergency's sims remote coordinators
 	sims_co_ids = db.session.query(User, Assignment, Emergency).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id, Assignment.role == 'SIMS Remote Coordinator').all()
 
@@ -124,22 +125,22 @@ def view_emergency(id):
 		user_is_sims_co = True
 	else:
 		user_is_sims_co = False
-	
+
 	# build availability query parameters
 	emergency_id = id
 	user_id = current_user.id
 	today = datetime.today().year
 	week_number = datetime.today().isocalendar()[1]
 	timeframe = f"{today}-{week_number}"
-	
+
 	# build availability query
 	availability_subquery = db.session.query(func.max(Availability.created_at)).filter(
 		Availability.emergency_id == emergency_id,
 		Availability.user_id == user_id,
-		Availability.timeframe == timeframe 
+		Availability.timeframe == timeframe
 	).scalar_subquery()
 	availability_query = db.session.query(
-		Availability.id, 
+		Availability.id,
 		Availability.emergency_id,
 		Availability.created_at,
 		Availability.dates
@@ -150,13 +151,13 @@ def view_emergency(id):
 		Availability.created_at == availability_subquery
 	)
 	availability_results = availability_query.first()
-	
+
 	# check for products that need to be approved
 	pending_products = db.session.query(Portfolio).filter(Portfolio.emergency_id == id, Portfolio.product_status == 'Pending Approval').all()
-	
+
 	# get simscos
 	sims_cos = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active', Assignment.role=='SIMS Remote Coordinator').order_by(User.firstname).all()
-	
+
 	# get deployed IM roles
 	deployed_im = db.session.query(Assignment, Emergency, User, NationalSociety).\
 	join(Emergency, Emergency.id == Assignment.emergency_id).\
@@ -172,10 +173,10 @@ def view_emergency(id):
 			Assignment.role == 'Mapping and Visualization Officer'
 		)
 	).order_by(User.firstname).all()
-	
+
 	# get remote supporters
 	deployments = db.session.query(Assignment, Emergency, User, NationalSociety).join(Emergency, Emergency.id==Assignment.emergency_id).join(User, User.id==Assignment.user_id).join(NationalSociety, NationalSociety.ns_go_id==User.ns_id).filter(Emergency.id==id, Assignment.assignment_status=='Active', Assignment.role=='Remote IM Support').order_by(User.firstname).all()
-	
+
 	# trigger quick action box if user has active remote assignment
 	user_ids = [user.id for assignment, emergency, user, national_society in deployments]
 	quick_action = current_user.id in user_ids
@@ -190,16 +191,16 @@ def view_emergency(id):
 		).first()
 	else:
 		quick_action_id = 0
-	
+
 	# get emergency information
 	emergency_info = db.session.query(Emergency, EmergencyType, NationalSociety).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id).filter(Emergency.id == id).first()
-	
+
 	# count approved products for emergency
 	emergency_portfolio_size = len(db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == id, Portfolio.product_status == 'Approved').all())
-	
+
 	# get 3 portfolio products for emergency
 	emergency_portfolio = db.session.query(Portfolio, Emergency).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Emergency.id == id, Portfolio.product_status == 'Approved').limit(3).all()
-	
+
 	# check if story already exists for button filtering
 	check_for_story = db.session.query(Story, Emergency).join(Emergency, Emergency.id == Story.emergency_id).filter(Story.emergency_id == id).first()
 
@@ -208,7 +209,7 @@ def view_emergency(id):
 
 	# get the average learning scores across all operations
 	learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}'.format(id))
-	
+
 	# build chart's x and y
 	data_dict_learnings = [x._asdict() for x in learning_data]
 	learning_keys = []
@@ -216,14 +217,14 @@ def view_emergency(id):
 	for k, v in data_dict_learnings[0].items():
 		learning_keys.append(k)
 		learning_values.append(v)
-	
+
 	try:
 		learning_values = [round(float(val), 2) for val in learning_values]
 	except:
 		learning_values = [0]
-	
+
 	avg_learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning')
-	
+
 	# convert avg learnings data to dict and parse into keys and values
 	data_dict_avg_learnings = [x._asdict() for x in avg_learning_data]
 	avg_learning_keys = []
@@ -231,16 +232,16 @@ def view_emergency(id):
 	for k, v in data_dict_avg_learnings[0].items():
 		avg_learning_keys.append(k)
 		avg_learning_values.append(v)
-	
+
 	try:
-		avg_learning_values = [round(float(val), 2) for val in avg_learning_values]	
+		avg_learning_values = [round(float(val), 2) for val in avg_learning_values]
 	except:
 		avg_learning_values = [0]
-	
+
 	existing_reviews = db.session.query(Review).filter(Review.emergency_id == id).all()
-	
+
 	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
-	
+
 	try:
 		# check for trello tasks
 		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)
@@ -248,7 +249,7 @@ def view_emergency(id):
 	except:
 		to_do_trello = None
 		count_cards = 0
-	
+
 	today = datetime.today()
 	current_weekday = today.weekday()
 	year, week_number, _ = today.isocalendar()
@@ -256,28 +257,28 @@ def view_emergency(id):
 	next_week = week_number + 1
 	next_week_num = f"{year}-{next_week:02d}"
 	days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-	
+
 	# current week supporters
 	available_supporters_current_week = db.session.query(User, Availability).join(Availability, User.id == Availability.user_id).filter(
 		Availability.emergency_id == id,
 		Availability.timeframe == current_week_num
 	)
 	available_supporter_current_week_list = available_supporters_current_week.all()
-	
+
 	# next week supporters
 	available_supporters_next_week = db.session.query(User, Availability).join(Availability, User.id == Availability.user_id).filter(
 		Availability.emergency_id == id,
-		Availability.timeframe == next_week_num 
+		Availability.timeframe == next_week_num
 	)
 	available_supporter_next_week_list = available_supporters_next_week.all()
-	
+
 	def extract_day_of_week(date_string):
 		try:
 			date_obj = datetime.strptime(date_string, '%A, %B %d')
 			return date_obj.strftime('%A')
 		except ValueError:
 			return date_string
-	
+
 	# iterate through the results and format the dates
 	for member in available_supporter_current_week_list:
 		availability = member.Availability
@@ -285,23 +286,23 @@ def view_emergency(id):
 		formatted_dates = [extract_day_of_week(date.strip("'")) for date in dates]
 		availability.dates = ', '.join(formatted_dates)
 		availability.dates = availability.dates.replace(',','').split()
-		
+
 		available_days_of_week = []
 		for date in availability.dates:
 			if date in days_of_week:
 				available_days_of_week.append(date)
 		availability.dates = available_days_of_week
-	
+
 	# check if the show_slack_modal parameter is in the URL
 	show_slack_modal = request.args.get('show_slack_modal', False)
-	
+
 	# convert the string 'True' or 'False' to boolean
 	show_slack_modal = show_slack_modal == 'True'
-	
-	# get issues from github	
+
+	# get issues from github
 	repo_name = emergency_info.Emergency.github_repo
 	user_alias = aliased(User)
-	
+
 	issues_list = (
 		db.session.query(
 			Task.id.label("task_id"),
@@ -318,7 +319,7 @@ def view_emergency(id):
 		.distinct(Task.id, user_alias.github)
 		.all()
 	)
-	
+
 	# count issues from github
 	task_counts = (
 		db.session.query(User.github, func.count(Task.id).label('task_count'))
@@ -327,46 +328,106 @@ def view_emergency(id):
 		.group_by(User.github)
 		.all()
 	)
-	
+
 	# convert task_counts to dict
 	task_counts_dict = {github: count for github, count in task_counts}
-	
+
+	# Build assignment checklist with sub-tasks for template
+	from SIMS_Portal.models import AssignmentChecklist, AssignmentSubTask, Checklist, SubTask
+	assignment_checklists = AssignmentChecklist.query.filter_by(emergency_id=id).order_by(AssignmentChecklist.id.asc()).all()
+	assignment_checklist_data = []
+	for ac in assignment_checklists:
+		checklist = Checklist.query.get(ac.checklist_id)
+		sub_tasks = []
+		# ensure subtasks are returned in the order they were added (id asc)
+		assignment_subtasks = AssignmentSubTask.query.filter_by(assignment_checklist_id=ac.id).order_by(AssignmentSubTask.id.asc()).all()
+		for ast in assignment_subtasks:
+			sub_checklist = SubTask.query.order_by(SubTask.id.asc()).filter(SubTask.id == ast.sub_task_id).first()
+			sub_tasks.append({
+				'id': ast.sub_task_id,
+				'name': sub_checklist.name if sub_checklist else '',
+				'description': sub_checklist.description if sub_checklist else '',
+				'task_url': sub_checklist.task_url if sub_checklist else '',
+				'task_completed': ast.task_completed,
+				'task_completed_date': ast.task_completed_date,
+			})
+		assignment_checklist_data.append({
+			'id': ac.id,
+			'emergency_id': ac.emergency_id,
+			'checklist_id': ac.checklist_id,
+			'task_completed': ac.task_completed,
+			'created_at': ac.created_at,
+			'updated_at': ac.updated_at,
+			'checklist_task_name': checklist.task_name if checklist else '',
+			'checklist_task_description': checklist.task_description if checklist else '',
+			'checklist_task_url': checklist.task_url if checklist else '',
+			'sub_tasks': sub_tasks,
+		})
+
+	tasks = db.session.query(Checklist).order_by(Checklist.id.asc()).all()
+
 	return render_template(
-		'emergency.html', 
-		title='Emergency View', 
-		emergency_info=emergency_info, 
-		deployments=deployments, 
-		emergency_portfolio=emergency_portfolio, 
-		check_for_story=check_for_story, 
-		learning_data=learning_data, 
-		learning_keys=learning_keys, 
-		learning_values=learning_values, 
-		learning_count=learning_count, 
-		avg_learning_keys=avg_learning_keys, 
-		avg_learning_values=avg_learning_values, 
-		deployment_history_count=deployment_history_count, 
-		user_is_sims_co=user_is_sims_co, 
-		pending_products=pending_products, 
-		emergency_portfolio_size=emergency_portfolio_size,  
-		existing_reviews=existing_reviews, 
-		to_do_trello=to_do_trello, 
-		count_cards=count_cards, 
-		current_weekday=current_weekday, 
+		'emergency.html',
+		title='Emergency View',
+		emergency_info=emergency_info,
+		deployments=deployments,
+		emergency_portfolio=emergency_portfolio,
+		check_for_story=check_for_story,
+		learning_data=learning_data,
+		learning_keys=learning_keys,
+		learning_values=learning_values,
+		learning_count=learning_count,
+		avg_learning_keys=avg_learning_keys,
+		avg_learning_values=avg_learning_values,
+		deployment_history_count=deployment_history_count,
+		user_is_sims_co=user_is_sims_co,
+		pending_products=pending_products,
+		emergency_portfolio_size=emergency_portfolio_size,
+		existing_reviews=existing_reviews,
+		to_do_trello=to_do_trello,
+		count_cards=count_cards,
+		current_weekday=current_weekday,
 		availability_results=availability_results,
-		user_info=user_info, 
+		user_info=user_info,
 		sims_cos=sims_cos,
 		deployed_im=deployed_im,
-		week_dates=week_dates, 
+		week_dates=week_dates,
 		frequency_count=frequency_count,
 		kill_chart=kill_chart,
 		quick_action=quick_action,
 		quick_action_id=quick_action_id,
 		available_supporter_current_week_list=available_supporter_current_week_list,
-		available_supporter_next_week_list=available_supporter_next_week_list, 
+		available_supporter_next_week_list=available_supporter_next_week_list,
 		show_slack_modal=show_slack_modal,
 		task_counts_dict=task_counts_dict,
-		issues_list=issues_list
+		issues_list=issues_list,
+		assignmet_checklist=assignment_checklist_data,
+		tasks=tasks,
+		current_date=datetime.today().strftime('%Y-%m-%d'),
+		chk_form=UpdateEmergenyChecklistForm(),
+		datetime=datetime
 	)
+
+@emergencies.route('/emergency/manage_checklist/update/task/<int:emergency_id>/<int:task_id>', methods=['POST'])
+@login_required
+def update_task_from_emergency(emergency_id, task_id):
+	form = UpdateEmergenyChecklistForm()
+
+	if form.validate_on_submit():
+		task_completed_bool = form.task_completed.data
+		if task_completed_bool == True:
+			if form.complted_at.data == None:
+				task_completed_date = datetime.now()
+			else:
+				task_completed_date = form.complted_at.data
+		else:
+			task_completed_date = None
+
+		db.session.query(AssignmentChecklist).filter(AssignmentChecklist.emergency_id == emergency_id).filter(AssignmentChecklist.checklist_id == task_id).update({"task_completed": task_completed_bool, "updated_at": task_completed_date})
+		db.session.commit()
+		flash('Task successfully updated.', 'success')
+
+	return redirect(url_for('emergencies.view_emergency', id=emergency_id))
 
 @emergencies.route('/emergency/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -375,7 +436,7 @@ def edit_emergency(id):
 	emergency_info = db.session.query(Emergency).filter(Emergency.id == id).first()
 	if form.validate_on_submit():
 		emergency_info.emergency_name = form.emergency_name.data
-		try: 
+		try:
 			emergency_info.emergency_location_id = form.emergency_location_id.data.ns_go_id
 		except:
 			pass
@@ -384,7 +445,7 @@ def edit_emergency(id):
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_type_id':selected_id})
 		except:
 			pass
-		try: 
+		try:
 			emergency_info.emergency_go_id = form.emergency_go_id.data
 		except:
 			pass
@@ -395,12 +456,12 @@ def edit_emergency(id):
 		emergency_info.github_repo = form.github_repo.data
 		db.session.commit()
 		flash('Emergency record updated!', 'success')
-		
+
 		log_message = f"[INFO] User {current_user.id} edited emergency {emergency_info.emergency_name}."
 		new_log = Log(message=log_message, user_id=current_user.id)
 		db.session.add(new_log)
 		db.session.commit()
-		
+
 		return redirect(url_for('emergencies.view_emergency', id=id))
 	elif request.method == 'GET':
 		form.emergency_name.data = emergency_info.emergency_name
@@ -429,23 +490,23 @@ def refresh_emergency_github(id):
 @login_required
 def emergency_gantt(id):
 	emergency_info = db.session.query(Emergency).filter(Emergency.id == id).first()
-	
+
 	assignments = db.session.query(Assignment, Emergency, User).join(Emergency, Emergency.id == Assignment.emergency_id).join(User, User.id == Assignment.user_id).filter(Emergency.id == id, Assignment.assignment_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').with_entities(Assignment.start_date, Assignment.end_date, User.fullname, Assignment.role).order_by(Assignment.start_date.asc()).all()
-	
+
 	start_end_dates = []
 	for dates in assignments:
 		start_end_dates.append([dates.start_date.strftime('%Y-%m-%d'), dates.end_date.strftime('%Y-%m-%d')])
-	
+
 	member_labels = []
 	for member in assignments:
 		member_labels.append(member.fullname)
-	
+
 	if start_end_dates:
 		min_date = min(start_end_dates)
 		min_date = min_date[0]
-	else: 
+	else:
 		min_date = '2000-01-01'
-	
+
 	return render_template('emergency_gantt.html', start_end_dates=start_end_dates, member_labels=member_labels, min_date=min_date, emergency_info=emergency_info)
 
 @emergencies.route('/emergency/closeout/<int:id>')
@@ -455,13 +516,13 @@ def closeout_emergency(id):
 		try:
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Closed'})
 			db.session.commit()
-			
+
 			# update map on dashboard
 			update_active_response_locations()
-			
+
 			# request learnings from remote supporters
 			request_learnings(id)
-			
+
 			current_app.logger.info("Emergency-{} has been closed out.".format(id))
 			flash("Emergency closed out.", 'success')
 		except:
@@ -480,13 +541,13 @@ def delete_emergency(id):
 			db.session.commit()
 			update_active_response_locations()
 			flash("Emergency deleted.", 'success')
-			
+
 			emergency_info = db.session.query(Emergency).filter(Emergency.id==id).first()
 			log_message = f"[WARNING] User {current_user.id} deleted emergency {emergency_info.emergency_name}."
 			new_log = Log(message=log_message, user_id=current_user.id)
 			db.session.add(new_log)
 			db.session.commit()
-			
+
 		except:
 			flash("Error deleting emergency. Check that the emergency ID exists.")
 		return redirect(url_for('main.dashboard'))
@@ -556,3 +617,55 @@ def api_get_emergencies():
 		})
 
 	return jsonify(result)
+
+@emergencies.route('/emergency/manage_checklist/update/subtask/<int:emergency_id>/<int:assignment_checklist_id>/<int:subtask_id>', methods=['POST'])
+@login_required
+def update_subtask_from_emergency(emergency_id, assignment_checklist_id, subtask_id):
+    from SIMS_Portal.models import AssignmentSubTask, AssignmentChecklist
+    from flask import request
+    from datetime import datetime
+
+    # Check if user is sims remote coordinator for this emergency
+    user_is_sims_co = check_sims_co(emergency_id)
+    if not user_is_sims_co:
+        flash('You do not have permission to edit this sub-task.', 'danger')
+        return redirect(url_for('emergencies.view_emergency', id=emergency_id))
+
+    # Get the AssignmentSubTask record
+    ast = AssignmentSubTask.query.filter_by(
+        assignment_checklist_id=assignment_checklist_id,
+        sub_task_id=subtask_id
+    ).first()
+    if not ast:
+        flash('Sub-task not found.', 'danger')
+        return redirect(url_for('emergencies.view_emergency', id=emergency_id))
+
+    # Only allow edit if not completed or user is sims remote coordinator
+    if ast.task_completed and not user_is_sims_co:
+        flash('You cannot edit a completed sub-task.', 'warning')
+        return redirect(url_for('emergencies.view_emergency', id=emergency_id))
+
+    # Get form data
+    completed = bool(request.form.get('task_completed'))
+    completed_at = request.form.get('completed_at')
+    if completed:
+        ast.task_completed = True
+        ast.task_completed_date = completed_at or datetime.now()
+        ast.task_completed_by = current_user.id
+    else:
+        ast.task_completed = False
+        ast.task_completed_date = None
+    ast.updated_at = datetime.now()
+    db.session.commit()
+
+    # Check if all sub-tasks for this checklist are complete
+    all_subtasks = AssignmentSubTask.query.filter_by(assignment_checklist_id=assignment_checklist_id).all()
+    all_complete = all(s.task_completed for s in all_subtasks)
+    parent = AssignmentChecklist.query.get(assignment_checklist_id)
+    if parent:
+        parent.task_completed = all_complete
+        parent.updated_at = datetime.now()
+        db.session.commit()
+
+    flash('Sub-task updated successfully.', 'success')
+    return redirect(url_for('emergencies.view_emergency', id=emergency_id))

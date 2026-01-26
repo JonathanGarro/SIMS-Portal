@@ -1,0 +1,611 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+.btn-danger, .btn-danger:visited, .btn-danger:active {
+    color: #fff !important;
+}
+</style>
+<div class="container">
+    <div id="hideMe">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mt-2 alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row mt-3 mb-5">
+    <div class="col col-md-3 rounded rounded-3 mb-5">
+        <div class="card p-4 bg-danger mt-5 position-sticky" style="top: 15px;">
+                <div class="row">
+                    <div>
+                        <h5 class="text-light Montserrat mb-3">Admin Controls</h5>
+                    <ul class="list-group border-0">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/manage_profiles" class="text-secondary">
+                                <i data-feather="user" class="mr-3"></i>
+                                &nbsp Manage Profiles
+                            </a>
+                        </li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="/admin/assign_badge" class="text-secondary">
+								<i data-feather="award" class="mr-3"></i>
+								&nbsp Assign Badges
+							</a>
+						</li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/upload_badges" class="text-secondary">
+                                <i data-feather="upload" class="mr-3"></i>
+                                &nbsp Upload Badges
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/approve_members" class="text-secondary">
+                                <i data-feather="thumbs-up" class="mr-3"></i>
+                                &nbsp Approve Members
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_reviews" class="text-secondary">
+                                <i data-feather="book-open" class="mr-3"></i>
+                                &nbsp Open Reviews
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/edit_skills" class="text-secondary">
+                                <i data-feather="list" class="mr-3"></i>
+                                &nbsp Skills List
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/process_acronyms" class="text-secondary">
+                                <i data-feather="pen-tool" class="mr-3"></i>
+                                &nbsp Process Acronyms
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/assign_regional_focal_point" class="text-secondary">
+                                <i data-feather="globe" class="mr-3"></i>
+                                &nbsp Focal Points
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/view_logs" class="text-secondary">
+                                <i data-feather="activity" class="mr-3"></i>
+                                &nbsp Activity Logs
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin/send_slack_message" class="text-secondary">
+                                <i data-feather="slack" class="mr-3"></i>
+                                &nbsp Slack Message
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-secondary  active-link">
+                                <i data-feather="check" class="mr-3"></i>
+                                &nbsp Checklists
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/manual_refresh" class="text-secondary">
+                                <i data-feather="refresh-ccw" class="mr-3"></i>
+                                &nbsp Manual Refresh
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/admin" class="text-secondary">
+                                <i data-feather="settings" class="mr-3"></i>
+                                &nbsp Admin Backend
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col g-5">
+
+            <!-- Tab navigation -->
+            <ul class="nav nav-pills mb-5" id="admin-checklist-nav" role="tablist">
+                <li class="nav-item" role="presentation">
+                <button class="nav-link {{ 'active' if active_tab != 'emergency-checklist' and active_tab != 'task-report' else '' }}" id="manage-checklist-tab" data-bs-toggle="pill" data-bs-target="#manage-checklist" type="button" role="tab" aria-controls="manage-checklist" aria-selected="true">Manage Checklist</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link {{ 'active' if active_tab == 'emergency-checklist' else '' }}" id="emergency-checklist-tab" data-bs-toggle="pill" data-bs-target="#emergency-checklist" type="button" role="tab" aria-controls="emergency-checklist" aria-selected="false">Emergency Checklist</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link {{ 'active' if active_tab == 'task-report' else '' }}" id="task-report-tab" data-bs-toggle="pill" data-bs-target="#task-report" type="button" role="tab" aria-controls="task-report" aria-selected="false">Task Report</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="admin-checklist-content">
+                <div class="tab-pane fade show {{ 'active' if active_tab != 'emergency-checklist' else '' }}" id="manage-checklist" role="tabpanel" aria-labelledby="manage-checklist-tab">
+                    <h2 class="text-danger Montserrat mb-4">Checklist</h2>
+                    <h5 class="text-danger Montserrat">Checklist Details</h5>
+                    <p id="sidebar-guidance">The checklist is a collection of tasks that need to be completed. Please provide a clear and concise description of each task.</p>
+
+                    <div class="col">
+                        <form action="{{ url_for('main.add_checklist') }}" method="POST" class="mb-4">
+                            {{ new_checklist_form.hidden_tag() }}
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    {{ new_checklist_form.task_name(class="form-control", placeholder="Task Name") }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ new_checklist_form.task_description(class="form-control", placeholder="Description") }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ new_checklist_form.task_url(class="form-control", placeholder="URL") }}
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="submit" class="btn btn-primary">Add Task</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="row row-cols-1 g-4 mt-4">
+                        {% for checklist in checklists %}
+                        <div class="col">
+                            <div class="card shadow-sm checklist-card">
+                                <div class="card-header d-flex justify-content-between align-items-start">
+                                    <div class="me-3">
+                                        <h5 class="mb-1">
+                                            {% if checklist.task_url %}
+                                            <a href="{{ checklist.task_url }}" target="_blank" class="text-decoration-none text-danger">
+                                                {{ checklist.task_name }}
+                                            </a>
+                                            {% else %}
+                                                <span class="text-danger">{{ checklist.task_name }}</span>
+                                            {% endif %}
+                                        </h5>
+                                        <p class="mb-0 text-muted small">{{ checklist.task_description }}</p>
+                                    </div>
+                                    <div class="d-flex gap-2 align-items-start">
+                                        <a href="{{ url_for('main.edit_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                        <a href="{{ url_for('main.remove_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Sub-Tasks</h6>
+                                        <small class="text-muted">{{ checklist.sub_tasks|length }} total</small>
+                                    </div>
+
+                                    <div class="list-group mb-3">
+                                        {% for subtask in checklist.sub_tasks|sort(attribute='id') %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                            <div>
+                                                {% if subtask.task_url %}
+                                                    <a href="{{ subtask.task_url }}" target="_blank" class="fw-semibold">{{ subtask.name }}</a>
+                                                {% else %}
+                                                    <span class="fw-semibold">{{ subtask.name }}</span>
+                                                {% endif %}
+                                                <div class="small text-muted">{{ subtask.description }}</div>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <a href="{{ url_for('main.edit_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                                <a href="{{ url_for('main.remove_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="list-group-item text-muted">No sub-tasks yet. Add one below.</div>
+                                        {% endfor %}
+                                    </div>
+
+                                    <!-- Add Sub-Task Form (keeps same fields and errors) -->
+                                    <form action="{{ url_for('main.add_subtask', checklist_id=checklist.id) }}" method="POST" class="row g-2 align-items-center">
+                                        {{ subtask_forms[checklist.id].hidden_tag() }}
+                                        <div class="col-md-4">
+                                            {{ subtask_forms[checklist.id].name(class_="form-control", placeholder="Sub-Task Name") }}
+                                            {% for error in subtask_forms[checklist.id].name.errors %}
+                                                <div class="text-danger small">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-md-5">
+                                            {{ subtask_forms[checklist.id].description(class_="form-control", placeholder="Description") }}
+                                            {% for error in subtask_forms[checklist.id].description.errors %}
+                                                <div class="text-danger small">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-md-2">
+                                            {{ subtask_forms[checklist.id].task_url(class_="form-control", placeholder="URL") }}
+                                            {% for error in subtask_forms[checklist.id].task_url.errors %}
+                                                <div class="text-danger small">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-md-1 text-end">
+                                            <button type="submit" class="btn btn-success">Add</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Emergency Checklist Tab -->
+                <div class="tab-pane fade {{ 'show active' if active_tab == 'emergency-checklist' else '' }}"
+                     id="emergency-checklist" role="tabpanel" aria-labelledby="emergency-checklist-tab">
+                    <h3>Emergency Checklist</h3>
+                    <p id="sidebar-guidance">
+                        The emergency checklist is a collection of tasks that need to be completed during an emergency.
+                        This section is only for active emergencies. Select an emergency to view and update its assigned tasks and sub-tasks.
+                    </p>
+
+                    <!-- Emergency Selection Form -->
+                    <div class="mb-3">
+                        <form id="emergency-select-form" method="get" action="{{ url_for('main.update_emergency_checklist') }}">
+                            {{ assign_form.emergency_id.label(class="form-label") }}
+                            <select name="emergency_id" class="form-select" onchange="document.getElementById('emergency-select-form').submit();">
+                                <option value="">-- Select Emergency --</option>
+                                {% for e in active_emergencies %}
+                                    <option value="{{ e.id }}" {% if assign_form.emergency_id.data == e.id %}selected{% endif %}>
+                                        {{ e.emergency_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+
+                    <!-- Emergency Checklist Form: only show when an emergency is selected -->
+                    {% if assign_form.emergency_id.data %}
+                    <form id="emergency-checklist-form" action="{{ url_for('main.update_emergency_checklist') }}" method="POST">
+                        {{ assign_form.hidden_tag() }}
+                        <input type="hidden" name="emergency_id" value="{{ assign_form.emergency_id.data }}">
+                        <div class="mb-3">
+                            <label class="form-label">Select Tasks and Sub-Tasks</label>
+                            <div class="accordion" id="checklistAccordion">
+                                {% for checklist in checklists|sort(attribute='id') %}
+                                {% set expanded = false %}
+                                {% set all_subtasks_completed = true %}
+                                {% for subtask in checklist.sub_tasks|sort(attribute='id') %}
+                                    {% if subtask.id in assigned_subtask_ids %}
+                                        {% set expanded = true %}
+                                        {% if not assigned_subtasks.get(subtask.id, {}).get('task_completed', false) %}
+                                            {% set all_subtasks_completed = false %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                {# compute selected / total counts so header can show summary without expanding #}
+                                {% set total_subtasks = checklist.sub_tasks|length %}
+                                {% set ns = namespace(count=0) %}
+                                {% for st in checklist.sub_tasks %}
+                                    {% if st.id in assigned_subtask_ids %}
+                                        {% set ns.count = ns.count + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% set selected_count = ns.count %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ checklist.id }}">
+                                        <button class="accordion-button {% if not expanded %}collapsed{% endif %}"
+                                                type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse{{ checklist.id }}"
+                                                aria-expanded="{{ 'true' if expanded else 'false' }}"
+                                                aria-controls="collapse{{ checklist.id }}">
+                                            <div class="d-flex align-items-center">
+                                                <span>{{ checklist.task_name }}
+                                                    <small class="text-muted ms-2">({{ selected_count }} of {{ total_subtasks }} selected)</small>
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ checklist.id }}"
+                                         class="accordion-collapse collapse {% if expanded %}show{% endif %}"
+                                         aria-labelledby="heading{{ checklist.id }}"
+                                         data-bs-parent="#checklistAccordion">
+                                        <div class="accordion-body">
+                                            {% for subtask in checklist.sub_tasks|sort(attribute='id') %}
+                                            {% set assigned_subtask_info = assigned_subtasks.get(subtask.id, {}) %}
+                                            <div class="form-check">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="subtask_ids[]"
+                                                           value="{{ checklist.id }}_{{ subtask.id }}"
+                                                           {% if subtask.id in assigned_subtask_ids %}checked{% endif %}
+                                                           data-parent-checklist-id="{{ checklist.id }}"
+                                                           {% if assigned_subtask_info.get('task_completed', false) %}disabled{% endif %}
+                                                           class="form-check-input subtask">
+                                                    <label class="form-check-label">{{ subtask.name }}</label>
+
+                                                    {% if assigned_subtask_info.get('task_completed', false) %}
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div>
+                                                            <span class="text-muted completed-date" data-subtask-id="{{ subtask.id }}">
+                                                                Completed: {{ assigned_subtask_info.get('task_completed_date').strftime('%Y-%m-%d %H:%M') if assigned_subtask_info.get('task_completed_date') else 'Never' }}
+                                                            </span>
+                                                            {% if assigned_subtask_info.get('task_completed_by_name') %}
+                                                            <span class="text-muted ms-3 completed-by" data-subtask-id="{{ subtask.id }}">
+                                                                Completed by: {{ assigned_subtask_info.get('task_completed_by_name') }}
+                                                            </span>
+                                                            {% endif %}
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-warning mark-undone"
+                                                                data-subtask-id="{{ subtask.id }}"
+                                                                data-emergency-id="{{ assign_form.emergency_id.data }}">
+                                                            Mark Undone
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-secondary override-date"
+                                                                data-subtask-id="{{ subtask.id }}"
+                                                                data-emergency-id="{{ assign_form.emergency_id.data }}">
+                                                            Override Date
+                                                        </button>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Assignments</button>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-secondary">Please select an emergency from the dropdown above to view and update tasks.</div>
+                    {% endif %}
+
+                </div>
+
+                <!-- Task Report Tab -->
+                <div class="tab-pane fade {{ 'show active' if active_tab == 'task-report' else '' }}" id="task-report" role="tabpanel" aria-labelledby="task-report-tab">
+                    <h3>Task Report</h3>
+
+                    <p class="text-muted">Overview of tasks and subtasks for active emergencies. Expand each emergency to see assigned checklists, subtasks, who completed them and when.</p>
+
+                    <div class="accordion" id="taskReportAccordion">
+                        {% for emergency in active_emergencies %}
+                            {% set stats = emergency_task_stats.get(emergency.id) if emergency_task_stats is defined else get_emergency_task_stats(emergency.id) %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="trh-{{ emergency.id }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#trc-{{ emergency.id }}" aria-expanded="false" aria-controls="trc-{{ emergency.id }}">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <div>
+                                                <strong class="text-danger">{{ emergency.emergency_name }}</strong>
+                                                <div class="small text-muted">Tasks: {{ stats.total_tasks if stats else 0 }} | Subtasks: {{ stats.total_subtasks if stats else 0 }} | Completed: {{ stats.completed_tasks if stats else 0 }}</div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="fw-bold">{{ stats.completion_rate if stats else 0 }}%</div>
+                                                <div class="small text-muted">Last update: {{ stats.last_update if stats and stats.last_update else 'Never' }}</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="trc-{{ emergency.id }}" class="accordion-collapse collapse" aria-labelledby="trh-{{ emergency.id }}" data-bs-parent="#taskReportAccordion">
+                                    <div class="accordion-body">
+                                        {% if stats and stats.assignments %}
+                                            {% for a in stats.assignments %}
+                                                <div class="card mb-3">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div>
+                                                                <h5 class="card-title mb-1">{{ a.checklist_name or 'Checklist' }}</h5>
+                                                                <div class="small text-muted">Subtasks: {{ a.total_subtasks }} | Completed: {{ a.completed_subtasks }} | Completion: {{ a.completion_rate }}%</div>
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#assign-{{ emergency.id }}-{{ a.checklist_id }}">Show Subtasks</button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="collapse mt-3" id="assign-{{ emergency.id }}-{{ a.checklist_id }}">
+                                                            <table class="table table-sm">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Subtask</th>
+                                                                        <th>Status</th>
+                                                                        <th>Completed By</th>
+                                                                        <th>Completed At</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for st in a.subtasks %}
+                                                                        <tr>
+                                                                            <td>{{ st.name }}</td>
+                                                                            <td>
+                                                                                {% if st.completed %}
+                                                                                    <span class="badge bg-success">Done</span>
+                                                                                {% else %}
+                                                                                    <span class="badge bg-secondary">Pending</span>
+                                                                                {% endif %}
+                                                                            </td>
+                                                                            <td>{{ st.completed_by_name or (st.completed_by and st.completed_by|string) or '' }}</td>
+                                                                            <td>{{ st.completed_date or '—' }}</td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="alert alert-secondary">No assignments or subtasks for this emergency.</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Date/Time Picker Modal -->
+<div class="modal fade" id="overrideDateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Override Completion Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">New Completion Date/Time:</label>
+                    <input type="datetime-local" class="form-control" id="newCompletionDate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveNewDate">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentSubtaskId = null;
+    let currentEmergencyId = null;
+    const dateModal = new bootstrap.Modal(document.getElementById('overrideDateModal'));
+
+    // Function to update completed by information
+    function updateCompletedByInfo(checkbox, userId) {
+        const completedBySpan = checkbox.closest('tr').querySelector('.completed-by');
+        if (completedBySpan) {
+            if (checkbox.checked) {
+                fetch(`/users/${userId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        completedBySpan.textContent = `Completed by: ${data.fullname}`;
+                    });
+            } else {
+                completedBySpan.textContent = '';
+            }
+        }
+    }
+
+    // Function to update parent task checkbox based on sub-tasks
+    function updateParentTaskCheckbox(parentChecklistId) {
+        const parentCheckbox = document.querySelector(`.parent-task[data-checklist-id="${parentChecklistId}"]`);
+        const subTaskCheckboxes = document.querySelectorAll(`.subtask[data-parent-checklist-id="${parentChecklistId}"]:not(:disabled)`);
+        const totalSubTasks = subTaskCheckboxes.length;
+        const checkedSubTasks = Array.from(subTaskCheckboxes).filter(cb => cb.checked).length;
+
+        if (totalSubTasks > 0) {
+            parentCheckbox.checked = checkedSubTasks > 0;
+            parentCheckbox.indeterminate = checkedSubTasks > 0 && checkedSubTasks < totalSubTasks;
+        } else {
+            parentCheckbox.checked = false;
+            parentCheckbox.indeterminate = false;
+        }
+    }
+
+    // Handle sub-task checkbox changes
+    document.querySelectorAll('.subtask').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const parentChecklistId = this.dataset.parentChecklistId;
+            updateParentTaskCheckbox(parentChecklistId);
+        });
+    });
+
+    // Remove the initial update of parent task checkboxes since they're no longer needed
+    // Initialize subtask checkboxes if needed
+    document.querySelectorAll('.subtask').forEach(checkbox => {
+        const parentChecklistId = checkbox.dataset.parentChecklistId;
+        if (parentChecklistId) {
+            checkbox.addEventListener('change', function() {
+                updateParentTaskCheckbox(parentChecklistId);
+            });
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('emergency-checklist-form').addEventListener('submit', function(e) {
+        const emergencyId = document.querySelector('input[name="emergency_id"]').value;
+        if (!emergencyId) {
+            e.preventDefault();
+            alert('Please select an emergency first');
+            return false;
+        }
+    });
+
+    // Handle Mark Undone button clicks
+    document.querySelectorAll('.mark-undone').forEach(button => {
+        button.addEventListener('click', function() {
+            const subtaskId = this.dataset.subtaskId;
+            const emergencyId = this.dataset.emergencyId;
+
+            fetch(`/admin/manage_checklist/unmark_subtask/${subtaskId}/${emergencyId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error unmarking subtask: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Handle Override Date button clicks
+    document.querySelectorAll('.override-date').forEach(button => {
+        button.addEventListener('click', function() {
+            currentSubtaskId = this.dataset.subtaskId;
+            currentEmergencyId = this.dataset.emergencyId;
+
+            // Get current date from the completed-date span
+            const dateSpan = document.querySelector(`.completed-date[data-subtask-id="${currentSubtaskId}"]`);
+            if (dateSpan) {
+                const currentDate = dateSpan.textContent.replace('Completed: ', '').trim();
+                if (currentDate !== 'Never') {
+                    // Convert the date string to a format that works with datetime-local input
+                    const date = new Date(currentDate);
+                    const formattedDate = date.toISOString().slice(0, 16);  // Format: YYYY-MM-DDThh:mm
+                    document.getElementById('newCompletionDate').value = formattedDate;
+                } else {
+                    // If no date is set, default to current date and time
+                    const now = new Date();
+                    const formattedDate = now.toISOString().slice(0, 16);
+                    document.getElementById('newCompletionDate').value = formattedDate;
+                }
+            }
+
+            dateModal.show();
+        });
+    });
+
+    // Handle Save button in the date modal
+    document.getElementById('saveNewDate').addEventListener('click', function() {
+        const newDate = document.getElementById('newCompletionDate').value;
+
+    fetch(`/admin/manage_checklist/override_subtask_date/${currentSubtaskId}/${currentEmergencyId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+            },
+            body: JSON.stringify({ new_date: newDate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                dateModal.hide();
+                location.reload();
+            } else {
+                alert('Error updating date: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+
+{% endblock content %}

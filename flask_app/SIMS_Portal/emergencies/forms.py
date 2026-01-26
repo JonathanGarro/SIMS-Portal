@@ -1,11 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField, FileField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField, HiddenField
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import asc
 from flask_wtf.file import FileField, FileAllowed
 from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType
+from wtforms.widgets import HiddenInput
+from datetime import datetime
+
 
 class NewEmergencyForm(FlaskForm):
 	emergency_name = StringField('Emergency Name', validators=[DataRequired(), Length(min=5, max=100)])
@@ -30,3 +33,10 @@ class UpdateEmergencyForm(FlaskForm):
 	dropbox_url = StringField('Dropbox URL')
 	github_repo = StringField('GitHub Repo')
 	submit = SubmitField('Update Emergency')
+
+class UpdateEmergenyChecklistForm(FlaskForm):
+	emergency_id = HiddenField('emergency_id')
+	checklist_id = HiddenField('checklist_id')
+	task_completed = BooleanField('Task Completed', default=False, widget=HiddenInput())
+	complted_at = DateTimeField('Completed At', format='%Y-%m-%d', default=datetime.now)
+	submit = SubmitField('Mark Complete')	

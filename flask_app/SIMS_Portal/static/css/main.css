@@ -1,3 +1,18 @@
+.subtask-label-inline {
+    display: flex;
+    flex-direction: column;
+}
+
+.subtask-label-container {
+    display: flex;
+    align-items: center;
+}
+
+.subtask-complete-controls {
+    margin-top: 0.5rem;
+    margin-left: 1.5rem;
+}
+
 #hideMe {
 	-moz-animation: cssAnimation 0s ease-in 5s forwards;
 	/* Firefox */

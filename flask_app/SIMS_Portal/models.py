@@ -20,12 +20,12 @@ user_profile = db.Table('user_profile',
 	db.Column('tier', db.Integer)
 )
 
-user_skill = db.Table('user_skill', 
+user_skill = db.Table('user_skill',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
 	db.Column('skill_id', db.Integer, db.ForeignKey('skill.id'))
 )
 
-user_language = db.Table('user_language', 
+user_language = db.Table('user_language',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
 	db.Column('language_id', db.Integer, db.ForeignKey('language.id'))
 )
@@ -46,7 +46,7 @@ user_workinggroup = db.Table('user_workinggroup',
 
 class Task(db.Model):
 	__tablename__ = 'task'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	task_id = db.Column(db.Integer) # github issue id
 	repo = db.Column(db.String(100))
@@ -56,27 +56,27 @@ class Task(db.Model):
 	url = db.Column(db.String(500))
 	assignees_gh = db.Column(db.String(500), nullable=True) # list of github names of people assigned
 	created_at = db.Column(db.DateTime)
-	
+
 	date_added = db.Column(db.DateTime, server_default=func.now())
 	date_modified = db.Column(db.DateTime, onupdate=func.now())
-	
+
 	def __repr__(self):
 		return f"Task({self.id}, {self.name}, {self.state})"
-	
+
 class Log(db.Model):
 	__tablename__ = 'log'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	message = db.Column(db.String(500))
 	user_id = db.Column(db.Integer)
 	timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-	
+
 	def __repr__(self):
 		return f"Log({self.timestamp}: {self.message}"
 
 class Acronym(db.Model):
 	__tablename__ = 'acronym'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	acronym_eng = db.Column(db.String(255), nullable=True)
 	def_eng = db.Column(db.Text, nullable=True)
@@ -92,94 +92,94 @@ class Acronym(db.Model):
 	anonymous_submitter_email = db.Column(db.String(), nullable=True)
 	scope = db.Column(db.Text, nullable=True)
 	field = db.Column(db.Text, nullable=True)
-	
+
 	associated_ns = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
 	added_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	approved_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-	
+
 	date_added = db.Column(db.DateTime, server_default=func.now())
 	date_modified = db.Column(db.DateTime, onupdate=func.now())
-	
+
 	def __repr__(self):
 		return f"{self.acronym_eng} - {self.def_eng}"
 
 class Documentation(db.Model):
 	__tablename__ = 'documentation'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	article_name = db.Column(db.String)
 	url = db.Column(db.String)
 	category = db.Column(db.String)
 	summary = db.Column(db.String)
 	featured = db.Column(db.Boolean)
-	
+
 	author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'))
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class Profile(db.Model):
 	__tablename__ = 'profile'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
 	image = db.Column(db.String)
-	
+
 	def __repr__(self):
-		return f"Profile('{self.name}')" 
+		return f"Profile('{self.name}')"
 
 class Skill(db.Model):
 	__tablename__ = 'skill'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
 	category = db.Column(db.String)
-	
+
 	def __repr__(self):
 		return f"Skill('{self.name}','{self.category}')"
-	
+
 class Language(db.Model):
 	__tablename__ = 'language'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
-	
+
 	def __repr__(self):
 		return f"Language('{self.name}')"
 
 class Badge(db.Model):
 	__tablename__ = 'badge'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
 	badge_url = db.Column(db.String)
 	description = db.Column(db.String)
 	limited_edition = db.Column(db.Boolean, default=False)
-	
+
 	def __repr__(self):
 		return f"Badge('{self.name}')"
-		
+
 
 class NationalSociety(db.Model):
 	__tablename__ = 'nationalsociety'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	ns_name = db.Column(db.String(120), nullable=False)
 	country_name = db.Column(db.String(120), nullable=False)
 	ns_go_id = db.Column(db.Integer, unique=True)
 	iso2 = db.Column(db.String(2))
 	iso3 = db.Column(db.String(3))
-	
+
 	users = db.relationship('User', backref='national_society', lazy=True)
 	acronyms = db.relationship('Acronym', backref='national_society', lazy=True)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class User(db.Model, UserMixin):
 	__tablename__ = 'user'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	firstname = db.Column(db.String(40), nullable=False)
 	lastname = db.Column(db.String(40), nullable=False)
@@ -205,9 +205,9 @@ class User(db.Model, UserMixin):
 	time_zone = db.Column(db.String(120))
 	place_label = db.Column(db.String(120))
 	private_profile = db.Column(db.Boolean, default=False)
-	
+
 	ns_id = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
-	
+
 	assignments = db.relationship('Assignment', backref='assigned_member')
 	products = db.relationship('Portfolio', backref='creator', lazy=True)
 	skills = db.relationship('Skill', secondary='user_skill', backref='members_with_skill')
@@ -215,16 +215,16 @@ class User(db.Model, UserMixin):
 	languages = db.relationship('Language', secondary='user_language', backref='members_with_language')
 	badges = db.relationship('Badge', secondary='user_badge', backref='members_with_badge')
 	working_groups = db.relationship('WorkingGroup', secondary='user_workinggroup', backref='members_with_workinggroup')
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
-	
+
 	fullname = column_property(firstname + " " + lastname)
-	
+
 	def get_reset_token(self, expires_sec=1800):
 		s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
 		return s.dumps({'user_id': self.id}).decode('utf-8')
-	
+
 	@staticmethod
 	def verify_reset_token(token):
 		s = Serializer(current_app.config['SECRET_KEY'])
@@ -233,17 +233,17 @@ class User(db.Model, UserMixin):
 		except:
 			return None
 		return User.query.get(user_id)
-	
+
 	@hybrid_property
 	def fullname(self):
 		return self.firstname + " " + self.lastname
-	
+
 	def __repr__(self):
 		return f"User({self.id}, {self.firstname} {self.lastname}, {self.email})"
 
 class Assignment(db.Model):
 	__tablename__ = 'assignment'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	role = db.Column(db.String(100))
 	start_date = db.Column(db.Date, default=datetime.utcnow)
@@ -256,10 +256,10 @@ class Assignment(db.Model):
 
 	products = db.relationship('Portfolio', backref='assignment', lazy=True)
 	learning = db.relationship('Learning', backref='assignment', uselist=False)
-	
+
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'), default=0)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
@@ -268,7 +268,7 @@ class Assignment(db.Model):
 
 class Learning(db.Model):
 	__tablename__ = 'learning'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	overall_score = db.Column(db.Integer, nullable=False)
 	overall_exp = db.Column(db.String, nullable=False)
@@ -279,15 +279,15 @@ class Learning(db.Model):
 	clear_tasks = db.Column(db.Integer)
 	clear_deadlines = db.Column(db.Integer)
 	coordination_tools = db.Column(db.Integer)
-	
+
 	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), unique=True)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class Review(db.Model):
 	__tablename__ = 'review'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	category = db.Column(db.String, nullable=False)
 	type = db.Column(db.String, nullable=False)
@@ -296,40 +296,40 @@ class Review(db.Model):
 	recommended_action = db.Column(db.Text)
 	follow_up = db.Column(db.Text)
 	status = db.Column(db.String, nullable=False)
-	
+
 	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'), nullable=False)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class WorkingGroup(db.Model):
 	__tablename__ = 'workinggroup'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	wg_name = db.Column(db.String, nullable=False)
 	wg_description = db.Column(db.Text)
 	wg_url = db.Column(db.String)
 	wg_external = db.Column(db.Boolean)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class Story(db.Model):
 	__tablename__ = 'story'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	header_image = db.Column(db.String, nullable=False, default='default-banner.jpg')
 	header_caption = db.Column(db.String, nullable=False, default='default-banner.jpg')
 	entry = db.Column(db.Text)
-	
+
 	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'), default=0)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class Emergency(db.Model):
 	__tablename__ = 'emergency'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	emergency_name = db.Column(db.String(100), nullable=False)
 	emergency_status = db.Column(db.String(100), nullable=False, default='Active')
@@ -342,52 +342,52 @@ class Emergency(db.Model):
 	dropbox_url = db.Column(db.String)
 	trello_url = db.Column(db.String)
 	github_repo = db.Column(db.String)
-	
+
 	emergency_type_id = db.Column(db.Integer, db.ForeignKey('emergencytype.id'))
-	
+
 	emergency_products = db.relationship('Portfolio', backref='emergency_response', lazy=True)
 	reviews = db.relationship('Review', backref='related_operation', lazy=True)
 	assigned_to = db.relationship('Assignment', backref='assigned_emergency', lazy=True)
 	story_id = db.relationship('Story', backref='associated_story', lazy=True)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
-	
+
 	@staticmethod
 	def get_latest_go_emergencies():
 		api_call = 'https://goadmin.ifrc.org/api/v2/event/'
 		r = requests.get(api_call).json()
-		
+
 		output = []
-		
+
 		for x in r['results']:
 			temp_dict = {}
 			temp_dict['dis_id'] = x['id']
 			temp_dict['dis_name'] = x['name']
 			output.append(temp_dict)
-		
+
 		sorted_output = sorted(output, key=lambda d: d['dis_id'], reverse=True)[:11]
-		
+
 		return sorted_output
-		
+
 	def __repr__(self):
 		return f"Emergency('{self.emergency_name}','{self.emergency_glide}','{self.emergency_go_id}','{self.emergency_location_id}','{self.emergency_type_id}','{self.emergency_review_id}','{self.activation_details}','{self.emergency_type_id}')"
 
 class EmergencyType(db.Model):
 	__tablename__ = 'emergencytype'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	emergency_type_go_id = db.Column(db.Integer)
 	emergency_type_name = db.Column(db.String)
-	
+
 	emergencies = db.relationship('Emergency', backref='emergencies_of_type')
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class Portfolio(db.Model):
 	__tablename__ = 'portfolio'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(200), nullable=False)
 	type = db.Column(db.String(100), nullable=False)
@@ -403,11 +403,11 @@ class Portfolio(db.Model):
 	approver_message = db.Column(db.Text)
 	km_article_id = db.Column(db.Integer) # this has been retired as we moved away from int for documentation ID
 	learning_site_url = db.Column(db.String(1000)) # this has replaced the km_article_id
-	
+
 	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
 	creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'))
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
@@ -416,7 +416,7 @@ class Portfolio(db.Model):
 
 class Alert(db.Model):
 	__tablename__ = 'alert'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	molnix_id = db.Column(db.Integer)
 	alert_record_created_at = db.Column(db.DateTime)
@@ -442,37 +442,92 @@ class Alert(db.Model):
 	ifrc_severity_level_display = db.Column(db.String)
 	alert_id = db.Column(db.Integer)
 	region_id = db.Column(db.Integer)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
-	
+
 	def __repr__(self):
 		return f"Alert('{self.event}', '{self.event}')"
-		
+
 class Availability(db.Model):
 	__tablename__ = 'availability'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	timeframe = db.Column(db.String)
 	dates = db.Column(db.String)
-	
+
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'), default=0)
-	
+
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
 
 class Region(db.Model):
 	__tablename__ = 'region'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
 
 class RegionalFocalPoint(db.Model):
 	__tablename__ = 'regional_focal_point'
-	
+
 	id = db.Column(db.Integer, primary_key=True)
 	regional_id = db.Column(db.Integer, db.ForeignKey('region.id'), nullable=False)
 	focal_point_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-	
-	
+
+class Checklist(db.Model):
+	__tablename__ = 'checklist'
+
+	id = db.Column(db.Integer, primary_key=True)
+	task_name = db.Column(db.String)
+	task_description = db.Column(db.String)
+	task_url = db.Column(db.String)
+	created_at = db.Column(db.DateTime, server_default=func.now())
+	updated_at = db.Column(db.DateTime, onupdate=func.now())
+
+	sub_tasks = db.relationship('SubTask', back_populates='checklist', cascade="all, delete-orphan")
+
+
+class AssignmentChecklist(db.Model):
+	__tablename__ = 'assignment_checklist'
+
+	id = db.Column(db.Integer, primary_key=True)
+	emergency_id = db.Column(db.Integer, db.ForeignKey('emergency.id'))
+	checklist_id = db.Column(db.Integer, db.ForeignKey('checklist.id'))
+	task_completed = db.Column(db.Boolean)
+	task_completed_date = db.Column(db.DateTime, nullable=True)
+	created_at = db.Column(db.DateTime, server_default=func.now())
+	updated_at = db.Column(db.DateTime, onupdate=func.now())
+	emergency = db.relationship('Emergency', backref='assignment_checklists')
+	checklist = db.relationship('Checklist', backref='assignment_checklists')
+	sub_tasks = db.relationship('AssignmentSubTask', back_populates='assignment_checklist')
+
+class SubTask(db.Model):
+    __tablename__ = 'sub_task'
+    id = db.Column(db.Integer, primary_key=True)
+    checklist_id = db.Column(db.Integer, db.ForeignKey('checklist.id'), nullable=False)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    task_url = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime)
+
+    checklist = db.relationship("Checklist", back_populates="sub_tasks")
+
+class AssignmentSubTask(db.Model):
+    __tablename__ = 'assignment_sub_task'
+
+    id = db.Column(db.Integer, primary_key=True)
+    assignment_checklist_id = db.Column(db.Integer, db.ForeignKey('assignment_checklist.id'), nullable=False)
+    sub_task_id = db.Column(db.Integer, db.ForeignKey('sub_task.id'), nullable=False)
+    task_completed = db.Column(db.Boolean, default=False)
+    task_completed_date = db.Column(db.DateTime, nullable=True)
+    task_completed_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+
+    assignment_checklist = db.relationship('AssignmentChecklist', back_populates='sub_tasks')
+    sub_task = db.relationship('SubTask')
+    completed_by = db.relationship('User', foreign_keys=[task_completed_by])
+
+    created_at = db.Column(db.DateTime, server_default=func.now())
+    updated_at = db.Column(db.DateTime, onupdate=func.now())
+

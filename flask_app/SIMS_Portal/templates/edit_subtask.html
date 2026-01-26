@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Sub-Task</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+            {% for error in form.name.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control") }}
+            {% for error in form.description.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.task_url.label(class="form-label") }}
+            {{ form.task_url(class="form-control") }}
+            {% for error in form.task_url.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('main.manage_checklist') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock content %}
