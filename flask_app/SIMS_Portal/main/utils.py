@@ -117,7 +117,7 @@ def get_ns_list():
 	None
 	"""
 	
-	ns_query = select([distinct(NationalSociety.ns_go_id), NationalSociety.ns_name, NationalSociety.country_name]) \
+	ns_query = select(distinct(NationalSociety.ns_go_id), NationalSociety.ns_name, NationalSociety.country_name) \
 		.join(User, NationalSociety.ns_go_id == User.ns_id) \
 		.filter(~NationalSociety.ns_name.like('%IFRC%')) \
 		.order_by(asc(NationalSociety.country_name))

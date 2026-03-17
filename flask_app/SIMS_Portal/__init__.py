@@ -9,7 +9,8 @@ from flask_caching import Cache
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flaskext.markdown import Markdown
+import markdown as md
+from markupsafe import Markup
 from logging.handlers import RotatingFileHandler
 from SIMS_Portal.config import Config
 import logging
@@ -62,7 +63,12 @@ def create_app(config_class=Config):
 	login_manager.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
 	babel = Babel(app)
-	Markdown(app)
+	# Custom markdown filter to replace Flask-Markdown (incompatible with Flask 3.x)
+	@app.template_filter('markdown')
+	def markdown_filter(text):
+		if text:
+			return Markup(md.markdown(text))
+		return ''
 	cache.init_app(app)
 	
 	csrf = CSRFProtect(app)
