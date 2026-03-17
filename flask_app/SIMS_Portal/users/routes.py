@@ -129,7 +129,7 @@ def register():
 				flash('This Slack ID is not valid and does not belong to any existing SIMS Slack accounts.', 'danger')
 				return render_template('register.html', title='Register for SIMS', form=form)
 			else:
-				hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+				hashed_password = bcrypt.generate_password_hash(form.password.data)
 				user = User(
 					firstname=form.firstname.data, 
 					lastname=form.lastname.data, 
@@ -215,7 +215,7 @@ def profile():
 	
 	user_products = db.session.query(User, Portfolio).join(Portfolio, Portfolio.creator_id==User.id).where(or_(User.id==current_user.id, Portfolio.collaborator_ids.like(str(user_info.id)))).filter(Portfolio.product_status != 'Removed').all()
 	
-	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
+	skills_list = db.session.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
 	qualifying_profile_list_query = text("""
 		SELECT profile.image, profile.name
@@ -231,16 +231,16 @@ def profile():
 		WHERE user_profile.user_id = :user_id
 	""")
 	
-	qualifying_profile_list = db.engine.execute(qualifying_profile_list_query, user_id=user_info.id).fetchall()
-	qualifying_profile_count = db.engine.execute(qualifying_profile_list_query, user_id=user_info.id).scalar()
+	qualifying_profile_list = db.session.execute(qualifying_profile_list_query, {'user_id': user_info.id}).fetchall()
+	qualifying_profile_count = db.session.execute(qualifying_profile_list_query, {'user_id': user_info.id}).scalar()
 	
-	languages_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
+	languages_list = db.session.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
 	profile_picture = '/uploads/' + current_user.image_file
 	
-	badges = db.engine.execute('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id))
+	badges = db.session.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id)))
 	
-	count_badges = db.engine.execute(text("SELECT count(user_id) as count FROM user_badge WHERE user_id = :user_id"), {'user_id': current_user.id}).scalar()
+	count_badges = db.session.execute(text("SELECT count(user_id) as count FROM user_badge WHERE user_id = :user_id"), {'user_id': current_user.id}).scalar()
 
 	return render_template('profile.html', title='Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], skills_list=skills_list, languages_list=languages_list, badges=badges, user_portfolio_size=user_portfolio_size, count_badges=count_badges, qualifying_profile_list=qualifying_profile_list, qualifying_profile_count=qualifying_profile_count)
 	
@@ -267,9 +267,9 @@ def view_profile(id):
 	
 	user_portfolio_size = len(user_portfolio)
 	
-	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id = :member_id'), {'member_id': id})
+	skills_list = db.session.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id = :member_id'), {'member_id': id})
 	
-	languages_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:member_id'), {'member_id': id})
+	languages_list = db.session.execute(text('SELECT * FROM "user" JOIN user_language ON "user".id = user_language.user_id JOIN language ON language.id = user_language.language_id WHERE "user".id=:member_id'), {'member_id': id})
 	
 	qualifying_profile_list_query = text("""
 		SELECT profile.image, profile.name
@@ -285,14 +285,14 @@ def view_profile(id):
 		WHERE user_profile.user_id = :user_id
 	""")
 	
-	qualifying_profile_list = db.engine.execute(qualifying_profile_list_query, user_id=id).fetchall()
-	qualifying_profile_count = db.engine.execute(qualifying_profile_list_query, user_id=id).scalar()
+	qualifying_profile_list = db.session.execute(qualifying_profile_list_query, {'user_id': id}).fetchall()
+	qualifying_profile_count = db.session.execute(qualifying_profile_list_query, {'user_id': id}).scalar()
 	
 	profile_picture = '/uploads/' + user_info.image_file
 	
-	count_badges = db.engine.execute(text('SELECT count(*) as count FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id'), {'member_id': id}).scalar()
+	count_badges = db.session.execute(text('SELECT count(*) as count FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id'), {'member_id': id}).scalar()
 	
-	badges = db.engine.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id ORDER BY name LIMIT 4'), {'member_id': id})
+	badges = db.session.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id=:member_id ORDER BY name LIMIT 4'), {'member_id': id})
 	
 	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges, qualifying_profile_list=qualifying_profile_list, qualifying_profile_count=qualifying_profile_count)
 
@@ -340,7 +340,7 @@ def assign_profiles(user_id, profile_id, tier):
 def view_all_user_badges(user_id):
 	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
-	all_user_badges = db.engine.execute(text('SELECT firstname, lastname, assigner_justify, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge b ON b.id = user_badge.badge_id WHERE "user".id=:user_id ORDER BY name'), {'user_id': user_id})
+	all_user_badges = db.session.execute(text('SELECT firstname, lastname, assigner_justify, b.id as badge_id, b.name as badge_name, b.badge_url as badge_url FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge b ON b.id = user_badge.badge_id WHERE "user".id=:user_id ORDER BY name'), {'user_id': user_id})
 	
 	list_badges = []
 	for badge in all_user_badges:
@@ -360,7 +360,7 @@ def view_all_user_badges(user_id):
 def view_all_user_profiles(user_id):
 	this_user = db.session.query(User).filter(User.id == user_id).first()
 	
-	qualifying_profile_list = db.engine.execute(text('SELECT profile.image, user_profile.tier FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
+	qualifying_profile_list = db.session.execute(text('SELECT profile.image, user_profile.tier FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN ('
 		'SELECT p.name AS name, MAX(up.tier) AS tier FROM user_profile up JOIN profile p ON p.id = up.profile_id WHERE up.user_id = :user_id GROUP BY p.name'
 	') highest_for_user ON profile.name = highest_for_user.name AND user_profile.tier = highest_for_user.tier WHERE user_profile.user_id = :user_id'), {'user_id': user_id})
 	
@@ -473,7 +473,7 @@ def update_profile():
 
 	profile_picture = '/uploads/' + current_user.image_file
 	
-	skills_list = db.engine.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
+	skills_list = db.session.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	
 	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, skills_list=skills_list, selected_skill_names=selected_skill_names, selected_language_names=selected_language_names)
 
@@ -649,7 +649,7 @@ def reset_token(token):
 	new_log = None 
 	if form.validate_on_submit():
 		try:
-			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+			hashed_password = bcrypt.generate_password_hash(form.password.data)
 			user.password = hashed_password
 			db.session.commit()
 			

@@ -89,7 +89,7 @@ def user_info_by_ns(ns_id):
 		"""
 	)
 	
-	results = db.engine.execute(query_text, ns_id=ns_id)
+	results = db.session.execute(query_text, {'ns_id': ns_id})
 	processed_results = [dict(row) for row in results]
 	
 	return processed_results
@@ -223,7 +223,7 @@ def generate_new_response_map():
 	None
 	"""
 	
-	all_emergencies = db.engine.execute("SELECT iso3, COUNT(*) as count FROM emergency JOIN nationalsociety WHERE emergency.emergency_location_id = nationalsociety.ns_go_id AND emergency_status <> 'Removed' GROUP BY iso3")
+	all_emergencies = db.session.execute(text("SELECT iso3, COUNT(*) as count FROM emergency JOIN nationalsociety WHERE emergency.emergency_location_id = nationalsociety.ns_go_id AND emergency_status <> 'Removed' GROUP BY iso3"))
 		
 	header_row = ['iso3', 'count']
 	with open('SIMS_Portal/static/data/emergencies_viz.csv', 'w', newline='') as f:
@@ -313,7 +313,7 @@ def auto_badge_assigner_maiden_voyage():
 			User.id
 		).all()
 		
-		existing_maiden_voyage_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 3")
+		existing_maiden_voyage_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 3"))
 		
 		list_user_ids_with_maiden_voyage = []
 		for user in existing_maiden_voyage_badges:
@@ -322,7 +322,7 @@ def auto_badge_assigner_maiden_voyage():
 		for user in remote_assignment_counts:
 			if user.count_assignments >= 1 and user.user_id not in list_user_ids_with_maiden_voyage:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 3, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Maiden Voyage Auto-Assign Failed: {}'.format(e))
@@ -346,7 +346,7 @@ def auto_badge_assigner_big_wig():
 			User.id
 		).all()
 		
-		existing_big_wig_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 20")
+		existing_big_wig_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 20"))
 	
 		list_user_ids_with_big_wig = []
 		for user in existing_big_wig_badges:
@@ -355,7 +355,7 @@ def auto_badge_assigner_big_wig():
 		for user in remote_assignment_counts:
 			if user.count_assignments >= 5 and user.user_id not in list_user_ids_with_big_wig:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 20, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Big Wig Auto-Assign Failed: {}'.format(e))
@@ -382,7 +382,7 @@ def auto_badge_assigner_self_promoter():
 			User.id
 		).all()
 		
-		existing_self_promoter_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 4")
+		existing_self_promoter_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 4"))
 		
 		list_user_ids_with_self_promoter = []
 		for user in existing_self_promoter_badges:
@@ -391,7 +391,7 @@ def auto_badge_assigner_self_promoter():
 		for user in users_with_skills:
 			if user.user_id not in list_user_ids_with_self_promoter:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 4, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.user_id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Self Promoter Auto-Assign Failed: {}'.format(e))
@@ -404,7 +404,7 @@ def auto_badge_assigner_polyglot():
 	try:
 		users_with_languages = db.session.query(User.id.label('user_id'), User.firstname, User.lastname, func.string_agg(Language.id.cast(String), ', ').label('languages')).join(user_language, User.id == user_language.c.user_id).join(Language, Language.id == user_language.c.language_id).group_by(User.id).all()
 		
-		existing_polyglot_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 1")
+		existing_polyglot_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 1"))
 		
 		list_users_with_languages = []
 		for user in users_with_languages:
@@ -425,7 +425,7 @@ def auto_badge_assigner_polyglot():
 		for user in list_users_with_languages:
 			if user['user_id'] not in list_user_ids_with_polyglot and user['lang_count'] > 1:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 1, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user['user_id'])
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Polyglot Auto-Assign Failed: {}'.format(e))
@@ -437,7 +437,7 @@ def auto_badge_assigner_autobiographer():
 	current_app.logger.info('Biographer Auto-Assign Ran')
 	try:
 		all_users = db.session.query(User).filter(User.bio != '').all()
-		existing_autobiographer_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 21")
+		existing_autobiographer_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 21"))
 		
 		list_user_ids_with_autobiographer = []
 		for user in existing_autobiographer_badges:
@@ -446,7 +446,7 @@ def auto_badge_assigner_autobiographer():
 		for user in all_users:
 			if user.id not in list_user_ids_with_autobiographer and len(user.bio) > 500:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 21, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Autobiographer Auto-Assign Failed: {}'.format(e))
@@ -465,7 +465,7 @@ def auto_badge_assigner_jack_of_all_trades():
 			Profile, Profile.id == user_profile.c.profile_id
 		).group_by(User.id, func.concat(User.firstname, ' ', User.lastname)).all()
 		
-		existing_jack_of_all_trades_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 22")
+		existing_jack_of_all_trades_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 22"))
 		
 		list_users_with_profiles = []
 		for user in users_with_profiles:
@@ -486,7 +486,7 @@ def auto_badge_assigner_jack_of_all_trades():
 		for user in list_users_with_profiles:
 			if user['user_id'] not in list_user_ids_with_jack_of_all_trades and user['prof_count'] > 5:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 22, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user['user_id'])
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Jack of All Trades Auto-Assign Failed: {}'.format(e))
@@ -497,7 +497,7 @@ def auto_badge_assigner_edward_tufte():
 	"""
 	try:
 		current_app.logger.info('Edward Tufte Auto-Assign Ran')
-		existing_edward_tufte_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 31")
+		existing_edward_tufte_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 31"))
 		
 		list_user_ids_with_edward_tufte = []
 		for user in existing_edward_tufte_badges:
@@ -509,7 +509,7 @@ def auto_badge_assigner_edward_tufte():
 		for user in users_eligible_for_edward_tufte:
 			if user.id not in list_user_ids_with_edward_tufte:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 31, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Edward Tufte Auto-Assign Failed: {}'.format(e))
@@ -520,7 +520,7 @@ def auto_badge_assigner_world_traveler():
 	"""
 	try:
 		current_app.logger.info('World Traveler Auto-Assign Ran')
-		existing_world_traveler_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 5")
+		existing_world_traveler_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 5"))
 		
 		list_user_ids_with_world_traveler = []
 		for user in existing_world_traveler_badges:
@@ -531,7 +531,7 @@ def auto_badge_assigner_world_traveler():
 		for user in users_eligible_for_world_traveler:
 			if user.id not in list_user_ids_with_world_traveler:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 5, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('World Traveler Auto-Assign Failed: {}'.format(e))
@@ -542,7 +542,7 @@ def auto_badge_assigner_old_salt():
 	"""
 	try:
 		current_app.logger.info('Old Salt Auto-Assign Ran')
-		existing_old_salt_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 25")
+		existing_old_salt_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 25"))
 		
 		list_user_ids_with_old_salt = []
 		for user in existing_old_salt_badges:
@@ -553,7 +553,7 @@ def auto_badge_assigner_old_salt():
 		for user in users_eligible_for_old_salt:
 			if user.id not in list_user_ids_with_old_salt:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 25, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Old Salt Auto-Assign Failed: {}'.format(e))
@@ -564,7 +564,7 @@ def auto_badge_assigner_eratosthenes():
 	"""
 	try:
 		current_app.logger.info('Eratosthenes Auto-Assign Ran')
-		existing_eratosthenes_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 18")
+		existing_eratosthenes_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 18"))
 		
 		list_user_ids_with_eratosthenes = []
 		for user in existing_eratosthenes_badges:
@@ -583,7 +583,7 @@ def auto_badge_assigner_eratosthenes():
 		for user in users_eligible_for_eratosthenes:
 			if user.id not in list_user_ids_with_eratosthenes:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 18, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Eratosthenes Auto-Assign Failed: {}'.format(e))
@@ -594,7 +594,7 @@ def auto_badge_assigner_super_scholar():
 	"""
 	try:
 		current_app.logger.info('Super Scholar Auto-Assign Ran')
-		existing_super_scholar_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 8")
+		existing_super_scholar_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 8"))
 		
 		list_user_ids_with_super_scholar = []
 		for user in existing_super_scholar_badges:
@@ -613,7 +613,7 @@ def auto_badge_assigner_super_scholar():
 		for user in users_eligible_for_super_scholar:
 			if user.id not in list_user_ids_with_super_scholar:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 8, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Super Scholar Auto-Assign Failed: {}'.format(e))	
@@ -624,7 +624,7 @@ def auto_badge_assigner_teaching_moment():
 	"""
 	try:
 		current_app.logger.info('Teaching Moment Auto-Assign Ran')
-		existing_teaching_moment_badges = db.engine.execute("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 6")
+		existing_teaching_moment_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 6"))
 		
 		list_user_ids_with_teaching_moment = []
 		for user in existing_teaching_moment_badges:
@@ -643,7 +643,7 @@ def auto_badge_assigner_teaching_moment():
 		for user in users_eligible_for_teaching_moment:
 			if user.id not in list_user_ids_with_teaching_moment:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 6, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(new_badge)
+				db.session.execute(text(new_badge))
 		db.session.commit()
 	except Exception as e:
 		current_app.logger.error('Teaching Moment Auto-Assign Failed: {}'.format(e))

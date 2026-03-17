@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, date
 from flask import url_for, current_app, flash, redirect
 from flask_login import current_user
 from SIMS_Portal import db
+from sqlalchemy import text
 from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Log
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -86,7 +87,7 @@ def update_response_locations():
 	None
 	"""
 	
-	response_locations = db.engine.execute("SELECT iso3, count(*) AS count_location FROM nationalsociety JOIN emergency ON emergency_location_id = nationalsociety.ns_go_id GROUP BY iso3")
+	response_locations = db.session.execute(text("SELECT iso3, count(*) AS count_location FROM nationalsociety JOIN emergency ON emergency_location_id = nationalsociety.ns_go_id GROUP BY iso3"))
 	
 	list_of_location_dicts = []
 	for location in response_locations:
@@ -125,7 +126,7 @@ def update_active_response_locations():
 	None
 	"""
 	
-	active_response_locations = db.engine.execute("SELECT * FROM emergency JOIN nationalsociety ON nationalsociety.ns_go_id = emergency.emergency_location_id WHERE emergency.emergency_status = 'Active'")
+	active_response_locations = db.session.execute(text("SELECT * FROM emergency JOIN nationalsociety ON nationalsociety.ns_go_id = emergency.emergency_location_id WHERE emergency.emergency_status = 'Active'"))
 	
 	list_of_location_dicts = []
 	for location in active_response_locations:
@@ -254,7 +255,7 @@ def emergency_availability_chart_data(dis_id):
 	current_week = datetime.today().isocalendar()[1]
 	year_week = f"{current_year}-{current_week}"
 	
-	data = db.engine.execute("SELECT u.id, STRING_AGG(DISTINCT p.name, ', ') AS profile_names, STRING_AGG(DISTINCT a.dates, '; ') AS associated_dates FROM public.user u JOIN public.user_profile up ON up.user_id = u.id JOIN public.profile p ON up.profile_id = p.id JOIN public.availability a ON a.user_id = u.id WHERE a.timeframe = '{}' AND a.emergency_id = {} GROUP BY u.id, a.timeframe".format(str(year_week), dis_id))
+	data = db.session.execute(text("SELECT u.id, STRING_AGG(DISTINCT p.name, ', ') AS profile_names, STRING_AGG(DISTINCT a.dates, '; ') AS associated_dates FROM public.user u JOIN public.user_profile up ON up.user_id = u.id JOIN public.profile p ON up.profile_id = p.id JOIN public.availability a ON a.user_id = u.id WHERE a.timeframe = '{}' AND a.emergency_id = {} GROUP BY u.id, a.timeframe".format(str(year_week), dis_id)))
 	
 	current_date = datetime.now().date()
 	start_of_week = current_date - timedelta(days=current_date.weekday())
