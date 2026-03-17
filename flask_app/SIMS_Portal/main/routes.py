@@ -698,7 +698,7 @@ def manage_checklist():
             completed_by_id = getattr(subtask, 'task_completed_by', None)
             completed_by_name = None
             if completed_by_id:
-                user = User.query.get(completed_by_id)
+                user = db.session.get(User, completed_by_id)
                 completed_by_name = user.fullname if user else None
             assigned_subtasks[subtask.sub_task_id] = {
                 'task_completed': subtask.task_completed,
@@ -754,7 +754,7 @@ def add_subtask(checklist_id):
 def edit_checklist(id):
     from SIMS_Portal.models import Checklist
     from SIMS_Portal.main.forms import EditChecklistForm
-    checklist = Checklist.query.get_or_404(id)
+    checklist = db.get_or_404(Checklist, id)
     form = EditChecklistForm(obj=checklist)
     if form.validate_on_submit():
         checklist.task_name = form.task_name.data
@@ -785,7 +785,7 @@ def add_checklist():
 @login_required
 def remove_checklist(id):
     from SIMS_Portal.models import Checklist, AssignmentChecklist
-    checklist = Checklist.query.get_or_404(id)
+    checklist = db.get_or_404(Checklist, id)
 
     # Prevent deletion if this checklist is assigned to any emergency assignments
     assignment_count = AssignmentChecklist.query.filter_by(checklist_id=id).count()
@@ -804,7 +804,7 @@ def remove_checklist(id):
 def edit_subtask(subtask_id):
     from SIMS_Portal.models import SubTask
     from SIMS_Portal.main.forms import EditSubTaskForm
-    subtask = SubTask.query.get_or_404(subtask_id)
+    subtask = db.get_or_404(SubTask, subtask_id)
     form = EditSubTaskForm(obj=subtask)
     if form.validate_on_submit():
         subtask.name = form.name.data
@@ -819,7 +819,7 @@ def edit_subtask(subtask_id):
 @login_required
 def remove_subtask(subtask_id):
     from SIMS_Portal.models import SubTask, AssignmentSubTask
-    subtask = SubTask.query.get_or_404(subtask_id)
+    subtask = db.get_or_404(SubTask, subtask_id)
 
     # Prevent deletion if this subtask is used in any assignment
     assigned_count = AssignmentSubTask.query.filter_by(sub_task_id=subtask_id).count()
@@ -875,7 +875,7 @@ def assign_checklist_to_emergency():
 def edit_assigned_checklist(assignment_id):
     from SIMS_Portal.models import AssignmentChecklist, Checklist
     from SIMS_Portal.main.forms import EditChecklistForm
-    assignment = AssignmentChecklist.query.get_or_404(assignment_id)
+    assignment = db.get_or_404(AssignmentChecklist, assignment_id)
     checklist = assignment.checklist
     form = EditChecklistForm(obj=checklist)
     if form.validate_on_submit():
@@ -891,7 +891,7 @@ def edit_assigned_checklist(assignment_id):
 @login_required
 def delete_assigned_checklist(assignment_id):
     from SIMS_Portal.models import AssignmentChecklist, AssignmentSubTask
-    assignment = AssignmentChecklist.query.get_or_404(assignment_id)
+    assignment = db.get_or_404(AssignmentChecklist, assignment_id)
     # Delete all related AssignmentSubTasks first
     AssignmentSubTask.query.filter_by(assignment_checklist_id=assignment.id).delete()
     db.session.delete(assignment)
@@ -904,7 +904,7 @@ def delete_assigned_checklist(assignment_id):
 def edit_assigned_subtask(assigned_subtask_id):
     from SIMS_Portal.models import AssignmentSubTask, SubTask
     from SIMS_Portal.main.forms import EditSubTaskForm
-    assigned_subtask = AssignmentSubTask.query.get_or_404(assigned_subtask_id)
+    assigned_subtask = db.get_or_404(AssignmentSubTask, assigned_subtask_id)
     subtask = assigned_subtask.sub_task
     form = EditSubTaskForm(obj=subtask)
     if form.validate_on_submit():
@@ -920,7 +920,7 @@ def edit_assigned_subtask(assigned_subtask_id):
 @login_required
 def delete_assigned_subtask(assigned_subtask_id):
     from SIMS_Portal.models import AssignmentSubTask
-    assigned_subtask = AssignmentSubTask.query.get_or_404(assigned_subtask_id)
+    assigned_subtask = db.get_or_404(AssignmentSubTask, assigned_subtask_id)
     db.session.delete(assigned_subtask)
     db.session.commit()
     flash('Assigned sub-task deleted successfully.', 'success')
@@ -929,7 +929,7 @@ def delete_assigned_subtask(assigned_subtask_id):
 @main.route('/admin/manage_checklist/update_task_status/<int:assignment_id>', methods=['POST'])
 @login_required
 def update_task_status(assignment_id):
-    assignment_subtask = AssignmentSubTask.query.get_or_404(assignment_id)
+    assignment_subtask = db.get_or_404(AssignmentSubTask, assignment_id)
     if request.method == 'POST':
         assignment_subtask.task_completed = True
         assignment_subtask.task_completed_date = datetime.utcnow()
@@ -941,7 +941,7 @@ def update_task_status(assignment_id):
         abort(403)
 
     from SIMS_Portal.models import AssignmentChecklist
-    assignment = AssignmentChecklist.query.get_or_404(assignment_id)
+    assignment = db.get_or_404(AssignmentChecklist, assignment_id)
 
     completed_date = request.form.get('completed_date')
     if completed_date:
@@ -976,7 +976,7 @@ def get_emergency_task_stats(emergency_id):
     for ac in assignments:
         checklist = getattr(ac, 'checklist', None)
         if checklist is None and getattr(ac, 'checklist_id', None):
-            checklist = Checklist.query.get(ac.checklist_id)
+            checklist = db.session.get(Checklist, ac.checklist_id)
 
         checklist_name = getattr(checklist, 'task_name', None) or getattr(checklist, 'name', 'Checklist')
 
@@ -991,7 +991,7 @@ def get_emergency_task_stats(emergency_id):
             # Resolve the SubTask entity
             sub = getattr(ast, 'sub_task', None)
             if sub is None and getattr(ast, 'sub_task_id', None):
-                sub = SubTask.query.get(ast.sub_task_id)
+                sub = db.session.get(SubTask, ast.sub_task_id)
 
             sub_name = getattr(sub, 'name', '') if sub is not None else ''
 
@@ -1001,7 +1001,7 @@ def get_emergency_task_stats(emergency_id):
             completed_by_name = None
             if completed_by_id:
                 try:
-                    user = User.query.get(completed_by_id)
+                    user = db.session.get(User, completed_by_id)
                     if user:
                         completed_by_name = f"{getattr(user, 'firstname', '')} {getattr(user, 'lastname', '')}".strip()
                 except Exception:
@@ -1090,7 +1090,7 @@ def unmark_subtask(subtask_id, emergency_id):
 @main.route('/users/<int:user_id>')
 @login_required
 def get_user(user_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
     return jsonify({
         'id': user.id,
         'fullname': user.fullname
@@ -1158,7 +1158,7 @@ def update_emergency_checklist():
                     completed_by_id = getattr(subtask, 'task_completed_by', None)
                     completed_by_name = None
                     if completed_by_id:
-                        user = User.query.get(completed_by_id)
+                        user = db.session.get(User, completed_by_id)
                         completed_by_name = user.fullname if user else None
                     assigned_subtasks[subtask.sub_task_id] = {
                         'task_completed': subtask.task_completed,
@@ -1246,7 +1246,7 @@ def update_emergency_checklist():
                             continue
                         try:
                             from SIMS_Portal.models import SubTask
-                            sub = SubTask.query.get(sid)
+                            sub = db.session.get(SubTask, sid)
                             if sub:
                                 task_subtasks.setdefault(sub.checklist_id, set()).add(sid)
                                 tasks.add(str(sub.checklist_id))

@@ -337,7 +337,7 @@ def view_emergency(id):
 	assignment_checklists = AssignmentChecklist.query.filter_by(emergency_id=id).order_by(AssignmentChecklist.id.asc()).all()
 	assignment_checklist_data = []
 	for ac in assignment_checklists:
-		checklist = Checklist.query.get(ac.checklist_id)
+		checklist = db.session.get(Checklist, ac.checklist_id)
 		sub_tasks = []
 		# ensure subtasks are returned in the order they were added (id asc)
 		assignment_subtasks = AssignmentSubTask.query.filter_by(assignment_checklist_id=ac.id).order_by(AssignmentSubTask.id.asc()).all()
@@ -661,7 +661,7 @@ def update_subtask_from_emergency(emergency_id, assignment_checklist_id, subtask
     # Check if all sub-tasks for this checklist are complete
     all_subtasks = AssignmentSubTask.query.filter_by(assignment_checklist_id=assignment_checklist_id).all()
     all_complete = all(s.task_completed for s in all_subtasks)
-    parent = AssignmentChecklist.query.get(assignment_checklist_id)
+    parent = db.session.get(AssignmentChecklist, assignment_checklist_id)
     if parent:
         parent.task_completed = all_complete
         parent.updated_at = datetime.now()
