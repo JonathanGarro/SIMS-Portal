@@ -9,12 +9,13 @@ from flask_caching import Cache
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flaskext.markdown import Markdown
 from logging.handlers import RotatingFileHandler
 from SIMS_Portal.config import Config
 import logging
+import markdown
 import os
 from flask_wtf.csrf import CSRFProtect
+from markupsafe import Markup
 
 load_dotenv()
 db = SQLAlchemy()
@@ -32,6 +33,11 @@ from SIMS_Portal.main.utils import get_ns_list
 def build_ns_dropdown():
 	ns_list = get_ns_list()
 	return {'ns_list': ns_list}
+
+def markdown_filter(text):
+	if text is None:
+		return ''
+	return Markup(markdown.markdown(text, extensions=['extra', 'sane_lists']))
 
 # AdminView inherits from ModelView to only show tables in the admin page if user is logged in AND is listed as an admin
 class AdminView(ModelView):
@@ -62,9 +68,9 @@ def create_app(config_class=Config):
 	login_manager.init_app(app)
 	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
 	babel = Babel(app)
-	Markdown(app)
+	app.jinja_env.filters['markdown'] = markdown_filter
 	cache.init_app(app)
-	
+
 	csrf = CSRFProtect(app)
 	
 	# these headers are part of a compliance requirement for AmRC hosting on AWS
