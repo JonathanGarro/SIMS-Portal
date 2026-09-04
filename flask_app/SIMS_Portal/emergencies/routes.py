@@ -9,7 +9,7 @@ from flask import (
 	jsonify, Blueprint, current_app
 )
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, func, and_
+from sqlalchemy import or_, func, and_, text
 from sqlalchemy.orm import sessionmaker, aliased
 from flask_login import (
 	login_user, logout_user, current_user, login_required
@@ -208,7 +208,7 @@ def view_emergency(id):
 	learning_count = db.session.query(Learning, Assignment, Emergency).join(Assignment, Assignment.id == Learning.assignment_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.id == id).count()
 
 	# get the average learning scores across all operations
-	learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}'.format(id))
+	learning_data = db.session.execute(text('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning JOIN assignment ON assignment.id = learning.assignment_id JOIN emergency ON emergency.id = assignment.emergency_id WHERE emergency.id = {}'.format(id)))
 
 	# build chart's x and y
 	data_dict_learnings = [x._asdict() for x in learning_data]
@@ -223,7 +223,7 @@ def view_emergency(id):
 	except:
 		learning_values = [0]
 
-	avg_learning_data = db.engine.execute('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning')
+	avg_learning_data = db.session.execute(text('SELECT AVG(overall_score) as "Overall", AVG(got_support) as "Support", AVG(internal_resource) as "Internal Resources", AVG(external_resource) as "External Resources", AVG(clear_tasks) as "Task Clarity", AVG(field_communication) as "Field Communication", AVG(clear_deadlines) as "Deadlines", AVG(coordination_tools) as "Coordination Tools" FROM learning'))
 
 	# convert avg learnings data to dict and parse into keys and values
 	data_dict_avg_learnings = [x._asdict() for x in avg_learning_data]
@@ -337,7 +337,7 @@ def view_emergency(id):
 	assignment_checklists = AssignmentChecklist.query.filter_by(emergency_id=id).order_by(AssignmentChecklist.id.asc()).all()
 	assignment_checklist_data = []
 	for ac in assignment_checklists:
-		checklist = Checklist.query.get(ac.checklist_id)
+		checklist = db.session.get(Checklist, ac.checklist_id)
 		sub_tasks = []
 		# ensure subtasks are returned in the order they were added (id asc)
 		assignment_subtasks = AssignmentSubTask.query.filter_by(assignment_checklist_id=ac.id).order_by(AssignmentSubTask.id.asc()).all()
@@ -661,7 +661,7 @@ def update_subtask_from_emergency(emergency_id, assignment_checklist_id, subtask
     # Check if all sub-tasks for this checklist are complete
     all_subtasks = AssignmentSubTask.query.filter_by(assignment_checklist_id=assignment_checklist_id).all()
     all_complete = all(s.task_completed for s in all_subtasks)
-    parent = AssignmentChecklist.query.get(assignment_checklist_id)
+    parent = db.session.get(AssignmentChecklist, assignment_checklist_id)
     if parent:
         parent.task_completed = all_complete
         parent.updated_at = datetime.now()

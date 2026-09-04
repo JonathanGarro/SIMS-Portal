@@ -17,7 +17,7 @@ from flask_login import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import select, and_, literal_column
-from sqlalchemy import func, distinct, desc, asc, select, case
+from sqlalchemy import func, distinct, desc, asc, select, case, text
 import boto3
 import botocore
 
@@ -87,7 +87,7 @@ def get_slack_id():
 
 @main.route('/badges')
 def badges():
-	assigned_badges = db.engine.execute("SELECT name, badge.id as id, description, badge_url, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name")
+	assigned_badges = db.session.execute(text("SELECT name, badge.id as id, description, badge_url, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name"))
 	all_badges = db.session.query(Badge).all()
 
 	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == True).all()
@@ -153,7 +153,7 @@ def send_manual_slack_message():
 def admin_manage_profiles():
 	profile_form = AssignProfileTypesForm()
 	if request.method == 'GET' and current_user.is_admin == 1:
-		all_assigned_profiles = db.engine.execute('SELECT user_id, firstname || \' \' || lastname as user_name, profile_id, max(tier) as max_tier, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN "user" ON "user".id = user_profile.user_id WHERE "user".status = \'Active\' GROUP BY user_id, profile_id, firstname, lastname, name ORDER BY user_name')
+		all_assigned_profiles = db.session.execute(text('SELECT user_id, firstname || \' \' || lastname as user_name, profile_id, max(tier) as max_tier, name FROM user_profile JOIN profile ON profile.id = user_profile.profile_id JOIN "user" ON "user".id = user_profile.user_id WHERE "user".status = \'Active\' GROUP BY user_id, profile_id, firstname, lastname, name ORDER BY user_name'))
 		return render_template('admin_profiles.html', profile_form=profile_form, all_assigned_profiles=all_assigned_profiles)
 
 	# assign profile to user
@@ -173,7 +173,7 @@ def admin_manage_profiles():
 			return redirect(url_for('main.admin_manage_profiles'))
 
 		# get the user's existing profiles and tiers, generate unique code that concats all three elements
-		users_existing_profiles = db.engine.execute("SELECT user_id, profile_id, tier, CONCAT(user_id, profile_id, tier) AS unique_code FROM user_profile WHERE user_id = {}".format(user_id))
+		users_existing_profiles = db.session.execute(text("SELECT user_id, profile_id, tier, CONCAT(user_id, profile_id, tier) AS unique_code FROM user_profile WHERE user_id = {}".format(user_id)))
 
 		# iterate over SQL object to extract unique_code
 		list_to_check = []
@@ -195,7 +195,7 @@ def admin_assign_badge():
 	badge_form = BadgeAssignmentForm()
 
 	if request.method == 'GET' and current_user.is_admin == 1:
-		assigned_badges = db.engine.execute('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname')
+		assigned_badges = db.session.execute(text('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname'))
 		return render_template('admin_assign_badge.html', assigned_badges=assigned_badges, badge_form=badge_form)
 
 	if request.method == 'POST' and badge_form.submit_badge.data and current_user.is_admin == True:
@@ -208,7 +208,7 @@ def admin_assign_badge():
 			return redirect(url_for('main.admin_assign_badge'))
 
 		# get list of assigned badges, create column that concats user_id and badge_id to create unique identifier
-		badge_ids = db.engine.execute("SELECT CAST(user_id AS text) || CAST(badge_id AS text) as unique_code FROM user_badge WHERE user_id = {}".format(user_id))
+		badge_ids = db.session.execute(text("SELECT CAST(user_id AS text) || CAST(badge_id AS text) as unique_code FROM user_badge WHERE user_id = {}".format(user_id)))
 
 		list_to_check = []
 		for id in badge_ids:
@@ -230,7 +230,7 @@ def admin_upload_badges():
 	badge_upload_form = NewBadgeUploadForm()
 
 	if request.method == 'GET' and current_user.is_admin == 1:
-		assigned_badges = db.engine.execute('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname')
+		assigned_badges = db.session.execute(text('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname'))
 		return render_template('admin_upload_badge.html', badge_upload_form=badge_upload_form)
 
 	elif request.method == 'POST' and badge_upload_form.name.data and current_user.is_admin == 1:
@@ -413,7 +413,7 @@ def badge_assignment_sims_co(dis_id):
 
 	event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 
-	assigned_badges = db.engine.execute("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM public.user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id))
+	assigned_badges = db.session.execute(text("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM public.user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id)))
 
 	assigned_members = db.session.query(Emergency, Assignment, User).join(Assignment, Assignment.emergency_id == Emergency.id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id).all()
 
@@ -433,7 +433,7 @@ def badge_assignment_sims_co(dis_id):
 		session['assigner_justify'] = badge_form.assigner_justify.data
 
 		# get all badges assigned to the user which sims co is trying to assign
-		users_badges = db.engine.execute('SELECT u.id, user_badge.user_id, user_badge.badge_id FROM public.user u JOIN user_badge ON user_badge.user_id = u.id WHERE u.id = {}'.format(user_id))
+		users_badges = db.session.execute(text('SELECT u.id, user_badge.user_id, user_badge.badge_id FROM public.user u JOIN user_badge ON user_badge.user_id = u.id WHERE u.id = {}'.format(user_id)))
 		users_badges_ids = []
 		for badge in users_badges:
 			users_badges_ids.append(badge.badge_id)
@@ -531,7 +531,7 @@ def dashboard():
 @main.route('/role_profile/<type>')
 def view_role_profile(type):
 	capitalized_type = type.capitalize()
-	users_with_profile = db.engine.execute('SELECT "user".id, firstname, lastname, max(tier) as tier, image_file FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\' GROUP BY "user".id'.format(capitalized_type))
+	users_with_profile = db.session.execute(text('SELECT "user".id, firstname, lastname, max(tier) as tier, image_file FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\' GROUP BY "user".id'.format(capitalized_type)))
 
 	users_with_profile_tier_1 = []
 	users_with_profile_tier_2 = []
@@ -547,7 +547,7 @@ def view_role_profile(type):
 		elif user.tier == 4:
 			users_with_profile_tier_4.append(user)
 
-	count_users_with_profile = db.engine.execute('SELECT count(distinct("user".id)) as count FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\''.format(capitalized_type))
+	count_users_with_profile = db.session.execute(text('SELECT count(distinct("user".id)) as count FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\''.format(capitalized_type)))
 	unpacked_count = [x.count for x in count_users_with_profile][0]
 
 	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)
@@ -698,7 +698,7 @@ def manage_checklist():
             completed_by_id = getattr(subtask, 'task_completed_by', None)
             completed_by_name = None
             if completed_by_id:
-                user = User.query.get(completed_by_id)
+                user = db.session.get(User, completed_by_id)
                 completed_by_name = user.fullname if user else None
             assigned_subtasks[subtask.sub_task_id] = {
                 'task_completed': subtask.task_completed,
@@ -754,7 +754,7 @@ def add_subtask(checklist_id):
 def edit_checklist(id):
     from SIMS_Portal.models import Checklist
     from SIMS_Portal.main.forms import EditChecklistForm
-    checklist = Checklist.query.get_or_404(id)
+    checklist = db.get_or_404(Checklist, id)
     form = EditChecklistForm(obj=checklist)
     if form.validate_on_submit():
         checklist.task_name = form.task_name.data
@@ -785,7 +785,7 @@ def add_checklist():
 @login_required
 def remove_checklist(id):
     from SIMS_Portal.models import Checklist, AssignmentChecklist
-    checklist = Checklist.query.get_or_404(id)
+    checklist = db.get_or_404(Checklist, id)
 
     # Prevent deletion if this checklist is assigned to any emergency assignments
     assignment_count = AssignmentChecklist.query.filter_by(checklist_id=id).count()
@@ -804,7 +804,7 @@ def remove_checklist(id):
 def edit_subtask(subtask_id):
     from SIMS_Portal.models import SubTask
     from SIMS_Portal.main.forms import EditSubTaskForm
-    subtask = SubTask.query.get_or_404(subtask_id)
+    subtask = db.get_or_404(SubTask, subtask_id)
     form = EditSubTaskForm(obj=subtask)
     if form.validate_on_submit():
         subtask.name = form.name.data
@@ -819,7 +819,7 @@ def edit_subtask(subtask_id):
 @login_required
 def remove_subtask(subtask_id):
     from SIMS_Portal.models import SubTask, AssignmentSubTask
-    subtask = SubTask.query.get_or_404(subtask_id)
+    subtask = db.get_or_404(SubTask, subtask_id)
 
     # Prevent deletion if this subtask is used in any assignment
     assigned_count = AssignmentSubTask.query.filter_by(sub_task_id=subtask_id).count()
@@ -875,7 +875,7 @@ def assign_checklist_to_emergency():
 def edit_assigned_checklist(assignment_id):
     from SIMS_Portal.models import AssignmentChecklist, Checklist
     from SIMS_Portal.main.forms import EditChecklistForm
-    assignment = AssignmentChecklist.query.get_or_404(assignment_id)
+    assignment = db.get_or_404(AssignmentChecklist, assignment_id)
     checklist = assignment.checklist
     form = EditChecklistForm(obj=checklist)
     if form.validate_on_submit():
@@ -891,7 +891,7 @@ def edit_assigned_checklist(assignment_id):
 @login_required
 def delete_assigned_checklist(assignment_id):
     from SIMS_Portal.models import AssignmentChecklist, AssignmentSubTask
-    assignment = AssignmentChecklist.query.get_or_404(assignment_id)
+    assignment = db.get_or_404(AssignmentChecklist, assignment_id)
     # Delete all related AssignmentSubTasks first
     AssignmentSubTask.query.filter_by(assignment_checklist_id=assignment.id).delete()
     db.session.delete(assignment)
@@ -904,7 +904,7 @@ def delete_assigned_checklist(assignment_id):
 def edit_assigned_subtask(assigned_subtask_id):
     from SIMS_Portal.models import AssignmentSubTask, SubTask
     from SIMS_Portal.main.forms import EditSubTaskForm
-    assigned_subtask = AssignmentSubTask.query.get_or_404(assigned_subtask_id)
+    assigned_subtask = db.get_or_404(AssignmentSubTask, assigned_subtask_id)
     subtask = assigned_subtask.sub_task
     form = EditSubTaskForm(obj=subtask)
     if form.validate_on_submit():
@@ -920,7 +920,7 @@ def edit_assigned_subtask(assigned_subtask_id):
 @login_required
 def delete_assigned_subtask(assigned_subtask_id):
     from SIMS_Portal.models import AssignmentSubTask
-    assigned_subtask = AssignmentSubTask.query.get_or_404(assigned_subtask_id)
+    assigned_subtask = db.get_or_404(AssignmentSubTask, assigned_subtask_id)
     db.session.delete(assigned_subtask)
     db.session.commit()
     flash('Assigned sub-task deleted successfully.', 'success')
@@ -929,7 +929,7 @@ def delete_assigned_subtask(assigned_subtask_id):
 @main.route('/admin/manage_checklist/update_task_status/<int:assignment_id>', methods=['POST'])
 @login_required
 def update_task_status(assignment_id):
-    assignment_subtask = AssignmentSubTask.query.get_or_404(assignment_id)
+    assignment_subtask = db.get_or_404(AssignmentSubTask, assignment_id)
     if request.method == 'POST':
         assignment_subtask.task_completed = True
         assignment_subtask.task_completed_date = datetime.utcnow()
@@ -941,7 +941,7 @@ def update_task_status(assignment_id):
         abort(403)
 
     from SIMS_Portal.models import AssignmentChecklist
-    assignment = AssignmentChecklist.query.get_or_404(assignment_id)
+    assignment = db.get_or_404(AssignmentChecklist, assignment_id)
 
     completed_date = request.form.get('completed_date')
     if completed_date:
@@ -976,7 +976,7 @@ def get_emergency_task_stats(emergency_id):
     for ac in assignments:
         checklist = getattr(ac, 'checklist', None)
         if checklist is None and getattr(ac, 'checklist_id', None):
-            checklist = Checklist.query.get(ac.checklist_id)
+            checklist = db.session.get(Checklist, ac.checklist_id)
 
         checklist_name = getattr(checklist, 'task_name', None) or getattr(checklist, 'name', 'Checklist')
 
@@ -991,7 +991,7 @@ def get_emergency_task_stats(emergency_id):
             # Resolve the SubTask entity
             sub = getattr(ast, 'sub_task', None)
             if sub is None and getattr(ast, 'sub_task_id', None):
-                sub = SubTask.query.get(ast.sub_task_id)
+                sub = db.session.get(SubTask, ast.sub_task_id)
 
             sub_name = getattr(sub, 'name', '') if sub is not None else ''
 
@@ -1001,7 +1001,7 @@ def get_emergency_task_stats(emergency_id):
             completed_by_name = None
             if completed_by_id:
                 try:
-                    user = User.query.get(completed_by_id)
+                    user = db.session.get(User, completed_by_id)
                     if user:
                         completed_by_name = f"{getattr(user, 'firstname', '')} {getattr(user, 'lastname', '')}".strip()
                 except Exception:
@@ -1090,7 +1090,7 @@ def unmark_subtask(subtask_id, emergency_id):
 @main.route('/users/<int:user_id>')
 @login_required
 def get_user(user_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
     return jsonify({
         'id': user.id,
         'fullname': user.fullname
@@ -1158,7 +1158,7 @@ def update_emergency_checklist():
                     completed_by_id = getattr(subtask, 'task_completed_by', None)
                     completed_by_name = None
                     if completed_by_id:
-                        user = User.query.get(completed_by_id)
+                        user = db.session.get(User, completed_by_id)
                         completed_by_name = user.fullname if user else None
                     assigned_subtasks[subtask.sub_task_id] = {
                         'task_completed': subtask.task_completed,
@@ -1246,7 +1246,7 @@ def update_emergency_checklist():
                             continue
                         try:
                             from SIMS_Portal.models import SubTask
-                            sub = SubTask.query.get(sid)
+                            sub = db.session.get(SubTask, sid)
                             if sub:
                                 task_subtasks.setdefault(sub.checklist_id, set()).add(sid)
                                 tasks.add(str(sub.checklist_id))

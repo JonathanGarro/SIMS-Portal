@@ -6,6 +6,10 @@ class Config:
 	SESSION_TYPE = 'filesystem'
 	SESSION_PERMANENT = False
 	SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+	SQLALCHEMY_ENGINE_OPTIONS = {
+		'pool_pre_ping': True,
+		'pool_recycle': 300,
+	}
 	CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
 	CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
 	ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')

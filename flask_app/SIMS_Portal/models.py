@@ -1,10 +1,9 @@
 from SIMS_Portal import db, login_manager
-from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 from datetime import datetime
 from flask_login import UserMixin, current_user
-from sqlalchemy.orm import declarative_base, relationship, column_property
+from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import Column, ForeignKey, Integer, Table
@@ -12,7 +11,7 @@ import requests
 
 @login_manager.user_loader
 def load_user(user_id):
-	return User.query.get(int(user_id))
+	return db.session.get(User, int(user_id))
 
 user_profile = db.Table('user_profile',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -222,17 +221,17 @@ class User(db.Model, UserMixin):
 	fullname = column_property(firstname + " " + lastname)
 
 	def get_reset_token(self, expires_sec=1800):
-		s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
-		return s.dumps({'user_id': self.id}).decode('utf-8')
+		s = Serializer(current_app.config['SECRET_KEY'])
+		return s.dumps({'user_id': self.id})
 
 	@staticmethod
-	def verify_reset_token(token):
+	def verify_reset_token(token, expires_sec=1800):
 		s = Serializer(current_app.config['SECRET_KEY'])
 		try:
-			user_id = s.loads(token)['user_id']
+			user_id = s.loads(token, max_age=expires_sec)['user_id']
 		except:
 			return None
-		return User.query.get(user_id)
+		return db.session.get(User, user_id)
 
 	@hybrid_property
 	def fullname(self):

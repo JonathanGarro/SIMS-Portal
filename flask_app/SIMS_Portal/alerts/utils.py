@@ -225,6 +225,7 @@ def refresh_surge_alerts_latest():
 						# Try to reconnect to the database
 						try:
 							db.session.rollback()
+							db.session.remove()
 							db.engine.dispose()
 						except:
 							pass
@@ -278,6 +279,7 @@ def refresh_surge_alerts_latest():
 							time.sleep(2)
 							try:
 								db.session.rollback()
+								db.session.remove()
 								db.engine.dispose()
 							except:
 								pass
