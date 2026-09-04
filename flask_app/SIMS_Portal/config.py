@@ -9,6 +9,15 @@ class Config:
 	SQLALCHEMY_ENGINE_OPTIONS = {
 		'pool_pre_ping': True,
 		'pool_recycle': 300,
+		# TCP keepalives so the OS notices a silently-dropped connection (e.g. a NAT
+		# gateway or firewall reaping an idle connection) instead of the app finding
+		# out only when a query fails with "SSL SYSCALL error: EOF detected".
+		'connect_args': {
+			'keepalives': 1,
+			'keepalives_idle': 30,
+			'keepalives_interval': 10,
+			'keepalives_count': 5,
+		},
 	}
 	CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
 	CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
