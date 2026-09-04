@@ -344,7 +344,10 @@ def refresh_surge_alerts_latest():
 				molnix_id = result.get("molnix_id", None)
 				alert_record_created_at = result.get("created_at", None)
 				molnix_status = result.get("molnix_status", None)
-				alert_status = result.get("status_display", None)
+				# the API's own "status_display" field has been deprecated and always
+				# returns None now; "molnix_status_display" ("Open"/"Stood Down"/"Closed")
+				# is the field that's actually populated.
+				alert_status = result.get("molnix_status_display", None)
 				opens = result.get("opens", None)
 				start = result.get("start", None)
 				end = result.get("end", None)
@@ -577,7 +580,84 @@ def refresh_surge_alerts_latest():
 			print(f"Failed to log completion message: {str(final_e)}")
 			send_error_message(f"Failed to log completion of Surge Alert cron job: {str(final_e)}")
 
-def refresh_surge_alerts(pages_to_fetch):
+def refresh_open_alert_statuses():
+	"""
+	Re-check the status of every alert we still consider unresolved (anything
+	not already "Closed"), one at a time via the single-alert detail endpoint.
+
+	refresh_surge_alerts_latest() only ever looks at the newest ~50 alerts (the
+	list endpoint's default ordering is always newest-created-first, and its
+	"ordering" query parameter has no effect no matter what field you pass it -
+	confirmed directly against the live API). An alert that closes weeks after
+	being created scrolls off that page long before it closes, and its status
+	then goes stale forever under that function alone. This targets exactly the
+	alerts we still think are open, so it scales with how many are actually
+	outstanding rather than with the full alert history.
+
+	Parameters:
+	None
+
+	Returns:
+	None
+
+	Side Effects:
+	- Logs information and errors to the database.
+	- Updates alert_status (and molnix_status) on existing alert records.
+	"""
+	count_checked = 0
+	count_updated = 0
+
+	def _fetch_unresolved_alerts():
+		return db.session.query(Alert).filter(Alert.alert_status != 'Closed').all()
+
+	fetched_ok, unresolved_alerts = with_db_retry(
+		_fetch_unresolved_alerts,
+		on_give_up=lambda e: safe_log(f"[ERROR] refresh_open_alert_statuses couldn't fetch unresolved alerts: {e}")
+	)
+	if not fetched_ok:
+		return
+
+	safe_log(f"[INFO] refresh_open_alert_statuses checking {len(unresolved_alerts)} unresolved alerts.")
+
+	for alert in unresolved_alerts:
+		if not alert.alert_id:
+			continue
+
+		try:
+			response = requests.get(f"https://goadmin.ifrc.org/api/v2/surge_alert/{alert.alert_id}/", timeout=15)
+			response.raise_for_status()
+			data = response.json()
+		except RequestException as e:
+			safe_log(f"[WARNING] refresh_open_alert_statuses couldn't fetch alert_id {alert.alert_id}: {e}")
+			continue
+		except ValueError as e:
+			safe_log(f"[WARNING] refresh_open_alert_statuses got an unparseable response for alert_id {alert.alert_id}: {e}")
+			continue
+
+		count_checked += 1
+		new_status = data.get("molnix_status_display", None)
+		new_molnix_status = data.get("molnix_status", None)
+		old_status = alert.alert_status
+
+		if new_status and new_status != old_status:
+			def _update_status():
+				alert.alert_status = new_status
+				if new_molnix_status is not None:
+					alert.molnix_status = new_molnix_status
+				db.session.commit()
+
+			updated_ok, _ = with_db_retry(_update_status)
+			if updated_ok:
+				count_updated += 1
+				safe_log(f"[INFO] refresh_open_alert_statuses updated alert_id {alert.alert_id}: {old_status} -> {new_status}.")
+			else:
+				safe_log(f"[ERROR] refresh_open_alert_statuses failed to save the updated status for alert_id {alert.alert_id}.")
+
+		time.sleep(0.2)  # be polite to the external API when checking many alerts individually
+
+	safe_log(f"[INFO] refresh_open_alert_statuses finished. Checked {count_checked} alerts, updated {count_updated}.")
+
+def refresh_surge_alerts(pages_to_fetch=100):
 	"""
 	Refresh and update surge alerts from the GO Admin API, fetching a specified number of pages.
 	
@@ -644,7 +724,10 @@ def refresh_surge_alerts(pages_to_fetch):
 				molnix_id = result.get("molnix_id", None)
 				alert_record_created_at = result.get("created_at", None)
 				molnix_status = result.get("molnix_status", None)
-				alert_status = result.get("status_display", None)
+				# the API's own "status_display" field has been deprecated and always
+				# returns None now; "molnix_status_display" ("Open"/"Stood Down"/"Closed")
+				# is the field that's actually populated.
+				alert_status = result.get("molnix_status_display", None)
 				opens = result.get("opens", None)
 				start = result.get("start", None)
 				end = result.get("end", None)

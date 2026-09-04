@@ -119,9 +119,10 @@ def create_app(config_class=Config):
 		@scheduler.task('cron', id='run_surge_alert_refresh', hour='1,4,7,10,13,16')
 		def run_surge_alert_refresh():
 			with scheduler.app.app_context():
-				from SIMS_Portal.alerts.utils import refresh_surge_alerts_latest
+				from SIMS_Portal.alerts.utils import refresh_surge_alerts_latest, refresh_open_alert_statuses
 				from SIMS_Portal.main.utils import heartbeats
 				refresh_surge_alerts_latest()
+				refresh_open_alert_statuses()
 				heartbeats('run_surge_alert_refresh', 'https://uptime.betterstack.com/api/v1/heartbeat/7DQYkNR4cM96cKsY69xQah4k')
 				
 		@scheduler.task('cron', id='run_auto_badge_assigners', hour='17')

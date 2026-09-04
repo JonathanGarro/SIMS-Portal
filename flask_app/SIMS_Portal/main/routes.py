@@ -50,7 +50,7 @@ from SIMS_Portal.users.utils import (
 	bulk_slack_photo_update, process_inactive_members, audit_inactive_members, process_inactive_members, alert_inactive_members
 )
 from SIMS_Portal.alerts.utils import (
-	refresh_surge_alerts, refresh_surge_alerts_latest
+	refresh_surge_alerts, refresh_surge_alerts_latest, refresh_open_alert_statuses
 )
 from SIMS_Portal.emergencies.utils import (
 	update_response_locations, update_active_response_locations
