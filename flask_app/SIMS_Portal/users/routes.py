@@ -129,7 +129,7 @@ def register():
 				flash('This Slack ID is not valid and does not belong to any existing SIMS Slack accounts.', 'danger')
 				return render_template('register.html', title='Register for SIMS', form=form)
 			else:
-				hashed_password = bcrypt.generate_password_hash(form.password.data)
+				hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 				user = User(
 					firstname=form.firstname.data, 
 					lastname=form.lastname.data, 
@@ -649,7 +649,7 @@ def reset_token(token):
 	new_log = None 
 	if form.validate_on_submit():
 		try:
-			hashed_password = bcrypt.generate_password_hash(form.password.data)
+			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 			user.password = hashed_password
 			db.session.commit()
 			

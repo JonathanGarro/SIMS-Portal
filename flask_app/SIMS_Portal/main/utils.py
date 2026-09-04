@@ -90,7 +90,7 @@ def user_info_by_ns(ns_id):
 	)
 	
 	results = db.session.execute(query_text, {'ns_id': ns_id})
-	processed_results = [dict(row) for row in results]
+	processed_results = [dict(row) for row in results.mappings()]
 	
 	return processed_results
 
