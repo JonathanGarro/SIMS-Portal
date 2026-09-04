@@ -118,10 +118,7 @@ def get_slack_username(user_id):
 	response = requests.get(url, headers=headers)
 	
 	if response.status_code != 200:
-		log_message = f"[ERROR] The get_slack_username function failed: {response.status_code}."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
+		safe_log(f"[ERROR] The get_slack_username function failed: {response.status_code}.")
 		return None
 	
 	json_response = response.json()
@@ -216,10 +213,7 @@ def send_im_alert_to_slack(alert_info):
 			regional_focal_point_id = db.session.query(RegionalFocalPoint, User).join(User, User.id == RegionalFocalPoint.focal_point_id).filter(RegionalFocalPoint.regional_id == alert_info.region_id).first()
 			regional_focal_point = get_slack_username(regional_focal_point_id.User.slack_id)
 		except:
-			log_message = f"[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message."
-			new_log = Log(message=log_message, user_id=0)
-			db.session.add(new_log)
-			db.session.commit()
+			safe_log(f"[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message.")
 			regional_focal_point = "Focal Point Missing"
 		
 		# check and reformat dates for slack message
@@ -249,10 +243,7 @@ def send_im_alert_to_slack(alert_info):
 		new_surge_alert(message)
 		
 	except Exception as e:
-		log_message = f"[WARNING] send_im_alert_to_slack() failed: {e}"
-		new_log = Log(message=log_message, user_id=63) # send message as Clara Barton
-		db.session.add(new_log)
-		db.session.commit()
+		safe_log(f"[WARNING] send_im_alert_to_slack() failed: {e}", user_id=63) # send message as Clara Barton
 
 def refresh_surge_alerts_latest():
 	"""
