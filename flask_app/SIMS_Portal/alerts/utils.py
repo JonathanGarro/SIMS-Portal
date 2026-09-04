@@ -17,6 +17,77 @@ from requests.exceptions import RequestException
 
 scheduler = APScheduler()
 
+def _is_transient_db_error(exc):
+	"""
+	True for connection-level failures (dropped SSL connections, network blips)
+	that are worth retrying, as opposed to data or programming errors that will
+	just fail the same way every time.
+	"""
+	message = str(exc).lower()
+	return any(s in message for s in ("ssl syscall error", "server closed the connection", "eof detected", "connection"))
+
+def with_db_retry(operation, on_give_up=None, max_retries=3, retry_delay=2):
+	"""
+	Run `operation` (a zero-arg callable that touches db.session), retrying with
+	backoff on transient connection errors.
+
+	This always leaves db.session in a clean state before returning - including
+	when it gives up - by rolling back on every failure. Without that, a single
+	transient DB blip (which is otherwise harmless and would resolve itself on
+	retry) leaves the session in a broken state that poisons every subsequent
+	db.session call for the rest of the job, turning one blip into a total
+	cron-job failure.
+
+	Returns (True, result) on success, or (False, None) once retries are
+	exhausted or the error isn't retryable.
+	"""
+	last_exc = None
+	for attempt in range(max_retries):
+		try:
+			return True, operation()
+		except Exception as e:
+			last_exc = e
+			try:
+				db.session.rollback()
+			except Exception:
+				pass
+
+			retryable = isinstance(e, OperationalError) and _is_transient_db_error(e)
+			if retryable and attempt < max_retries - 1:
+				try:
+					db.session.remove()
+					db.engine.dispose()
+				except Exception:
+					pass
+				time.sleep(retry_delay * (attempt + 1))
+				continue
+			break
+
+	if on_give_up:
+		try:
+			on_give_up(last_exc)
+		except Exception:
+			pass
+	return False, None
+
+def safe_log(message, user_id=0, max_retries=3, retry_delay=2):
+	"""
+	Write a Log row, retrying with backoff on transient connection errors via
+	with_db_retry(). Falls back to stdout (so the message isn't lost outright)
+	if the database is unreachable after retries. Returns True on success.
+	"""
+	def _write():
+		new_log = Log(message=message, user_id=user_id)
+		db.session.add(new_log)
+		db.session.commit()
+
+	def _give_up(exc):
+		print(f"DATABASE ERROR: {exc}")
+		print(f"Failed to log message: {message}")
+
+	ok, _ = with_db_retry(_write, on_give_up=_give_up, max_retries=max_retries, retry_delay=retry_delay)
+	return ok
+
 def get_slack_username(user_id):
 	"""
 	Retrieve the Slack username for a given user ID.
@@ -47,10 +118,7 @@ def get_slack_username(user_id):
 	response = requests.get(url, headers=headers)
 	
 	if response.status_code != 200:
-		log_message = f"[ERROR] The get_slack_username function failed: {response.status_code}."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
+		safe_log(f"[ERROR] The get_slack_username function failed: {response.status_code}.")
 		return None
 	
 	json_response = response.json()
@@ -145,10 +213,7 @@ def send_im_alert_to_slack(alert_info):
 			regional_focal_point_id = db.session.query(RegionalFocalPoint, User).join(User, User.id == RegionalFocalPoint.focal_point_id).filter(RegionalFocalPoint.regional_id == alert_info.region_id).first()
 			regional_focal_point = get_slack_username(regional_focal_point_id.User.slack_id)
 		except:
-			log_message = f"[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message."
-			new_log = Log(message=log_message, user_id=0)
-			db.session.add(new_log)
-			db.session.commit()
+			safe_log(f"[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message.")
 			regional_focal_point = "Focal Point Missing"
 		
 		# check and reformat dates for slack message
@@ -178,10 +243,7 @@ def send_im_alert_to_slack(alert_info):
 		new_surge_alert(message)
 		
 	except Exception as e:
-		log_message = f"[WARNING] send_im_alert_to_slack() failed: {e}"
-		new_log = Log(message=log_message, user_id=63) # send message as Clara Barton
-		db.session.add(new_log)
-		db.session.commit()
+		safe_log(f"[WARNING] send_im_alert_to_slack() failed: {e}", user_id=63) # send message as Clara Barton
 
 def refresh_surge_alerts_latest():
 	"""
@@ -209,89 +271,27 @@ def refresh_surge_alerts_latest():
 	count_new_records = 0
 	count_updated_records = 0
 	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
-	
-	# helper function for safe database logging
-	def safe_log(message, user_id=0, max_retries=3, retry_delay=2):
-		for attempt in range(max_retries):
-			try:
-				new_log = Log(message=message, user_id=user_id)
-				db.session.add(new_log)
-				db.session.commit()
-				return True
-			except OperationalError as e:
-				if "SSL SYSCALL error" in str(e) or "connection" in str(e).lower():
-					if attempt < max_retries - 1:
-						time.sleep(retry_delay)
-						# Try to reconnect to the database
-						try:
-							db.session.rollback()
-							db.session.remove()
-							db.engine.dispose()
-						except:
-							pass
-					else:
-						# log to stdout/stderr as a last resort
-						print(f"DATABASE CONNECTION ERROR: {str(e)}")
-						print(f"Failed to log message: {message}")
-						return False
-				else:
-					# for other operational errors retry then give up
-					if attempt == 0:
-						time.sleep(retry_delay)
-						db.session.rollback()
-					else:
-						print(f"DATABASE ERROR: {str(e)}")
-						print(f"Failed to log message: {message}")
-						return False
-			except SQLAlchemyError as e:
-				db.session.rollback()
-				print(f"SQL ERROR: {str(e)}")
-				print(f"Failed to log message: {message}")
-				return False
-			except Exception as e:
-				db.session.rollback()
-				print(f"UNEXPECTED ERROR DURING LOGGING: {str(e)}")
-				print(f"Failed to log message: {message}")
-				return False
-	
+
 	try:
 		# start job and log message with fallback to print if db logging fails
 		start_message = f"[INFO] The Surge Alert (Latest) cron job has started."
 		if not safe_log(start_message):
 			# If we can't even log to the database, send an error alert
 			send_error_message(f"Database connection error in Surge Alert cron job. Unable to log to database.")
-			
-		try:
-			safe_log(f"[INFO] Fetching existing alerts from the database.")
-			
-			# try to get existing alerts with retry logic
-			max_db_retries = 3
-			for db_attempt in range(max_db_retries):
-				try:
-					existing_alerts = db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
-					existing_alert_ids = {alert.alert_id for alert in existing_alerts}
-					existing_statuses = {alert.alert_id: alert.alert_status for alert in existing_alerts}
-					break
-				except OperationalError as e:
-					if "SSL SYSCALL error" in str(e) or "connection" in str(e).lower():
-						if db_attempt < max_db_retries - 1:
-							safe_log(f"[WARNING] Database connection issue, retrying... ({db_attempt + 1}/{max_db_retries})")
-							time.sleep(2)
-							try:
-								db.session.rollback()
-								db.session.remove()
-								db.engine.dispose()
-							except:
-								pass
-						else:
-							raise
-					else:
-						raise
-		except Exception as db_error:
-			safe_log(f"[ERROR] Failed to fetch existing alerts: {str(db_error)}")
+
+		safe_log(f"[INFO] Fetching existing alerts from the database.")
+
+		def _fetch_existing_alerts():
+			return db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
+
+		fetched_ok, existing_alerts = with_db_retry(
+			_fetch_existing_alerts,
+			on_give_up=lambda e: safe_log(f"[ERROR] Failed to fetch existing alerts: {e}")
+		)
+		if not fetched_ok:
 			existing_alerts = []
-			existing_alert_ids = set()
-			existing_statuses = {}
+		existing_alert_ids = {alert.alert_id for alert in existing_alerts}
+		existing_statuses = {alert.alert_id: alert.alert_status for alert in existing_alerts}
 	
 		safe_log(f"[INFO] Making API request to {url}.")
 	
@@ -494,15 +494,17 @@ def refresh_surge_alerts_latest():
 		
 				if existing_alert:
 					if existing_alert.alert_status != result['alert_status']:
-						try:
+						def _update_alert():
 							existing_alert.alert_status = result['alert_status']
 							db.session.commit()
+
+						updated_ok, _ = with_db_retry(_update_alert)
+						if updated_ok:
 							count_updated_records += 1
 							safe_log(f"[INFO] Updated alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
-						except Exception as e:
-							db.session.rollback()
-							safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}: {e}")
-		
+						else:
+							safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
+
 				else:
 					if result['alert_id'] not in existing_alert_ids:
 						try:
@@ -532,17 +534,23 @@ def refresh_surge_alerts_latest():
 								alert_id=result['alert_id'],
 								region_id=result['region_id']
 							)
+						except Exception as e:
+							safe_log(f"[ERROR] Couldn't build alert object (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}): {e}")
+							continue
+
+						def _add_alert():
 							db.session.add(individual_alert)
 							db.session.commit()
+
+						added_ok, _ = with_db_retry(_add_alert)
+						if added_ok:
 							count_new_records += 1
 							safe_log(f"[INFO] Added new alert with alert_id {individual_alert.alert_id}, molnix_id: {current_molnix_id}.")
-		
+
 							if individual_alert.im_filter:
 								send_im_alert_to_slack(individual_alert)
-		
-						except Exception as e:
-							db.session.rollback()
-							safe_log(f"[ERROR] Couldn't add alert (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}) to the database: {e}")
+						else:
+							safe_log(f"[ERROR] Couldn't add alert (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}) to the database.")
 							
 			except Exception as e:
 				current_molnix_id = result.get('molnix_id', 'Unknown')
@@ -592,13 +600,21 @@ def refresh_surge_alerts(pages_to_fetch):
 	None
 	"""
 	
+	count_new_records = 0
+	count_updated_records = 0
+
 	try:
-		log_message = f"[INFO] The Surge Alert (full version) function has started."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
-		
-		existing_alerts = db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
+		safe_log(f"[INFO] The Surge Alert (full version) function has started.")
+
+		def _fetch_existing_alerts():
+			return db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
+
+		fetched_ok, existing_alerts = with_db_retry(
+			_fetch_existing_alerts,
+			on_give_up=lambda e: safe_log(f"[ERROR] Failed to fetch existing alerts: {e}")
+		)
+		if not fetched_ok:
+			existing_alerts = []
 		existing_alert_ids = []
 		existing_statuses = []
 		for alert in existing_alerts:
@@ -619,8 +635,8 @@ def refresh_surge_alerts(pages_to_fetch):
 			results = data.get("results", [])
 		
 			for result in results:
-				molnix_tags = result.get("molnix_tags", [])
-			
+				molnix_tags = result.get("molnix_tags", []) or []
+
 				sectors = []
 				roles = []
 				
@@ -644,34 +660,37 @@ def refresh_surge_alerts(pages_to_fetch):
 				scope = None
 				
 				for tag in molnix_tags:
-					groups = tag.get("groups", [])
-			
+					groups = tag.get("groups", []) or []
+
 					if "SECTOR" in groups:
 						sector = tag.get("description", None)
 						sectors.append(sector)
-			
+
 					if "ROLES" in groups:
 						role_profile = tag.get("description", None)
 						roles.append(role_profile)
-			
+
 					if "Modality" in groups:
 						modality = tag.get("name", None)
-					
+
 					if "ALERT TYPE" in groups:
-						scope = tag.get("name", None).title()
-			
+						scope_name = tag.get("name")
+						if scope_name:
+							scope = scope_name.title()
+
 				im_filter = "Information Management" in sectors
-			
+
 				language_required = next((tag.get("description", None) for tag in molnix_tags if tag.get("tag_type") == "language"), None)
-				rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in group.get("groups", [])), None)
-			
-				country = result.get("country", {})
+				rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in (group.get("groups") or [])), None)
+
+				country = result.get("country", {}) or {}
 				iso3 = country.get("iso3", None)
 				country_name = country.get("name", None)
-			
-				event = result.get("event", {})
-				disaster_type_id = event.get("dtype", {}).get("id", None)
-				disaster_type_name = event.get("dtype", {}).get("name", None)
+
+				event = result.get("event", {}) or {}
+				dtype = event.get("dtype", {}) or {}
+				disaster_type_id = dtype.get("id", None)
+				disaster_type_name = dtype.get("name", None)
 				ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
 				event_name = event.get("name", None)
 				disaster_go_id = event.get("id", None)
@@ -708,31 +727,27 @@ def refresh_surge_alerts(pages_to_fetch):
 			url = data.get("next")
 			current_page += 1
 		
-		count_new_records = 0
-		count_updated_records = 0
-		
 		for result in result_list:
-			
+
 			# these fields can have multiple values, so strip curly brackets and save as comma-separated strings
 			result['sectors'] = ', '.join(result['sectors'])
 			result['role_tags'] = ', '.join(result['role_tags'])
-			
+
 			existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
-			
+
 			if existing_alert:
 				# check if alert_status has changed
 				if existing_alert.alert_status != result['alert_status']:
-					try:
-						# update the existing alert in the database
+					def _update_alert():
 						existing_alert.alert_status = result['alert_status']
 						db.session.commit()
+
+					updated_ok, _ = with_db_retry(_update_alert)
+					if updated_ok:
 						count_updated_records += 1
-					except Exception as e:
-						log_message = f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}: {e}"
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
-			
+					else:
+						safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}.")
+
 			else:
 				# this is a new alert; add it to the database
 				if result['alert_id'] not in existing_alert_ids:
@@ -763,30 +778,21 @@ def refresh_surge_alerts(pages_to_fetch):
 							alert_id = result['alert_id']
 						)
 					except Exception as e:
-						log_message = f"[WARNING] The refresh_surge_alerts (full version) function couldn't parse one of the alerts it found in the Surge Alert cron job as it tried to instantiate a new Alert object: {e}"
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
-					
-					try:
+						safe_log(f"[WARNING] The refresh_surge_alerts (full version) function couldn't parse one of the alerts it found in the Surge Alert cron job as it tried to instantiate a new Alert object: {e}")
+						continue
+
+					def _add_alert():
 						db.session.add(individual_alert)
 						db.session.commit()
+
+					added_ok, _ = with_db_retry(_add_alert)
+					if added_ok:
 						count_new_records += 1
-						
-					except Exception as e:
-						log_message = f"[ERROR] The refresh_surge_alerts (full version) function couldn't add one of the alerts (id={individual_alert.id}) to the database: {e}"
-						new_log = Log(message=log_message, user_id=0)
-						db.session.add(new_log)
-						db.session.commit()
-			
+					else:
+						safe_log(f"[ERROR] The refresh_surge_alerts (full version) function couldn't add one of the alerts (alert_id={result['alert_id']}) to the database.")
+
 	except Exception as e:
-		log_message = f"[ERROR] The Surge Alert (full version) cron job has failed: {e}."
-		new_log = Log(message=log_message, user_id=0)
-		db.session.add(new_log)
-		db.session.commit()
-		send_error_message(log_message)
-	
-	log_message = f"[INFO] The Surge Alert (full version) cron job has finished and logged {count_new_records} new records."
-	new_log = Log(message=log_message, user_id=0)
-	db.session.add(new_log)
-	db.session.commit()	
+		safe_log(f"[ERROR] The Surge Alert (full version) cron job has failed: {e}.")
+		send_error_message(f"[ERROR] The Surge Alert (full version) cron job has failed: {e}.")
+
+	safe_log(f"[INFO] The Surge Alert (full version) cron job has finished and logged {count_new_records} new records.")
