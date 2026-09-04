@@ -344,7 +344,10 @@ def refresh_surge_alerts_latest():
 				molnix_id = result.get("molnix_id", None)
 				alert_record_created_at = result.get("created_at", None)
 				molnix_status = result.get("molnix_status", None)
-				alert_status = result.get("status_display", None)
+				# the API's own "status_display" field has been deprecated and always
+				# returns None now; "molnix_status_display" ("Open"/"Stood Down"/"Closed")
+				# is the field that's actually populated.
+				alert_status = result.get("molnix_status_display", None)
 				opens = result.get("opens", None)
 				start = result.get("start", None)
 				end = result.get("end", None)
@@ -577,7 +580,7 @@ def refresh_surge_alerts_latest():
 			print(f"Failed to log completion message: {str(final_e)}")
 			send_error_message(f"Failed to log completion of Surge Alert cron job: {str(final_e)}")
 
-def refresh_surge_alerts(pages_to_fetch):
+def refresh_surge_alerts(pages_to_fetch=100):
 	"""
 	Refresh and update surge alerts from the GO Admin API, fetching a specified number of pages.
 	
@@ -644,7 +647,10 @@ def refresh_surge_alerts(pages_to_fetch):
 				molnix_id = result.get("molnix_id", None)
 				alert_record_created_at = result.get("created_at", None)
 				molnix_status = result.get("molnix_status", None)
-				alert_status = result.get("status_display", None)
+				# the API's own "status_display" field has been deprecated and always
+				# returns None now; "molnix_status_display" ("Open"/"Stood Down"/"Closed")
+				# is the field that's actually populated.
+				alert_status = result.get("molnix_status_display", None)
 				opens = result.get("opens", None)
 				start = result.get("start", None)
 				end = result.get("end", None)
