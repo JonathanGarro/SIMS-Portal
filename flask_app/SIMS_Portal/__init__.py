@@ -42,7 +42,7 @@ class AdminView(ModelView):
 		try:
 			if current_user.is_admin == 1:
 				return current_user.is_authenticated
-		except:
+		except AttributeError:
 			pass
 	
 	def inaccessible_callback(self, name, **kwargs):
@@ -50,7 +50,7 @@ class AdminView(ModelView):
 	
 def create_app(config_class=Config):
 	app = Flask(__name__)
-	app.config.from_object(Config)
+	app.config.from_object(config_class)
 	app.config['MAX_CONTENT_LENGTH'] = 75 * 1000 * 1000
 	
 	db.init_app(app)
@@ -87,7 +87,7 @@ def create_app(config_class=Config):
 			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://d3js.org https://unpkg.com https://www.google.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net https://www.gstatic.com; "
 			"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com; "
 			"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com data:; "
-			"connect-src 'self' https://www.google-analytics.com https://www.gstatic.com"
+			"connect-src 'self' https://www.google-analytics.com https://www.gstatic.com; "
 			"frame-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net; "
 			"child-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net; "
 			"object-src 'none';"
