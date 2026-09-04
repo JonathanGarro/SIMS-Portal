@@ -635,8 +635,8 @@ def refresh_surge_alerts(pages_to_fetch):
 			results = data.get("results", [])
 		
 			for result in results:
-				molnix_tags = result.get("molnix_tags", [])
-			
+				molnix_tags = result.get("molnix_tags", []) or []
+
 				sectors = []
 				roles = []
 				
@@ -660,34 +660,37 @@ def refresh_surge_alerts(pages_to_fetch):
 				scope = None
 				
 				for tag in molnix_tags:
-					groups = tag.get("groups", [])
-			
+					groups = tag.get("groups", []) or []
+
 					if "SECTOR" in groups:
 						sector = tag.get("description", None)
 						sectors.append(sector)
-			
+
 					if "ROLES" in groups:
 						role_profile = tag.get("description", None)
 						roles.append(role_profile)
-			
+
 					if "Modality" in groups:
 						modality = tag.get("name", None)
-					
+
 					if "ALERT TYPE" in groups:
-						scope = tag.get("name", None).title()
-			
+						scope_name = tag.get("name")
+						if scope_name:
+							scope = scope_name.title()
+
 				im_filter = "Information Management" in sectors
-			
+
 				language_required = next((tag.get("description", None) for tag in molnix_tags if tag.get("tag_type") == "language"), None)
-				rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in group.get("groups", [])), None)
-			
-				country = result.get("country", {})
+				rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in (group.get("groups") or [])), None)
+
+				country = result.get("country", {}) or {}
 				iso3 = country.get("iso3", None)
 				country_name = country.get("name", None)
-			
-				event = result.get("event", {})
-				disaster_type_id = event.get("dtype", {}).get("id", None)
-				disaster_type_name = event.get("dtype", {}).get("name", None)
+
+				event = result.get("event", {}) or {}
+				dtype = event.get("dtype", {}) or {}
+				disaster_type_id = dtype.get("id", None)
+				disaster_type_name = dtype.get("name", None)
 				ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
 				event_name = event.get("name", None)
 				disaster_go_id = event.get("id", None)
