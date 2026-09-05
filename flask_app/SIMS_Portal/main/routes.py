@@ -79,7 +79,7 @@ def about():
 @main.route('/portal_admins')
 def portal_admins():
 	list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == True).all()
-	return render_template('portal_admins.html', list_admins=list_admins)
+	return render_template('portal_admins.html', title='Portal Admins', list_admins=list_admins)
 
 @main.route('/get_slack_id')
 def get_slack_id():
@@ -87,7 +87,7 @@ def get_slack_id():
 
 @main.route('/badges')
 def badges():
-	assigned_badges = db.session.execute(text("SELECT name, badge.id as id, description, badge_url, limited_edition, count(user_badge.user_id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name"))
+	assigned_badges = db.session.execute(text("SELECT name, badge.id as id, description, badge_url, limited_edition, count(\"user\".id) as count FROM badge LEFT JOIN user_badge ON user_badge.badge_id = badge.id LEFT JOIN \"user\" ON \"user\".id = user_badge.user_id AND \"user\".status = 'Active' WHERE limited_edition = false GROUP BY name, badge.id, description, limited_edition ORDER BY name"))
 	all_badges = db.session.query(Badge).all()
 
 	all_limited_edition_badges = db.session.query(Badge).filter(Badge.limited_edition == True).all()
@@ -104,7 +104,7 @@ def badges():
 		temp_dict['limited_edition'] = badge.limited_edition
 		list_assigned_badges.append(temp_dict)
 
-	return render_template('badges.html', count_active_members=count_active_members, all_badges=all_badges, list_assigned_badges=list_assigned_badges, all_limited_edition_badges=all_limited_edition_badges)
+	return render_template('badges.html', title='Badges', count_active_members=count_active_members, all_badges=all_badges, list_assigned_badges=list_assigned_badges, all_limited_edition_badges=all_limited_edition_badges)
 
 @main.route('/badges/create', methods=['GET', 'POST'])
 @login_required
@@ -526,7 +526,7 @@ def dashboard():
 
 	surge_alerts = db.session.query(Alert).filter(Alert.im_filter == True).all()
 
-	return render_template('dashboard.html', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, count_active_IM_alerts=count_active_IM_alerts, list_active_IM_alerts=list_active_IM_alerts)
+	return render_template('dashboard.html', title='Dashboard', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, count_active_IM_alerts=count_active_IM_alerts, list_active_IM_alerts=list_active_IM_alerts)
 
 @main.route('/role_profile/<type>')
 def view_role_profile(type):

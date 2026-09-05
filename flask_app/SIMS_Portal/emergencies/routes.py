@@ -43,7 +43,7 @@ emergencies = Blueprint('emergencies', __name__)
 def view_all_emergencies():
 	emergencies = db.session.query(Emergency, Assignment, NationalSociety, EmergencyType).join(Assignment, Assignment.id == Emergency.id, isouter=True).join(NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id, isouter=True).join(EmergencyType, EmergencyType.emergency_type_go_id == Emergency.emergency_type_id, isouter=True).filter(Emergency.emergency_status != "Removed").all()
 
-	return render_template('emergencies_all.html', emergencies=emergencies)
+	return render_template('emergencies_all.html', title='Emergencies', emergencies=emergencies)
 
 @emergencies.route('/emergency/new', methods=['GET', 'POST'])
 @login_required
@@ -368,7 +368,7 @@ def view_emergency(id):
 
 	return render_template(
 		'emergency.html',
-		title='Emergency View',
+		title=emergency_info.Emergency.emergency_name,
 		emergency_info=emergency_info,
 		deployments=deployments,
 		emergency_portfolio=emergency_portfolio,
