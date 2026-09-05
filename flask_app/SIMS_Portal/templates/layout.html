@@ -159,15 +159,15 @@
 			</nav>
 			{% if current_user.is_authenticated %}
 			{% if '/national_societies/' in request.path %}
-			<nav id="navbar_top_login" class="navbar navbar-expand-sm box-shadow shadow-sm navbar-dark sticky-top">
+			<nav id="navbar_top_login" class="navbar navbar-expand-lg box-shadow shadow-sm navbar-dark sticky-top">
 				{% else %}
-				<nav id="navbar_top_login" class="navbar navbar-expand-sm box-shadow shadow-sm navbar-dark sticky-top mb-2">
+				<nav id="navbar_top_login" class="navbar navbar-expand-lg box-shadow shadow-sm navbar-dark sticky-top mb-2">
 					{% endif %}
 					<div class="container">
-						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav">
+						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav_login">
 							<span class="navbar-toggler-icon"></span>
 						</button>
-						<div class="collapse navbar-collapse" id="main_nav">
+						<div class="collapse navbar-collapse" id="main_nav_login">
 							<ul class="navbar-nav ms-auto">
 								<li class="nav-item-bottom px-2">
 									<div class="dropdown" style="margin-top: 1px;">
