@@ -12,7 +12,17 @@ class Config:
 	SECRET_KEY = os.environ.get('SECRET_KEY')
 	SESSION_TYPE = 'filesystem'
 	SESSION_PERMANENT = False
-	SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+	# In debug mode (local dev, e.g. via docker-compose's FLASK_DEBUG=1), prefer
+	# DEV_SQLALCHEMY_DATABASE_URI over SQLALCHEMY_DATABASE_URI, so a dev and prod
+	# credential can both sit in the same .env without one having to be commented
+	# out for the other to take effect - a local run can no longer accidentally
+	# point at the production database just because that line was left uncommented.
+	# Production itself is unaffected: it doesn't set FLASK_DEBUG, and AWS injects
+	# SQLALCHEMY_DATABASE_URI directly rather than through this file.
+	if DEBUG:
+		SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_SQLALCHEMY_DATABASE_URI') or os.environ.get('SQLALCHEMY_DATABASE_URI')
+	else:
+		SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 	SQLALCHEMY_ENGINE_OPTIONS = {
 		'pool_pre_ping': True,
 		'pool_recycle': 300,
