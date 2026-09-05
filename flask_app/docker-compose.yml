@@ -1,10 +1,15 @@
 services:
   web:
     build: .
-    volumes: 
+    volumes:
       - ./SIMS_Portal:/app/SIMS_Portal
       - ./db:/app/db
       - ./migrations:/app/migrations
+      # SIMS_Portal/static/assets is intentionally near-empty in git - in production
+      # it's populated by a separate Docker volume outside the repo (see that
+      # directory's git history). Locally, mount the real committed image files
+      # from ./assets so they land where the app and nginx.conf expect them.
+      - ./assets:/app/SIMS_Portal/static/assets
     ports:
       - "5001:5000"
     env_file: ./.env
