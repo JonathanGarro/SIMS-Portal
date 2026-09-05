@@ -1,7 +1,14 @@
 import os
+from flask.cli import get_debug_flag
 
 class Config:
-	DEBUG = True
+	# Driven by the FLASK_DEBUG env var (Flask's own convention), defaulting to False.
+	# This used to be hardcoded True, which meant it had to be hand-edited to False
+	# before every production deploy - forget that step and the app still runs fine,
+	# but the entire APScheduler block below (surge alerts, badge assignment,
+	# inactive-member handling) silently never starts, since it's gated on
+	# app.config['DEBUG'] == False. Set FLASK_DEBUG=1 in your local .env for dev.
+	DEBUG = get_debug_flag()
 	SECRET_KEY = os.environ.get('SECRET_KEY')
 	SESSION_TYPE = 'filesystem'
 	SESSION_PERMANENT = False

@@ -8,4 +8,8 @@ services:
     ports:
       - "5001:5000"
     env_file: ./.env
-    # command: gunicorn --bind 0.0.0.0:5000 -w 3 --preload run:app
+    environment:
+      - FLASK_DEBUG=1
+    # the image's own CMD runs gunicorn (production-safe default); override back
+    # to flask run here for local dev's auto-reload on code changes
+    command: flask run --host=0.0.0.0 --port=5000
