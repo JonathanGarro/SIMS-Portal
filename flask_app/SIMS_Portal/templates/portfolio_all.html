@@ -89,7 +89,7 @@
 					<td class="align-middle">{{product.Portfolio.format}}</td>
 					<td class="align-middle">{{product.Portfolio.description|truncate(75, True)}}</td>
 					<td class="align-middle">{{product.Portfolio.external}}</td>
-					<td class="align-middle">{{product.Portfolio.created_at.strftime('%B %d, %Y')}}</td>
+					<td class="align-middle" data-order="{{product.Portfolio.created_at.strftime('%Y%m%d')}}">{{product.Portfolio.created_at.strftime('%B %d, %Y')}}</td>
 					
 			  	</tr>
 				{% endfor %}

@@ -192,7 +192,7 @@
 									<td class="align-middle">{{assignment.NationalSociety.ns_name}}</td>
 									<td class="align-middle"><a href="/emergency/{{assignment.Assignment.emergency_id}}" class='link-danger'>{{assignment.Emergency.emergency_name}}</a></td>
 									<td class="align-middle"><a href='/assignment/{{assignment.Assignment.id}}'>{{assignment.Assignment.role}}</a></td>
-									<td class="align-middle">{{assignment.Assignment.end_date.strftime('%B %d, %Y')}}</td>
+									<td class="align-middle" data-order="{{assignment.Assignment.end_date.strftime('%Y%m%d')}}">{{assignment.Assignment.end_date.strftime('%B %d, %Y')}}</td>
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -267,7 +267,7 @@
 								<td class="align-middle">{{alert.country_name}}</td>
 								<td class="align-middle">{{alert.ifrc_severity_level_display}}</td>
 								<td class="align-middle">{{alert.scope}}</td>
-								<td class="align-middle">
+								<td class="align-middle" data-order="{{ alert.start.strftime('%Y%m%d') if alert.start else '' }}">
 									{% if alert.start %}
 										{{ alert.start.strftime('%b %d, %Y') }}
 									{% else %}
