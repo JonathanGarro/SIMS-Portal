@@ -1,10 +1,14 @@
 from dotenv import load_dotenv
-# Load .env before anything below reads os.environ at import time - Config does,
-# via os.environ.get(...) and now get_debug_flag() in its class body.
+# Load .env before anything below reads os.environ at import time (Config does, via
+# os.environ.get(...) and get_debug_flag() in its class body). flask run happens to
+# pre-load .env itself, which is why this worked even in the wrong order - but the
+# Procfile runs gunicorn, which does not, so every config value would silently be
+# None under that path.
 load_dotenv()
 
 from flask import Flask, render_template
 from flask_admin import Admin
+from flask_admin.base import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_apscheduler import APScheduler
 from flask_babel import Babel
@@ -50,7 +54,22 @@ class AdminView(ModelView):
 	
 	def inaccessible_callback(self, name, **kwargs):
 		return render_template('errors/403.html'), 403
-	
+
+# Flask-Admin's default index view (used when none is passed to Admin()) has no
+# access check at all - is_accessible() just returns True - so /admin/ itself was
+# reachable by anyone even though every individual model view above is properly
+# gated. Apply the same admin-only check to the index page too.
+class AdminHomeView(AdminIndexView):
+	def is_accessible(self):
+		try:
+			if current_user.is_admin == 1:
+				return current_user.is_authenticated
+		except AttributeError:
+			pass
+
+	def inaccessible_callback(self, name, **kwargs):
+		return render_template('errors/403.html'), 403
+
 def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(config_class)
@@ -64,7 +83,7 @@ def create_app(config_class=Config):
 	
 	bcrypt.init_app(app)
 	login_manager.init_app(app)
-	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin')
+	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin', index_view=AdminHomeView())
 	babel = Babel(app)
 	# Custom markdown filter to replace Flask-Markdown (incompatible with Flask 3.x)
 	@app.template_filter('markdown')
