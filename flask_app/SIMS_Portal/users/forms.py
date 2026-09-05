@@ -59,7 +59,13 @@ class UpdateAccountForm(FlaskForm):
 	submit = SubmitField('Update Profile')
 	
 	def validate_email(self, email):
-		if email.data != current_user.email:
+		# original_email lets an admin editing someone else's profile (update_specified_profile)
+		# compare against that user's own email instead of the logged-in admin's - otherwise this
+		# always fails validation for any admin-submitted edit that doesn't change the email.
+		original_email = getattr(self, 'original_email', None)
+		if original_email is None:
+			original_email = current_user.email
+		if email.data != original_email:
 			user = User.query.filter_by(email=email.data).first()
 			if user:
 				raise ValidationError('Email is already registered.')

@@ -24,12 +24,6 @@
       <div class="col-md-5 pe-5">
         <h2 class="text-danger pb-4 Montserrat mt-3">Post New Acronym</h2>
 
-        {% if anon_user == True %}
-        <div class="alert alert-warning border border-2 border-warning" role="alert">
-          <span class="fw-bold">Submitting anonymously</span>: You are posting a new acronym as an anonymous user. This means your submission will be placed into a review queue and will not be immediately available on the site. SIMS members can post acronyms and have them post directly to the Portal—please <a href="/submit_acronym/member"><span class="fw-bold">log in</span></a> if you are already a member.
-        </div>
-        {% endif %}
-
         <h5 class="text-secondary Montserrat mt-4">Add Relevant Data in One or More Languages</h5>
         <p id="assignment-guidance">Fill out the acronym, the definition, and (optionally) the description and relevant URL.</p>
 
@@ -275,44 +269,8 @@
                 {{ form.relevant_link(class="form-control form-control-lg") }}
                             {% endif %}
               </div>
-              {% if anon_user == True %}
-              <hr class="text-danger mt-5">
-              <div class="form-group pt-4">
-                {{ form.anonymous_submitter_name.label(class="form-control-label pb-2 text-danger") }}
-              
-                        {% if form.anonymous_submitter_name.errors %}
-                {{ form.anonymous_submitter_name(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                  {% for error in form.anonymous_submitter_name.errors %}
-                  <span>{{ error }}</span>
-                  {% endfor %}
-                </div>
-                {% else %}
-                {{ form.anonymous_submitter_name(class="form-control form-control-lg") }}
-                        {% endif %}
-              </div>
-              <div class="form-group py-4">
-                {{ form.anonymous_submitter_email.label(class="form-control-label pb-2 text-danger") }}
-              
-                        {% if form.anonymous_submitter_email.errors %}
-                {{ form.anonymous_submitter_email(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                  {% for error in form.anonymous_submitter_email.errors %}
-                  <span>{{ error }}</span>
-                  {% endfor %}
-                </div>
-                {% else %}
-                {{ form.anonymous_submitter_email(class="form-control form-control-lg") }}
-                        {% endif %}
-              </div>
 
-              {{ form.recaptcha.label }}
-              {{ form.recaptcha }}
 
-              {% endif %}
-              
-
-              
               {{ form.submit(class="btn btn-danger w-25 mt-5") }}
           </fieldset>
         </form>

@@ -452,7 +452,9 @@ def update_profile():
 		form.email.data = current_user.email
 		form.job_title.data = current_user.job_title
 		form.unit.data = current_user.unit
-		form.ns_id.data = current_user.ns_id
+		# QuerySelectField needs the actual NationalSociety object to pre-select the
+		# matching option, not the raw ns_go_id integer.
+		form.ns_id.data = db.session.query(NationalSociety).filter(NationalSociety.ns_go_id == current_user.ns_id).first()
 		form.bio.data = current_user.bio
 		form.slack_id.data = current_user.slack_id
 		form.github.data = current_user.github
@@ -464,17 +466,21 @@ def update_profile():
 		
 		skill_names = [skill.name for skill in current_user.skills]
 		language_names = [language.name for language in current_user.languages]
-		
-		selected_skill_names = [skill.name for skill in current_user.skills]
-		selected_language_names = [language.name for language in current_user.languages]
-		
+
 		form.skills.data = skill_names
 		form.languages.data = language_names
 
+	# Computed unconditionally (not just on GET) so this route can re-render the form
+	# with its current data instead of crashing whenever form validation fails on a
+	# POST - e.g. the form's own validate_email() rejecting an email already in use
+	# by another account.
+	selected_skill_names = [skill.name for skill in current_user.skills]
+	selected_language_names = [language.name for language in current_user.languages]
+
 	profile_picture = '/uploads/' + current_user.image_file
-	
+
 	skills_list = db.session.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
-	
+
 	return render_template('profile_edit.html', title='Profile', profile_picture=profile_picture, form=form, ns_association=ns_association, skills_list=skills_list, selected_skill_names=selected_skill_names, selected_language_names=selected_language_names)
 
 @users.route('/profile_edit/<int:id>', methods=['GET', 'POST'])
@@ -483,8 +489,9 @@ def update_specified_profile(id):
 	if current_user.is_admin == 1:
 		form = UpdateAccountForm()
 		this_user = db.session.query(User).filter(User.id==id).first()
+		form.original_email = this_user.email
 		try:
-			ns_association = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.id==id).with_entities(NationalSociety.ns_name).first()[0]	
+			ns_association = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.id==id).with_entities(NationalSociety.ns_name).first()[0]
 		except:
 			ns_association = 'None'
 		if form.validate_on_submit():
@@ -517,7 +524,7 @@ def update_specified_profile(id):
 			form.lastname.data = this_user.lastname
 			form.email.data = this_user.email
 			form.job_title.data = this_user.job_title
-			form.ns_id.data = this_user.ns_id
+			form.ns_id.data = db.session.query(NationalSociety).filter(NationalSociety.ns_go_id == this_user.ns_id).first()
 			form.bio.data = this_user.bio
 			form.github.data = this_user.github
 			form.twitter.data = this_user.twitter

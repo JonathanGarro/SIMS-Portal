@@ -389,7 +389,7 @@ def remove_supporter_from_product(product_id):
 def view_documentation():
 	documentation = db.session.query(Documentation, User, Portfolio).outerjoin(User, User.id == Documentation.author_id).outerjoin(Portfolio, Portfolio.id == Documentation.portfolio_id).all()
 
-	return render_template('documentation.html', documentation=documentation)
+	return render_template('documentation.html', title='Documentation', documentation=documentation)
 
 @portfolios.route('/add_documentation', methods=['GET', 'POST'])
 @login_required
