@@ -24,4 +24,9 @@ RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 5000
 ENV FLASK_APP=run.py
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+# Always gunicorn here - flask run's dev server isn't meant for production, and
+# this used to be a manual toggle (comment/uncomment before every deploy) tied to
+# also hand-editing Config.DEBUG. Both are now driven by FLASK_DEBUG instead, so
+# this image is production-safe by default. docker-compose.yml overrides this
+# command back to flask run for local dev's live-reload.
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "-w", "3", "--max-requests", "1000", "--max-requests-jitter", "100", "--timeout", "120", "run:app"]

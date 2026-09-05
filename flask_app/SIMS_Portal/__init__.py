@@ -1,4 +1,8 @@
 from dotenv import load_dotenv
+# Load .env before anything below reads os.environ at import time - Config does,
+# via os.environ.get(...) and now get_debug_flag() in its class body.
+load_dotenv()
+
 from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -17,7 +21,6 @@ import logging
 import os
 from flask_wtf.csrf import CSRFProtect
 
-load_dotenv()
 db = SQLAlchemy()
 migrate = Migrate()
 bcrypt = Bcrypt()
