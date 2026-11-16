@@ -15,7 +15,6 @@ PERSONAS = ('anonymous', 'member', 'admin')
 # endpoint -> reason; these are deliberately not requested by the smoke test
 SKIP_ENDPOINTS = {
 	'static': 'Flask built-in',
-	'main.manual_refresh': 'passes the URL argument to eval(); must not be exercised generically',
 }
 
 # default values for non-integer URL arguments
@@ -54,7 +53,6 @@ KNOWN_FAILURES = {
 	('member', 'main.admin_assign_badge'): 'view returns None for non-admins',
 	('member', 'main.admin_edit_skills'): 'view returns None for non-admins',
 	('member', 'main.admin_upload_badges'): 'view returns None for non-admins',
-	('member', 'main.manual_refresh_landing'): 'view returns None for non-admins',
 	('member', 'reviews.process_op_review'): 'User.is_admin == 1 fails on Postgres',
 	('member', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
 	('admin', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
