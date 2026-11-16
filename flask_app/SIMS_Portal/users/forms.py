@@ -46,7 +46,6 @@ class UpdateAccountForm(FlaskForm):
 	linked_in = StringField('LinkedIn ID')
 	molnix_id = IntegerField('Molnix ID')
 	slack_id = StringField('SIMS Slack ID')
-	twitter = StringField('Twitter Handle')
 	github = StringField('Github Username')
 	roles = StringField('SIMS Roles')
 	messaging_number_country_code = IntegerField('Country Code', validators=[Optional()])
