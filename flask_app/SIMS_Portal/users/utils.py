@@ -211,31 +211,6 @@ def new_acronym_alert(message):
 	except Exception as e:
 		current_app.logger.error('new_acronym_alert Slack message failed: {}'.format(e))
 
-def rem_cos_search():
-	"""
-	Retrieve a list of active SIMS Remote Coordinators for active emergencies.
-	
-	Queries the database to find all active SIMS Remote Coordinators who are assigned to active emergencies.
-	It returns a list of tuples containing assignment, user, and emergency details.
-	
-	Parameters:
-	None
-	
-	Returns:
-	list: A list of tuples, each containing:
-		- Assignment: The assignment details of the SIMS Remote Coordinator.
-		- User: The user details of the SIMS Remote Coordinator.
-		- Emergency: The emergency details to which the SIMS Remote Coordinator is assigned.
-	
-	Side Effects:
-	None
-	
-	Raises:
-	None
-	"""
-	
-	with app.app_context():  # noqa: F821 - undefined name, see #160
-		active_SIMS_cos = db.session.query(Assignment, User, Emergency).join(User, User.id == Assignment.user_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.emergency_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').all()
 
 def send_slack_dm(message, user):
 	"""
@@ -275,7 +250,7 @@ def send_slack_dm(message, user):
 			'text': message
 	}
 	try:
-		response = requests.post(url='https://slack.com/api/chat.postMessage', data=data)
+		response = requests.post(url='https://slack.com/api/chat.postMessage', data=data, timeout=10)
 		response_data = response.json()
 		if not response_data.get('ok'):
 			log_message = f"[ERROR] send_slack_dm() failed: {response_data.get('error')}"

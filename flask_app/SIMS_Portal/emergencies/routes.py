@@ -242,13 +242,10 @@ def view_emergency(id):
 
 	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
 
-	try:
-		# check for trello tasks
-		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)  # noqa: F821 - undefined name, see #160
-		count_cards = len(to_do_trello)
-	except:
-		to_do_trello = None
-		count_cards = 0
+	# Trello was replaced by GitHub issues (the fetch has been dead since July 2024);
+	# the template's Trello tab stays hidden until it's removed in the Phase 2 cleanup
+	to_do_trello = None
+	count_cards = 0
 
 	today = datetime.today()
 	current_weekday = today.weekday()
