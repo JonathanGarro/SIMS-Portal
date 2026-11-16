@@ -14,6 +14,8 @@ from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.base import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla.validators import Unique as _AdminUniqueValidator
+from flask_admin.form.validators import FieldListInputRequired as _AdminFieldListInputRequired
 from flask_apscheduler import APScheduler
 from flask_babel import Babel
 from flask_bcrypt import Bcrypt
@@ -27,6 +29,12 @@ from logging.handlers import RotatingFileHandler
 from SIMS_Portal.config import Config
 import logging
 from flask_wtf.csrf import CSRFProtect
+
+# Flask-Admin 1.6.1 declares these validators' field_flags as tuples, but WTForms 3
+# expects a dict, so every admin form with a unique column (e.g. Create User)
+# crashed. Remove this shim when Flask-Admin is upgraded to 2.x (#158).
+_AdminUniqueValidator.field_flags = {'unique': True}
+_AdminFieldListInputRequired.field_flags = {'required': True}
 
 db = SQLAlchemy()
 migrate = Migrate()
