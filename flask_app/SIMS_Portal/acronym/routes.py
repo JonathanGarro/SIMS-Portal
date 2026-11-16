@@ -16,6 +16,24 @@ from SIMS_Portal.acronym.forms import NewAcronymForm, EditAcronymForm
 
 acronym = Blueprint('acronym', __name__)
 
+# Columns the search page offers (its dropdown) and the API accepts. Anything else
+# falls back to acronym_eng: the column name comes from the query string, and looking
+# it up with a bare getattr let searches filter on hidden fields such as
+# anonymous_submitter_email.
+SEARCHABLE_COLUMNS = {
+	'acronym_eng': 'Acronym (English)',
+	'def_eng': 'Definition (English)',
+	'acronym_esp': 'Acrónimo (Español)',
+	'def_esp': 'Definición (Español)',
+	'acronym_fra': 'Acronyme (Français)',
+	'def_fra': 'Définition (Français)',
+}
+
+
+def _search_column():
+	column = request.args.get('search_column', 'acronym_eng')
+	return column if column in SEARCHABLE_COLUMNS else 'acronym_eng'
+
 @acronym.route('/acronyms', methods=['GET'])
 def acronyms():
     page = request.args.get('page', 1, type=int)
@@ -59,11 +77,11 @@ def search_acronyms():
             - user_info: The current user's information, or None if not found.
     """
     
-    search_column = request.args.get('search_column', 'acronym_eng')
+    search_column = _search_column()
     search_term = request.args.get('search_term', '')
 
     # get column attribute from acronym model
-    column_attribute = getattr(Acronym, search_column, Acronym.acronym_eng)
+    column_attribute = getattr(Acronym, search_column)
 
     search_results = db.session.query(Acronym).filter(
         Acronym.approved_by > 0,
@@ -84,16 +102,7 @@ def search_acronyms():
         if user_info is not None:
             user_info.id = 0
             
-    db_col_name = {
-        'acronym_eng': 'Acronym (English)',
-        'def_eng': 'Definition (English)',
-        'acronym_esp': 'Acrónimo (Español)',
-        'def_esp': 'Definición (Español)',
-        'acronym_fra': 'Acronyme (Français)',
-        'def_fra': 'Définition (Français)'
-    }
-    
-    search_column_display = db_col_name.get(search_column)
+    search_column_display = SEARCHABLE_COLUMNS[search_column]
     
     row_count = db.session.query(Acronym).filter(
         Acronym.approved_by > 0,
@@ -131,11 +140,11 @@ def search_acronyms_api():
             - link: A relevant link associated with the acronym.
     """
     
-    search_column = request.args.get('search_column', 'acronym_eng')
+    search_column = _search_column()
     search_term = request.args.get('search_term', '')
 
     # get column attribute from acronym model
-    column_attribute = getattr(Acronym, search_column, Acronym.acronym_eng)
+    column_attribute = getattr(Acronym, search_column)
 
     search_results = db.session.query(Acronym).filter(
         Acronym.approved_by > 0,
@@ -186,9 +195,12 @@ def view_acronym(id):
         
         if acronym_info is None: 
             abort(404)
+        # pending (never approved) submissions are only visible to admins
+        if acronym_info.Acronym.approved_by is None and not (current_user.is_authenticated and current_user.is_admin == 1):
+            abort(404)
     
         try:
-            similar_matches = db.session.query(Acronym).filter(Acronym.acronym_eng == acronym_info.Acronym.acronym_eng, Acronym.id != id).all()
+            similar_matches = db.session.query(Acronym).filter(Acronym.acronym_eng == acronym_info.Acronym.acronym_eng, Acronym.id != id, Acronym.approved_by > 0).all()
         except:
             similar_matches = None
     except NoResultFound:
