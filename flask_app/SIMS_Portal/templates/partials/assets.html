@@ -18,6 +18,6 @@
 {% endmacro %}
 
 {% macro fullcalendar() %}
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" integrity="sha384-39yVKLsD9lMelmY+ij49KZgE+Mfk6hjdUPNE8yKHqdMPceLXzhlCJAK81xlD5jDj" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js" integrity="sha384-syUyaKmv4nVYKjg5ii/6PR+u4Z0rS+UM4oEKZJmWdo/WeffuEoWsv0yQ7zkBZ+M4" crossorigin="anonymous"></script>
+	{# FullCalendar 6 injects its own CSS; there is no separate stylesheet #}
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q" crossorigin="anonymous"></script>
 {% endmacro %}
