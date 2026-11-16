@@ -12,7 +12,6 @@ Safety rails (all set up before the app package is imported):
     Slack, hitting GO/Molnix, etc.
 """
 import os
-import shutil
 import socket
 from urllib.parse import urlparse
 
@@ -83,24 +82,8 @@ class TestConfig(Config):
 	RECAPTCHA_PRIVATE_KEY = 'test'
 
 
-@pytest.fixture(scope='session', autouse=True)
-def _isolated_cwd(tmp_path_factory):
-	"""
-	Several utils write generated files to CWD-relative paths like
-	"SIMS_Portal/static/data/active_emergencies.csv" (files tracked in git). Run the
-	suite from a temp dir holding a copy of that folder so tests never modify the repo.
-	"""
-	repo_data = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'SIMS_Portal', 'static', 'data')
-	workdir = tmp_path_factory.mktemp('cwd')
-	shutil.copytree(repo_data, workdir / 'SIMS_Portal' / 'static' / 'data')
-	original = os.getcwd()
-	os.chdir(workdir)
-	yield workdir
-	os.chdir(original)
-
-
 @pytest.fixture(scope='session')
-def app(_isolated_cwd):
+def app():
 	app = create_app(TestConfig)
 	with app.app_context():
 		db.drop_all()

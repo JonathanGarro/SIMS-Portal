@@ -19,9 +19,10 @@ from SIMS_Portal.users.forms import (
 from SIMS_Portal.users.utils import (
 	save_picture, send_slack_dm,
 	check_valid_slack_ids, send_reset_slack, search_location,
-	update_member_locations, update_robots_txt, set_user_active
+	update_robots_txt, set_user_active
 )
 from SIMS_Portal.portfolios.utils import get_full_portfolio
+from SIMS_Portal.main import map_data
 from SIMS_Portal.users.utils import download_profile_photo, invite_user_to_github
 from SIMS_Portal.main.utils import send_error_message
 
@@ -576,7 +577,7 @@ def save_user_location(user_id):
 # and shows a confirmation page that POSTs here. POST-only (with the app-wide CSRF
 # token) so the save can't be triggered by a link, and a no-op unless a pending
 # location for this same user is actually in the session - writing str(None) into
-# the coordinates used to break update_member_locations() for every later caller.
+# the coordinates used to break the member-location map data for every later caller.
 @users.route('/confirm_work_location/<int:user_id>', methods=['POST'])
 @login_required
 def confirm_user_location(user_id):
@@ -599,7 +600,7 @@ def confirm_user_location(user_id):
 	db.session.commit()
 	flash("You've successfully saved your location!", "success")
 
-	update_member_locations()
+	map_data.invalidate_member_locations()
 	return redirect(url_for('users.profile'))
 
 @users.route('/reset_password', methods=['GET', 'POST'])

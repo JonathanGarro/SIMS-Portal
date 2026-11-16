@@ -11,7 +11,8 @@ from sqlalchemy import func, distinct, desc, text
 import boto3
 import botocore
 
-from SIMS_Portal import db
+from SIMS_Portal import cache, db
+from SIMS_Portal.main import map_data
 from SIMS_Portal.models import (
 	Assignment, User, Emergency, Alert, Portfolio,
 	NationalSociety, Story,
@@ -195,6 +196,18 @@ def view_national_society(ns_id):
 	.count()
 
 	return render_template('national_society_view.html', ns_members=ns_members, ns_info=ns_info, active_ns_member_count=active_ns_member_count)
+
+@main.route('/data/response_history.json')
+@cache.cached(timeout=map_data.CACHE_SECONDS, key_prefix=map_data.RESPONSE_HISTORY_CACHE_KEY)
+def response_history_data():
+	return jsonify(map_data.response_history())
+
+
+@main.route('/data/member_locations.json')
+@cache.cached(timeout=map_data.CACHE_SECONDS, key_prefix=map_data.MEMBER_LOCATIONS_CACHE_KEY)
+def member_locations_data():
+	return jsonify(map_data.member_locations())
+
 
 @main.route('/get_active_emergencies')
 def get_active_emergencies():

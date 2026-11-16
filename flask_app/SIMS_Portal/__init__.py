@@ -55,14 +55,12 @@ def create_app(config_class=Config):
 	_init_logging(app)
 
 	from SIMS_Portal.admin import init_admin
-	from SIMS_Portal.cli import init_cli
 	from SIMS_Portal.scheduler import init_scheduler
 	from SIMS_Portal.security import init_security_headers
 
 	init_security_headers(app)
 	_register_blueprints(app)
 	init_admin(app, db)
-	init_cli(app)
 	init_scheduler(app)
 
 	@app.route('/health', methods=['GET'])

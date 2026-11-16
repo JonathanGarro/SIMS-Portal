@@ -20,8 +20,8 @@ from SIMS_Portal.models import (
 from SIMS_Portal.emergencies.forms import (
 	NewEmergencyForm, UpdateEmergencyForm, UpdateEmergenyChecklistForm
 )
+from SIMS_Portal.main import map_data
 from SIMS_Portal.emergencies.utils import (
-	update_response_locations, update_active_response_locations,
 	emergency_availability_chart_data, create_response_channel
 )
 from SIMS_Portal.main.utils import check_sims_co
@@ -74,9 +74,8 @@ def new_emergency():
 			db.session.add(new_log)
 			db.session.commit()
 
-		# run updates to csvs that hold data for visualizations
-		update_response_locations()
-		update_active_response_locations()
+		# the about page's response history map includes the new emergency
+		map_data.invalidate_response_history()
 
 		log_message = f"[INFO] User {current_user.id} created emergency record: {emergency.emergency_name}."
 		new_log = Log(message=log_message, user_id=current_user.id)
@@ -504,9 +503,6 @@ def closeout_emergency(id):
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Closed'})
 			db.session.commit()
 
-			# update map on dashboard
-			update_active_response_locations()
-
 			# request learnings from remote supporters
 			request_learnings(id)
 
@@ -526,7 +522,6 @@ def delete_emergency(id):
 		try:
 			db.session.query(Emergency).filter(Emergency.id==id).update({'emergency_status':'Removed'})
 			db.session.commit()
-			update_active_response_locations()
 			flash("Emergency deleted.", 'success')
 
 			emergency_info = db.session.query(Emergency).filter(Emergency.id==id).first()

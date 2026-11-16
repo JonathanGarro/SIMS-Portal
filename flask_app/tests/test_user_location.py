@@ -1,11 +1,8 @@
 """Saving a member's work location (/save_work_location -> /confirm_work_location)."""
-import json
-
 import pytest
 
 from SIMS_Portal import db
 from SIMS_Portal.models import User
-from SIMS_Portal.users.utils import update_member_locations
 from tests.seed import ADMIN_ID, MEMBER_ID
 
 URL = f'/confirm_work_location/{MEMBER_ID}'
@@ -27,9 +24,10 @@ def _member():
 
 
 @pytest.fixture(autouse=True)
-def _no_locations_file_write(monkeypatch):
-	# confirm_user_location() regenerates the globe data file; not under test here
-	monkeypatch.setattr('SIMS_Portal.users.routes.update_member_locations', lambda: None)
+def invalidations(monkeypatch):
+	calls = []
+	monkeypatch.setattr('SIMS_Portal.main.map_data.invalidate_member_locations', lambda: calls.append(1))
+	return calls
 
 
 def test_get_is_not_allowed(member_client):
@@ -86,12 +84,12 @@ def test_save_page_requires_login(client):
 	assert response.status_code == 302 and '/login' in response.headers['Location']
 
 
-@pytest.mark.parametrize('bad_value', ['None', '[abc, def]', '[1.5]'])
-def test_update_member_locations_skips_malformed_coordinates(app, bad_value):
-	with app.app_context():
-		db.session.query(User).filter(User.id == MEMBER_ID).update({'coordinates': bad_value})
-		db.session.commit()
-		update_member_locations()  # must not raise
-		with open('SIMS_Portal/static/data/locations.json') as f:
-			locations = json.load(f)
-	assert locations == [{'latitude': 0.0, 'longitude': 0.0}]  # only the admin's valid row
+def test_saving_a_location_refreshes_the_globe_data(member_client, invalidations):
+	_pending_location(member_client)
+	member_client.post(URL)
+	assert invalidations == [1]
+
+
+def test_no_refresh_when_nothing_was_saved(member_client, invalidations):
+	member_client.post(URL)
+	assert invalidations == []

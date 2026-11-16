@@ -8,8 +8,6 @@ per worker. A non-blocking lock on SCHEDULER_LOCK_FILE makes sure exactly one
 process per host runs the scheduler. When that worker exits (e.g. gunicorn's
 --max-requests recycling), the lock is released and its replacement takes over.
 """
-from datetime import datetime, timezone
-
 from flask_apscheduler import APScheduler
 
 try:
@@ -66,24 +64,13 @@ def run_process_inactive_members():
 	process_inactive_members()
 
 
-def run_update_member_locations():
-	from SIMS_Portal.users.utils import update_member_locations
-	update_member_locations()
-
-
 # (job id, function, trigger arguments). Times use SCHEDULER_TIMEZONE unless set.
 JOBS = [
 	('run_surge_alert_refresh', run_surge_alert_refresh, {'trigger': 'cron', 'hour': '1,4,7,10,13,16'}),
 	('run_auto_badge_assigners', run_auto_badge_assigners, {'trigger': 'cron', 'hour': '17'}),
 	('run_set_user_inactive', run_alert_inactive_members, {'trigger': 'cron', 'day_of_week': 'thu', 'hour': 9, 'timezone': 'America/New_York'}),
 	('run_process_inactive_members', run_process_inactive_members, {'trigger': 'cron', 'day_of_week': 'tue', 'hour': 9, 'timezone': 'America/New_York'}),
-	# regenerates the globe data (static/data/locations.json); used to run on every
-	# app start in every process, including `flask db` commands
-	('run_update_member_locations', run_update_member_locations, {'trigger': 'interval', 'hours': 6}),
 ]
-
-# jobs that should also run once as soon as the scheduler starts
-RUN_AT_STARTUP = {'run_update_member_locations'}
 
 
 def init_scheduler(app):
@@ -105,10 +92,6 @@ def init_scheduler(app):
 		return job
 
 	for job_id, func, trigger_args in JOBS:
-		if job_id in RUN_AT_STARTUP:
-			# timezone-aware: a naive now() would be read in SCHEDULER_TIMEZONE and could
-			# land in the past, and APScheduler silently skips misfired runs
-			trigger_args = {**trigger_args, 'next_run_time': datetime.now(timezone.utc)}
 		scheduler.add_job(id=job_id, func=in_app_context(func), **trigger_args)
 
 	scheduler.start()

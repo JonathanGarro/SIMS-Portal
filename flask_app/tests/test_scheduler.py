@@ -7,7 +7,7 @@ from tests.conftest import TestConfig
 
 EXPECTED_JOBS = {
 	'run_surge_alert_refresh', 'run_auto_badge_assigners', 'run_set_user_inactive',
-	'run_process_inactive_members', 'run_update_member_locations',
+	'run_process_inactive_members',
 }
 
 
@@ -62,18 +62,13 @@ def test_lock_is_released_when_the_holder_exits(make_production_like_app):
 	assert hasattr(make_production_like_app(), 'apscheduler')
 
 
-def test_member_locations_job_runs_at_startup(make_production_like_app):
-	job = make_production_like_app().apscheduler.get_job('run_update_member_locations')
-	assert job.next_run_time is not None and job.next_run_time.tzinfo is not None
-
-
 def test_scheduler_disabled_in_tests_and_debug(app):
 	assert not hasattr(app, 'apscheduler')
 
 
 def test_jobs_run_inside_an_app_context(make_production_like_app, monkeypatch):
 	ran = []
-	monkeypatch.setattr('SIMS_Portal.users.utils.update_member_locations', lambda: ran.append(__import__('flask').current_app.name))
-	job = make_production_like_app().apscheduler.get_job('run_update_member_locations')
+	monkeypatch.setattr('SIMS_Portal.users.utils.process_inactive_members', lambda: ran.append(__import__('flask').current_app.name))
+	job = make_production_like_app().apscheduler.get_job('run_process_inactive_members')
 	job.func()
 	assert ran == ['SIMS_Portal']

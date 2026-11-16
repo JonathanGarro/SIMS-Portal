@@ -60,7 +60,7 @@ These all have sensible defaults or are skipped when unset, so you don't need th
 ## Running the SIMS Portal
 
 - When you’re ready to run the SIMS Portal, use `docker-compose up --build` (it can take several minutes to complete the first time you run the command but should be much faster subsequent times).
-- Scheduled jobs (surge alerts, badges, inactive members, the member-location globe) only run in production, where `FLASK_DEBUG` is unset. To regenerate the member-location globe data locally, run `flask --app run.py update-member-locations` (or `docker compose exec web flask update-member-locations`).
+- Scheduled jobs (surge alerts, badges, inactive members) only run in production, where `FLASK_DEBUG` is unset. The homepage globe and the about page map read their data live from `/data/member_locations.json` and `/data/response_history.json`, so there's nothing to regenerate.
 - If you want to access the real data in the production database, let Jonathan know. As long as you’re only doing SELECTs and no updates/deletes, it may be useful to test your queries. Access to the database is locked down to specific IP addresses. The process for granting access is [documented here](https://learn-sims.org/docs/sims-portal-documentation/administrator-backend-controls-461/#direct-database-access).
 
 ## Populating the local database
