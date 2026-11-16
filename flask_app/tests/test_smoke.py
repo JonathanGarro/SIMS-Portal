@@ -40,20 +40,12 @@ ENDPOINT_ARGS = {
 	'main.view_role_profile': {'type': 'simsco'},
 }
 
-# Known 500s, tracked in https://github.com/JonathanGarro/SIMS-Portal/issues/160.
-# Keyed by (persona, endpoint); persona '*' means all three. These are strict
-# xfails: once a bug is fixed the test XPASSes, fails, and the entry must be removed.
-ISSUE = '#160'
-KNOWN_FAILURES = {
-	('*', 'portfolios.download_portfolio'): 'missing local file raises instead of 404',
-	('member', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
-	('admin', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
-	('member', 'assignments.assignment_availability_result'): 'GET builds url_for without id',
-	('admin', 'assignments.assignment_availability_result'): 'GET builds url_for without id',
-	('admin', 'main.view_logs'): 'template uses Log.severity, which does not exist',
-	('admin', 'user.create_view'): 'Flask-Admin create form incompatible with WTForms 3.2',
-	('admin', 'nationalsociety.create_view'): 'Flask-Admin create form incompatible with WTForms 3.2',
-}
+# Known 500s that can't be fixed right away. Keyed by (persona, endpoint), where
+# persona '*' means all three; the value is '<issue ref>: <reason>', e.g.
+#   ('member', 'main.some_page'): '#123: view returns None for non-admins',
+# These are strict xfails: once a bug is fixed the test XPASSes, fails, and the
+# entry must be removed. (Empty since #160 was cleared.)
+KNOWN_FAILURES = {}
 
 
 def _build_url(rule):
@@ -83,7 +75,7 @@ def _params():
 	for persona in PERSONAS:
 		for rule in _get_routes():
 			reason = KNOWN_FAILURES.get((persona, rule.endpoint)) or KNOWN_FAILURES.get(('*', rule.endpoint))
-			marks = [pytest.mark.xfail(reason=f'{ISSUE}: {reason}', strict=True)] if reason else []
+			marks = [pytest.mark.xfail(reason=reason, strict=True)] if reason else []
 			params.append(pytest.param(persona, _build_url(rule), marks=marks, id=f'{persona}-{rule.endpoint}'))
 	return params
 
