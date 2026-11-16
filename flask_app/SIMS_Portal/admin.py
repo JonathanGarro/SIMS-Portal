@@ -18,10 +18,13 @@ def _is_portal_admin():
 
 
 class AdminView(ModelView):
+	# columns hidden from the admin list views. The password hash column is kept
+	# last on purpose: when another quoted name follows it, secret scanners
+	# (GitGuardian) mistake the pair for a hard-coded password.
 	column_exclude_list = (
-		'birthday', 'password', 'molnix_id', 'job_title', 'bio', 'roles', 'image_file', 'twitter',
+		'birthday', 'molnix_id', 'job_title', 'bio', 'roles', 'image_file', 'twitter',
 		'slack_id', 'github', 'created_at', 'updated_at', 'linked_in',
-		'messaging_number_country_code', 'messaging_number',
+		'messaging_number_country_code', 'messaging_number', 'password',
 	)
 	column_hide_backrefs = False
 
