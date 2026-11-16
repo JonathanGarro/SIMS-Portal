@@ -4,7 +4,11 @@ from dotenv import load_dotenv
 # pre-load .env itself, which is why this worked even in the wrong order - but the
 # Procfile runs gunicorn, which does not, so every config value would silently be
 # None under that path.
-load_dotenv()
+# The test suite sets SIMS_SKIP_DOTENV=1 so a developer's real .env (prod/dev DB
+# URLs, Slack/Dropbox/GitHub tokens) can never leak into a test run.
+import os
+if os.environ.get('SIMS_SKIP_DOTENV') != '1':
+	load_dotenv()
 
 from flask import Flask, render_template
 from flask_admin import Admin
@@ -22,7 +26,6 @@ from markupsafe import Markup
 from logging.handlers import RotatingFileHandler
 from SIMS_Portal.config import Config
 import logging
-import os
 from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
@@ -121,7 +124,7 @@ def create_app(config_class=Config):
 		return 'OK', 200
 	
 	# logging
-	if not app.debug:
+	if not app.debug and not app.testing:
 		if not os.path.exists('logs'):
 			os.mkdir('logs')
 		file_handler = RotatingFileHandler('logs/sims-portal.log', maxBytes=1000000, backupCount=10)
@@ -131,8 +134,9 @@ def create_app(config_class=Config):
 		app.logger.setLevel(logging.INFO)
 		app.logger.info('SIMS Portal Started Up')
 	
-	# only turn scheduled tasks on in production
-	if app.config['DEBUG'] == False:
+	# only turn scheduled tasks on in production (SCHEDULER_ENABLED defaults to
+	# `not DEBUG`; the test config turns it off explicitly)
+	if app.config.get('SCHEDULER_ENABLED', not app.config['DEBUG']):
 	
 		scheduler = APScheduler()
 		scheduler.init_app(app)
@@ -219,8 +223,9 @@ def create_app(config_class=Config):
 	admin.add_view(AdminView(Documentation, db.session))
 	
 	# run function to populate globe animation each time the app spins up
-	with app.app_context():
-		from SIMS_Portal.users.utils import update_member_locations
-		update_member_locations()
+	if app.config.get('RUN_STARTUP_TASKS', True):
+		with app.app_context():
+			from SIMS_Portal.users.utils import update_member_locations
+			update_member_locations()
 	
 	return app

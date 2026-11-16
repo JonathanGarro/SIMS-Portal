@@ -1,0 +1,12 @@
+# Ruff is enforced in CI with a deliberately small rule set for now: syntax errors
+# and undefined names, i.e. things that are crashes rather than style. Phase 2 of
+# the cleanup (#157) widens this (unused imports/variables, etc.).
+target-version = "py311"
+extend-exclude = ["migrations"]
+
+[lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[format]
+# not enforced yet; the codebase mixes tabs and spaces
+indent-style = "tab"

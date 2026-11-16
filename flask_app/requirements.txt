@@ -12,7 +12,7 @@ charset-normalizer==2.0.12
 click==8.1.8
 cryptography==46.0.5
 Deprecated==1.2.14
-dropbox==11.36.0
+dropbox==11.36.2
 email-validator==1.2.1
 Flask==3.1.2
 func_timeout==4.3.5
