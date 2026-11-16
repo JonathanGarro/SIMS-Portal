@@ -128,6 +128,16 @@ The test suite runs against its own throwaway PostgreSQL database. It never read
 
 - `tests/test_smoke.py` requests every GET route as an anonymous visitor, a member and an admin, and fails on any 500. If a route has a known bug that can't be fixed right away, list it in `KNOWN_FAILURES` with a link to its GitHub issue. Those entries are strict, so once you fix a bug the test will fail until you remove its entry. When you add a route that takes a new kind of URL argument, give it a value in `STRING_ARGS`/`INT_ARGS` (or `ENDPOINT_ARGS`). If it needs data, add that to `tests/seed.py`.
 
+## Database migrations
+
+Schema changes go through Alembic (Flask-Migrate). After changing `models.py`:
+
+- Generate a migration with `flask db migrate -m "describe the change"`, then review the file it writes to `migrations/versions/`. Autogenerate can miss renames and some type changes.
+- Apply it locally with `flask db upgrade`. Production needs the same command run against its database as part of deploying.
+- The test suite builds a database from an empty one using only the migrations, then runs `flask db check`. If you change a model without adding a migration, CI fails with the difference it found.
+
+The migration history starts at a baseline (`c02b8677c08a`) that creates the full schema. The older revisions in `migrations/archive/` are for reference only, because they could not build a database from scratch (#175).
+
 ## Managing Docker
 
 - When you make changes and want to view them, you'll need to stop the Docker container and rebuild it. 
