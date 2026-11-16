@@ -2,7 +2,7 @@ import os
 
 from flask import (
 	request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app, send_file
+	jsonify, Blueprint, current_app, send_file, send_from_directory, abort
 )
 from flask_login import (
 	login_user, logout_user, current_user, login_required
@@ -154,14 +154,20 @@ def view_portfolio(id):
 
 @portfolios.route('/portfolio/download/<int:id>')
 def download_portfolio(id):
-	product = db.session.query(Portfolio).filter(Portfolio.id==id).first()
-	path = os.path.join(current_app.root_path, 'static/assets/portfolio', product.local_file)
-	return send_file(path, as_attachment=True)
+	product = db.session.get(Portfolio, id)
+	if product is None or not product.local_file:
+		abort(404)
+	# send_from_directory refuses paths outside the folder and 404s on missing files
+	return send_from_directory(os.path.join(current_app.root_path, 'static/assets/portfolio'), product.local_file, as_attachment=True)
 
 @portfolios.route('/portfolio/delete/<int:id>')
 @login_required
 def delete_portfolio(id):
-	if current_user.is_admin == 1 or current_user.id == id:
+	product = db.session.get(Portfolio, id)
+	if product is None:
+		abort(404)
+	# was `current_user.id == id`, comparing the user's ID to the product's ID
+	if current_user.is_admin == 1 or current_user.id == product.creator_id:
 		try:
 			db.session.query(Portfolio).filter(Portfolio.id==id).update({'product_status':'Removed'})
 			db.session.commit()
