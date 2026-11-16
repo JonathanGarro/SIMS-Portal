@@ -192,7 +192,6 @@ class User(db.Model, UserMixin):
 	roles = db.Column(db.String(1000))
 	languages = db.Column(db.String(1000))
 	image_file = db.Column(db.String(200), nullable=False, default='default.png')
-	twitter = db.Column(db.String(120))
 	slack_id = db.Column(db.String(120))
 	github = db.Column(db.String(120))
 	linked_in = db.Column(db.String(120))

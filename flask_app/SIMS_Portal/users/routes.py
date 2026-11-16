@@ -378,7 +378,6 @@ def update_profile():
 		except:
 			pass
 		current_user.bio = form.bio.data
-		current_user.twitter = form.twitter.data
 		current_user.slack_id = form.slack_id.data
 		current_user.linked_in = form.linked_in.data
 		current_user.messaging_number_country_code = form.messaging_number_country_code.data
@@ -441,7 +440,6 @@ def update_profile():
 		form.bio.data = current_user.bio
 		form.slack_id.data = current_user.slack_id
 		form.github.data = current_user.github
-		form.twitter.data = current_user.twitter
 		form.linked_in.data = current_user.linked_in
 		form.messaging_number_country_code.data = current_user.messaging_number_country_code
 		form.messaging_number.data = current_user.messaging_number
@@ -490,7 +488,6 @@ def update_specified_profile(id):
 			except:
 				pass
 			this_user.bio = form.bio.data
-			this_user.twitter = form.twitter.data
 			this_user.github = form.github.data
 			this_user.linked_in = form.linked_in.data
 			this_user.slack_id = form.slack_id.data
@@ -510,7 +507,6 @@ def update_specified_profile(id):
 			form.ns_id.data = db.session.query(NationalSociety).filter(NationalSociety.ns_go_id == this_user.ns_id).first()
 			form.bio.data = this_user.bio
 			form.github.data = this_user.github
-			form.twitter.data = this_user.twitter
 			form.linked_in.data = this_user.linked_in
 			form.slack_id.data = this_user.slack_id
 		profile_picture = '/uploads/' + this_user.image_file

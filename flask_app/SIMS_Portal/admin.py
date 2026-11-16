@@ -15,7 +15,7 @@ class AdminView(ModelView):
 	# last on purpose: when another quoted name follows it, secret scanners
 	# (GitGuardian) mistake the pair for a hard-coded password.
 	column_exclude_list = (
-		'birthday', 'molnix_id', 'job_title', 'bio', 'roles', 'image_file', 'twitter',
+		'birthday', 'molnix_id', 'job_title', 'bio', 'roles', 'image_file',
 		'slack_id', 'github', 'created_at', 'updated_at', 'linked_in',
 		'messaging_number_country_code', 'messaging_number', 'password',
 	)
