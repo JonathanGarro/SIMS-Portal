@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <div class="container">
 	<div class="row my-5">
@@ -95,7 +96,7 @@
 				  </div>
 				  <div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nevermind</button>
-					<a href="/story/delete/{{story.emergency_id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+					{{ post_button('/story/delete/' ~ story.emergency_id, 'Delete', 'btn btn-danger') }}
 				  </div>
 				</div>
 			  </div>

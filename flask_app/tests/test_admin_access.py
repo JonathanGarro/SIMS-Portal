@@ -2,7 +2,6 @@
 import pytest
 
 ADMIN_ONLY_GET = [
-	'/acronym/delete/1',
 	'/admin/assign_badge',
 	'/admin/edit_skills',
 	'/admin/upload_badges',

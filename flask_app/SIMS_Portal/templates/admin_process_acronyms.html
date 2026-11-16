@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <div class="container">
     <div id="hideMe">
@@ -47,7 +48,7 @@
                             <td>{{acronym.def_eng}}</td>
                             <td><a href="mailto:{{ acronym.anonymous_submitter_email }}">{{acronym.anonymous_submitter_name}}</td>
                             <td><a href='/view_acronym/{{acronym.id}}'>View</a></td>
-                            <td class='text-end'><a href='/acronym/approve/{{acronym.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/acronym/delete/{{acronym.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
+                            <td class='text-end'>{{ post_button('/acronym/approve/' ~ acronym.id, 'Approve', 'btn btn-sm btn-success') }} {{ post_button('/acronym/delete/' ~ acronym.id, 'Reject', 'btn btn-sm btn-danger') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

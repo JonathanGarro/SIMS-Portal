@@ -781,3 +781,22 @@ def set_user_active(user_id):
 		db.session.commit()
 		
 	return active_user
+
+def assign_profile(user_id, profile_id, tier, assigned_by):
+	"""
+	Give a member a role profile at a tier, replacing that profile at any other tier.
+	Called from the admin's POST handler; it used to live in a GET route that handler
+	redirected to.
+	"""
+	from sqlalchemy import or_
+	from SIMS_Portal.models import user_profile
+	# replace this profile at any other tier, including rows with no tier at all (rows
+	# created through the User.profiles relationship have tier NULL, and `tier != x`
+	# is never true for NULL in SQL)
+	db.session.execute(user_profile.delete().where(
+		user_profile.c.user_id == user_id, user_profile.c.profile_id == profile_id,
+		or_(user_profile.c.tier != tier, user_profile.c.tier.is_(None)),
+	))
+	db.session.execute(user_profile.insert().values(user_id=user_id, profile_id=profile_id, tier=tier))
+	db.session.add(Log(message=f"[INFO] A new profile has been assigned to {user_id} by {assigned_by.id}: Profile id: {profile_id} at tier {tier}.", user_id=assigned_by.id))
+	db.session.commit()

@@ -13,6 +13,13 @@ class Config:
 	DEBUG = get_debug_flag()
 	SECRET_KEY = os.environ.get('SECRET_KEY')
 	MAX_CONTENT_LENGTH = 75 * 1000 * 1000  # upload size limit
+	# Cookies: SameSite=Lax keeps browsers from sending the session on cross-site
+	# subresource requests (<img>, iframes, fetch), a second line of defence behind
+	# POST-only actions + CSRF tokens. Secure (HTTPS-only) outside local debug runs.
+	SESSION_COOKIE_SAMESITE = 'Lax'
+	REMEMBER_COOKIE_SAMESITE = 'Lax'
+	SESSION_COOKIE_SECURE = not DEBUG
+	REMEMBER_COOKIE_SECURE = not DEBUG
 	# In debug mode (local dev, e.g. via docker-compose's FLASK_DEBUG=1), prefer
 	# DEV_SQLALCHEMY_DATABASE_URI over SQLALCHEMY_DATABASE_URI, so a dev and prod
 	# credential can both sit in the same .env without one having to be commented

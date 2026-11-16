@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% import 'partials/assets.html' as assets %}
 {% block head %}{{ assets.d3() }}{{ assets.chartjs() }}{% endblock %}
 {% block content %}
@@ -150,7 +151,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-									<a href="/emergency/closeout/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Closeout</button></a>
+									{{ post_button('/emergency/closeout/' ~ emergency_info.Emergency.id, 'Closeout', 'btn btn-danger') }}
 								</div>
 							</div>
 						</div>
@@ -168,7 +169,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-									<a href="/emergency/delete/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+									{{ post_button('/emergency/delete/' ~ emergency_info.Emergency.id, 'Delete', 'btn btn-danger') }}
 								</div>
 							</div>
 						</div>
@@ -703,9 +704,7 @@
 			</div>
 			<div>
 				{% if user_info.is_admin == True or user_is_sims_co %}
-				<button class="btn btn-danger">
-					<a href="/emergency/refresh_github/{{emergency_info.Emergency.id}}" class="text-decoration-none text-white">Refresh</a>
-				</button>
+				{{ post_button('/emergency/refresh_github/' ~ emergency_info.Emergency.id, 'Refresh', 'btn btn-danger') }}
 				{% endif %}
 			</div>
 		</div>

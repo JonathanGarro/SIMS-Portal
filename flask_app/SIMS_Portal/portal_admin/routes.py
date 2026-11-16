@@ -2,13 +2,15 @@ import re
 
 from flask import (
 	abort, request, render_template, url_for, flash, redirect,
-	Blueprint, current_app, session
+	Blueprint, current_app
 )
 from flask_login import (
 	current_user, login_required
 )
 from sqlalchemy import desc, text
 
+from SIMS_Portal.users.utils import assign_profile
+from SIMS_Portal.badges.utils import award_badge
 from SIMS_Portal import db
 from SIMS_Portal.models import (
 	User, Emergency, Skill, NationalSociety, Badge, Review, Log, Acronym, RegionalFocalPoint, Region
@@ -17,7 +19,7 @@ from SIMS_Portal.main.forms import (
 	BadgeAssignmentForm, SkillCreatorForm, NewBadgeUploadForm, ManualSlackMessage
 )
 from SIMS_Portal.main.utils import (
-	save_new_badge,
+	save_new_badge, send_error_message,
 	auto_badge_assigner_big_wig, auto_badge_assigner_maiden_voyage,
 	auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot,
 	auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades,
@@ -35,7 +37,7 @@ from SIMS_Portal.availability.utils import (
 	request_availability_updates
 )
 
-from SIMS_Portal.tasks.utils import GitHubSyncError, get_issues, refresh_all_active_githubs
+from SIMS_Portal.tasks.utils import refresh_all_active_githubs
 
 portal_admin = Blueprint('portal_admin', __name__)
 
@@ -100,7 +102,17 @@ def admin_manage_profiles():
 			flash('User already has that profile at that tier.', 'danger')
 			return redirect(url_for('portal_admin.admin_manage_profiles'))
 		else:
-			return redirect(url_for('users.assign_profiles', user_id=user_id, profile_id=profile_id, tier=tier))
+			try:
+				assign_profile(user_id, profile_id, int(tier), current_user)
+				flash('User has been assigned a new profile.', 'success')
+			except Exception as e:
+				db.session.rollback()
+				log_message = f"[ERROR] Error assigning a new profile tier to user {user_id}: {e}."
+				db.session.add(Log(message=log_message, user_id=current_user.id))
+				db.session.commit()
+				send_error_message(log_message)
+				flash('There was an error assigning the profile.', 'danger')
+			return redirect(url_for('portal_admin.admin_manage_profiles'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
@@ -118,26 +130,15 @@ def admin_assign_badge():
 		return render_template('admin_assign_badge.html', assigned_badges=assigned_badges, badge_form=badge_form)
 
 	if request.method == 'POST' and badge_form.submit_badge.data and current_user.is_admin == True:
-		if badge_form.validate_on_submit():
-			user_id = badge_form.user_name.data.id
-			badge_id = badge_form.badge_name.data.id
-			session['assigner_justify'] = badge_form.assigner_justify.data
-		else:
+		if not badge_form.validate_on_submit():
 			flash('Please fill out all badge assignment fields.', 'danger')
 			return redirect(url_for('portal_admin.admin_assign_badge'))
+		user_id = badge_form.user_name.data.id
+		badge_id = badge_form.badge_name.data.id
 
-		# get list of assigned badges, create column that concats user_id and badge_id to create unique identifier
-		badge_ids = db.session.execute(text("SELECT CAST(user_id AS text) || CAST(badge_id AS text) as unique_code FROM user_badge WHERE user_id = :user_id"), {'user_id': user_id})
-
-		list_to_check = []
-		for id in badge_ids:
-			list_to_check.append(id[0])
-
-		attempted_user_badge_code = str(user_id) + str(badge_id)
-
-		# check list against the values we're trying to save, and proceed if user doesn't already have that badge
-		if attempted_user_badge_code not in list_to_check:
-			return redirect(url_for('badges.badge_assignment', user_id=user_id, badge_id=badge_id))
+		if award_badge(user_id, badge_id, current_user, badge_form.assigner_justify.data):
+			flash('Badge successfully assigned.', 'success')
+			return redirect(url_for('portal_admin.admin_assign_badge'))
 		else:
 			flash('Cannot add badge - user already has it.', 'danger')
 			current_app.logger.warning('The system raised an error when trying to assign a badge. Badge-{} was assigned to User-{}, but was given an error that they already have it.'.format(badge_id, user_id))
@@ -339,18 +340,3 @@ def manual_refresh(func):
 	current_app.logger.info('User-{} ran the {} function manually.'.format(current_user.id, func))
 	flash('{} function ran successfully.'.format(func), 'success')
 	return redirect(url_for('portal_admin.manual_refresh_landing'))
-
-
-@portal_admin.route('/staging')
-@login_required
-def staging():
-    if current_user.is_admin == 1:
-        try:
-            get_issues('2024-bra-floods')
-        except GitHubSyncError as e:
-            flash(f'Could not sync GitHub issues. {e}', 'warning')
-        return render_template('visualization.html')
-    else:
-        current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
-        list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
-        return render_template('errors/403.html', list_of_admins=list_of_admins), 403

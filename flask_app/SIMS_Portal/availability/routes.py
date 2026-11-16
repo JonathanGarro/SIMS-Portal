@@ -115,7 +115,7 @@ def handle_availability_submission(form, disaster_id, week_offset):
     
     return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))
 
-@availability.route('/availability/result/<int:disaster_id>', methods=['GET', 'POST'])
+@availability.route('/availability/result/<int:disaster_id>', methods=['POST'])
 @login_required
 def availability_result(disaster_id):
     user_info = db.session.query(User).filter(User.id == current_user.id).first()
@@ -150,7 +150,7 @@ def availability_result(disaster_id):
     
     return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))
     
-@availability.route('/availability/result/next_week/<int:disaster_id>', methods=['GET', 'POST'])
+@availability.route('/availability/result/next_week/<int:disaster_id>', methods=['POST'])
 @login_required
 def availability_result_next_week(disaster_id):
     user_info = db.session.query(User).filter(User.id == current_user.id).first()

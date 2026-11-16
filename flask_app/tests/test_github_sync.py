@@ -88,7 +88,7 @@ def test_failures_raise_github_sync_error(app, github, setup):
 
 def test_refresh_route_reports_failure_instead_of_erroring(admin_client, github):
 	github.error = requests.ConnectionError('down')
-	response = admin_client.get('/emergency/refresh_github/1', follow_redirects=True)
+	response = admin_client.post('/emergency/refresh_github/1', follow_redirects=True)
 	assert response.status_code == 200
 	assert 'Could not sync GitHub issues' in response.get_data(as_text=True)
 
@@ -97,6 +97,6 @@ def test_refresh_route_syncs(admin_client, github):
 	db.session.query(Emergency).filter(Emergency.id == 1).update({'github_repo': 'repo-a'})
 	db.session.commit()
 	github.response = _Response(issues=[_issue(1, 'First')])
-	response = admin_client.get('/emergency/refresh_github/1', follow_redirects=True)
+	response = admin_client.post('/emergency/refresh_github/1', follow_redirects=True)
 	assert 'Sync with GitHub issues for this emergency successful' in response.get_data(as_text=True)
 	assert _tasks('repo-a') == {1: 'First'}

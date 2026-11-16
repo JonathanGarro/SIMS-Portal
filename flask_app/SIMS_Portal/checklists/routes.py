@@ -20,6 +20,15 @@ from SIMS_Portal.main.forms import (
 checklists = Blueprint('checklists', __name__)
 
 
+@checklists.before_request
+@login_required
+def require_admin():
+	# every route here is part of the admin checklist tool; several (including the
+	# delete routes) had no admin check at all
+	if current_user.is_admin != 1:
+		abort(403)
+
+
 @checklists.route('/admin/manage_checklist', methods=['GET', 'POST'])
 @login_required
 def manage_checklist():
@@ -140,7 +149,7 @@ def add_checklist():
 	return redirect(url_for('checklists.manage_checklist'))
 
 
-@checklists.route('/admin/manage_checklist/remove/<int:id>', methods=['GET', 'POST'])
+@checklists.route('/admin/manage_checklist/remove/<int:id>', methods=['POST'])
 @login_required
 def remove_checklist(id):
     from SIMS_Portal.models import Checklist, AssignmentChecklist
@@ -176,7 +185,7 @@ def edit_subtask(subtask_id):
     return render_template('edit_subtask.html', subtask=subtask, form=form)
 
 
-@checklists.route('/admin/manage_checklist/remove_subtask/<int:subtask_id>', methods=['GET', 'POST'])
+@checklists.route('/admin/manage_checklist/remove_subtask/<int:subtask_id>', methods=['POST'])
 @login_required
 def remove_subtask(subtask_id):
     from SIMS_Portal.models import SubTask, AssignmentSubTask
@@ -251,7 +260,7 @@ def edit_assigned_checklist(assignment_id):
     return render_template('edit_checklist.html', checklist=checklist, form=form)
 
 
-@checklists.route('/admin/manage_checklist/delete_assigned_checklist/<int:assignment_id>', methods=['GET', 'POST'])
+@checklists.route('/admin/manage_checklist/delete_assigned_checklist/<int:assignment_id>', methods=['POST'])
 @login_required
 def delete_assigned_checklist(assignment_id):
     from SIMS_Portal.models import AssignmentChecklist, AssignmentSubTask
@@ -282,7 +291,7 @@ def edit_assigned_subtask(assigned_subtask_id):
     return render_template('edit_subtask.html', subtask=subtask, form=form)
 
 
-@checklists.route('/admin/manage_checklist/delete_assigned_subtask/<int:assigned_subtask_id>', methods=['GET', 'POST'])
+@checklists.route('/admin/manage_checklist/delete_assigned_subtask/<int:assigned_subtask_id>', methods=['POST'])
 @login_required
 def delete_assigned_subtask(assigned_subtask_id):
     from SIMS_Portal.models import AssignmentSubTask
