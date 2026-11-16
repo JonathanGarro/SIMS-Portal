@@ -83,69 +83,6 @@ $(document).ready(function () {
 	});
 });
 
-$(document).ready(function () {
-	$('#acronyms-preview-datatable').DataTable({
-		order: [[0, 'desc']],
-		lengthChange: false,
-		searching: false,
-		columnDefs: [
-			{ targets: [0], visible: false }
-		]
-	});
-});
-
-$(document).ready(function () {
-	$('#acronyms-compact-datatable').DataTable({
-		order: [[0, 'asc']],
-		lengthChange: false,
-		paging: false,
-	});
-});
-
-$(document).ready(function () {
-	$('#acronyms-datatable').DataTable({
-		order: [[0, 'asc']],
-		lengthChange: false,
-		autoWidth: true,
-		dom: 'frtipB', 
-		buttons: [
-			{
-				extend: 'copy',
-				exportOptions: {
-					columns: [0, 2, 5, 6, 7, 8, 9]
-				}
-			},
-			{
-				extend: 'csv',
-				filename: function () {
-					// customize the csv file name
-					return "SIMS_Portal_Acronyms";
-				},
-				exportOptions: {
-					columns: [0, 2, 5, 6, 7, 8, 9] 
-				},
-				charset: 'utf-8' 
-			},
-		],
-		"columnDefs": [
-			{ "targets": [0, 5, 6, 7, 8, 9], "visible": false },
-			{ "orderable": false, "targets": "_all" } 
-		],
-		columns: [
-			null, // Include column 0 in search
-			false, // Include column 1 in search
-			false, // Exclude column 2 from search
-			false, // Exclude column 3 from search
-			false, // Exclude column 4 from search
-			false, // Include column 5 in search
-			false, // Include column 6 in search
-			false, // Include column 7 in search
-			false, // Include column 8 in search
-			false  // Include column 9 in search
-		]
-	});
-});
-
 $(document).ready(function() {
 	$('#skills-datatable').DataTable( {
 		order: [[0, 'asc']],
@@ -280,7 +217,7 @@ $(document).ready(function() {
 		var select = $('<select><option value="">Category</option></select>') // Add the default option
 			.appendTo($(column.header()).empty())
 			.on('change', function() {
-				var val = $.fn.dataTable.util.escapeRegex(
+				var val = DataTable.util.escapeRegex(
 					$(this).val()
 				);
 

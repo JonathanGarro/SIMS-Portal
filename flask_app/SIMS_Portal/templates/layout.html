@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/date-1.2.0/rg-1.3.0/sb-1.4.0/sp-2.1.0/datatables.min.css" />
+	<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-2.1.8/b-3.1.2/b-html5-3.1.2/rg-1.5.0/datatables.min.css" integrity="sha384-jKLRBORajJl5bnjDF9ozdIYZP2ciicy/1NkXA/i7bqXohmBQOZTXJ2cdPAEeLS94" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:Bold|Montserrat:Bold|Oswald">
@@ -226,11 +226,11 @@
 			</div>
 		</footer>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
 		<!-- the bundle includes Popper 2 -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-		<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/date-1.2.0/rg-1.3.0/sb-1.4.0/sp-2.1.0/datatables.min.js"></script>
-		<script src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
+		<!-- DataTables 2 with only the extensions in use: Buttons (copy/CSV) and RowGroup -->
+		<script src="https://cdn.datatables.net/v/bs5/dt-2.1.8/b-3.1.2/b-html5-3.1.2/rg-1.5.0/datatables.min.js" integrity="sha384-YsY/yxDoHLU++xtPHUj3iXAu4jV0rCsp1ya08FGtSgZ24cVUt6mIRe2a1BB2kHwn" crossorigin="anonymous"></script>
 		<script src="{{url_for('static', filename='js/scripts.js')}}"></script>
 		{% if request.path == '/' %}
 		<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" integrity="sha384-NMn9+T8zIKnDUstqb5le7vdLNSyAgSU9DtEPT/b7ks9NJQpPk4Dc9b1tI8oyzimc" crossorigin="anonymous"></script>
