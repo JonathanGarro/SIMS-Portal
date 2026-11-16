@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% import 'partials/assets.html' as assets %}
+{% block head %}{{ assets.d3() }}{% endblock %}
 {% block content %}
 <div class="container">
 	<div class="row my-5">
@@ -36,20 +38,20 @@
 
 
 				// data and color scale
-				var data = d3.map();
+				var data = new Map();
 				var colorScale = d3.scaleThreshold()
 					.domain([1, 2, 3, 4])
 					.range([color0, color1, color2, color3, color4]);
 
 				// load external data and boot
-				d3.queue()
-					.defer(d3.json, "/static/data/response-locations-base.json")
-					.defer(d3.csv, "/static/data/emergencies_viz.csv", function(d) {
+				Promise.all([
+					d3.json("/static/data/response-locations-base.json"),
+					d3.csv("/static/data/emergencies_viz.csv", function(d) {
 						data.set(d.iso3, +d.count);
 					})
-					.await(ready);
+				]).then(function([topo]) { ready(topo); });
 
-				function ready(error, topo) {
+				function ready(topo) {
 
 					// draw map
 					svg.append("g")

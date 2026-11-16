@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-  <style>
+{% extends "layout.html" %}
+{% block head %}
+<style>
     /* custom CSS to change accordion header color for language section */
     #acronymForm .accordion-button {
       background-color: lightgrey !important;
     }
   </style>
-
-  {% extends "layout.html" %}
+{% endblock %}
   {% block content %}
   <div class="container mb-5">
     <div id="hideMe">

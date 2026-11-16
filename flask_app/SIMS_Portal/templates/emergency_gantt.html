@@ -1,7 +1,6 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-
 {% extends "layout.html" %}
+{% import 'partials/assets.html' as assets %}
+{% block head %}{{ assets.chartjs() }}{% endblock %}
 {% block content %}
 <div class='container'>
 	<h2 class='mt-5 Montserrat'>{{emergency_info.emergency_name}} Coordinators and Deployments</h2>

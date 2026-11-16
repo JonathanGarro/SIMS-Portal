@@ -728,3 +728,8 @@ input[type="checkbox"] {
 .custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
   background-color: #C8FFC8; 
 }
+/* admin sidebar icons (Bootstrap Icons; sized to match the Feather SVGs they replaced) */
+.admin-nav .bi {
+	font-size: 1.25rem;
+	vertical-align: -0.2em;
+}

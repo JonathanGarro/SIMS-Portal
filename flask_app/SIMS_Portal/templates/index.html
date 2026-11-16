@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% import 'partials/assets.html' as assets %}
+{% block head %}{{ assets.d3() }}{{ assets.topojson() }}{% endblock %}
 {% block content %}
 <section class="position-relative overflow-hidden">
 	<div class="container pt-lg-2">
@@ -16,8 +18,6 @@
 			<div class='col'>
 				<div class='mt-6 d-none d-lg-block'>
 					<svg viewBox="0 120 650 650" preserveAspectRatio="none"></svg>
-					<script src="https://d3js.org/d3.v4.min.js"></script>
-					<script src="https://d3js.org/topojson.v1.min.js"></script>
 					<script>
 						const width = 750;
 						const height = 750;
@@ -39,10 +39,10 @@
 						enableRotation();
 
 						function drawGlobe() {
-							d3.queue()
-								.defer(d3.json, '/static/data/world-110m.json')
-								.defer(d3.json, '/static/data/locations.json')
-								.await((error, worldData, locationData) => {
+							Promise.all([
+								d3.json('/static/data/world-110m.json'),
+								d3.json('/static/data/locations.json')
+							]).then(([worldData, locationData]) => {
 									svg.selectAll('.segment')
 										.data(topojson.feature(worldData, worldData.objects.countries).features)
 										.enter().append('path')

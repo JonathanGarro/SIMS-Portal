@@ -1,0 +1,28 @@
+{# Admin sidebar used by every custom admin page. The current page is shown as plain
+   text with .active-link instead of a link. #}
+{% set admin_nav_items = [
+	('/admin/manage_profiles', 'bi-person', 'Manage Profiles'),
+	('/admin/assign_badge', 'bi-award', 'Assign Badges'),
+	('/admin/upload_badges', 'bi-upload', 'Upload Badges'),
+	('/admin/approve_members', 'bi-hand-thumbs-up', 'Approve Members'),
+	('/admin/process_reviews', 'bi-book', 'Open Reviews'),
+	('/admin/edit_skills', 'bi-list-ul', 'Skills List'),
+	('/admin/process_acronyms', 'bi-pen', 'Process Acronyms'),
+	('/admin/assign_regional_focal_point', 'bi-globe', 'Focal Points'),
+	('/admin/view_logs', 'bi-activity', 'Activity Logs'),
+	('/admin/send_slack_message', 'bi-slack', 'Slack Message'),
+	('/admin/manage_checklist', 'bi-check2-square', 'Checklists'),
+	('/manual_refresh', 'bi-arrow-counterclockwise', 'Manual Refresh'),
+	('/admin', 'bi-gear', 'Admin Backend'),
+] %}
+<ul class="list-group border-0 admin-nav">
+	{% for href, icon, label in admin_nav_items %}
+	<li class="list-group-item d-flex justify-content-between align-items-center">
+		{% if request.path == href %}
+		<div class="text-secondary active-link"><i class="bi {{ icon }} me-3" aria-hidden="true"></i>{{ label }}</div>
+		{% else %}
+		<a href="{{ href }}" class="text-secondary"><i class="bi {{ icon }} me-3" aria-hidden="true"></i>{{ label }}</a>
+		{% endif %}
+	</li>
+	{% endfor %}
+</ul>

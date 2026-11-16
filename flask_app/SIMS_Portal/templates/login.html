@@ -1,4 +1,6 @@
-	<!-- Random image picker for login page -->
+{% extends "layout.html" %}
+{% block head %}
+<!-- Random image picker for login page -->
 <script type="text/javascript">
 	ImageArray = new Array();
 	ImageArray[0] = 'login-afg-assess.jpg';
@@ -13,8 +15,7 @@ function getRandomImage() {
 	document.getElementById("randImage").innerHTML = ('<img src="' + 'static/assets/img/' + img + '" class="img-fluid rounded ">')
 }
 </script>
-
-{% extends "layout.html" %}
+{% endblock %}
 {% block content %}
 <div class="container mt-4">
 	<div id="hideMe">
