@@ -33,162 +33,74 @@
 
 <!-- the login page picks a random background image on load -->
 <body class="d-flex flex-column min-vh-100"{% if request.path == '/login' %} onload="getRandomImage()"{% endif %}>
+{%- macro icon_link(href, icon, label, title, current) -%}
+<div class="nav-item nav-icon px-2">
+	{% if current %}
+	<span class="nav-link text-light Montserrat image-with-underline" aria-current="page"><img src="{{ url_for('static', filename='assets/img/' ~ icon) }}" alt="" data-bs-toggle="tooltip" data-bs-placement="auto" title="{{ title }}"><span class="d-lg-none ms-2">{{ label }}</span></span>
+	{% else %}
+	<a class="nav-link text-light Montserrat" href="{{ href }}"><img src="{{ url_for('static', filename='assets/img/' ~ icon) }}" alt="" data-bs-toggle="tooltip" data-bs-placement="auto" title="{{ title }}"><span class="d-lg-none ms-2">{{ label }}</span></a>
+	{% endif %}
+</div>
+{%- endmacro -%}
+
 		<header>
-			<nav id="navbar_top" class="navbar navbar-expand-md navbar-dark bg-danger navbar-static-top py-3">
+			{#- One navigation for every screen size. From lg up the offcanvas below renders
+			    inline in the top bar (Bootstrap's responsive offcanvas navbar) and the
+			    section links sit in the second bar; below lg a single hamburger opens a
+			    side menu with everything (it used to be two stacked hamburgers). #}
+			<nav id="navbar_top" class="navbar navbar-expand-lg navbar-dark bg-danger navbar-static-top py-3">
 				<div class="container">
-					<img src='/static/assets/img/SIMS-Logo-Dark.png' height='50px'>&nbsp &nbsp
+					<img src='/static/assets/img/SIMS-Logo-Dark.png' height='50px' alt="SIMS logo">&nbsp &nbsp
 					{% if current_user.is_authenticated %}
-					<a class="" href="/dashboard" style="font-family: 'Montserrat'; font-size: 20px; text-decoration: none; color: white;">SIMS Portal </a>
+					<a class="portal-brand" href="/dashboard">SIMS Portal </a>
 					{% else %}
-					<a class="navbar-brand" href="/" style="font-family: 'Montserrat';">Surge Information Management Support</a>
+					<a class="navbar-brand Montserrat" href="/">Surge Information Management Support</a>
 					{% endif %}
-					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav">
+					<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteNav" aria-controls="siteNav" aria-label="Open menu">
 						<span class="navbar-toggler-icon"></span>
 					</button>
-					<div class="collapse navbar-collapse" id="main_nav">
-						<div class="navbar-nav ms-auto">
+					<div class="offcanvas offcanvas-end text-bg-danger" tabindex="-1" id="siteNav" aria-labelledby="siteNavLabel">
+						<div class="offcanvas-header">
+							<h5 class="offcanvas-title Montserrat" id="siteNavLabel">Menu</h5>
+							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close menu"></button>
+						</div>
+						<div class="offcanvas-body">
 							{% if current_user.is_authenticated %}
-
-							{% if current_user.is_admin == 1 %}
-							{% if '/admin' in request.path %}
-							<div class="nav-item nav-icon px-2">
-								<span class="nav-link text-light image-with-underline"><img src="{{ url_for('static', filename='assets/img/admin.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Viewing Admin Portal"></span>
+							{# section links: in this menu below lg only (the second bar shows them from lg up) #}
+							<ul class="navbar-nav d-lg-none mb-3 pb-3 border-bottom border-light border-opacity-50">
+								{% with nav_mode = 'menu' %}{% include 'partials/main_nav_items.html' %}{% endwith %}
+							</ul>
+							<div class="navbar-nav ms-auto">
+								{% if current_user.is_admin == 1 %}
+								{{ icon_link('/admin/manage_profiles', 'admin.svg', 'Admin', 'Viewing Admin Portal' if '/admin' in request.path else 'Admin Portal', '/admin' in request.path) }}
+								{% endif %}
+								{{ icon_link('/dashboard', 'dashboard.svg', 'Dashboard', 'Currently Viewing: Dashboard' if request.path == '/dashboard' else 'Dashboard', request.path == '/dashboard') }}
+								{{ icon_link('/profile', 'user.svg', 'Profile', 'Editing Your Profile' if '/profile_edit' in request.path else ('Viewing Your Profile' if request.path == '/profile' else 'View and Edit Your Profile'), request.path == '/profile' or '/profile_edit' in request.path) }}
+								{{ icon_link('/logout', 'log-out.svg', 'Logout', 'Logout', false) }}
 							</div>
 							{% else %}
-							<div class="nav-item nav-icon px-2">
-								<a class="nav-link text-light" href="/admin/manage_profiles" style="font-family: 'Montserrat';"><img src="{{ url_for('static', filename='assets/img/admin.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Admin Portal"></a>
+							<div class="navbar-nav ms-auto">
+								{% for match, label in [('/about', 'About'), ('/portfolio', 'Portfolio'), ('/members', 'Members'), ('/login', 'Login')] %}
+								<div class="nav-item px-2">
+									<a class="nav-link text-light Montserrat{% if match in request.path %} nav-active{% endif %}" href="{{ match }}"{% if match in request.path %} aria-current="page"{% endif %}>{{ label }}</a>
+								</div>
+								{% endfor %}
 							</div>
-							{% endif %}
-							{% endif %}
-
-							{% if request.path == '/dashboard' %}
-							<div class="nav-item nav-icon px-2">
-								<span class="nav-link text-light image-with-underline"><img src="{{ url_for('static', filename='assets/img/dashboard.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Currently Viewing: Dashboard"></span>
-							</div>
-							{% else %}
-							<div class="nav-item nav-icon px-2">
-								<a class="nav-link text-light" href="/dashboard" style="font-family: 'Montserrat';"><img src="{{ url_for('static', filename='assets/img/dashboard.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Dashboard"></a>
-							</div>
-							{% endif %}
-
-							{% if '/profile_edit' in request.path %}
-							<div class="nav-item nav-icon px-2">
-								<a class="nav-link image-with-underline" href="/profile" style="font-family: 'Montserrat';"><img src="{{ url_for('static', filename='assets/img/user.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Editing Your Profile"></a>
-							</div>
-							{% elif request.path == '/profile' %}
-							<div class="nav-item nav-icon image-with-underline px-2">
-								<a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src="{{ url_for('static', filename='assets/img/user.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Viewing Your Profile"></a>
-							</div>
-							{% else %}
-							<div class="nav-item nav-icon px-2">
-								<a class="nav-link" href="/profile" style="font-family: 'Montserrat';"><img src="{{ url_for('static', filename='assets/img/user.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="View and Edit Your Profile"></a>
-							</div>
-							{% endif %}
-
-							<div class="nav-item nav-icon ps-2">
-								<a class="nav-link Montserrat text-light" href="/logout"><img src="{{ url_for('static', filename='assets/img/log-out.svg') }}" data-bs-toggle="tooltip" data-bs-placement="auto" title="Logout"></a>
-							</div>
-
-							{% else %}
-
-							{% if '/about' in request.path %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/about" style="text-decoration: underline; text-decoration-thickness: 3px;">About</a>
-							</div>
-							{% else %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/about">About</a>
-							</div>
-							{% endif %}
-
-							{% if '/portfolio' in request.path %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/portfolio" style="text-decoration: underline; text-decoration-thickness: 3px;">Portfolio</a>
-							</div>
-							{% else %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/portfolio">Portfolio</a>
-							</div>
-							{% endif %}
-
-							{% if '/members' in request.path %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/members" style="text-decoration: underline; text-decoration-thickness: 3px;">Members</a>
-							</div>
-							{% else %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/members">Members</a>
-							</div>
-							{% endif %}
-
-							{% if '/login' in request.path %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/login" style="text-decoration: underline; text-decoration-thickness: 3px;">Login</a>
-							</div>
-							{% else %}
-							<div class="nav-item px-2">
-								<a class="nav-link text-light Montserrat" href="/login">Login</a>
-							</div>
-							{% endif %}
-
 							{% endif %}
 						</div>
 					</div>
+				</div>
 			</nav>
 			{% if current_user.is_authenticated %}
-			{% if '/national_societies/' in request.path %}
-			<nav id="navbar_top_login" class="navbar navbar-expand-lg box-shadow shadow-sm navbar-dark sticky-top">
-				{% else %}
-				<nav id="navbar_top_login" class="navbar navbar-expand-lg box-shadow shadow-sm navbar-dark sticky-top mb-2">
-					{% endif %}
-					<div class="container">
-						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav_login">
-							<span class="navbar-toggler-icon"></span>
-						</button>
-						<div class="collapse navbar-collapse" id="main_nav_login">
-							<ul class="navbar-nav ms-auto">
-								<li class="nav-item-bottom px-2">
-									<div class="dropdown" style="margin-top: 1px;">
-										<button class="btn text-light dropdown-toggle" type="button" id="nsDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-											National Societies
-										</button>
-										<div class="dropdown-menu" aria-labelledby="nsDropdownMenuButton">
-											{% for ns in ns_list %}
-											<a class="dropdown-item" href="/national_societies/{{ ns[0] }}">{{ ns[2] }}</a>
-											{% endfor %}
-										</div>
-									</div>
-								</li>
-								{% if '/about' in request.path %}
-								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">About</button></li>
-								{% else %}
-								<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="/about">About</a></li>
-								{% endif %}
-								{% if '/emergencies/all' in request.path %}
-								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Emergencies</button></li>
-								{% else %}
-								<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('emergencies.view_all_emergencies')}}">Emergencies</a></li>
-								{% endif %}
-								{% if '/members/all' in request.path %}
-								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Members</button></li>
-								{% else %}
-								<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('users.members_all')}}">Members</a></li>
-								{% endif %}
-								{% if '/all_products' in request.path %}
-								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Portfolio</button></li>
-								{% else %}
-								<li class="nav-item-bottom px-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('portfolios.all_products')}}">Portfolio</a></li>
-								{% endif %}
-								{% if '/documentation' in request.path %}
-								<li class="nav-item-bottom px-2 Montserrat"><button type="button" class="btn btn-light">Documentation</button></li>
-								{% else %}
-								<li class="nav-item-bottom ps-2 Montserrat"><a class="nav-link text-light" href="{{ url_for('portfolios.view_documentation')}}">Documentation</a></li>
-								{% endif %}
-							</ul>
-						</div>
-					</div>
-				</nav>
-				{% endif %}
+			{# desktop only; on smaller screens these links are in the menu above #}
+			<nav id="navbar_top_login" class="navbar navbar-expand-lg box-shadow shadow-sm navbar-dark sticky-top d-none d-lg-flex{% if '/national_societies/' not in request.path %} mb-2{% endif %}">
+				<div class="container">
+					<ul class="navbar-nav ms-auto">
+						{% with nav_mode = 'bar' %}{% include 'partials/main_nav_items.html' %}{% endwith %}
+					</ul>
+				</div>
+			</nav>
+			{% endif %}
 		</header>
 
 		<main class="flex-grow-1">

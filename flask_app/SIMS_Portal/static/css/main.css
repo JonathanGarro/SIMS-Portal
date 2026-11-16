@@ -360,7 +360,7 @@ p {
 	left: 0;
 	width: 100%;
 	height: 3px; 
-	border-bottom: 3px solid black; 
+	border-bottom: 3px solid white; 
 }
 
 .info { 
@@ -403,7 +403,9 @@ p {
 	font-size: 16px;
 }
 
-.nav-icon {
+/* the nav icons are black SVGs; invert just the image (inverting the whole item would
+   also turn the text labels shown in the mobile menu black) */
+.nav-icon img {
 	filter: invert(100%);
 }
 
@@ -756,4 +758,28 @@ div.dt-container .dt-layout-table > div {
 /* sticky admin sidebar card */
 .admin-sidebar {
 	top: 15px;
+}
+
+/* --- navigation (layout.html) --- */
+.portal-brand {
+	font-family: 'Montserrat';
+	font-size: 20px;
+	text-decoration: none;
+	color: white;
+}
+
+/* the current page's link, in the logged-out top bar and the mobile menu */
+.nav-link.nav-active {
+	text-decoration: underline;
+	text-decoration-thickness: 3px;
+}
+
+.ns-dropdown {
+	margin-top: 1px;
+}
+
+/* the national society list is long; keep it scrollable inside the mobile menu */
+.offcanvas .ns-dropdown-menu {
+	max-height: 50vh;
+	overflow-y: auto;
 }
