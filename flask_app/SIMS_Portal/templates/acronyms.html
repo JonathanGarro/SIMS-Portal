@@ -87,18 +87,18 @@
                                         </div>
                                         <div class="modal-body p-5">
                                             <div class="d-flex justify-content-between mt-4">
-                                                <div id="english" style="flex: 1; padding-right: 20px">
+                                                <div id="english" class="acronym-language-column">
                                                     <h2 class="text-danger fw-bold custom-negative-margin">English</h2><br>
                                                     <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_eng}}</h3>
                                                 </div>
                                                 {% if acronym.acronym_esp != None %}
-                                                <div id="spanish" style="flex: 1; padding-right: 20px">
+                                                <div id="spanish" class="acronym-language-column">
                                                     <h2 class="text-danger fw-bold custom-negative-margin">Español</h2><br>
                                                     <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_esp}}</h3>
                                                 </div>
                                                 {% endif %}
                                                 {% if acronym.acronym_fra != None %}
-                                                <div id="french" style="flex: 1; padding-right: 20px">
+                                                <div id="french" class="acronym-language-column">
                                                     <h2 class="text-danger fw-bold custom-negative-margin">Française</h2><br>
                                                     <h3 class="text-dark Montserrat mb-5" id="acronymEng">{{acronym.acronym_fra}}</h3>
                                                 </div>
@@ -107,18 +107,18 @@
                         
                                             <hr class="mb-5">
                                             <div class="d-flex justify-content-between mt-4">
-                                                <div id="english_def" style="flex: 1; padding-right: 20px">
+                                                <div id="english_def" class="acronym-language-column">
                                                     <h5 class="text-danger fw-bold custom-negative-margin">Definition</h5><br>
                                                     <p class="text-dark mb-5" id="acronymEng">{{acronym.def_eng}}</p>
                                                 </div>
                                                 {% if acronym.def_esp != None %}
-                                                <div id="spanish_def" style="flex: 1; padding-right: 20px">
+                                                <div id="spanish_def" class="acronym-language-column">
                                                     <h5 class="text-danger fw-bold custom-negative-margin">Definición</h5><br>
                                                     <p class="text-dark mb-5" id="acronymEng">{{acronym.def_esp}}</p>
                                                 </div>
                                                 {% endif %}
                                                 {% if acronym.def_fra != None %}
-                                                <div id="french_def" style="flex: 1; padding-right: 20px">
+                                                <div id="french_def" class="acronym-language-column">
                                                     <h5 class="text-danger fw-bold custom-negative-margin">Définition</h5><br>
                                                     <p class="text-dark mb-5" id="acronymEng">{{acronym.def_fra}}</p>
                                                 </div>
@@ -130,19 +130,19 @@
                                             {% endif %}
                                             <div class="d-flex justify-content-between mt-4">
                                                 {% if acronym.expl_eng %}
-                                                <div id="english_def" style="flex: 1; padding-right: 20px">
+                                                <div id="english_def" class="acronym-language-column">
                                                     <h5 class="text-danger fw-bold custom-negative-margin">Explanation</h5><br>
                                                     <p class="text-dark mb-5" id="acronymEng">{{acronym.expl_eng}}</p>
                                                 </div>
                                                 {% endif %}
                                                 {% if acronym.expl_esp != None %}
-                                                <div id="spanish_def" style="flex: 1; padding-right: 20px">
+                                                <div id="spanish_def" class="acronym-language-column">
                                                     <h5 class="text-danger fw-bold custom-negative-margin">Explicación</h5><br>
                                                     <p class="text-dark mb-5" id="acronymEng">{{acronym.expl_esp}}</p>
                                                 </div>
                                                 {% endif %}
                                                 {% if acronym.expl_fra != None %}
-                                                <div id="french_def" style="flex: 1; padding-right: 20px">
+                                                <div id="french_def" class="acronym-language-column">
                                                     <h5 class="text-danger fw-bold custom-negative-margin">Explication</h5><br>
                                                     <p class="text-dark mb-5" id="acronymEng">{{acronym.expl_fra}}</p>
                                                 </div>

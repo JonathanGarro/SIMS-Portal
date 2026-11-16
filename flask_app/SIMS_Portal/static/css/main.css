@@ -741,3 +741,19 @@ div.dt-container .dt-layout-table > div {
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
 }
+
+/* role profile competency tables: the competency name column (was an inline style on 88 cells) */
+.competency-name {
+	width: 40%;
+}
+
+/* acronym list/search: one column per language */
+.acronym-language-column {
+	flex: 1;
+	padding-right: 20px;
+}
+
+/* sticky admin sidebar card */
+.admin-sidebar {
+	top: 15px;
+}
