@@ -112,23 +112,23 @@
 				<h5 class='Montserrat sims-blue'>Automatic Badge Assigners</h5>
 				<div class='d-flex flex-wrap'>
 					{% for badge in sorted_badge_refresh_list %}
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func=badge) }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>{{badge}}</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func=badge) }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>{{badge}}</button></form></div>
 					{% endfor %}
 				</div>
 			</div>
 			<div class='row'>
 				<h5 class='Montserrat sims-blue'>Maintenance Tasks</h5>
 				<div class='d-flex flex-wrap'>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='refresh_surge_alerts_latest') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Refresh Surge Alerts</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='refresh_surge_alerts') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Full Surge Alert Status Backfill</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='refresh_open_alert_statuses') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Re-check Open Surge Alert Statuses</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='request_availability_updates') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Request Availability Updates</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='update_active_response_locations') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Active Disasters Map</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='update_response_locations') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Response History Map</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='update_member_locations') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Member Locations Map</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='bulk_slack_photo_update') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Missing Avatars</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='alert_inactive_members') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Alert Inactive Members</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('main.manual_refresh', func='refresh_all_active_githubs') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Refresh GitHub Issues for Active Emergencies</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_surge_alerts_latest') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Refresh Surge Alerts</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_surge_alerts') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Full Surge Alert Status Backfill</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_open_alert_statuses') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Re-check Open Surge Alert Statuses</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='request_availability_updates') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Request Availability Updates</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='update_active_response_locations') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Active Disasters Map</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='update_response_locations') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Response History Map</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='update_member_locations') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Member Locations Map</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='bulk_slack_photo_update') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Missing Avatars</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='alert_inactive_members') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Alert Inactive Members</button></form></div>
+					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_all_active_githubs') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Refresh GitHub Issues for Active Emergencies</button></form></div>
 				</div>
 			</div>
 			</div>

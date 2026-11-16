@@ -129,7 +129,7 @@
                     <p id="sidebar-guidance">The checklist is a collection of tasks that need to be completed. Please provide a clear and concise description of each task.</p>
 
                     <div class="col">
-                        <form action="{{ url_for('main.add_checklist') }}" method="POST" class="mb-4">
+                        <form action="{{ url_for('checklists.add_checklist') }}" method="POST" class="mb-4">
                             {{ new_checklist_form.hidden_tag() }}
                             <div class="row g-3">
                                 <div class="col-md-4">
@@ -166,8 +166,8 @@
                                         <p class="mb-0 text-muted small">{{ checklist.task_description }}</p>
                                     </div>
                                     <div class="d-flex gap-2 align-items-start">
-                                        <a href="{{ url_for('main.edit_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                                        <a href="{{ url_for('main.remove_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                        <a href="{{ url_for('checklists.edit_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                        <a href="{{ url_for('checklists.remove_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -188,8 +188,8 @@
                                                 <div class="small text-muted">{{ subtask.description }}</div>
                                             </div>
                                             <div class="d-flex gap-2">
-                                                <a href="{{ url_for('main.edit_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                                <a href="{{ url_for('main.remove_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                                <a href="{{ url_for('checklists.edit_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                                <a href="{{ url_for('checklists.remove_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
                                             </div>
                                         </div>
                                         {% else %}
@@ -198,7 +198,7 @@
                                     </div>
 
                                     <!-- Add Sub-Task Form (keeps same fields and errors) -->
-                                    <form action="{{ url_for('main.add_subtask', checklist_id=checklist.id) }}" method="POST" class="row g-2 align-items-center">
+                                    <form action="{{ url_for('checklists.add_subtask', checklist_id=checklist.id) }}" method="POST" class="row g-2 align-items-center">
                                         {{ subtask_forms[checklist.id].hidden_tag() }}
                                         <div class="col-md-4">
                                             {{ subtask_forms[checklist.id].name(class_="form-control", placeholder="Sub-Task Name") }}
@@ -240,7 +240,7 @@
 
                     <!-- Emergency Selection Form -->
                     <div class="mb-3">
-                        <form id="emergency-select-form" method="get" action="{{ url_for('main.update_emergency_checklist') }}">
+                        <form id="emergency-select-form" method="get" action="{{ url_for('checklists.update_emergency_checklist') }}">
                             {{ assign_form.emergency_id.label(class="form-label") }}
                             <select name="emergency_id" class="form-select" onchange="document.getElementById('emergency-select-form').submit();">
                                 <option value="">-- Select Emergency --</option>
@@ -255,7 +255,7 @@
 
                     <!-- Emergency Checklist Form: only show when an emergency is selected -->
                     {% if assign_form.emergency_id.data %}
-                    <form id="emergency-checklist-form" action="{{ url_for('main.update_emergency_checklist') }}" method="POST">
+                    <form id="emergency-checklist-form" action="{{ url_for('checklists.update_emergency_checklist') }}" method="POST">
                         {{ assign_form.hidden_tag() }}
                         <input type="hidden" name="emergency_id" value="{{ assign_form.emergency_id.data }}">
                         <div class="mb-3">

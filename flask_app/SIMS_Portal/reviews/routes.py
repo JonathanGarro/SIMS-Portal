@@ -70,7 +70,7 @@ def process_op_review(id):
 		db.session.query(Review).filter(Review.id == id).update({'follow_up':follow_up, 'status':'Processed'})
 		db.session.commit()
 		flash('Review record successfully processed.', 'success')
-		return redirect(url_for('main.admin_process_reviews'))
+		return redirect(url_for('portal_admin.admin_process_reviews'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404

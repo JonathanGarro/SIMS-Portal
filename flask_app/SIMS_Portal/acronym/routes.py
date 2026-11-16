@@ -329,7 +329,7 @@ def approve_acronym(id):
         db.session.query(Acronym).filter(Acronym.id == id).update({'approved_by':current_user.id})
         db.session.commit()
         flash('Acronym has been approved and is now listed for all viewers.', 'success')
-        return redirect(url_for('main.admin_process_acronyms'))
+        return redirect(url_for('portal_admin.admin_process_acronyms'))
     else:
         list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == True).all()
         return render_template('portal_admins.html', list_admins=list_admins)
@@ -377,9 +377,9 @@ def delete_acronym(id):
                 db.session.add(new_log)
                 db.session.commit()
                 
-                return redirect(url_for('main.admin_process_acronyms'))
+                return redirect(url_for('portal_admin.admin_process_acronyms'))
         
-        return redirect(url_for('main.admin_process_acronyms'))
+        return redirect(url_for('portal_admin.admin_process_acronyms'))
         
 @acronym.route('/acronym/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
