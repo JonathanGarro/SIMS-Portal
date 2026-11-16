@@ -1,0 +1,36 @@
+{# The logged-in section links: National Societies, About, Emergencies, Members,
+   Portfolio, Documentation. Rendered twice from this one list so they can't drift:
+     nav_mode == 'bar'  -> the desktop second nav bar (lg and up)
+     nav_mode == 'menu' -> the mobile offcanvas menu (below lg) #}
+{% set section_links = [
+	('/about', '/about', 'About'),
+	('/emergencies/all', url_for('emergencies.view_all_emergencies'), 'Emergencies'),
+	('/members/all', url_for('users.members_all'), 'Members'),
+	('/all_products', url_for('portfolios.all_products'), 'Portfolio'),
+	('/documentation', url_for('portfolios.view_documentation'), 'Documentation'),
+] %}
+<li class="{{ 'nav-item-bottom px-2' if nav_mode == 'bar' else 'nav-item' }}">
+	<div class="dropdown ns-dropdown">
+		<button class="btn text-light dropdown-toggle{% if nav_mode == 'menu' %} ps-0{% endif %}" type="button" id="nsDropdown-{{ nav_mode }}" data-bs-toggle="dropdown" aria-expanded="false">
+			National Societies
+		</button>
+		<div class="dropdown-menu ns-dropdown-menu" aria-labelledby="nsDropdown-{{ nav_mode }}">
+			{% for ns in ns_list %}
+			<a class="dropdown-item" href="/national_societies/{{ ns[0] }}">{{ ns[2] }}</a>
+			{% endfor %}
+		</div>
+	</div>
+</li>
+{% for match, href, label in section_links %}
+{% set active = match in request.path %}
+{% if nav_mode == 'bar' %}
+<li class="nav-item-bottom px-2 Montserrat">
+	{% if active %}<button type="button" class="btn btn-light" aria-current="page">{{ label }}</button>
+	{% else %}<a class="nav-link text-light" href="{{ href }}">{{ label }}</a>{% endif %}
+</li>
+{% else %}
+<li class="nav-item Montserrat">
+	<a class="nav-link text-light{% if active %} nav-active{% endif %}" href="{{ href }}"{% if active %} aria-current="page"{% endif %}>{{ label }}</a>
+</li>
+{% endif %}
+{% endfor %}

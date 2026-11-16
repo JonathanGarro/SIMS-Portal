@@ -205,7 +205,7 @@ def test_app_imports_without_pkg_resources():
 # Inline style="" attributes still in templates. This only goes down: put new styling
 # in static/css/main.css (or a Bootstrap utility class) and lower the number when
 # you remove one (#159).
-MAX_INLINE_STYLES = 76
+MAX_INLINE_STYLES = 64
 
 
 def test_inline_styles_do_not_increase():
