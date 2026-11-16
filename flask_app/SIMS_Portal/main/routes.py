@@ -310,13 +310,18 @@ def view_logs():
 	if current_user.is_admin == 1:
 		logs = db.session.query(Log, User).outerjoin(User, User.id == Log.user_id).order_by(desc(Log.timestamp)).limit(1000).all()
 
+		# split a leading "[ERROR]"-style tag out of each message for display, without
+		# modifying the Log objects themselves (they're attached to the session)
+		rows = []
 		for log, user in logs:
-			match = re.search(r'\[(\w+)\]', log.message)
+			message = log.message or ''
+			match = re.search(r'\[(\w+)\]', message)
+			severity = match.group(1) if match else ''
 			if match:
-				log.severity = match.group(1)
-				log.message = log.message.replace(match.group(0), '')
+				message = message.replace(match.group(0), '')
+			rows.append({'log': log, 'user': user, 'message': message, 'severity': severity})
 
-		return render_template('admin_logs.html', logs=logs)
+		return render_template('admin_logs.html', logs=rows)
 	else:
 		abort(403)
 
