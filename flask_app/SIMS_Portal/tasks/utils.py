@@ -52,7 +52,7 @@ def get_issues(repo_name):
     if not repo_name:
         raise GitHubSyncError('No GitHub repository is set for this emergency.')
     
-    ACCESS_TOKEN = os.environ.get('GITHUB_TOKEN')
+    ACCESS_TOKEN = current_app.config['GITHUB_TOKEN']
     ORGANIZATION = 'Surge-Information-Management-Support'
     REPO = repo_name
     

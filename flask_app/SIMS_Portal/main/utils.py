@@ -128,9 +128,17 @@ def get_ns_list():
 
 def heartbeats(name, url):
 	"""
-	Fires off GET requests to betterstack/logtail to serve as heartbeats for cron job monitoring
+	Fires off GET requests to betterstack/logtail to serve as heartbeats for cron job monitoring.
+	Skipped when no URL is configured (e.g. outside production).
 	"""
-	response = requests.get(url)
+	if not url:
+		current_app.logger.info("heartbeat skipped for {}: no URL configured".format(name))
+		return "Skipped"
+	try:
+		response = requests.get(url, timeout=10)
+	except requests.RequestException as e:
+		current_app.logger.error("heartbeat GET request failed for {}: {}".format(name, e))
+		return "Request failed"
 	
 	if response.status_code == 200:
 		current_app.logger.info("heartbeat GET request successfully ran for {}".format(name))
