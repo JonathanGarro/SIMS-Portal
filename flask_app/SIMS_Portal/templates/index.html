@@ -4,7 +4,7 @@
 	<div class="container pt-lg-2">
 		<div class="row flex-lg-nowrap">
 			<div class="col-lg-5 col-xl-5 text-center text-lg-start pt-5 mt-xl-4">
-				<div class="col jumbotron">
+				<div class="col p-5 mb-4 bg-light rounded-3">
 					<h3 class='pb-3 sims-blue Montserrat'>We support operations with<br><span class="text-danger typed"> </span></h3>
 					<p class="lead mt-4">{{ _('Surge Information Management Support (SIMS) is a global network of Information Management specialists who support IFRC emergency response operations by providing a variety of services and products. Key areas of technical support include geospatial analysis, web-based and static data visualization, mobile data collection, scenario planning, and much more.') }}</p>
 					<p class="lead mt-4">SIMS remote coordinators work directly with teams in-country to translate operational needs into discrete tasks, which are then assigned to specialists with the skills and experience to complete them.</p>
@@ -200,9 +200,9 @@
 	<h3 class="text-dark mt-2 Montserrat">Latest Response Stories</h3>
 	<div id="carouselStories" class="carousel slide mt-4 mb-5" data-ride="carousel">
 		<ol class="carousel-indicators">
-			<li data-target="#carouselStories" data-slide-to="0" class="active"></li>
-			<li data-target="#carouselStories" data-slide-to="1"></li>
-			<li data-target="#carouselStories" data-slide-to="2"></li>
+			<li data-bs-target="#carouselStories" data-slide-to="0" class="active"></li>
+			<li data-bs-target="#carouselStories" data-slide-to="1"></li>
+			<li data-bs-target="#carouselStories" data-slide-to="2"></li>
 		</ol>
 		<div class="carousel-inner">
 			{% for story in latest_stories %}

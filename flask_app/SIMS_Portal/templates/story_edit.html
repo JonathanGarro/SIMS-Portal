@@ -29,7 +29,7 @@
 				<div class="row">
 					<h4 class="text-danger pb-3 Montserrat">Edit Response Story for {{emergency_name[0]}}</h4>
 						<img src='/uploads/{{story.header_image}}' class='img-fluid mb-4'>
-							<div class="form-group pb-4">
+							<div class="mb-3 pb-4">
 								{{ form.header_image.label(class="form-control-label pb-2 text-danger") }}
 								{% if form.header_image.errors %}
 									{{ form.header_image(class="form-control form-control-lg is-invalid") }}
@@ -44,7 +44,7 @@
 							</div>
 
 
-						<div class="form-group pb-4">
+						<div class="mb-3 pb-4">
 							{{ form.header_caption.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.header_caption.errors %}
@@ -62,7 +62,7 @@
 				</div>
 				<div class="row">
 
-						<div class="form-group pb-4">
+						<div class="mb-3 pb-4">
 							{{ form.entry.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.entry.errors %}
@@ -81,22 +81,20 @@
 					
 				</div>
 
-				{{ form.submit(class="btn btn-success") }} <a href='#' data-toggle="modal" data-target="#confirm-delete"><div class='btn btn-outline-danger btn-outline ms-3'>Delete Story</div></a>
+				{{ form.submit(class="btn btn-success") }} <a href='#' data-bs-toggle="modal" data-bs-target="#confirm-delete"><div class='btn btn-outline-danger btn-outline ms-3'>Delete Story</div></a>
 			</form>
 			<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="deleteStory" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 				  <div class="modal-header">
 					<h5 class="modal-title" id="deleteStory">Delete this Story</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					  <span aria-hidden="true">&times;</span>
-					</button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				  </div>
 				  <div class="modal-body">
 					<span class=''>Deleted stories cannot be recovered.</span>
 				  </div>
 				  <div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nevermind</button>
 					<a href="/story/delete/{{story.emergency_id}}"><button type="button" class="btn btn-danger">Delete</button></a>
 				  </div>
 				</div>

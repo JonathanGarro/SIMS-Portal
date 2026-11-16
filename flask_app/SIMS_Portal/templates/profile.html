@@ -45,27 +45,27 @@
 				<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
 					<li class="nav-item">
 						<a href="{{ url_for('users.update_profile') }}" class="d-block">
-						  <button class="btn btn-secondary w-100 mt-2 text-left" style="text-align: left !important;">Update Profile</button>
+						  <button class="btn btn-secondary w-100 mt-2 text-start" style="text-align: left !important;">Update Profile</button>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a href="/save_work_location/{{user_info.id}}" class="d-block">
-						  <button class="btn btn-secondary w-100 mt-2 text-left" style="text-align: left !important;">Save Work Location</button>
+						  <button class="btn btn-secondary w-100 mt-2 text-start" style="text-align: left !important;">Save Work Location</button>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a href="/reset_password" class="d-block">
-						  <button class="btn btn-secondary w-100 mt-2 text-left" style="text-align: left !important;">Reset Password</button>
+						  <button class="btn btn-secondary w-100 mt-2 text-start" style="text-align: left !important;">Reset Password</button>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a href="/user/save_slack_photo/{{current_user.id}}" class="d-block">
-						  <button class="btn btn-secondary w-100 mt-2 text-left" style="text-align: left !important;">Use Slack Photo</button>
+						  <button class="btn btn-secondary w-100 mt-2 text-start" style="text-align: left !important;">Use Slack Photo</button>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a href='#' data-toggle="modal" data-target="#confirm-delete" class="d-block">
-						  <button class="btn btn-danger w-100 mt-2 text-left" style="text-align: left !important;">Delete Account</button>
+						<a href='#' data-bs-toggle="modal" data-bs-target="#confirm-delete" class="d-block">
+						  <button class="btn btn-danger w-100 mt-2 text-start" style="text-align: left !important;">Delete Account</button>
 						</a>
 					</li>
 				</ul>
@@ -83,15 +83,13 @@
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title" id="exampleModalLongTitle">Delete Your SIMS Account</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-							</button>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
 							<span class='fw-bold'>Was it something we said?</span> <br><br> Are you sure you want to delete your account? You will lose all data associated with it.
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nevermind</button>
 							<a href="/user/delete/{{current_user.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
 						</div>
 					</div>
@@ -108,7 +106,7 @@
 							</div>
 							<div class="row row-cols-xxl-3 row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-2 g-4 mt-2">
 								{% for profile in qualifying_profile_list %}
-								<img class='my-2 img-fluid' src='/static/assets/img/Profile-Badge-{{profile.image}}-sm.png' data-toggle="tooltip" data-placement="top" title="{{profile.name}}">
+								<img class='my-2 img-fluid' src='/static/assets/img/Profile-Badge-{{profile.image}}-sm.png' data-bs-toggle="tooltip" data-bs-placement="top" title="{{profile.name}}">
 								{% endfor %}
 							</div>
 						</div>

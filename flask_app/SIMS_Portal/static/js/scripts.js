@@ -3,8 +3,11 @@ window.setTimeout(function() {
 	$("#alert").fadeTo(500, 0) 
 }, 6000);
 
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
+// Bootstrap 5 tooltips are opt-in: initialise every element that asks for one
+document.addEventListener('DOMContentLoaded', function () {
+	document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+		new bootstrap.Tooltip(el);
+	});
 });
 
 window.addEventListener('DOMContentLoaded', event => {
