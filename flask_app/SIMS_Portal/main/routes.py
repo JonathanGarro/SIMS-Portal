@@ -173,7 +173,7 @@ def admin_manage_profiles():
 			return redirect(url_for('main.admin_manage_profiles'))
 
 		# get the user's existing profiles and tiers, generate unique code that concats all three elements
-		users_existing_profiles = db.session.execute(text("SELECT user_id, profile_id, tier, CONCAT(user_id, profile_id, tier) AS unique_code FROM user_profile WHERE user_id = {}".format(user_id)))
+		users_existing_profiles = db.session.execute(text("SELECT user_id, profile_id, tier, CONCAT(user_id, profile_id, tier) AS unique_code FROM user_profile WHERE user_id = :user_id"), {'user_id': user_id})
 
 		# iterate over SQL object to extract unique_code
 		list_to_check = []
@@ -208,7 +208,7 @@ def admin_assign_badge():
 			return redirect(url_for('main.admin_assign_badge'))
 
 		# get list of assigned badges, create column that concats user_id and badge_id to create unique identifier
-		badge_ids = db.session.execute(text("SELECT CAST(user_id AS text) || CAST(badge_id AS text) as unique_code FROM user_badge WHERE user_id = {}".format(user_id)))
+		badge_ids = db.session.execute(text("SELECT CAST(user_id AS text) || CAST(badge_id AS text) as unique_code FROM user_badge WHERE user_id = :user_id"), {'user_id': user_id})
 
 		list_to_check = []
 		for id in badge_ids:
@@ -413,7 +413,7 @@ def badge_assignment_sims_co(dis_id):
 
 	event_name = db.session.query(Emergency).filter(Emergency.id == dis_id).first()
 
-	assigned_badges = db.session.execute(text("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM public.user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = {} AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname".format(dis_id)))
+	assigned_badges = db.session.execute(text("SELECT u.id, u.firstname, u.lastname, string_agg(b.name, ', ') as badges FROM public.user u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id JOIN assignment a ON a.user_id = u.id JOIN emergency e ON e.id = a.emergency_id WHERE u.status = 'Active' AND e.id = :emergency_id AND a.role = 'Remote IM Support' AND a.assignment_status = 'Active' GROUP BY u.id ORDER BY u.firstname"), {'emergency_id': dis_id})
 
 	assigned_members = db.session.query(Emergency, Assignment, User).join(Assignment, Assignment.emergency_id == Emergency.id).join(User, User.id == Assignment.user_id).filter(Emergency.id == dis_id).all()
 
@@ -433,7 +433,7 @@ def badge_assignment_sims_co(dis_id):
 		session['assigner_justify'] = badge_form.assigner_justify.data
 
 		# get all badges assigned to the user which sims co is trying to assign
-		users_badges = db.session.execute(text('SELECT u.id, user_badge.user_id, user_badge.badge_id FROM public.user u JOIN user_badge ON user_badge.user_id = u.id WHERE u.id = {}'.format(user_id)))
+		users_badges = db.session.execute(text('SELECT u.id, user_badge.user_id, user_badge.badge_id FROM public.user u JOIN user_badge ON user_badge.user_id = u.id WHERE u.id = :user_id'), {'user_id': user_id})
 		users_badges_ids = []
 		for badge in users_badges:
 			users_badges_ids.append(badge.badge_id)
@@ -528,10 +528,19 @@ def dashboard():
 
 	return render_template('dashboard.html', title='Dashboard', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, count_active_IM_alerts=count_active_IM_alerts, list_active_IM_alerts=list_active_IM_alerts)
 
+# role profile slugs used in URLs; each has a matching role_profile_<slug>.html
+# template and a Profile row whose `image` column is the capitalized slug
+ROLE_PROFILE_TYPES = ('datatrans', 'geo', 'infodes', 'mobdata', 'simsco', 'webviz')
+
 @main.route('/role_profile/<type>')
 def view_role_profile(type):
+	if type not in ROLE_PROFILE_TYPES:
+		abort(404)
 	capitalized_type = type.capitalize()
-	users_with_profile = db.session.execute(text('SELECT "user".id, firstname, lastname, max(tier) as tier, image_file FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\' GROUP BY "user".id'.format(capitalized_type)))
+	users_with_profile = db.session.execute(
+		text('SELECT "user".id, firstname, lastname, max(tier) as tier, image_file FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = :image GROUP BY "user".id'),
+		{'image': capitalized_type}
+	)
 
 	users_with_profile_tier_1 = []
 	users_with_profile_tier_2 = []
@@ -547,35 +556,62 @@ def view_role_profile(type):
 		elif user.tier == 4:
 			users_with_profile_tier_4.append(user)
 
-	count_users_with_profile = db.session.execute(text('SELECT count(distinct("user".id)) as count FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = \'{}\''.format(capitalized_type)))
-	unpacked_count = [x.count for x in count_users_with_profile][0]
+	unpacked_count = db.session.execute(
+		text('SELECT count(distinct("user".id)) as count FROM "user" JOIN user_profile ON "user".id = user_profile.user_id JOIN profile ON profile.id = user_profile.profile_id WHERE image = :image'),
+		{'image': capitalized_type}
+	).scalar()
 
 	return render_template('role_profile_{}.html'.format(type), users_with_profile_tier_1=users_with_profile_tier_1, users_with_profile_tier_2=users_with_profile_tier_2, users_with_profile_tier_3=users_with_profile_tier_3, users_with_profile_tier_4=users_with_profile_tier_4, unpacked_count=unpacked_count)
+
+# Jobs an admin can trigger from /manual_refresh. Only names listed here can be run.
+MANUAL_REFRESH_BADGE_JOBS = {
+	'autobiographer': auto_badge_assigner_autobiographer,
+	'big_wig': auto_badge_assigner_big_wig,
+	'edward_tufte': auto_badge_assigner_edward_tufte,
+	'jack_of_all_trades': auto_badge_assigner_jack_of_all_trades,
+	'maiden_voyage': auto_badge_assigner_maiden_voyage,
+	'old_salt': auto_badge_assigner_old_salt,
+	'polyglot': auto_badge_assigner_polyglot,
+	'self_promoter': auto_badge_assigner_self_promoter,
+	'world_traveler': auto_badge_assigner_world_traveler,
+}
+MANUAL_REFRESH_JOBS = {
+	**MANUAL_REFRESH_BADGE_JOBS,
+	'alert_inactive_members': alert_inactive_members,
+	'bulk_slack_photo_update': bulk_slack_photo_update,
+	'refresh_all_active_githubs': refresh_all_active_githubs,
+	'refresh_open_alert_statuses': refresh_open_alert_statuses,
+	'refresh_surge_alerts': refresh_surge_alerts,
+	'refresh_surge_alerts_latest': refresh_surge_alerts_latest,
+	'request_availability_updates': request_availability_updates,
+	'update_active_response_locations': update_active_response_locations,
+	'update_member_locations': update_member_locations,
+	'update_response_locations': update_response_locations,
+}
 
 @main.route('/manual_refresh')
 @login_required
 def manual_refresh_landing():
-	badge_refresh_list = ['big_wig', 'maiden_voyage', 'self_promoter', 'polyglot', 'autobiographer', 'jack_of_all_trades','edward_tufte', 'world_traveler','old_salt']
-	sorted_badge_refresh_list = sorted(badge_refresh_list)
-	if current_user.is_admin == 1:
-		return render_template('admin_manual_refresh.html', sorted_badge_refresh_list=sorted_badge_refresh_list)
+	if current_user.is_admin != 1:
+		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
+		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+	return render_template('admin_manual_refresh.html', sorted_badge_refresh_list=sorted(MANUAL_REFRESH_BADGE_JOBS))
 
-@main.route('/manual_refresh/<func>')
+# POST-only (with the app-wide CSRF token) so a link or embedded image on another
+# site can't trigger a job in a logged-in admin's browser
+@main.route('/manual_refresh/<func>', methods=['POST'])
 @login_required
 def manual_refresh(func):
-	if current_user.is_admin == 1:
-		badge_refresh_list = ['big_wig', 'maiden_voyage', 'self_promoter', 'polyglot', 'autobiographer', 'jack_of_all_trades','edward_tufte', 'world_traveler','old_salt']
-		if func in badge_refresh_list:
-			function_constructor = 'auto_badge_assigner_' + func + '()'
-		else:
-			function_constructor = func + '()'
-		eval(function_constructor)
-		current_app.logger.info('User-{} ran the {} function manually.'.format(current_user.id, func))
-		flash('{} function ran successfully.'.format(func), 'success')
-		return redirect(url_for('main.manual_refresh_landing'))
-	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+	if current_user.is_admin != 1:
+		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
+	job = MANUAL_REFRESH_JOBS.get(func)
+	if job is None:
+		abort(404)
+	job()
+	current_app.logger.info('User-{} ran the {} function manually.'.format(current_user.id, func))
+	flash('{} function ran successfully.'.format(func), 'success')
+	return redirect(url_for('main.manual_refresh_landing'))
 
 @main.route('/get_ns_member_location_data')
 def get_ns_member_location_data():

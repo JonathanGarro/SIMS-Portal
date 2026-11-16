@@ -193,13 +193,8 @@ def get_trello_tasks(trello_board_url):
 	# translate lists to legible format
 	board_results = json.dumps(json.loads(boards_response.text), sort_keys=True, indent=4, separators=(",", ": "))
 	
-	# override incorrectly formatted booleans
-	true = True
-	false = False
-	null = ''
-	
 	# get list ID that matches name "To Do"
-	df_board_results = pd.DataFrame(eval(board_results))
+	df_board_results = pd.DataFrame(json.loads(board_results))
 	list_id = df_board_results.loc[df_board_results['name'] == 'To Do']
 	str_id = list_id['id'].to_string(index=False)
 
@@ -255,7 +250,7 @@ def emergency_availability_chart_data(dis_id):
 	current_week = datetime.today().isocalendar()[1]
 	year_week = f"{current_year}-{current_week}"
 	
-	data = db.session.execute(text("SELECT u.id, STRING_AGG(DISTINCT p.name, ', ') AS profile_names, STRING_AGG(DISTINCT a.dates, '; ') AS associated_dates FROM public.user u JOIN public.user_profile up ON up.user_id = u.id JOIN public.profile p ON up.profile_id = p.id JOIN public.availability a ON a.user_id = u.id WHERE a.timeframe = '{}' AND a.emergency_id = {} GROUP BY u.id, a.timeframe".format(str(year_week), dis_id)))
+	data = db.session.execute(text("SELECT u.id, STRING_AGG(DISTINCT p.name, ', ') AS profile_names, STRING_AGG(DISTINCT a.dates, '; ') AS associated_dates FROM public.user u JOIN public.user_profile up ON up.user_id = u.id JOIN public.profile p ON up.profile_id = p.id JOIN public.availability a ON a.user_id = u.id WHERE a.timeframe = :timeframe AND a.emergency_id = :emergency_id GROUP BY u.id, a.timeframe"), {'timeframe': str(year_week), 'emergency_id': dis_id})
 	
 	current_date = datetime.now().date()
 	start_of_week = current_date - timedelta(days=current_date.weekday())

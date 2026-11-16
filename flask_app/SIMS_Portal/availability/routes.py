@@ -1,3 +1,4 @@
+import ast
 from datetime import datetime
 
 from flask import (
@@ -37,11 +38,11 @@ def view_availability(user_id, emergency_id):
     merged_dates = []
     
     for item in this_week_dates:
-        inner_list = eval(item[0])
+        inner_list = ast.literal_eval(item[0])
         merged_dates.extend(inner_list)
         
     for item in next_week_dates:
-        inner_list = eval(item[0])
+        inner_list = ast.literal_eval(item[0])
         merged_dates.extend(inner_list)
     
     available_dates = []

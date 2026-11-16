@@ -238,7 +238,7 @@ def profile():
 	
 	profile_picture = '/uploads/' + current_user.image_file
 	
-	badges = db.session.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id={} ORDER BY name LIMIT 4'.format(current_user.id)))
+	badges = db.session.execute(text('SELECT * FROM "user" JOIN user_badge ON user_badge.user_id = "user".id JOIN badge ON badge.id = user_badge.badge_id WHERE "user".id = :user_id ORDER BY name LIMIT 4'), {'user_id': current_user.id})
 	
 	count_badges = db.session.execute(text("SELECT count(user_id) as count FROM user_badge WHERE user_id = :user_id"), {'user_id': current_user.id}).scalar()
 
