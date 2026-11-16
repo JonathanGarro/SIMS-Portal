@@ -166,3 +166,27 @@ def test_nothing_rendered_before_extends():
 		if '{% extends' in text and not text.lstrip().startswith('{% extends'):
 			offenders.append(p.name)
 	assert not offenders, offenders
+
+
+STATIC_DIR = TEMPLATES_DIR.parent / 'static'
+
+
+def test_datatables_use_v2_layout_not_legacy_dom():
+	"""The legacy `dom` option skips DataTables 2's .dt-layout-table wrapper, which the
+	responsive CSS relies on to keep wide tables from overflowing phone screens."""
+	import re
+	scripts = (STATIC_DIR / 'js' / 'scripts.js').read_text()
+	assert not re.search(r'^\s*dom\s*:', scripts, re.M)
+	assert 'div.dt-container .dt-layout-table > div' in (STATIC_DIR / 'css' / 'main.css').read_text()
+
+
+def test_no_fixed_widths_wider_than_a_phone_in_templates():
+	import re
+	offenders = []
+	for p in TEMPLATES_DIR.rglob('*.html'):
+		if p.parent.name == 'admin':
+			continue
+		for m in re.finditer(r'(?:min-)?width:\s*(\d{3,})px|\swidth=["\']?(\d{3,})', p.read_text()):
+			if int(m.group(1) or m.group(2)) > 360:
+				offenders.append(f'{p.name}: {m.group(0).strip()}')
+	assert not offenders, offenders

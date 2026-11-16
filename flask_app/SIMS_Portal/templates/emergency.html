@@ -22,7 +22,7 @@
 	{% endif %}
 
 	<div class="row my-5">
-		<div class="col col-lg-4 mb-3 min-width-custom">
+		<div class="col-12 col-lg-4 mb-3 min-width-custom">
 			<div class="card p-4 bg-dark">
 				<h5 class="text-light py-1 Montserrat">Response Operation</h5>
 				<h1 class="text-light mb-5 emergency-title">{{ emergency_info.Emergency.emergency_name}}</h1>
@@ -440,7 +440,7 @@
 				</ul>
 			</div>
 		</div>
-		<div class="col ms-4">
+		<div class="col-12 col-lg ms-lg-4">
 			{% if (pending_products|length > 0 and user_is_sims_co) or (pending_products|length > 0 and current_user.is_admin == 1) %}
 			<div class="alert alert-warning alert-dismissible fade show mb-5" role="alert">
 				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
