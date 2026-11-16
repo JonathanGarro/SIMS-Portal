@@ -144,7 +144,7 @@ def availability_result(disaster_id):
     # try sending message if user has slack ID filled in
     try:
         message = 'Hi {}, you have successfully updated your availability!'.format(user_info.firstname)
-        send_slack_dm(message, user_info.slack_id)
+        send_slack_dm(message, user_info.slack_id)  # noqa: F821 - undefined name, see #160
     except:
         pass
     
@@ -179,7 +179,7 @@ def availability_result_next_week(disaster_id):
     # try sending message if user has slack ID filled in
     try:
         message = 'Hi {}, you have successfully updated your availability!'.format(user_info.firstname)
-        send_slack_dm(message, user_info.slack_id)
+        send_slack_dm(message, user_info.slack_id)  # noqa: F821 - undefined name, see #160
     except:
         pass
     

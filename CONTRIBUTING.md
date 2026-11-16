@@ -94,6 +94,28 @@ The following steps utilize the [pg_dump](https://www.postgresql.org/docs/curren
 
 - Finally, open your browser and navigate to http://localhost:5001/ (or the port specified in your `docker-compose.yml` file). The SIMS portal should load.
 
+## Running the tests
+
+The test suite runs against its own throwaway PostgreSQL database. It never reads your `.env`, and it blocks all outbound network calls, so it can't touch the production database or post to Slack, GitHub, etc. GitHub Actions runs it, along with `ruff`, on every pull request and on every push to `main`.
+
+- Start a disposable test database (port 5433, so it won't clash with a local Postgres on 5432):
+
+	```
+	docker run -d --name sims-test-db -e POSTGRES_USER=sims -e POSTGRES_PASSWORD=sims -e POSTGRES_DB=sims_test -p 5433:5432 postgres:16-alpine
+	```
+
+- Install the dev dependencies and run the tests from the `flask_app` folder:
+
+	```
+	pip install -r requirements-dev.txt
+	pytest
+	ruff check SIMS_Portal tests
+	```
+
+- To use a different database, set `TEST_DATABASE_URL`. For safety, it must point at `localhost` and have "test" in the database name, because the suite drops and recreates every table in it.
+
+- `tests/test_smoke.py` requests every GET route as an anonymous visitor, a member and an admin, and fails on any 500. Routes with known bugs are listed in `KNOWN_FAILURES` and linked to a GitHub issue. Those entries are strict, so once you fix a bug the test will fail until you remove its entry. When you add a route that takes a new kind of URL argument, give it a value in `STRING_ARGS`/`INT_ARGS` (or `ENDPOINT_ARGS`). If it needs data, add that to `tests/seed.py`.
+
 ## Managing Docker
 
 - When you make changes and want to view them, you'll need to stop the Docker container and rebuild it. 

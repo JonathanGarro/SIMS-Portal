@@ -228,7 +228,7 @@ def generate_new_response_map():
 	header_row = ['iso3', 'count']
 	with open('SIMS_Portal/static/data/emergencies_viz.csv', 'w', newline='') as f:
 		f.write(','.join(header_row) + '\n')
-		writer = csv.writer(f)
+		writer = csv.writer(f)  # noqa: F821 - undefined name, see #160
 		for x in all_emergencies:
 			writer.writerow([x.iso3, x.count])
 

@@ -234,7 +234,7 @@ def rem_cos_search():
 	None
 	"""
 	
-	with app.app_context():
+	with app.app_context():  # noqa: F821 - undefined name, see #160
 		active_SIMS_cos = db.session.query(Assignment, User, Emergency).join(User, User.id == Assignment.user_id).join(Emergency, Emergency.id == Assignment.emergency_id).filter(Emergency.emergency_status == 'Active', Assignment.role == 'SIMS Remote Coordinator').all()
 
 def send_slack_dm(message, user):

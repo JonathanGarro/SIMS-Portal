@@ -244,7 +244,7 @@ def view_emergency(id):
 
 	try:
 		# check for trello tasks
-		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)
+		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)  # noqa: F821 - undefined name, see #160
 		count_cards = len(to_do_trello)
 	except:
 		to_do_trello = None
