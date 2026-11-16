@@ -18,7 +18,8 @@ from SIMS_Portal.portfolios.forms import PortfolioUploadForm, NewDocumentationFo
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal.main.utils import send_error_message
 from SIMS_Portal.portfolios.utils import (
-	get_full_portfolio, save_portfolio_to_dropbox, save_cover_image
+	get_full_portfolio, save_portfolio_to_dropbox, save_cover_image,
+	can_view_product, deny_product_access
 )
 
 portfolios = Blueprint('portfolios', __name__)
@@ -131,6 +132,11 @@ def new_portfolio_from_assignment(assignment_id, user_id, emergency_id):
 
 @portfolios.route('/portfolio/view/<int:id>')
 def view_portfolio(id):
+	record = db.session.get(Portfolio, id)
+	if record is None:
+		abort(404)
+	if not can_view_product(record, current_user):
+		return deny_product_access()
 	product = db.session.query(Portfolio, User, Emergency).join(User, User.id == Portfolio.creator_id).join(Emergency, Emergency.id == Portfolio.emergency_id).filter(Portfolio.id==id).first()
 	if product is not None:
 		# check if product already has collaborators assigned
@@ -147,13 +153,15 @@ def view_portfolio(id):
 			list_collaborators_user_info = None
 			return render_template('portfolio_view.html', product=product, list_collaborators_user_info=list_collaborators_user_info)
 	else:
-		return redirect('error404')
+		abort(404)
 
 @portfolios.route('/portfolio/download/<int:id>')
 def download_portfolio(id):
 	product = db.session.get(Portfolio, id)
 	if product is None or not product.local_file:
 		abort(404)
+	if not can_view_product(product, current_user):
+		return deny_product_access()
 	# send_from_directory refuses paths outside the folder and 404s on missing files
 	return send_from_directory(os.path.join(current_app.root_path, 'static/assets/portfolio'), product.local_file, as_attachment=True)
 

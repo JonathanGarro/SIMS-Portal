@@ -18,13 +18,13 @@ def test_download_unknown_product_is_404(client):
 	assert client.get('/portfolio/download/999').status_code == 404
 
 
-def test_download_missing_file_is_404(client):
-	assert client.get('/portfolio/download/1').status_code == 404  # seeded file isn't on disk
+def test_download_missing_file_is_404(member_client):
+	assert member_client.get('/portfolio/download/1').status_code == 404  # seeded file isn't on disk
 
 
-def test_download_cannot_escape_the_portfolio_folder(client):
+def test_download_cannot_escape_the_portfolio_folder(member_client):
 	_add_product(50, MEMBER_ID, local_file='../../config.py')
-	assert client.get('/portfolio/download/50').status_code == 404
+	assert member_client.get('/portfolio/download/50').status_code == 404
 
 
 def test_creator_can_delete_their_product(member_client):

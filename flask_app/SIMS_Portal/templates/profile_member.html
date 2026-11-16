@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% block head %}{% if user_info.private_profile %}<meta name="robots" content="noindex">{% endif %}{% endblock %}
 {% block content %}
 <div class="container">
 	<div id="hideMe">
@@ -174,7 +175,7 @@
 					<div class="col d-flex align-items-stretch">
 						<div class="card" id="portfolio-card" style="width: 18rem;">
 							<a href="/portfolio/view/{{product.id}}">
-							{% if 'user' in product.image_file %}
+							{% if product.image_file and 'user' in product.image_file %}
 							<img src="/uploads/{{product.image_file}}" class="card-img-top" alt="Product Image">
 							{% else %}
 							<img src="/static/assets/img/portfolio_placeholders/{{product.image_file}}" class="card-img-top" alt="Product Placeholder Icon">

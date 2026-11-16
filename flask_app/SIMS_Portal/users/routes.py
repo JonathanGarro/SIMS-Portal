@@ -1,6 +1,6 @@
 
 from flask import (
-	request, render_template, url_for, flash, redirect,
+	abort, request, render_template, url_for, flash, redirect,
 	jsonify, Blueprint, current_app, session
 )
 from flask_login import (
@@ -8,7 +8,7 @@ from flask_login import (
 )
 from sqlalchemy import or_, and_, text, func
 
-from SIMS_Portal import db, bcrypt
+from SIMS_Portal import db, bcrypt, login_manager
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Skill, Language, user_skill, Profile, user_profile, Log, user_language
 )
@@ -19,9 +19,9 @@ from SIMS_Portal.users.forms import (
 from SIMS_Portal.users.utils import (
 	save_picture, send_slack_dm,
 	check_valid_slack_ids, send_reset_slack, search_location,
-	update_robots_txt, set_user_active
+	set_user_active
 )
-from SIMS_Portal.portfolios.utils import get_full_portfolio
+from SIMS_Portal.portfolios.utils import get_full_portfolio, is_public_product
 from SIMS_Portal.main import map_data
 from SIMS_Portal.users.utils import download_profile_photo, invite_user_to_github
 from SIMS_Portal.main.utils import send_error_message
@@ -230,6 +230,11 @@ def profile():
 @users.route('/profile/view/<int:id>')
 def view_profile(id):
 	user_info = User.query.filter(User.id==id).first()
+	if user_info is None:
+		abort(404)
+	# a private profile is only for logged-in members
+	if user_info.private_profile and not current_user.is_authenticated:
+		return login_manager.unauthorized()
 	try:
 		ns_association = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.id==id).with_entities(NationalSociety.ns_name).first()[0];
 	except:
@@ -241,12 +246,10 @@ def view_profile(id):
 		
 	deployment_history_count = len(set(emergency.id for _, _, emergency in assignment_history))	
 	
-	# show full portfolio if user is logged in
-	if current_user.is_authenticated:
-		user_portfolio = get_full_portfolio(id)
-	# else show only products user has tagged as 'external'
-	else:
-		user_portfolio = get_full_portfolio(id)
+	# members see the full portfolio; anonymous visitors only approved, external products
+	user_portfolio = get_full_portfolio(id)
+	if not current_user.is_authenticated:
+		user_portfolio = [product for product in user_portfolio if is_public_product(product)]
 	
 	user_portfolio_size = len(user_portfolio)
 	
@@ -382,13 +385,9 @@ def update_profile():
 		current_user.linked_in = form.linked_in.data
 		current_user.messaging_number_country_code = form.messaging_number_country_code.data
 		current_user.messaging_number = form.messaging_number.data
+		# private profiles are hidden from anonymous visitors (view_profile) and carry a
+		# noindex tag (profile_member.html)
 		current_user.private_profile = form.private_profile.data
-		
-		# update robots.txt with user profile info if they want it to be private
-		if form.private_profile.data: 
-			update_robots_txt(current_user.id, disallow=True)
-		else:
-			update_robots_txt(current_user.id, disallow=False)
 		
 		# Check for GitHub username update before setting current_user.github
 		if form.github.data != current_user.github:

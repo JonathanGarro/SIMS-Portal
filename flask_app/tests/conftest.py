@@ -85,6 +85,15 @@ class TestConfig(Config):
 @pytest.fixture(scope='session')
 def app():
 	app = create_app(TestConfig)
+
+	# _rollback_db keeps one app context open for the whole test, and Flask reuses an
+	# open app context for test-client requests, so `g` (where Flask-Login caches the
+	# current user) would carry one request's user into the next - even across
+	# different clients. Production gets a fresh context per request; mirror that.
+	@app.before_request
+	def _forget_cached_user():
+		from flask import g
+		g.pop('_login_user', None)
 	with app.app_context():
 		db.drop_all()
 		db.create_all()
