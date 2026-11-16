@@ -120,3 +120,49 @@ def test_no_bootstrap4_data_attributes_left():
 		for m in re.finditer(r'(?<![\w-])data-(toggle|target|dismiss|placement|parent|spy|offset)=', path.read_text()):
 			offenders.append(f'{path.name}: {m.group(0)}')
 	assert not offenders, offenders
+
+
+TEMPLATES_DIR = __import__('pathlib').Path(__file__).parent.parent / 'SIMS_Portal' / 'templates'
+
+# a page that uses one of these must load it via partials/assets.html
+PAGE_LIBRARIES = {
+	'd3': (r'\bd3\.', 'assets.d3()'),
+	'topojson': (r'\btopojson\.', 'assets.topojson()'),
+	'Chart.js': (r'new Chart\(', 'assets.chartjs()'),
+	'FullCalendar': (r'FullCalendar\.', 'assets.fullcalendar()'),
+}
+
+
+@pytest.mark.parametrize('library', PAGE_LIBRARIES)
+def test_pages_load_the_libraries_they_use(library):
+	import re
+	usage, loader = PAGE_LIBRARIES[library]
+	missing = [
+		p.name for p in TEMPLATES_DIR.rglob('*.html')
+		if p.parent.name not in ('admin', 'partials') and p.name != 'layout.html'
+		and re.search(usage, p.read_text()) and loader not in p.read_text()
+	]
+	assert not missing, f'{library} used without {{{{ {loader} }}}}: {missing}'
+
+
+def test_layout_does_not_load_page_specific_libraries():
+	layout = (TEMPLATES_DIR / 'layout.html').read_text()
+	for lib in ('d3', 'chart.js', 'fullcalendar', 'moment', 'feather-icons', 'fontawesome', 'topojson'):
+		assert lib not in layout.lower(), lib
+
+
+def test_single_icon_set():
+	import re
+	offenders = [p.name for p in TEMPLATES_DIR.rglob('*.html')
+	             if p.parent.name != 'admin' and re.search(r'data-feather|\bfa-solid\b|\bfa-regular\b|\bfa fa-|feather\.replace', p.read_text())]
+	assert not offenders, offenders
+
+
+def test_nothing_rendered_before_extends():
+	"""Markup before {% extends %} is emitted ahead of <!DOCTYPE>; use {% block head %} instead."""
+	offenders = []
+	for p in TEMPLATES_DIR.rglob('*.html'):
+		text = p.read_text()
+		if '{% extends' in text and not text.lstrip().startswith('{% extends'):
+			offenders.append(p.name)
+	assert not offenders, offenders

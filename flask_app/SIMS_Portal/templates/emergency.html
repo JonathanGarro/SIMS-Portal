@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% import 'partials/assets.html' as assets %}
+{% block head %}{{ assets.d3() }}{{ assets.chartjs() }}{% endblock %}
 {% block content %}
 <div class="container">
 	<div id="hideMe">
@@ -239,13 +241,13 @@
 					<button class="btn btn-link p-0 me-2 text-secondary collapse-trigger" type="button"
 	data-bs-toggle="collapse" data-bs-target="#subtasks-{{ assignment.id }}"
 	aria-expanded="false" aria-controls="subtasks-{{ assignment.id }}">
-		<i class="fa-solid fa-chevron-right chevron-icon" aria-hidden="true"></i>
+		<i class="bi bi-chevron-right chevron-icon" aria-hidden="true"></i>
 	</button>
 					<div>
 						<strong class="parent-checklist-title text-secondary" data-bs-toggle="collapse" data-bs-target="#subtasks-{{ assignment.id }}" role="button" aria-expanded="false" aria-controls="subtasks-{{ assignment.id }}">{{ assignment.checklist_task_name }}</strong>
 						{% if assignment.checklist_task_url %}
 							<a href="{{ assignment.checklist_task_url }}" target="_blank" class="ms-2 text-secondary open-in-new-window" title="Open checklist in new window">
-								<i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i>
+								<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
 							</a>
 						{% endif %}
 						{% if assignment.checklist_task_description %}
@@ -308,21 +310,21 @@
 			var collapseTarget = document.querySelector(trigger.getAttribute('data-bs-target'));
 			// Set initial state
 			if (collapseTarget && collapseTarget.classList.contains('show')) {
-				chevron.classList.remove('fa-chevron-right');
-				chevron.classList.add('fa-chevron-down');
+				chevron.classList.remove('bi-chevron-right');
+				chevron.classList.add('bi-chevron-down');
 			} else {
-				chevron.classList.remove('fa-chevron-down');
-				chevron.classList.add('fa-chevron-right');
+				chevron.classList.remove('bi-chevron-down');
+				chevron.classList.add('bi-chevron-right');
 			}
 			// Listen for Bootstrap collapse events
 			if (collapseTarget) {
 				collapseTarget.addEventListener('show.bs.collapse', function() {
-					chevron.classList.remove('fa-chevron-right');
-					chevron.classList.add('fa-chevron-down');
+					chevron.classList.remove('bi-chevron-right');
+					chevron.classList.add('bi-chevron-down');
 				});
 				collapseTarget.addEventListener('hide.bs.collapse', function() {
-					chevron.classList.remove('fa-chevron-down');
-					chevron.classList.add('fa-chevron-right');
+					chevron.classList.remove('bi-chevron-down');
+					chevron.classList.add('bi-chevron-right');
 				});
 			}
 		});
@@ -674,9 +676,9 @@
 				<tr>
 					<td class='text-center align-middle'>
 						{% if issue.task_state == 'open' %}
-							<i data-feather="clock" style="color: green"></i>
+							<i class="bi bi-clock" aria-hidden="true" style="color: green"></i>
 						{% else %}
-							<i data-feather="check-circle" style="color: grey"></i>
+							<i class="bi bi-check-circle" aria-hidden="true" style="color: grey"></i>
 						{% endif %}
 					</td>
 					<td class='align-middle h5 Montserrat'>
@@ -696,8 +698,8 @@
 
 		<div class="d-flex justify-content-between align-items-center mt-3">
 			<div class="d-inline-flex align-items-start border border-1 p-2 pe-3">
-				<div class="me-5"><i data-feather="clock" style="color: green"></i> &nbsp; Open</div>
-				<div><i data-feather="check-circle" style="color: grey"></i> &nbsp; Closed</div>
+				<div class="me-5"><i class="bi bi-clock" aria-hidden="true" style="color: green"></i> &nbsp; Open</div>
+				<div><i class="bi bi-check-circle" aria-hidden="true" style="color: grey"></i> &nbsp; Closed</div>
 			</div>
 			<div>
 				{% if user_info.is_admin == True or user_is_sims_co %}

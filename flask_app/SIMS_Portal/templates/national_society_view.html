@@ -38,7 +38,7 @@
         <tbody>
         {% for member in ns_members %}
         <tr>
-            <td class="Montserrat" style="font-size: 18px;"><a href='/profile/view/{{member.id}}'>{% if member.status == 'Active' %}<i data-feather="check-circle" style="color: green"></i>{% else %}<i data-feather="x-circle" style="color: grey"></i>{% endif %} &nbsp {{member.firstname}} {{member.lastname}}</a></td>
+            <td class="Montserrat" style="font-size: 18px;"><a href='/profile/view/{{member.id}}'>{% if member.status == 'Active' %}<i class="bi bi-check-circle" aria-hidden="true" style="color: green"></i>{% else %}<i class="bi bi-x-circle" aria-hidden="true" style="color: grey"></i>{% endif %} &nbsp {{member.firstname}} {{member.lastname}}</a></td>
             <td class="ns-view-members-table text-center star-{{ member.geospatial if member.geospatial is not none else "0" }}">
                 {% if member.geospatial is not none %}
                     {% set stars = '★' * member.geospatial %}
@@ -93,8 +93,8 @@
         </table>
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-inline-flex align-items-start border border-1 p-2 pe-3">
-                <div class="me-5"><i data-feather="check-circle" style="color: green"></i> &nbsp; Active</div>
-                <div><i data-feather="x-circle" style="color: grey"></i> &nbsp; Inactive</div>
+                <div class="me-5"><i class="bi bi-check-circle" aria-hidden="true" style="color: green"></i> &nbsp; Active</div>
+                <div><i class="bi bi-x-circle" aria-hidden="true" style="color: grey"></i> &nbsp; Inactive</div>
             </div>
             <div class="d-inline-flex align-items-start ms-3">
                 <div class="text-end">

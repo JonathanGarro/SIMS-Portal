@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% import 'partials/assets.html' as assets %}
+{% block head %}{{ assets.fullcalendar() }}{% endblock %}
 {% block content %}
 
 <div class="container">

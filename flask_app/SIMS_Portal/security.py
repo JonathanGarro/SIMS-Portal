@@ -10,9 +10,8 @@ directive below or the browser will block it.
 CONTENT_SECURITY_POLICY = '; '.join([
 	"default-src 'self'",
 	"img-src 'self' data: https://www.google.com https://www.gstatic.com",
-	"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://d3js.org https://www.google.com "
-	"https://www.googletagmanager.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://cdn.datatables.net "
-	"https://www.gstatic.com",
+	"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.google.com "
+	"https://www.googletagmanager.com https://ajax.googleapis.com https://cdn.datatables.net https://www.gstatic.com",
 	"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.datatables.net",
 	"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net data:",
 	"connect-src 'self' https://www.google-analytics.com https://www.gstatic.com",
