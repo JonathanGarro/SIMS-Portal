@@ -1,9 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField
-from flask_sqlalchemy import SQLAlchemy
-from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from SIMS_Portal.models import Learning
+from wtforms import SubmitField, IntegerField, TextAreaField
+from wtforms.validators import DataRequired
 
 class NewAssignmentLearningForm(FlaskForm):
 	overall_score = IntegerField('Rank your overall experience (1 = Terrible, 5 = Fantastic)', validators=[DataRequired()])

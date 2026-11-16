@@ -1,27 +1,21 @@
-import ast
-import json
-import logging
-from collections import Counter
 from datetime import datetime
 
 from flask import (
 	request, render_template, url_for, flash, redirect,
 	jsonify, Blueprint, current_app
 )
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func, and_, text
-from sqlalchemy.orm import sessionmaker, aliased
+from sqlalchemy.orm import aliased
 from flask_login import (
-	login_user, logout_user, current_user, login_required
+	current_user, login_required
 )
 
 from SIMS_Portal import db
-from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety,
-	EmergencyType, Alert, Portfolio, Story,
+	EmergencyType, Portfolio, Story,
 	Learning, Review, Availability, Log, Task,
-	AssignmentChecklist, Checklist
+	AssignmentChecklist
 )
 from SIMS_Portal.emergencies.forms import (
 	NewEmergencyForm, UpdateEmergencyForm, UpdateEmergenyChecklistForm
@@ -30,7 +24,6 @@ from SIMS_Portal.emergencies.utils import (
 	update_response_locations, update_active_response_locations,
 	emergency_availability_chart_data, create_response_channel
 )
-from SIMS_Portal.assignments.utils import aggregate_availability
 from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.learnings.utils import request_learnings
 from SIMS_Portal.tasks.utils import GitHubSyncError, get_issues
@@ -242,10 +235,6 @@ def view_emergency(id):
 
 	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
 
-	# Trello was replaced by GitHub issues (the fetch has been dead since July 2024);
-	# the template's Trello tab stays hidden until it's removed in the Phase 2 cleanup
-	to_do_trello = None
-	count_cards = 0
 
 	today = datetime.today()
 	current_weekday = today.weekday()
@@ -381,8 +370,6 @@ def view_emergency(id):
 		pending_products=pending_products,
 		emergency_portfolio_size=emergency_portfolio_size,
 		existing_reviews=existing_reviews,
-		to_do_trello=to_do_trello,
-		count_cards=count_cards,
 		current_weekday=current_weekday,
 		availability_results=availability_results,
 		user_info=user_info,

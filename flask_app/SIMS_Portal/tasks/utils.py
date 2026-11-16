@@ -1,34 +1,9 @@
 from SIMS_Portal import db
-from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from sqlalchemy.orm import joinedload
-from SIMS_Portal.models import User, Task, Log, Emergency
+from SIMS_Portal.models import Task, Log, Emergency
 from datetime import datetime
-import os
 import requests
-import logging
 
-def get_repos():
-    org = "Surge-Information-Management-Support"
-    url = f"https://api.github.com/orgs/{org}/repos"
-    
-    repos = []
-    page = 1
-    
-    while True:
-        response = requests.get(url, params={'page': page, 'per_page': 100})
-        if response.status_code != 200:
-            print(f"Failed to retrieve data: {response.status_code}")
-            break
-        
-        data = response.json()
-        if not data:
-            break
-        
-        repos.extend(data)
-        page += 1
-    
-    return repos
     
 class GitHubSyncError(Exception):
     """Raised when an emergency's GitHub issues can't be fetched."""

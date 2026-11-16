@@ -2,11 +2,9 @@ from SIMS_Portal import db, login_manager
 from flask import current_app
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from datetime import datetime
-from flask_login import UserMixin, current_user
-from sqlalchemy.orm import relationship, column_property
+from flask_login import UserMixin
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import Column, ForeignKey, Integer, Table
 import requests
 
 @login_manager.user_loader
@@ -217,8 +215,6 @@ class User(db.Model, UserMixin):
 
 	created_at = db.Column(db.DateTime, server_default=func.now())
 	updated_at = db.Column(db.DateTime, onupdate=func.now())
-
-	fullname = column_property(firstname + " " + lastname)
 
 	def get_reset_token(self, expires_sec=1800):
 		s = Serializer(current_app.config['SECRET_KEY'])

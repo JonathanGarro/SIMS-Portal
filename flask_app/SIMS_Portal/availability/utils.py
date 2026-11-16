@@ -26,7 +26,7 @@ def send_slack_availability_request(disaster_id, slack_channel):
     client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
     link = current_app.config['ROOT_URL'] + '/availability/report/' + str(disaster_id)
     try:
-        result = client.chat_postMessage(
+        client.chat_postMessage(
             channel = slack_channel,
             text = 'Hello, <!channel>! In order to help the SIMS Remote Coordinator ensure sufficient coverage for this operation, it is requested that you submit your availability for support. The reporting process involves simply checking off the days when you are volunteering to be ready to work on tasks that match your skill set. <{}|Click this link to report.>'.format(link)
         )
@@ -59,7 +59,6 @@ def get_dates_current_and_next_week():
     
     today = datetime.now().date()
     current_week_start = today - timedelta(days=today.weekday())
-    next_week_start = current_week_start + timedelta(days=7)
     
     dates = []
     for i in range(14):

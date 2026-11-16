@@ -1,7 +1,7 @@
 from SIMS_Portal import db
 from SIMS_Portal.models import Assignment, Emergency
 from collections import Counter
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 
 def aggregate_availability(dis_id):
@@ -58,43 +58,3 @@ def aggregate_availability(dis_id):
 		labels.append(x['day_of_week'])
 		
 	return values, labels
-
-def get_dates_current_and_next_week():
-	"""
-	Get dates for the current and next week starting from today.
-	
-	This function calculates the dates for the current week starting from today and the entire next week.
-	It returns a zip object containing tuples of date objects and their corresponding readable string formats.
-	
-	Parameters:
-	None
-	
-	Returns:
-	zip: A zip object containing tuples of:
-		- dates (list of date): Date objects for the current and next week.
-		- readable_dates (list of str): Readable string formats of the corresponding dates.
-	
-	Side Effects:
-	None
-	
-	Raises:
-	None
-	"""
-	
-	today = datetime.now().date()
-	current_week_start = today - timedelta(days=today.weekday())
-	next_week_start = current_week_start + timedelta(days=7)
-	
-	dates = []
-	for i in range(14):
-		current_date = current_week_start + timedelta(days=i)
-		if current_date >= today:
-			dates.append(current_date)
-	
-	readable_dates = []
-	for date in dates:
-		readable_dates.append(f"{date.strftime('%A')}, {date.strftime('%B')} {date.day}")
-		
-	zip_dates = zip(dates,readable_dates)
-	
-	return zip_dates

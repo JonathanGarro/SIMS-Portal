@@ -1,7 +1,4 @@
-import logging
-from datetime import datetime, date
 
-import pytz
 from flask import (
 	request, render_template, url_for, flash, redirect,
 	jsonify, Blueprint, current_app, session
@@ -9,26 +6,18 @@ from flask import (
 from flask_login import (
 	login_user, logout_user, current_user, login_required
 )
-from flask_mail import Message
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, and_, Integer, text, func
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import aliased
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy import or_, and_, text, func
 
 from SIMS_Portal import db, bcrypt
 from SIMS_Portal.models import (
-	User, Assignment, Emergency, NationalSociety, Portfolio,
-	EmergencyType, Skill, Language, user_skill, user_language,
-	Badge, Alert, user_badge, Profile, user_profile, Log, user_language
+	User, Assignment, Emergency, NationalSociety, Skill, Language, user_skill, Profile, user_profile, Log, user_language
 )
 from SIMS_Portal.users.forms import (
 	RegistrationForm, LoginForm, UpdateAccountForm,
-	RequestResetForm, ResetPasswordForm, AssignProfileTypesForm,
-	UserLocationForm
+	RequestResetForm, ResetPasswordForm, UserLocationForm
 )
 from SIMS_Portal.users.utils import (
-	save_picture, new_user_slack_alert, send_slack_dm,
+	save_picture, send_slack_dm,
 	check_valid_slack_ids, send_reset_slack, search_location,
 	update_member_locations, update_robots_txt, set_user_active
 )
@@ -69,9 +58,6 @@ def inactive_members():
 @users.route('/members/all') 
 @login_required
 def members_all(): 
-	language_alias = aliased(Language)
-	skill_alias = aliased(Skill)
-	profile_alias = aliased(Profile)
 	
 	members = db.session.query(
 		User.id,
@@ -139,9 +125,6 @@ def register():
 					password=hashed_password)
 				db.session.add(user)
 				db.session.commit()
-				message = "Thank you for registering for the SIMS Portal, {}. Your account has been placed into a queue, and will be approved by a SIMS Governance Committee member. You will be alerted here when that action is taken. In the meantime, you can log into the portal and explore the resources, but you will have limited permissions.".format(form.firstname.data)
-				#send_slack_dm(message, form.slack_id.data)
-				#new_user_slack_alert("A new user has registered on the SIMS Portal. Please review {}'s registration in the <{}/admin/approve_members|admin area>.".format(user.firstname, current_app.config['ROOT_URL']))
 				flash('Your account has been created.', 'success')
 				
 				log_message = f"[INFO] A new user has registered for the Portal: {user.firstname} {user.lastname}."
@@ -213,7 +196,6 @@ def profile():
 	user_portfolio = get_full_portfolio(current_user.id)
 	user_portfolio_size = len(user_portfolio)
 	
-	user_products = db.session.query(User, Portfolio).join(Portfolio, Portfolio.creator_id==User.id).where(or_(User.id==current_user.id, Portfolio.collaborator_ids.like(str(user_info.id)))).filter(Portfolio.product_status != 'Removed').all()
 	
 	skills_list = db.session.execute(text('SELECT * FROM "user" JOIN user_skill ON "user".id = user_skill.user_id JOIN skill ON skill.id = user_skill.skill_id WHERE "user".id=:current_user'), {'current_user': current_user.id})
 	

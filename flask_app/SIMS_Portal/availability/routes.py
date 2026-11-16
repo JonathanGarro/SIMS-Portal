@@ -3,18 +3,16 @@ from datetime import datetime
 
 from flask import (
     request, render_template, url_for, flash, redirect,
-    jsonify, Blueprint, current_app
+    Blueprint, current_app
 )
 from flask_login import login_required, current_user
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, text, insert
 
 from SIMS_Portal import db
-from SIMS_Portal.models import Availability, Emergency, User, Log
+from SIMS_Portal.models import Availability, Emergency, User
 from SIMS_Portal.availability.forms import AvailabilityForm
 from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal.availability.utils import (
-    get_dates_current_and_next_week, get_dates_current_week,
+    get_dates_current_week,
     get_dates_next_week
 )
 

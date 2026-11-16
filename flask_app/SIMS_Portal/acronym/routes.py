@@ -1,20 +1,17 @@
-import logging
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 from flask import (
-    request, render_template, url_for, flash, redirect,
-    jsonify, Blueprint, current_app, redirect, abort, session
+    request, render_template, url_for, flash, jsonify, Blueprint, redirect, abort
 )
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
-    login_user, current_user, logout_user, login_required
+    current_user, login_required
 )
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
 from SIMS_Portal.models import Acronym, User, Log, NationalSociety
-from SIMS_Portal.users.utils import send_slack_dm, new_acronym_alert
-from SIMS_Portal import db, login_manager
+from SIMS_Portal.users.utils import new_acronym_alert
+from SIMS_Portal import db
 from SIMS_Portal.acronym.forms import NewAcronymForm, EditAcronymForm
 
 acronym = Blueprint('acronym', __name__)

@@ -1,18 +1,14 @@
 from SIMS_Portal import db
-from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from SIMS_Portal.models import Alert, Log, RegionalFocalPoint, User
-from SIMS_Portal.users.utils import new_surge_alert, test_surge_alert
+from SIMS_Portal.users.utils import new_surge_alert
 from SIMS_Portal.main.utils import send_error_message
 from flask_apscheduler import APScheduler
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import math
 import requests
-import logging
-import re
 import time
-from sqlalchemy.exc import OperationalError, SQLAlchemyError
+from sqlalchemy.exc import OperationalError
 from requests.exceptions import RequestException
 
 scheduler = APScheduler()
@@ -213,7 +209,7 @@ def send_im_alert_to_slack(alert_info):
 			regional_focal_point_id = db.session.query(RegionalFocalPoint, User).join(User, User.id == RegionalFocalPoint.focal_point_id).filter(RegionalFocalPoint.regional_id == alert_info.region_id).first()
 			regional_focal_point = get_slack_username(regional_focal_point_id.User.slack_id)
 		except:
-			safe_log(f"[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message.")
+			safe_log("[WARNING] The Surge Alert (Latest) script could not identify a regional focal point to tag in the Slack availability message.")
 			regional_focal_point = "Focal Point Missing"
 		
 		# check and reformat dates for slack message
@@ -274,12 +270,12 @@ def refresh_surge_alerts_latest():
 
 	try:
 		# start job and log message with fallback to print if db logging fails
-		start_message = f"[INFO] The Surge Alert (Latest) cron job has started."
+		start_message = "[INFO] The Surge Alert (Latest) cron job has started."
 		if not safe_log(start_message):
 			# If we can't even log to the database, send an error alert
-			send_error_message(f"Database connection error in Surge Alert cron job. Unable to log to database.")
+			send_error_message("Database connection error in Surge Alert cron job. Unable to log to database.")
 
-		safe_log(f"[INFO] Fetching existing alerts from the database.")
+		safe_log("[INFO] Fetching existing alerts from the database.")
 
 		def _fetch_existing_alerts():
 			return db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
@@ -291,7 +287,6 @@ def refresh_surge_alerts_latest():
 		if not fetched_ok:
 			existing_alerts = []
 		existing_alert_ids = {alert.alert_id for alert in existing_alerts}
-		existing_statuses = {alert.alert_id: alert.alert_status for alert in existing_alerts}
 	
 		safe_log(f"[INFO] Making API request to {url}.")
 	
@@ -312,14 +307,14 @@ def refresh_surge_alerts_latest():
 					safe_log(f"[ERROR] API request failed after {max_api_retries} attempts: {str(e)}")
 					raise
 		
-		safe_log(f"[INFO] API request successful, processing response.")
+		safe_log("[INFO] API request successful, processing response.")
 	
 		try:
 			data = response.json()
 			results = data.get("results", [])
 			
 			if not results:
-				safe_log(f"[WARNING] No results were returned from the API.")
+				safe_log("[WARNING] No results were returned from the API.")
 		except ValueError as e:
 			safe_log(f"[ERROR] Failed to parse API response as JSON: {str(e)}")
 			safe_log(f"[DEBUG] Response content preview: {response.text[:200]}...")
@@ -475,7 +470,6 @@ def refresh_surge_alerts_latest():
 		for result in result_list:
 			try:
 				current_molnix_id = result.get('molnix_id', 'Unknown')
-				current_alert_id = result.get('alert_id', 'Unknown')
 				
 				# handle potential None values in lists
 				sectors = result.get('sectors', [])
@@ -684,7 +678,7 @@ def refresh_surge_alerts(pages_to_fetch=100):
 	count_updated_records = 0
 
 	try:
-		safe_log(f"[INFO] The Surge Alert (full version) function has started.")
+		safe_log("[INFO] The Surge Alert (full version) function has started.")
 
 		def _fetch_existing_alerts():
 			return db.session.query(Alert).order_by(Alert.molnix_id.desc()).all()
@@ -736,7 +730,6 @@ def refresh_surge_alerts(pages_to_fetch=100):
 				im_filter = False
 				
 				# predefine these in case they don't appear in molnix tags
-				region_id = None
 				sector = None
 				role_profile = None 
 				modality = None

@@ -1,20 +1,13 @@
-from collections import Counter
-from datetime import datetime, timedelta, date
-from flask import url_for, current_app, flash, redirect
+from datetime import datetime, timedelta
+from flask import current_app
 from flask_login import current_user
 from SIMS_Portal import db
 from sqlalchemy import text
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety, EmergencyType, Log
+from SIMS_Portal.models import NationalSociety, EmergencyType, Log
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-import ast
 import csv
-import logging
-import json
-import os
-import pandas as pd
 import re
-import requests
 
 def create_response_channel(location, disaster_type):
 	"""

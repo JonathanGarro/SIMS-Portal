@@ -1,39 +1,28 @@
-import csv
 import io
-import json
-import logging
-import os
 import re
 from datetime import datetime, timedelta
-from time import timezone
 
-import pandas as pd
 from flask import (
 	abort, request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app, session, send_file, send_from_directory
+	jsonify, Blueprint, current_app, session, send_file
 )
 from flask_login import (
-	login_user, current_user, logout_user, login_required
+	current_user, login_required
 )
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import select, and_, literal_column
-from sqlalchemy import func, distinct, desc, asc, select, case, text
+from sqlalchemy import func, distinct, desc, text
 import boto3
 import botocore
 
-from SIMS_Portal import db, cache
-from SIMS_Portal.config import Config
+from SIMS_Portal import db
 from SIMS_Portal.models import (
-	Assignment, User, Emergency, Alert, user_skill, user_language, Portfolio,
-	user_badge, Skill, Language, NationalSociety, Badge, Story,
-	EmergencyType, Review, user_profile, Profile, Log, Acronym, RegionalFocalPoint, Region,
-	Task, Checklist, AssignmentChecklist, AssignmentSubTask
+	Assignment, User, Emergency, Alert, Portfolio,
+	user_badge, Skill, NationalSociety, Badge, Story,
+	EmergencyType, Review, Log, Acronym, RegionalFocalPoint, Region,
+	Checklist, AssignmentChecklist, AssignmentSubTask
 )
 from SIMS_Portal.main.forms import (
-	MemberSearchForm, EmergencySearchForm, ProductSearchForm,
 	BadgeAssignmentForm, SkillCreatorForm, BadgeAssignmentViaSIMSCoForm,
-	NewBadgeUploadForm, ManualSlackMessage, NewChecklistForm, UpdateChecklistForm,
-	UpdateEmergenyChecklistForm, SubTaskForm, EditChecklistForm, EditSubTaskForm, AssignChecklistToEmergencyForm
+	NewBadgeUploadForm, ManualSlackMessage, NewChecklistForm, SubTaskForm, AssignChecklistToEmergencyForm
 )
 from SIMS_Portal.main.utils import (
 	fetch_slack_channels, check_sims_co, save_new_badge,
@@ -41,13 +30,12 @@ from SIMS_Portal.main.utils import (
 	auto_badge_assigner_self_promoter, auto_badge_assigner_polyglot,
 	auto_badge_assigner_autobiographer, auto_badge_assigner_jack_of_all_trades,
 	auto_badge_assigner_edward_tufte, auto_badge_assigner_world_traveler,
-	auto_badge_assigner_old_salt, auto_badge_assigner_eratosthenes,
-	auto_badge_assigner_super_scholar, auto_badge_assigner_teaching_moment, user_info_by_ns
+	auto_badge_assigner_old_salt, user_info_by_ns
 )
 from SIMS_Portal.users.forms import AssignProfileTypesForm, RegionalFocalPointForm
 from SIMS_Portal.users.utils import (
-	send_slack_dm, new_surge_alert, send_reset_slack, update_member_locations,
-	bulk_slack_photo_update, process_inactive_members, audit_inactive_members, process_inactive_members, alert_inactive_members
+	send_slack_dm, update_member_locations,
+	bulk_slack_photo_update, alert_inactive_members
 )
 from SIMS_Portal.alerts.utils import (
 	refresh_surge_alerts, refresh_surge_alerts_latest, refresh_open_alert_statuses
@@ -56,7 +44,7 @@ from SIMS_Portal.emergencies.utils import (
 	update_response_locations, update_active_response_locations
 )
 from SIMS_Portal.availability.utils import (
-	send_slack_availability_request, request_availability_updates
+	request_availability_updates
 )
 
 from SIMS_Portal.tasks.utils import GitHubSyncError, get_issues, refresh_all_active_githubs
@@ -234,7 +222,6 @@ def admin_upload_badges():
 	badge_upload_form = NewBadgeUploadForm()
 
 	if request.method == 'GET' and current_user.is_admin == 1:
-		assigned_badges = db.session.execute(text('SELECT u.id, u.firstname, u.lastname, string_agg(b.name, \', \') as badges FROM "user" u JOIN user_badge ub ON ub.user_id = u.id JOIN badge b ON b.id = ub.badge_id WHERE u.status = \'Active\' GROUP BY u.id ORDER BY u.firstname'))
 		return render_template('admin_upload_badge.html', badge_upload_form=badge_upload_form)
 
 	elif request.method == 'POST' and badge_upload_form.name.data and current_user.is_admin == 1:
@@ -356,7 +343,8 @@ def assign_regional_focal_point():
 
 			new_focal_point_info = db.session.query(User).filter(User.id == form.user_name.data.id).first()
 			log_message = f"[INFO] {new_focal_point_info.firstname} {new_focal_point_info.lastname} has been assigned a regional IM focal point role in the database."
-			new_log = Log(message=log_message, user_id=current_user.id)
+			db.session.add(Log(message=log_message, user_id=current_user.id))
+			db.session.commit()
 
 			return redirect(url_for('main.assign_regional_focal_point'))
 		else:
@@ -394,9 +382,7 @@ def badge_assignment(user_id, badge_id):
 @login_required
 def badge_assignment_via_SIMSCO(user_id, badge_id, assigner_id, dis_id):
 	user_is_sims_co = check_sims_co(dis_id)
-	badge_form = BadgeAssignmentViaSIMSCoForm()
 	if user_is_sims_co:
-		assigner_justify = badge_form.assigner_justify.data
 		# uses session to get assigner_justify from form
 		new_badge = user_badge.insert().values(user_id=user_id, badge_id=badge_id, assigner_id=assigner_id, assigner_justify=session.get('assigner_justify', None))
 		db.session.execute(new_badge)
@@ -698,12 +684,6 @@ def download_file(name):
 
     return send_file(file_stream, mimetype=content_type)
 
-@main.route('/static/<path:filename>')
-def static_files(filename):
-    """route to handle caching of static files"""
-    cache_timeout = 3600
-
-    return send_from_directory(current_app.config['STATIC_FOLDER'], filename, cache_timeout=cache_timeout)
 
 @main.route('/staging')
 @login_required
@@ -722,7 +702,7 @@ def staging():
 @main.route('/admin/manage_checklist', methods=['GET', 'POST'])
 @login_required
 def manage_checklist():
-    from SIMS_Portal.models import Checklist, SubTask, Emergency, AssignmentChecklist
+    from SIMS_Portal.models import Checklist, Emergency, AssignmentChecklist
     from SIMS_Portal.main.forms import SubTaskForm, AssignChecklistToEmergencyForm
     checklists = Checklist.query.order_by(Checklist.id).all()
     subtask_forms = {cl.id: SubTaskForm(prefix=f'subtask_{cl.id}') for cl in checklists}
@@ -890,7 +870,7 @@ def remove_subtask(subtask_id):
 @main.route('/admin/manage_checklist/assign_to_emergency', methods=['POST'])
 @login_required
 def assign_checklist_to_emergency():
-    from SIMS_Portal.models import AssignmentChecklist, AssignmentSubTask, Emergency, Checklist, SubTask
+    from SIMS_Portal.models import AssignmentChecklist, AssignmentSubTask, Emergency, Checklist
     from SIMS_Portal.main.forms import AssignChecklistToEmergencyForm
     form = AssignChecklistToEmergencyForm()
     # Populate emergency choices
@@ -927,7 +907,7 @@ def assign_checklist_to_emergency():
 @main.route('/admin/manage_checklist/edit_assigned_checklist/<int:assignment_id>', methods=['GET', 'POST'])
 @login_required
 def edit_assigned_checklist(assignment_id):
-    from SIMS_Portal.models import AssignmentChecklist, Checklist
+    from SIMS_Portal.models import AssignmentChecklist
     from SIMS_Portal.main.forms import EditChecklistForm
     assignment = db.get_or_404(AssignmentChecklist, assignment_id)
     checklist = assignment.checklist
@@ -956,7 +936,7 @@ def delete_assigned_checklist(assignment_id):
 @main.route('/admin/manage_checklist/edit_assigned_subtask/<int:assigned_subtask_id>', methods=['GET', 'POST'])
 @login_required
 def edit_assigned_subtask(assigned_subtask_id):
-    from SIMS_Portal.models import AssignmentSubTask, SubTask
+    from SIMS_Portal.models import AssignmentSubTask
     from SIMS_Portal.main.forms import EditSubTaskForm
     assigned_subtask = db.get_or_404(AssignmentSubTask, assigned_subtask_id)
     subtask = assigned_subtask.sub_task

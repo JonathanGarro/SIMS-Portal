@@ -1,14 +1,12 @@
 from flask_wtf import FlaskForm
-from flask_sqlalchemy import SQLAlchemy
-from wtforms import StringField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, SelectField, SelectMultipleField, HiddenField, FileField, TextAreaField
+from wtforms import StringField, SubmitField, BooleanField, DateTimeField, SelectField, HiddenField, TextAreaField
 from wtforms.widgets import TextArea
 from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional, URL
+from wtforms.validators import DataRequired, Length, Optional, URL
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.widgets import HiddenInput
-from SIMS_Portal import db
 from datetime import datetime
-from SIMS_Portal.models import User, Emergency, Portfolio, Skill, Language, EmergencyType, NationalSociety, Badge, Assignment
+from SIMS_Portal.models import User, Skill, Language, EmergencyType, NationalSociety, Badge
 
 class ManualSlackMessage(FlaskForm):
 	message = TextAreaField('Message', validators=[DataRequired()], render_kw={'style':'height: 100px'})

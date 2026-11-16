@@ -61,7 +61,6 @@ class Config:
 	GOOGLE_MAPS_TOKEN = os.environ.get('GOOGLE_MAPS_TOKEN')
 	UPLOAD_BUCKET = 'sims-portal-uploads'
 	CACHE_TYPE = 'simple'
-	STATIC_FOLDER = 'static'
 	RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
 	RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 	GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')

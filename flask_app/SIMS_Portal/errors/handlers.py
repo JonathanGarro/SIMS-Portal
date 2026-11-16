@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template
 from SIMS_Portal import db
 from SIMS_Portal.models import User
 

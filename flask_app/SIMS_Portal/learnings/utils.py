@@ -1,8 +1,7 @@
-from flask import url_for, current_app, flash, redirect
+from flask import current_app
 from SIMS_Portal import db
-from SIMS_Portal.models import User, Assignment, Emergency, NationalSociety
+from SIMS_Portal.models import User, Assignment, Emergency
 from SIMS_Portal.users.utils import send_slack_dm
-import logging
 
 def request_learnings(dis_id):
     """
@@ -30,7 +29,6 @@ def request_learnings(dis_id):
     
     # reference the tuples returned by sql, reference first result, then relevant keys
     emergency_name = emergency_remote_assignments[0][5]
-    emergency_id = emergency_remote_assignments[0][4]
     
     for row in emergency_remote_assignments:
         try:
