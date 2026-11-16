@@ -222,7 +222,9 @@ def admin_edit_skills():
 @login_required
 def admin_process_acronyms():
 	# anonymous submissions are attributed to user 63 (Clara Barton)
-	pending_acronyms = db.session.query(Acronym).filter(Acronym.approved_by.is_(None), Acronym.added_by == 63)
+	# member submissions are auto-approved, so anything still unapproved (e.g. old anonymous
+	# submissions, filed under the bot account) is pending review
+	pending_acronyms = db.session.query(Acronym).filter(Acronym.approved_by.is_(None))
 
 	return render_template('admin_process_acronyms.html', pending_acronyms=pending_acronyms)
 
