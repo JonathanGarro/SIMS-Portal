@@ -141,7 +141,7 @@ def view_portfolio(id):
 			# strip out collaborator ids
 			split_collaborators = product.Portfolio.collaborator_ids.split(',')
 			# convert str to int
-			list_collaborators = [eval(i) for i in split_collaborators]
+			list_collaborators = [int(i) for i in split_collaborators]
 			list_collaborators_user_info = []
 			for user_id in list_collaborators:
 				list_collaborators_user_info.append(db.session.query(User).filter(User.id == user_id).first())
@@ -325,7 +325,7 @@ def add_supporter_to_product(product_id):
 		# split the string by comma and convert to list
 		split_collaborators = collaborators.collaborator_ids.split(',')
 		# convert str to int
-		list_collaborators = [eval(i) for i in split_collaborators]
+		list_collaborators = [int(i) for i in split_collaborators]
 		# check if user is already associated
 		if user_id in list_collaborators:
 			flash('You are already associated with this product.', 'danger')
@@ -362,7 +362,7 @@ def remove_supporter_from_product(product_id):
 		# split the string by comma and convert to list
 		split_collaborators = collaborators.collaborator_ids.split(',')
 		# convert str to int
-		list_collaborators = [eval(i) for i in split_collaborators]
+		list_collaborators = [int(i) for i in split_collaborators]
 		
 		if user_id in list_collaborators:
 			list_collaborators.remove(user_id)
