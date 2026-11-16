@@ -165,7 +165,7 @@ def download_portfolio(id):
 	# send_from_directory refuses paths outside the folder and 404s on missing files
 	return send_from_directory(os.path.join(current_app.root_path, 'static/assets/portfolio'), product.local_file, as_attachment=True)
 
-@portfolios.route('/portfolio/delete/<int:id>')
+@portfolios.route('/portfolio/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_portfolio(id):
 	product = db.session.get(Portfolio, id)
@@ -220,7 +220,7 @@ def review_portfolio(dis_id):
 
 	return render_template('portfolio_approve.html', pending_list=pending_list, emergency_info=emergency_info)
 	
-@portfolios.route('/portfolio/approve/<int:prod_id>/<int:dis_id>', methods=['GET', 'POST'])
+@portfolios.route('/portfolio/approve/<int:prod_id>/<int:dis_id>', methods=['POST'])
 @login_required
 def approve_portfolio(prod_id, dis_id):
 	# get list of all SIMS coordinators for event
@@ -272,7 +272,7 @@ def approve_portfolio(prod_id, dis_id):
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins, disaster_coordinator_query=disaster_coordinator_query, event_name=event_name), 403
 
-@portfolios.route('/portfolio/reject/<int:prod_id>/<int:dis_id>', methods=['GET', 'POST'])
+@portfolios.route('/portfolio/reject/<int:prod_id>/<int:dis_id>', methods=['POST'])
 @login_required
 def reject_portfolio(prod_id, dis_id):
 	# get list of all SIMS coordinators for event
@@ -320,7 +320,7 @@ def all_user_products(id):
 	
 	return render_template('profile_more.html', user_info=user_info, user_portfolio=user_portfolio)
 
-@portfolios.route('/portfolio/add_supporter/<int:product_id>')
+@portfolios.route('/portfolio/add_supporter/<int:product_id>', methods=['POST'])
 @login_required
 def add_supporter_to_product(product_id):
 	product = db.session.query(Portfolio).filter(Portfolio.id == product_id).first()
@@ -359,7 +359,7 @@ def add_supporter_to_product(product_id):
 		flash('You are now listed as a collaborator!', 'success')
 		return redirect(url_for('portfolios.view_portfolio', id=product_id))
 
-@portfolios.route('/portfolio/remove_supporter/<int:product_id>')
+@portfolios.route('/portfolio/remove_supporter/<int:product_id>', methods=['POST'])
 @login_required
 def remove_supporter_from_product(product_id):
 	product = db.session.query(Portfolio).filter(Portfolio.id == product_id).first()

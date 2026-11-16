@@ -130,7 +130,7 @@ def edit_assignment(id):
 	
 	return render_template('assignment_edit.html', form=form, assignment_info=assignment_info)
 
-@assignments.route('/assignment/delete/<int:id>')
+@assignments.route('/assignment/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_assignment(id):
 	user_assignment = db.session.query(Assignment, User).join(User, User.id == Assignment.user_id).filter(Assignment.id == id).first()

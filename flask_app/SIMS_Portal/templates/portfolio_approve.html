@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <div class="container">
 	<div id="hideMe">
@@ -47,8 +48,8 @@
 					  <div class="card-footer py-3 bg-transparent border-0">
 						  <div class="d-flex justify-content-between align-items-center">
 						  
-						  <a href='/portfolio/approve/{{product.Portfolio.id}}/{{product.Emergency.id}}'><button class='btn btn-sm btn-success'>Approve</button></a>
-						  <a href='/portfolio/reject/{{product.Portfolio.id}}/{{product.Emergency.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a>
+						  {{ post_button('/portfolio/approve/' ~ product.Portfolio.id ~ '/' ~ product.Emergency.id, 'Approve', 'btn btn-sm btn-success') }}
+						  {{ post_button('/portfolio/reject/' ~ product.Portfolio.id ~ '/' ~ product.Emergency.id, 'Reject', 'btn btn-sm btn-danger') }}
 						  </div>
 					  </div>
 					</div>

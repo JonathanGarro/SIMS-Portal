@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <div class="container">
 	<div id="hideMe">
@@ -59,9 +60,7 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a href="/user/save_slack_photo/{{current_user.id}}" class="d-block">
-						  <button class="btn btn-secondary w-100 mt-2 text-start" style="text-align: left !important;">Use Slack Photo</button>
-						</a>
+						{{ post_button('/user/save_slack_photo/' ~ current_user.id, 'Use Slack Photo', 'btn btn-secondary w-100 mt-2 text-start') }}
 					</li>
 					<li class="nav-item">
 						<a href='#' data-bs-toggle="modal" data-bs-target="#confirm-delete" class="d-block">
@@ -90,7 +89,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nevermind</button>
-							<a href="/user/delete/{{current_user.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+							{{ post_button('/user/delete/' ~ current_user.id, 'Delete', 'btn btn-danger') }}
 						</div>
 					</div>
 				</div>

@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <style>
 .btn-danger, .btn-danger:visited, .btn-danger:active {
@@ -88,7 +89,7 @@
                                     </div>
                                     <div class="d-flex gap-2 align-items-start">
                                         <a href="{{ url_for('checklists.edit_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                                        <a href="{{ url_for('checklists.remove_checklist', id=checklist.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                        {{ post_button(url_for('checklists.remove_checklist', id=checklist.id), 'Remove', 'btn btn-sm btn-outline-danger') }}
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -110,7 +111,7 @@
                                             </div>
                                             <div class="d-flex gap-2">
                                                 <a href="{{ url_for('checklists.edit_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                                <a href="{{ url_for('checklists.remove_subtask', subtask_id=subtask.id) }}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                                {{ post_button(url_for('checklists.remove_subtask', subtask_id=subtask.id), 'Remove', 'btn btn-sm btn-outline-danger') }}
                                             </div>
                                         </div>
                                         {% else %}

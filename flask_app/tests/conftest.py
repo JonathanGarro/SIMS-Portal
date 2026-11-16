@@ -80,6 +80,9 @@ class TestConfig(Config):
 	SERVER_NAME = 'localhost'
 	RECAPTCHA_PUBLIC_KEY = 'test'
 	RECAPTCHA_PRIVATE_KEY = 'test'
+	# the test client talks plain http, which never carries Secure cookies
+	SESSION_COOKIE_SECURE = False
+	REMEMBER_COOKIE_SECURE = False
 
 
 @pytest.fixture(scope='session')

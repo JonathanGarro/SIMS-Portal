@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <div class="container">
 	<div id="hideMe">
@@ -33,8 +34,8 @@
 				{% if current_user.is_authenticated %}
 				<br>
 				<div class="btn-group" role="group" aria-label="Basic example">
-					<a href="/portfolio/add_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-success">Add to Profile</button></a>&nbsp;
-					<a href="/portfolio/remove_supporter/{{product.Portfolio.id}}"><button type="button" class="btn btn-sm btn-danger">Remove from Profile</button></a>&nbsp;
+					{{ post_button('/portfolio/add_supporter/' ~ product.Portfolio.id, 'Add to Profile', 'btn btn-sm btn-success') }}&nbsp;
+					{{ post_button('/portfolio/remove_supporter/' ~ product.Portfolio.id, 'Remove from Profile', 'btn btn-sm btn-danger') }}&nbsp;
 					<a href="https://learn-sims.org/docs/sims-portal-documentation/portfolio-overview/#sharing-ownership"><button type="button" class="btn btn-sm btn-secondary">?</button></a>
 				</div>
 				{% endif %}
@@ -81,7 +82,7 @@
 								</div>
 								<div class="modal-footer">
 								  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nevermind</button>
-								  <a href="/portfolio/delete/{{product.Portfolio.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+								  {{ post_button('/portfolio/delete/' ~ product.Portfolio.id, 'Delete', 'btn btn-danger') }}
 								</div>
 							  </div>
 							</div>

@@ -79,7 +79,7 @@ def process_op_review(id):
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	return render_template('emergency_review_processing.html', record=record, emergency_info=emergency_info)
 
-@reviews.route('/operation_review/drop/<int:id>', methods=['GET', 'POST'])
+@reviews.route('/operation_review/drop/<int:id>', methods=['POST'])
 @login_required
 def drop_op_review(id):
 	db.session.query(Review).filter(Review.id == id).update({'status': 'Dropped'})

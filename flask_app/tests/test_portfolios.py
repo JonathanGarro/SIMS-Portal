@@ -28,21 +28,21 @@ def test_download_cannot_escape_the_portfolio_folder(member_client):
 
 
 def test_creator_can_delete_their_product(member_client):
-	member_client.get('/portfolio/delete/1')  # product 1 is the member's
+	member_client.post('/portfolio/delete/1')  # product 1 is the member's
 	assert _status(1) == 'Removed'
 
 
 def test_member_cannot_delete_product_whose_id_matches_their_user_id(member_client):
 	# used to be allowed: the check compared the user's ID with the product's ID
 	_add_product(MEMBER_ID, ADMIN_ID)
-	assert member_client.get(f'/portfolio/delete/{MEMBER_ID}').status_code == 403
+	assert member_client.post(f'/portfolio/delete/{MEMBER_ID}').status_code == 403
 	assert _status(MEMBER_ID) != 'Removed'
 
 
 def test_admin_can_delete_any_product(admin_client):
-	admin_client.get('/portfolio/delete/1')
+	admin_client.post('/portfolio/delete/1')
 	assert _status(1) == 'Removed'
 
 
 def test_delete_unknown_product_is_404(admin_client):
-	assert admin_client.get('/portfolio/delete/999').status_code == 404
+	assert admin_client.post('/portfolio/delete/999').status_code == 404

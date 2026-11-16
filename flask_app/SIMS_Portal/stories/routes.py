@@ -110,7 +110,7 @@ def edit_story(emergency_id):
 		form.entry.data = story.entry
 		return render_template('story_edit.html', form=form, emergency_name=emergency_name, story=story)
 	
-@stories.route('/story/delete/<int:emergency_id>', methods=["GET", "POST"])
+@stories.route('/story/delete/<int:emergency_id>', methods=['POST'])
 @login_required
 def delete_story(emergency_id):
 	if current_user.is_admin == 1:

@@ -282,45 +282,6 @@ def view_profile(id):
 	
 	return render_template('profile_member.html', title='Member Profile', profile_picture=profile_picture, ns_association=ns_association, user_info=user_info, assignment_history=assignment_history, deployment_history_count=deployment_history_count, user_portfolio=user_portfolio[:3], user_portfolio_size=user_portfolio_size, skills_list=skills_list, languages_list=languages_list, count_badges=count_badges, badges=badges, qualifying_profile_list=qualifying_profile_list, qualifying_profile_count=qualifying_profile_count)
 
-@users.route('/assign_profiles/<int:user_id>/<int:profile_id>/<int:tier>', methods=['GET', 'POST'])
-@login_required
-def assign_profiles(user_id, profile_id, tier):
-	if current_user.is_admin == 1:
-		try:
-			# delete user's existing profiles at other tiers
-			user_profile_table = db.Table('user_profile', db.metadata, autoload=True, autoload_with=db.engine)
-			delete_condition = db.and_(
-				user_profile_table.c.user_id == user_id,
-				user_profile_table.c.profile_id == profile_id,
-				user_profile_table.c.tier != tier
-			)
-			db.session.execute(user_profile_table.delete().where(delete_condition))
-			db.session.commit()
-		
-			# insert the new profile for the user
-			new_profile = user_profile_table.insert().values(user_id=user_id, profile_id=profile_id, tier=tier)
-			db.session.execute(new_profile)
-			db.session.commit()
-			
-			log_message = f"[INFO] A new profile has been assigned to {user_id} by {current_user.id}: Profile id: {profile_id} at tier {tier}."
-			new_log = Log(message=log_message, user_id=current_user.id)
-			db.session.add(new_log)
-			db.session.commit()
-			
-			flash('User has been assigned a new profile.', 'success')
-			return redirect(url_for('portal_admin.admin_manage_profiles'))
-		except Exception as e:
-			log_message = f"[ERROR] Error assigning a new profile tier to user {user_id}: {e}."
-			new_log = Log(message=log_message, user_id=current_user.id)
-			db.session.add(new_log)
-			db.session.commit()
-			send_error_message(log_message)
-			
-			return redirect(url_for('portal_admin.admin_manage_profiles'))
-	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
-		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
-
 @users.route('/badges_more/<int:user_id>')
 @login_required
 def view_all_user_badges(user_id):
@@ -514,7 +475,7 @@ def update_specified_profile(id):
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@users.route('/delete_skill/<int:user_id>/<int:skill_id>', methods=['GET', 'POST'])
+@users.route('/delete_skill/<int:user_id>/<int:skill_id>', methods=['POST'])
 @login_required
 def delete_skill(user_id, skill_id):
 	if current_user.id == user_id:
@@ -663,7 +624,7 @@ def reset_token(token):
 	return render_template('reset_token.html', title='Reset Password', form=form)
 
 
-@users.route('/user/approve/<int:id>', methods=['GET', 'POST'])
+@users.route('/user/approve/<int:id>', methods=['POST'])
 @login_required
 def approve_user(id):
 	approver_info = db.session.query(User).filter(User.id == current_user.id).first()
@@ -692,7 +653,7 @@ def approve_user(id):
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@users.route('/user/delete/<int:id>', methods=['GET', 'POST'])
+@users.route('/user/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_user(id):
 	if current_user.id == id:
@@ -729,7 +690,7 @@ def delete_user(id):
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@users.route('/user/save_slack_photo/<int:user_id>')
+@users.route('/user/save_slack_photo/<int:user_id>', methods=['POST'])
 @login_required
 def save_slack_photo_to_profile(user_id):
 	if current_user.id == user_id or current_user.is_admin == 1:

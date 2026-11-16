@@ -1,0 +1,10 @@
+{# A button that POSTs to `action` with the CSRF token. Use it for anything that changes
+   data: plain links send GET requests, which CSRF protection doesn't cover and which can
+   be triggered from other sites, by prefetching, or by a refresh.
+     {% from 'partials/forms.html' import post_button %}
+     {{ post_button('/emergency/delete/' ~ emergency.id, 'Delete', 'btn btn-danger') }}
+   The form uses display: contents so the button lays out as if the form weren't there
+   (e.g. inside .list-group or .d-flex). #}
+{% macro post_button(action, label, button_class='btn btn-sm', title=none) -%}
+<form method="POST" action="{{ action }}" style="display: contents;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="{{ button_class }}"{% if title %} title="{{ title }}"{% endif %}>{{ label }}</button></form>
+{%- endmacro %}

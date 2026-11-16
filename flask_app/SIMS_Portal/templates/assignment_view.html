@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 
 <div class="container">
@@ -31,7 +32,7 @@
 						{% if current_user.is_admin == 1 or current_user.id == assignment_info.User.id or sims_co_check == True %}
 							<a href="/assignment/edit/{{assignment_info.Assignment.id}}" class="list-group-item list-group-item-action text-secondary">Edit Assignment</a>
 						{% if assignment_info.Assignment.assignment_status != 'Removed' %}
-							<a href="/assignment/delete/{{assignment_info.Assignment.id}}" class="list-group-item list-group-item-action text-danger">Delete Assignment</a>
+							{{ post_button('/assignment/delete/' ~ assignment_info.Assignment.id, 'Delete Assignment', 'list-group-item list-group-item-action text-danger') }}
 						{% endif %}
 						
 					{% endif %}

@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'partials/forms.html' import post_button %}
 {% block content %}
 <div class="container">
     <div id="hideMe">
@@ -49,7 +50,7 @@
                             <td>{{user.NationalSociety.ns_name}}</td>
                             <td>{{user.User.email}}</td>
                             <td><a href='https://slack.com/app_redirect?team=T038EDXPB&channel={{user.User.slack_id}}'>Check Slack</a></td>
-                            <td class='text-end'><a href='/user/approve/{{user.User.id}}'><button class='btn btn-sm btn-success'>Approve</button></a> <a href='/user/delete/{{user.User.id}}'><button class='btn btn-sm btn-danger'>Reject</button></a></td>
+                            <td class='text-end'>{{ post_button('/user/approve/' ~ user.User.id, 'Approve', 'btn btn-sm btn-success') }} {{ post_button('/user/delete/' ~ user.User.id, 'Reject', 'btn btn-sm btn-danger') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

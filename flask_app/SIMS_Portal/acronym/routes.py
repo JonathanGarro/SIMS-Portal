@@ -300,7 +300,7 @@ def submit_acronym_member():
             return redirect(url_for('acronym.submit_acronym'))
         return redirect(url_for('acronym.submit_acronym'))
 
-@acronym.route('/acronym/approve/<int:id>', methods=['GET', 'POST'])
+@acronym.route('/acronym/approve/<int:id>', methods=['POST'])
 @login_required
 def approve_acronym(id):
     """
@@ -334,7 +334,7 @@ def approve_acronym(id):
         list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == True).all()
         return render_template('portal_admins.html', list_admins=list_admins)
 
-@acronym.route('/acronym/delete/<int:id>', methods=['GET', 'POST'])
+@acronym.route('/acronym/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_acronym(id):
     """

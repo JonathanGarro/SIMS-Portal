@@ -456,7 +456,7 @@ def edit_emergency(id):
 		form.github_repo.data = emergency_info.github_repo
 	return render_template('emergency_edit.html', form=form, emergency_info=emergency_info)
 
-@emergencies.route('/emergency/refresh_github/<int:id>')
+@emergencies.route('/emergency/refresh_github/<int:id>', methods=['POST'])
 @login_required
 def refresh_emergency_github(id):
 	user_is_sims_co = check_sims_co(id)
@@ -495,7 +495,7 @@ def emergency_gantt(id):
 
 	return render_template('emergency_gantt.html', start_end_dates=start_end_dates, member_labels=member_labels, min_date=min_date, emergency_info=emergency_info)
 
-@emergencies.route('/emergency/closeout/<int:id>')
+@emergencies.route('/emergency/closeout/<int:id>', methods=['POST'])
 @login_required
 def closeout_emergency(id):
 	if current_user.is_admin == 1:
@@ -515,7 +515,7 @@ def closeout_emergency(id):
 		list_of_admins = db.session.query(User).filter(User.is_admin==True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
-@emergencies.route('/emergency/delete/<int:id>')
+@emergencies.route('/emergency/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_emergency(id):
 	if current_user.is_admin == 1:
