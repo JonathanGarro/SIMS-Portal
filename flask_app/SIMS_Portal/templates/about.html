@@ -46,10 +46,11 @@
 				// load external data and boot
 				Promise.all([
 					d3.json("/static/data/response-locations-base.json"),
-					d3.csv("/static/data/emergencies_viz.csv", function(d) {
-						data.set(d.iso3, +d.count);
-					})
-				]).then(function([topo]) { ready(topo); });
+					d3.json("/data/response_history.json")
+				]).then(function([topo, counts]) {
+					counts.forEach(function(d) { data.set(d.iso3, +d.count); });
+					ready(topo);
+				});
 
 				function ready(topo) {
 

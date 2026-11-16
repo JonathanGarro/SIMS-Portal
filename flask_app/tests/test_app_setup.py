@@ -25,14 +25,6 @@ def test_health_check(client):
 	assert client.get('/health').get_data(as_text=True) == 'OK'
 
 
-def test_update_member_locations_cli_command(app, monkeypatch):
-	ran = []
-	monkeypatch.setattr('SIMS_Portal.users.utils.update_member_locations', lambda: ran.append(True))
-	result = app.test_cli_runner().invoke(args=['update-member-locations'])
-	assert result.exit_code == 0, result.output
-	assert ran == [True]
-
-
 def test_no_secrets_or_removed_keys_in_config():
 	from SIMS_Portal.config import Config
 	for removed in ('WERKZEUG_DEBUG_PIN', 'CONSUMER_KEY', 'ACCESS_TOKEN', 'TRELLO_KEY', 'LOGTAIL_SOURCE_TOKEN'):

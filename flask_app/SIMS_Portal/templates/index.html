@@ -41,7 +41,7 @@
 						function drawGlobe() {
 							Promise.all([
 								d3.json('/static/data/world-110m.json'),
-								d3.json('/static/data/locations.json')
+								d3.json('/data/member_locations.json')
 							]).then(([worldData, locationData]) => {
 									svg.selectAll('.segment')
 										.data(topojson.feature(worldData, worldData.objects.countries).features)

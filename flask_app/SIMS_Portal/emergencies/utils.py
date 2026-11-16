@@ -6,7 +6,6 @@ from sqlalchemy import text
 from SIMS_Portal.models import NationalSociety, EmergencyType, Log
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-import csv
 import re
 
 def create_response_channel(location, disaster_type):
@@ -59,83 +58,7 @@ def create_response_channel(location, disaster_type):
 		db.session.add(new_log)
 		db.session.commit()
 
-def update_response_locations():
-	"""
-	Update the response locations and save the data to a CSV file.
 	
-	Queries the database to get the count of emergencies for each location (identified by ISO3 codes),
-	aggregates this data, and saves it to a CSV file for visualization purposes.
-	
-	Parameters:
-	None
-	
-	Returns:
-	None
-	
-	Side Effects:
-	- Writes data to a CSV file at "SIMS_Portal/static/data/emergencies_viz.csv".
-	- Logs the success of the function to the current application's logger.
-	
-	Raises:
-	None
-	"""
-	
-	response_locations = db.session.execute(text("SELECT iso3, count(*) AS count_location FROM nationalsociety JOIN emergency ON emergency_location_id = nationalsociety.ns_go_id GROUP BY iso3"))
-	
-	list_of_location_dicts = []
-	for location in response_locations:
-		locations_dict = {}
-		locations_dict['iso3'] = location[0]
-		locations_dict['count'] = location[1]
-		list_of_location_dicts.append(locations_dict)
-	csv_file_path = "SIMS_Portal/static/data/emergencies_viz.csv"
-	keys = ('iso3', 'count')
-	with open(csv_file_path, 'w') as outfile:
-		dict_writer = csv.DictWriter(outfile, keys)
-		dict_writer.writeheader()
-		dict_writer.writerows(list_of_location_dicts)
-		outfile.close()
-	
-	current_app.logger.info('The update_response_locations function ran successfully.')
-	
-def update_active_response_locations():
-	"""
-	Update the active response locations and save the data to a CSV file.
-	
-	Queries the database to get all active emergencies and their corresponding locations (identified by ISO3 codes),
-	aggregates this data, and saves it to a CSV file for visualization purposes.
-	
-	Parameters:
-	None
-	
-	Returns:
-	None
-	
-	Side Effects:
-	- Writes data to a CSV file at "SIMS_Portal/static/data/active_emergencies.csv".
-	- Logs the success of the function to the current application's logger.
-	
-	Raises:
-	None
-	"""
-	
-	active_response_locations = db.session.execute(text("SELECT * FROM emergency JOIN nationalsociety ON nationalsociety.ns_go_id = emergency.emergency_location_id WHERE emergency.emergency_status = 'Active'"))
-	
-	list_of_location_dicts = []
-	for location in active_response_locations:
-		locations_dict = {}
-		locations_dict['iso3'] = location.iso3
-		locations_dict['count'] = 1
-		list_of_location_dicts.append(locations_dict)
-	csv_file_path = "SIMS_Portal/static/data/active_emergencies.csv"
-	keys = ('iso3', 'count')
-	with open(csv_file_path, 'w') as outfile:
-		dict_writer = csv.DictWriter(outfile, keys)
-		dict_writer.writeheader()
-		dict_writer.writerows(list_of_location_dicts)
-		outfile.close()
-	
-	current_app.logger.info('The update_active_response_locations function ran successfully.')
 	
 
 def emergency_availability_chart_data(dis_id):

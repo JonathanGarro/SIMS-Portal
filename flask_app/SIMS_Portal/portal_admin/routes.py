@@ -26,14 +26,10 @@ from SIMS_Portal.main.utils import (
 )
 from SIMS_Portal.users.forms import AssignProfileTypesForm, RegionalFocalPointForm
 from SIMS_Portal.users.utils import (
-	send_slack_dm, update_member_locations,
-	bulk_slack_photo_update, alert_inactive_members
+	send_slack_dm, bulk_slack_photo_update, alert_inactive_members
 )
 from SIMS_Portal.alerts.utils import (
 	refresh_surge_alerts, refresh_surge_alerts_latest, refresh_open_alert_statuses
-)
-from SIMS_Portal.emergencies.utils import (
-	update_response_locations, update_active_response_locations
 )
 from SIMS_Portal.availability.utils import (
 	request_availability_updates
@@ -316,9 +312,6 @@ MANUAL_REFRESH_JOBS = {
 	'refresh_surge_alerts': refresh_surge_alerts,
 	'refresh_surge_alerts_latest': refresh_surge_alerts_latest,
 	'request_availability_updates': request_availability_updates,
-	'update_active_response_locations': update_active_response_locations,
-	'update_member_locations': update_member_locations,
-	'update_response_locations': update_response_locations,
 }
 
 

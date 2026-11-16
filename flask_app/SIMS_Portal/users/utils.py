@@ -391,53 +391,6 @@ def search_location(query):
 
 	return lat, long, place, time_zone, offset
 	
-def update_member_locations():
-	"""
-	Updates the JSON file with the locations of all members having coordinates.
-	
-	This function performs the following steps:
-		1. Queries the database to retrieve all user records.
-		2. Iterates through each user to extract and parse their coordinates if available.
-		3. Converts the coordinates to a dictionary format with 'latitude' and 'longitude' keys.
-		4. Collects all location dictionaries into a list.
-		5. Serializes the list of location dictionaries into a JSON string.
-		6. Writes the JSON string to a file located at 'SIMS_Portal/static/data/locations.json'.
-		7. Removes any existing file at the specified path before writing the new file.
-	
-	Notes:
-		- The function assumes that user coordinates are stored as strings in the format "[latitude, longitude]".
-		- Coordinates are parsed and converted to float before being added to the dictionary.
-		- The function uses the `db.session` to query user data and the `json` library to serialize the data.
-		- The file path is hard-coded to "SIMS_Portal/static/data/locations.json", and any existing file at 
-		  this path will be replaced.
-	
-	Example:
-		update_member_locations()
-		This will update the 'locations.json' file with the current member locations.
-	"""
-	
-	member_coordinates = db.session.query(User).all()
-	
-	list_of_location_dicts = []
-	for member in member_coordinates:
-		if member.coordinates:
-			strip_brackets = member.coordinates.replace('[', '').replace(']', '').split(", ")
-			# skip malformed values (e.g. the string "None") rather than crash: this
-			# runs at app startup, so one bad row would stop the app from booting
-			try:
-				latitude, longitude = float(strip_brackets[0]), float(strip_brackets[1])
-			except (ValueError, IndexError):
-				current_app.logger.warning(f"Skipping user {member.id} with malformed coordinates: {member.coordinates!r}")
-				continue
-			list_of_location_dicts.append({"latitude": latitude, "longitude": longitude})
-			
-	json_output = json.dumps(list_of_location_dicts)
-
-	json_file_path = "SIMS_Portal/static/data/locations.json"
-	if os.path.exists(json_file_path):
-		os.remove(json_file_path)
-	with open(json_file_path, "w") as outfile:
-		outfile.write(json_output)
 		
 def download_profile_photo(slack_id):
 	"""
