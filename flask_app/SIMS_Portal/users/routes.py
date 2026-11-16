@@ -549,6 +549,7 @@ def delete_skill(user_id, skill_id):
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @users.route('/save_work_location/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def save_user_location(user_id):
 	form = UserLocationForm()
 	if request.method == 'GET':
@@ -569,6 +570,7 @@ def save_user_location(user_id):
 					session['coordinates'] = [latitude, longitude]
 					session['time_zone'] = time_zone
 					session['place_label'] = place_label
+					session['location_user_id'] = user_id
 					google_token = current_app.config['GOOGLE_MAPS_TOKEN']
 					query_url = 'https://www.google.com/maps/embed/v1/place?key={}&q={}'.format(google_token, converted_location)
 					return render_template('validate_location.html', query_url=query_url, user_id=user_id)
@@ -586,30 +588,38 @@ def save_user_location(user_id):
 				flash("You are not allowed to edit other people's location.", "danger")
 				return redirect(url_for('users.save_user_location', user_id = user_id))
 		else:
-			return redirect('users.save_user_location')
+			return redirect(url_for('users.save_user_location', user_id=user_id))
 
-@users.route('/confirm_work_location/<int:user_id>', methods=['GET', 'POST'])
+# Saves the location found by save_user_location(), which stashes it in the session
+# and shows a confirmation page that POSTs here. POST-only (with the app-wide CSRF
+# token) so the save can't be triggered by a link, and a no-op unless a pending
+# location for this same user is actually in the session - writing str(None) into
+# the coordinates used to break update_member_locations() for every later caller.
+@users.route('/confirm_work_location/<int:user_id>', methods=['POST'])
+@login_required
 def confirm_user_location(user_id):
-	user_info = db.session.query(User).filter(User.id == user_id).first()
-	coordinates = session.get('coordinates', None)
-	place_label = session.get('place_label', None)
-	time_zone = session.get('time_zone', None)
-	if current_user.is_admin == 1 or current_user.id == user_id:
-		db.session.query(User).filter(User.id==user_id).update({'coordinates':str(coordinates), 'place_label':place_label, 'time_zone': time_zone})
-		db.session.commit()
-		flash("You've successfully saved your location!", "success")
-		
-		log_message = f"[INFO] User {user_info.id} has updated their location."
-		new_log = Log(message=log_message, user_id=current_user.id)
-		db.session.add(new_log)
-		db.session.commit()
-		
-		update_member_locations()
+	if not (current_user.is_admin == 1 or current_user.id == user_id):
+		flash('You are not allowed to edit the locations of other users.', 'danger')
 		return redirect(url_for('users.profile'))
-	else:
-		flash('You are not allowed to edit other the locations of other users.', 'danger')
-		return redirect('users.save_user_location', user_id = user_id)
-		
+
+	coordinates = session.get('coordinates')
+	if not coordinates or session.get('location_user_id') != user_id:
+		flash('No location to save. Please search for your location first.', 'warning')
+		return redirect(url_for('users.save_user_location', user_id=user_id))
+
+	place_label = session.pop('place_label', None)
+	time_zone = session.pop('time_zone', None)
+	session.pop('coordinates', None)
+	session.pop('location_user_id', None)
+
+	db.session.query(User).filter(User.id == user_id).update({'coordinates': str(coordinates), 'place_label': place_label, 'time_zone': time_zone})
+	db.session.add(Log(message=f"[INFO] User {user_id} has updated their location.", user_id=current_user.id))
+	db.session.commit()
+	flash("You've successfully saved your location!", "success")
+
+	update_member_locations()
+	return redirect(url_for('users.profile'))
+
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
 	form = RequestResetForm()

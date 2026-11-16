@@ -449,11 +449,15 @@ def update_member_locations():
 	list_of_location_dicts = []
 	for member in member_coordinates:
 		if member.coordinates:
-			locations_dict = {}
 			strip_brackets = member.coordinates.replace('[', '').replace(']', '').split(", ")
-			locations_dict["latitude"] = float(strip_brackets[0])
-			locations_dict["longitude"] = float(strip_brackets[1])
-			list_of_location_dicts.append(locations_dict)
+			# skip malformed values (e.g. the string "None") rather than crash: this
+			# runs at app startup, so one bad row would stop the app from booting
+			try:
+				latitude, longitude = float(strip_brackets[0]), float(strip_brackets[1])
+			except (ValueError, IndexError):
+				current_app.logger.warning(f"Skipping user {member.id} with malformed coordinates: {member.coordinates!r}")
+				continue
+			list_of_location_dicts.append({"latitude": latitude, "longitude": longitude})
 			
 	json_output = json.dumps(list_of_location_dicts)
 

@@ -45,7 +45,6 @@ ENDPOINT_ARGS = {
 # xfails: once a bug is fixed the test XPASSes, fails, and the entry must be removed.
 ISSUE = '#160'
 KNOWN_FAILURES = {
-	('*', 'users.confirm_user_location'): 'writes "None" coordinates on GET; no login_required',
 	('*', 'main.staging'): 'no login_required; calls GitHub API unguarded',
 	('*', 'main.download_file'): 'S3 call with no error handling',
 	('*', 'portfolios.download_portfolio'): 'missing local file raises instead of 404',
