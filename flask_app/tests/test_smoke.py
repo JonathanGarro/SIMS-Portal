@@ -46,11 +46,6 @@ ENDPOINT_ARGS = {
 ISSUE = '#160'
 KNOWN_FAILURES = {
 	('*', 'portfolios.download_portfolio'): 'missing local file raises instead of 404',
-	('member', 'acronym.delete_acronym'): 'view returns None for non-admins',
-	('member', 'main.admin_assign_badge'): 'view returns None for non-admins',
-	('member', 'main.admin_edit_skills'): 'view returns None for non-admins',
-	('member', 'main.admin_upload_badges'): 'view returns None for non-admins',
-	('member', 'reviews.process_op_review'): 'User.is_admin == 1 fails on Postgres',
 	('member', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
 	('admin', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
 	('member', 'assignments.assignment_availability_result'): 'GET builds url_for without id',

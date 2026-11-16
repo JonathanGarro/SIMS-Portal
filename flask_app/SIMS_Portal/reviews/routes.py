@@ -75,10 +75,10 @@ def process_op_review(id):
 		flash('Review record successfully processed.', 'success')
 		return redirect(url_for('main.admin_process_reviews'))
 	else:
-		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	if record is None or emergency_info is None:
-		list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404
 	return render_template('emergency_review_processing.html', record=record, emergency_info=emergency_info)
 

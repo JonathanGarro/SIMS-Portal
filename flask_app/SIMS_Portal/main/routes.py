@@ -192,6 +192,8 @@ def admin_manage_profiles():
 @main.route('/admin/assign_badge', methods=['GET', 'POST'])
 @login_required
 def admin_assign_badge():
+	if current_user.is_admin != 1:
+		abort(403)
 	badge_form = BadgeAssignmentForm()
 
 	if request.method == 'GET' and current_user.is_admin == 1:
@@ -227,6 +229,8 @@ def admin_assign_badge():
 @main.route('/admin/upload_badges', methods=['GET', 'POST'])
 @login_required
 def admin_upload_badges():
+	if current_user.is_admin != 1:
+		abort(403)
 	badge_upload_form = NewBadgeUploadForm()
 
 	if request.method == 'GET' and current_user.is_admin == 1:
@@ -268,6 +272,8 @@ def admin_process_reviews():
 @main.route('/admin/edit_skills', methods=['GET', 'POST'])
 @login_required
 def admin_edit_skills():
+	if current_user.is_admin != 1:
+		abort(403)
 	skill_form = SkillCreatorForm()
 
 	if request.method == 'GET' and current_user.is_admin == 1:
