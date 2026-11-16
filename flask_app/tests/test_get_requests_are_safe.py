@@ -1,5 +1,5 @@
 """
-GET requests must never change data (#178 follow-up to the GET-link audit).
+GET requests must never change data.
 
 Every GET route is requested as an admin and as a member, and the whole database
 is compared before and after. CSRF protection only covers POST, so a GET that
