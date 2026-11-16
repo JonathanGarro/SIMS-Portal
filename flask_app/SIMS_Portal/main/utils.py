@@ -174,7 +174,8 @@ def fetch_slack_channels():
 			result = client.conversations_list()
 			save_conversations(result["channels"])
 			
-		except SlackApiError as e:
+		# OSError covers the network failures (URLError, timeouts) slack_sdk lets through
+		except (SlackApiError, OSError) as e:
 			current_app.logger.error("Error fetching conversations: {}".format(e))
 			
 	# put conversations into the JavaScript object

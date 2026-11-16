@@ -59,7 +59,7 @@ from SIMS_Portal.availability.utils import (
 	send_slack_availability_request, request_availability_updates
 )
 
-from SIMS_Portal.tasks.utils import get_issues, refresh_all_active_githubs
+from SIMS_Portal.tasks.utils import GitHubSyncError, get_issues, refresh_all_active_githubs
 
 main = Blueprint('main', __name__)
 
@@ -677,12 +677,15 @@ def download_file(name):
     s3_object = s3.Object(current_app.config['UPLOAD_BUCKET'], name)
     try:
         s3_object.download_fileobj(file_stream)
-    except botocore.exceptions.ClientError as e:
+        content_type = s3_object.content_type
+    except (botocore.exceptions.ClientError, botocore.exceptions.BotoCoreError) as e:
+        # ClientError: missing key / access denied; BotoCoreError: no credentials,
+        # endpoint unreachable, etc.
         current_app.logger.error(e)
         abort(404)
     file_stream.seek(0)
 
-    return send_file(file_stream, mimetype=s3_object.content_type)
+    return send_file(file_stream, mimetype=content_type)
 
 @main.route('/static/<path:filename>')
 def static_files(filename):
@@ -692,13 +695,17 @@ def static_files(filename):
     return send_from_directory(current_app.config['STATIC_FOLDER'], filename, cache_timeout=cache_timeout)
 
 @main.route('/staging')
+@login_required
 def staging():
     if current_user.is_admin == 1:
-        get_issues('2024-bra-floods')
+        try:
+            get_issues('2024-bra-floods')
+        except GitHubSyncError as e:
+            flash(f'Could not sync GitHub issues. {e}', 'warning')
         return render_template('visualization.html')
     else:
         current_app.logger.warning('User-{}, a non-administrator, tried to access the staging area'.format(current_user.id))
-        list_of_admins = db.session.query(User).filter(User.is_admin == 1).all()
+        list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
         return render_template('errors/403.html', list_of_admins=list_of_admins), 403
 
 @main.route('/admin/manage_checklist', methods=['GET', 'POST'])

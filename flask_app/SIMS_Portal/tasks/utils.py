@@ -30,6 +30,10 @@ def get_repos():
     
     return repos
     
+class GitHubSyncError(Exception):
+    """Raised when an emergency's GitHub issues can't be fetched."""
+
+
 def get_issues(repo_name):
     """
     Fetches issues from the specified SIMS GitHub repository and updates or inserts them into the database.
@@ -40,7 +44,13 @@ def get_issues(repo_name):
     
     Returns:
         list: A list of dictionaries representing the issues that were added, updated, or deleted.
+    
+    Raises:
+        GitHubSyncError: if no repo is set, GitHub is unreachable, or it returns a non-200 response.
     """
+    
+    if not repo_name:
+        raise GitHubSyncError('No GitHub repository is set for this emergency.')
     
     ACCESS_TOKEN = os.environ.get('GITHUB_TOKEN')
     ORGANIZATION = 'Surge-Information-Management-Support'
@@ -53,7 +63,13 @@ def get_issues(repo_name):
     
     url = f'https://api.github.com/repos/{ORGANIZATION}/{REPO}/issues?state=all'
     
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url, headers=headers, timeout=30)
+    except requests.RequestException as e:
+        log_message = f"[ERROR] The get_issues() function could not reach GitHub for {repo_name}: {e}"
+        db.session.add(Log(message=log_message, user_id=0))
+        db.session.commit()
+        raise GitHubSyncError(f'Could not reach GitHub: {e}') from e
     
     issues_processed = []
     
@@ -68,7 +84,7 @@ def get_issues(repo_name):
         
         # Process each issue from GitHub
         for issue in issues:
-            task = Task.query.filter(Task.task_id == issue['number']).first()
+            task = Task.query.filter(Task.repo == repo_name, Task.task_id == issue['number']).first()
             if task is None:
                 task = Task(
                     task_id=issue['number'],
@@ -126,7 +142,7 @@ def get_issues(repo_name):
         
         # delete issues from the database that are no longer on GitHub
         for task_id in existing_task_ids - github_task_ids:
-            task_to_delete = Task.query.filter(Task.task_id == task_id).first()
+            task_to_delete = Task.query.filter(Task.repo == repo_name, Task.task_id == task_id).first()
             db.session.delete(task_to_delete)
             deleted_count += 1
             issues_processed.append({
@@ -147,10 +163,11 @@ def get_issues(repo_name):
         db.session.add(new_log)
         db.session.commit()
     else:
-        log_message = f"[ERROR] The get_issues() function failed. Status code: {response.status_code}. JSON response: {response.json()}. Headers: {response.headers}. URL: {url}"
+        log_message = f"[ERROR] The get_issues() function failed. Status code: {response.status_code}. Response: {response.text[:500]}. URL: {url}"
         new_log = Log(message=log_message, user_id=0)
         db.session.add(new_log)
         db.session.commit()
+        raise GitHubSyncError(f'GitHub returned status {response.status_code}.')
     
     return issues_processed
     

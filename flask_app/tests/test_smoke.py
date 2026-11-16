@@ -45,8 +45,6 @@ ENDPOINT_ARGS = {
 # xfails: once a bug is fixed the test XPASSes, fails, and the entry must be removed.
 ISSUE = '#160'
 KNOWN_FAILURES = {
-	('*', 'main.staging'): 'no login_required; calls GitHub API unguarded',
-	('*', 'main.download_file'): 'S3 call with no error handling',
 	('*', 'portfolios.download_portfolio'): 'missing local file raises instead of 404',
 	('member', 'acronym.delete_acronym'): 'view returns None for non-admins',
 	('member', 'main.admin_assign_badge'): 'view returns None for non-admins',
@@ -57,9 +55,6 @@ KNOWN_FAILURES = {
 	('admin', 'assignments.assignment_availability'): 'template uses undefined disaster_info',
 	('member', 'assignments.assignment_availability_result'): 'GET builds url_for without id',
 	('admin', 'assignments.assignment_availability_result'): 'GET builds url_for without id',
-	('member', 'main.resources_slack_channels'): 'Slack API call with no error handling',
-	('admin', 'main.resources_slack_channels'): 'Slack API call with no error handling',
-	('admin', 'emergencies.refresh_emergency_github'): 'GitHub API call with no error handling',
 	('admin', 'main.view_logs'): 'template uses Log.severity, which does not exist',
 	('admin', 'user.create_view'): 'Flask-Admin create form incompatible with WTForms 3.2',
 	('admin', 'nationalsociety.create_view'): 'Flask-Admin create form incompatible with WTForms 3.2',

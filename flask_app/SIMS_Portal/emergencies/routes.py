@@ -33,7 +33,7 @@ from SIMS_Portal.emergencies.utils import (
 from SIMS_Portal.assignments.utils import aggregate_availability
 from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.learnings.utils import request_learnings
-from SIMS_Portal.tasks.utils import get_issues
+from SIMS_Portal.tasks.utils import GitHubSyncError, get_issues
 
 
 emergencies = Blueprint('emergencies', __name__)
@@ -479,8 +479,11 @@ def refresh_emergency_github(id):
 	user_is_sims_co = check_sims_co(id)
 	if current_user.is_admin == True or user_is_sims_co:
 		emergency_github_repo = db.session.query(Emergency).filter(Emergency.id == id).first()
-		get_issues(emergency_github_repo.github_repo)
-		flash('Sync with GitHub issues for this emergency successful.', 'success')
+		try:
+			get_issues(emergency_github_repo.github_repo)
+			flash('Sync with GitHub issues for this emergency successful.', 'success')
+		except GitHubSyncError as e:
+			flash(f'Could not sync GitHub issues for this emergency. {e}', 'warning')
 		return redirect(url_for('emergencies.view_emergency', id=id))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
