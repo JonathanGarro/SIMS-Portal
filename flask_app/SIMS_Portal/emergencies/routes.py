@@ -33,7 +33,7 @@ from SIMS_Portal.emergencies.utils import (
 from SIMS_Portal.assignments.utils import aggregate_availability
 from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.learnings.utils import request_learnings
-from SIMS_Portal.tasks.utils import get_issues
+from SIMS_Portal.tasks.utils import GitHubSyncError, get_issues
 
 
 emergencies = Blueprint('emergencies', __name__)
@@ -242,13 +242,10 @@ def view_emergency(id):
 
 	deployment_history_count = db.session.query(func.count(func.distinct(Assignment.user_id))).filter(Assignment.emergency_id == id).filter(Assignment.assignment_status == 'Active', Assignment.role == 'Remote IM Support').scalar()
 
-	try:
-		# check for trello tasks
-		to_do_trello = get_trello_tasks(emergency_info.Emergency.trello_url)  # noqa: F821 - undefined name, see #160
-		count_cards = len(to_do_trello)
-	except:
-		to_do_trello = None
-		count_cards = 0
+	# Trello was replaced by GitHub issues (the fetch has been dead since July 2024);
+	# the template's Trello tab stays hidden until it's removed in the Phase 2 cleanup
+	to_do_trello = None
+	count_cards = 0
 
 	today = datetime.today()
 	current_weekday = today.weekday()
@@ -479,8 +476,11 @@ def refresh_emergency_github(id):
 	user_is_sims_co = check_sims_co(id)
 	if current_user.is_admin == True or user_is_sims_co:
 		emergency_github_repo = db.session.query(Emergency).filter(Emergency.id == id).first()
-		get_issues(emergency_github_repo.github_repo)
-		flash('Sync with GitHub issues for this emergency successful.', 'success')
+		try:
+			get_issues(emergency_github_repo.github_repo)
+			flash('Sync with GitHub issues for this emergency successful.', 'success')
+		except GitHubSyncError as e:
+			flash(f'Could not sync GitHub issues for this emergency. {e}', 'warning')
 		return redirect(url_for('emergencies.view_emergency', id=id))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()

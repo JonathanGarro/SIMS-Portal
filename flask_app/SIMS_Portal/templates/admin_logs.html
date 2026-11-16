@@ -117,7 +117,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for log, user in logs %}
+                            {% for row in logs %}
+                            {% set log, user = row.log, row.user %}
                             <tr>
                                 <td>{{log.timestamp}}</td>
                                 <td>
@@ -127,8 +128,8 @@
                                     <a href='/profile/view/{{ user.id }}'>{{ user.firstname }} {{ user.lastname }}</a>
                                   {% endif %}
                                 </td>
-                                <td>{{log.message}}</td>
-                                <td><span class="{{ log.severity.lower() }}">{{ log.severity }}</span></td>
+                                <td>{{row.message}}</td>
+                                <td><span class="{{ row.severity.lower() }}">{{ row.severity }}</span></td>
                             </tr>
                             {% endfor %}
                         </tbody>

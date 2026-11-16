@@ -7,7 +7,7 @@
 			<p class='lead'>Hit 'Confirm' below if this location looks correct. Otherwise, hit 'Edit' to return and search again.</p>
 			<div class='row'>
 				<div class='col'>
-					<a href='/confirm_work_location/{{user_id}}'><button class='btn btn-danger'>Confirm Location</button></a>
+					<form method='POST' action="{{ url_for('users.confirm_user_location', user_id=user_id) }}" class='d-inline'><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Confirm Location</button></form>
 					<a href='/save_work_location/{{user_id}}'><button class='btn btn-secondary'>Edit Location</button></a>
 				</div>
 			</div>

@@ -12,6 +12,7 @@ from sqlalchemy import func, text, insert
 from SIMS_Portal import db
 from SIMS_Portal.models import Availability, Emergency, User, Log
 from SIMS_Portal.availability.forms import AvailabilityForm
+from SIMS_Portal.users.utils import send_slack_dm
 from SIMS_Portal.availability.utils import (
     get_dates_current_and_next_week, get_dates_current_week,
     get_dates_next_week
@@ -141,12 +142,13 @@ def availability_result(disaster_id):
     
     flash('Thank you for updating your availability for this emergency!', 'success')
     
-    # try sending message if user has slack ID filled in
-    try:
-        message = 'Hi {}, you have successfully updated your availability!'.format(user_info.firstname)
-        send_slack_dm(message, user_info.slack_id)  # noqa: F821 - undefined name, see #160
-    except:
-        pass
+    # confirm by Slack DM if the member has a Slack ID; never fail the save over it
+    if user_info.slack_id:
+        try:
+            message = 'Hi {}, you have successfully updated your availability!'.format(user_info.firstname)
+            send_slack_dm(message, user_info.slack_id)
+        except Exception as e:
+            current_app.logger.warning(f'Availability confirmation DM failed for user {user_info.id}: {e}')
     
     return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))
     
@@ -176,11 +178,12 @@ def availability_result_next_week(disaster_id):
     
     flash('Thank you for updating your availability for this emergency!', 'success')
     
-    # try sending message if user has slack ID filled in
-    try:
-        message = 'Hi {}, you have successfully updated your availability!'.format(user_info.firstname)
-        send_slack_dm(message, user_info.slack_id)  # noqa: F821 - undefined name, see #160
-    except:
-        pass
+    # confirm by Slack DM if the member has a Slack ID; never fail the save over it
+    if user_info.slack_id:
+        try:
+            message = 'Hi {}, you have successfully updated your availability!'.format(user_info.firstname)
+            send_slack_dm(message, user_info.slack_id)
+        except Exception as e:
+            current_app.logger.warning(f'Availability confirmation DM failed for user {user_info.id}: {e}')
     
     return redirect(url_for('availability.view_availability', user_id=user_info.id, emergency_id=disaster_id))

@@ -362,6 +362,8 @@ def delete_acronym(id):
             - If the acronym does not exist, the user is redirected to the acronym administration page.
     """
     
+    if current_user.is_admin != 1:
+        abort(403)
     if current_user.is_admin == 1:
         acronym_to_delete = db.session.query(Acronym).filter(Acronym.id == id).first()
         if acronym_to_delete:

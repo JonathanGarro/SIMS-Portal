@@ -114,7 +114,7 @@ The test suite runs against its own throwaway PostgreSQL database. It never read
 
 - To use a different database, set `TEST_DATABASE_URL`. For safety, it must point at `localhost` and have "test" in the database name, because the suite drops and recreates every table in it.
 
-- `tests/test_smoke.py` requests every GET route as an anonymous visitor, a member and an admin, and fails on any 500. Routes with known bugs are listed in `KNOWN_FAILURES` and linked to a GitHub issue. Those entries are strict, so once you fix a bug the test will fail until you remove its entry. When you add a route that takes a new kind of URL argument, give it a value in `STRING_ARGS`/`INT_ARGS` (or `ENDPOINT_ARGS`). If it needs data, add that to `tests/seed.py`.
+- `tests/test_smoke.py` requests every GET route as an anonymous visitor, a member and an admin, and fails on any 500. If a route has a known bug that can't be fixed right away, list it in `KNOWN_FAILURES` with a link to its GitHub issue. Those entries are strict, so once you fix a bug the test will fail until you remove its entry. When you add a route that takes a new kind of URL argument, give it a value in `STRING_ARGS`/`INT_ARGS` (or `ENDPOINT_ARGS`). If it needs data, add that to `tests/seed.py`.
 
 ## Managing Docker
 

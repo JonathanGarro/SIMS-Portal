@@ -174,7 +174,8 @@ def fetch_slack_channels():
 			result = client.conversations_list()
 			save_conversations(result["channels"])
 			
-		except SlackApiError as e:
+		# OSError covers the network failures (URLError, timeouts) slack_sdk lets through
+		except (SlackApiError, OSError) as e:
 			current_app.logger.error("Error fetching conversations: {}".format(e))
 			
 	# put conversations into the JavaScript object
@@ -202,35 +203,6 @@ def fetch_slack_channels():
 				output.append(temp_dict)
 	return output
 
-def generate_new_response_map():
-	"""
-	Generate a CSV file containing a list of countries where SIMS has responded.
-	
-	Queries the database to retrieve a count of emergencies by country (identified by ISO3 codes) where 
-	SIMS has responded, excluding those with a status of 'Removed'. It writes the results to a CSV file stored in the 
-	static folder for visualization purposes.
-	
-	Parameters:
-	None
-	
-	Returns:
-	None
-	
-	Side Effects:
-	- Writes data to a CSV file at "SIMS_Portal/static/data/emergencies_viz.csv".
-	
-	Raises:
-	None
-	"""
-	
-	all_emergencies = db.session.execute(text("SELECT iso3, COUNT(*) as count FROM emergency JOIN nationalsociety WHERE emergency.emergency_location_id = nationalsociety.ns_go_id AND emergency_status <> 'Removed' GROUP BY iso3"))
-		
-	header_row = ['iso3', 'count']
-	with open('SIMS_Portal/static/data/emergencies_viz.csv', 'w', newline='') as f:
-		f.write(','.join(header_row) + '\n')
-		writer = csv.writer(f)  # noqa: F821 - undefined name, see #160
-		for x in all_emergencies:
-			writer.writerow([x.iso3, x.count])
 
 def check_sims_co(emergency_id):
 	"""
