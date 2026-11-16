@@ -72,6 +72,7 @@
                 </div>
             </div>
             {% if row_count > 0 %}
+            <div class="table-responsive">
             <table class="table table-striped">
                 <thead class="">
                     <tr>
@@ -210,6 +211,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <h5 class="Montserrat text-dark">Either you just discovered a new acronym or it hasn't been added. <a href="/submit_acronym">Any interest in submitting it?</a></h5>
             {% endif %}

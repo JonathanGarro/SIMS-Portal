@@ -76,7 +76,9 @@ $(document).ready(function () {
 		lengthChange: true,
 		searching: true,
 		pageLength: 100,
-		dom: 'frtipB',
+		// DataTables 2 equivalent of the legacy dom: 'frtipB' (search, table, info,
+		// paging, then the export buttons below; no page-length menu)
+		layout: { topStart: null, topEnd: 'search', bottomStart: 'info', bottomEnd: 'paging', bottom2Start: 'buttons' },
 		buttons: [
 			'copy', 'csv'
 		],
@@ -104,7 +106,9 @@ $(document).ready(function() {
 $(document).ready(function () {
 	$('#members-datatable').DataTable({
 		order: [[1, 'asc']],
-		dom: 'frtipB',
+		// DataTables 2 equivalent of the legacy dom: 'frtipB' (search, table, info,
+		// paging, then the export buttons below; no page-length menu)
+		layout: { topStart: null, topEnd: 'search', bottomStart: 'info', bottomEnd: 'paging', bottom2Start: 'buttons' },
 		buttons: [
 			'copy', 'csv'
 		],
@@ -130,7 +134,9 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 	$('#alert-table').DataTable({
-		dom: 'frtipB',
+		// DataTables 2 equivalent of the legacy dom: 'frtipB' (search, table, info,
+		// paging, then the export buttons below; no page-length menu)
+		layout: { topStart: null, topEnd: 'search', bottomStart: 'info', bottomEnd: 'paging', bottom2Start: 'buttons' },
 		buttons: [
 			'copy', 'csv'
 		],

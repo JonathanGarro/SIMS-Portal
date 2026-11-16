@@ -375,13 +375,12 @@ p {
 	color: red; 
 }
 
-.map {
-	width: 800px;
-	height: 500px;
-}
-
-.min-width-custom {
-	min-width: 380px;
+/* only from the lg breakpoint up: below it the column stacks full-width, and a
+   380px minimum would push it past the edge of a phone screen */
+@media (min-width: 992px) {
+	.min-width-custom {
+		min-width: 380px;
+	}
 }
 
 .min-width-custom-sm {
@@ -732,4 +731,13 @@ input[type="checkbox"] {
 .admin-nav .bi {
 	font-size: 1.25rem;
 	vertical-align: -0.2em;
+}
+
+/* Responsive tables: let every DataTable scroll horizontally inside its own box on
+   narrow screens instead of widening the whole page (DataTables 2 wraps each table
+   in a .dt-layout-table row; with the Bootstrap 5 styling its cell is a plain .col-12
+   div). Plain tables use Bootstrap's .table-responsive. */
+div.dt-container .dt-layout-table > div {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
