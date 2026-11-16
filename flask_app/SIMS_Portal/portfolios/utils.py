@@ -5,6 +5,7 @@ import secrets
 import boto3
 import dropbox
 from flask import current_app
+from flask_login import current_user
 from SIMS_Portal import db
 from SIMS_Portal.models import Portfolio
 from PIL import Image
@@ -161,3 +162,30 @@ def get_full_portfolio(id):
 		user_portfolio.append(product[0])
 
 	return user_portfolio
+
+
+# --- who may see a portfolio product -------------------------------------------
+# Products start as 'Personal' (visible to logged-in members on the creator's
+# profile) or 'Pending Approval' (same, while a SIMS coordinator reviews them).
+# Only approved, external products are public. 'Removed' is a soft delete.
+
+def is_public_product(product):
+	"""Approved for external visitors: shown on the public portfolio and to anyone."""
+	return product.product_status == 'Approved' and bool(product.external)
+
+
+def can_view_product(product, user):
+	if product.product_status == 'Removed':
+		return bool(user.is_authenticated and user.is_admin == 1)
+	if is_public_product(product):
+		return True
+	return bool(user.is_authenticated)
+
+
+def deny_product_access():
+	"""Anonymous visitors are sent to log in; members get a 404 so existence isn't revealed."""
+	from flask import abort
+	from SIMS_Portal import login_manager
+	if not current_user.is_authenticated:
+		return login_manager.unauthorized()
+	abort(404)
