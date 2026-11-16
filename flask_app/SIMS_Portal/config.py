@@ -41,7 +41,10 @@ class Config:
 	ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 	ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET')
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
-	SCHEDULER_API_ENABLED = True
+	# Must stay False: Flask-APScheduler's REST API (/scheduler/...) has no
+	# authentication, and POST /scheduler/jobs can schedule any importable function
+	# with arbitrary arguments. Nothing in the app uses it.
+	SCHEDULER_API_ENABLED = False
 	TRELLO_KEY = os.environ.get('TRELLO_KEY')
 	TRELLO_TOKEN = os.environ.get('TRELLO_TOKEN')
 	DATA_FOLDER = os.environ.get('DATA_FOLDER', '/SIMS_Portal/static/data/')
