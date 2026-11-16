@@ -200,3 +200,19 @@ def test_app_imports_without_pkg_resources():
 	result = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True, env=env,
 	                        cwd=str(TEMPLATES_DIR.parent.parent))
 	assert result.returncode == 0 and 'ok' in result.stdout, result.stderr[-2000:]
+
+
+# Inline style="" attributes still in templates. This only goes down: put new styling
+# in static/css/main.css (or a Bootstrap utility class) and lower the number when
+# you remove one (#159).
+MAX_INLINE_STYLES = 76
+
+
+def test_inline_styles_do_not_increase():
+	import re
+	count = sum(len(re.findall(r'''\sstyle\s*=\s*["']''', p.read_text()))
+	            for p in TEMPLATES_DIR.rglob('*.html') if p.parent.name != 'admin')
+	assert count <= MAX_INLINE_STYLES, (
+		f'{count} inline style attributes (limit {MAX_INLINE_STYLES}); move the new ones into static/css/main.css')
+	if count < MAX_INLINE_STYLES:
+		pytest.fail(f'Only {count} inline styles now: lower MAX_INLINE_STYLES in this file to {count}')
