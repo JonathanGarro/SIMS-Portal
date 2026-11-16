@@ -190,3 +190,21 @@ def test_no_fixed_widths_wider_than_a_phone_in_templates():
 			if int(m.group(1) or m.group(2)) > 360:
 				offenders.append(f'{p.name}: {m.group(0).strip()}')
 	assert not offenders, offenders
+
+
+def test_app_imports_without_pkg_resources():
+	"""setuptools is removing pkg_resources; Flask-Admin 1.6.1, APScheduler 3.10 and
+	dropbox 11 all imported it, so a fresh environment would fail to start the app."""
+	import subprocess
+	import sys
+	code = (
+		"import sys; sys.modules['pkg_resources'] = None\n"  # makes `import pkg_resources` raise
+		"from SIMS_Portal import create_app\n"
+		"import SIMS_Portal.portfolios.utils, SIMS_Portal.scheduler, SIMS_Portal.admin\n"
+		"import flask_apscheduler, apscheduler.triggers.cron, dropbox, flask_admin.contrib.sqla\n"
+		"print('ok')\n"
+	)
+	env = {**__import__('os').environ, 'SIMS_SKIP_DOTENV': '1'}
+	result = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True, env=env,
+	                        cwd=str(TEMPLATES_DIR.parent.parent))
+	assert result.returncode == 0 and 'ok' in result.stdout, result.stderr[-2000:]

@@ -38,3 +38,25 @@ def test_logs_page_handles_untagged_messages_without_modifying_them(admin_client
 
 	db.session.expire_all()
 	assert db.session.get(Log, 100).message == '[ERROR] tagged failure'
+
+
+FLASK_ADMIN_URLS = ['/admin/', '/admin/user/', '/admin/user/new/', '/admin/nationalsociety/new/', '/admin/user/export/csv/']
+
+
+@pytest.mark.parametrize('url', FLASK_ADMIN_URLS)
+def test_flask_admin_is_admin_only(client, member_client, url):
+	assert client.get(url).status_code == 403
+	assert member_client.get(url).status_code == 403
+
+
+@pytest.mark.parametrize('url', FLASK_ADMIN_URLS)
+def test_flask_admin_pages_render_for_admins(admin_client, url):
+	# CSV export is disabled (Flask-Admin's default can_export=False), so it redirects to the list
+	expected = 302 if '/export/' in url else 200
+	assert admin_client.get(url).status_code == expected
+
+
+def test_flask_admin_user_list_hides_password_hash(admin_client):
+	html = admin_client.get('/admin/user/').get_data(as_text=True)
+	assert 'member@example.org' in html
+	assert '$2b$' not in html  # bcrypt hash prefix
