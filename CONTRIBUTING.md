@@ -46,9 +46,21 @@ _Note that this process will likely change as the number of contributors grows a
 	npx dotenv-vault@latest pull
 	```
 
+### Optional environment variables
+
+These all have sensible defaults or are skipped when unset, so you don't need them for local development:
+
+| Variable | Purpose |
+| --- | --- |
+| `ROOT_URL` | Base URL for links in Slack messages. Defaults to `https://rcrcsims.org`; set it to `http://localhost:5001` locally if you want those links to point at your machine. |
+| `HEARTBEAT_URL_SURGE_ALERTS`, `HEARTBEAT_URL_BADGES` | Better Stack uptime heartbeat URLs, pinged after the surge alert and badge jobs. **Production only**. Without them those monitors will report the jobs as down. |
+| `SCHEDULER_LOCK_FILE` | Lock file that ensures only one gunicorn worker runs the scheduled jobs. Defaults to a file in the system temp directory. |
+| `WERKZEUG_DEBUG_PIN` | PIN for the Werkzeug debugger console when running with `FLASK_DEBUG=1`. Werkzeug reads this variable directly. |
+
 ## Running the SIMS Portal
 
 - When you’re ready to run the SIMS Portal, use `docker-compose up --build` (it can take several minutes to complete the first time you run the command but should be much faster subsequent times).
+- Scheduled jobs (surge alerts, badges, inactive members, the member-location globe) only run in production, where `FLASK_DEBUG` is unset. To regenerate the member-location globe data locally, run `flask --app run.py update-member-locations` (or `docker compose exec web flask update-member-locations`).
 - If you want to access the real data in the production database, let Jonathan know. As long as you’re only doing SELECTs and no updates/deletes, it may be useful to test your queries. Access to the database is locked down to specific IP addresses. The process for granting access is [documented here](https://learn-sims.org/docs/sims-portal-documentation/administrator-backend-controls-461/#direct-database-access).
 
 ## Populating the local database
