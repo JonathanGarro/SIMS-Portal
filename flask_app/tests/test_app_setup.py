@@ -72,3 +72,51 @@ class TestHeartbeats:
 		with app.app_context():
 			assert heartbeats('job', 'https://example.invalid/hb') == result
 		assert calls == [('https://example.invalid/hb', 10)]
+
+
+def _csp_directive(name):
+	for directive in SECURITY_HEADERS['Content-Security-Policy'].rstrip(';').split('; '):
+		parts = directive.split()
+		if parts[0] == name:
+			return set(parts[1:])
+	raise AssertionError(f'no {name} directive')
+
+
+def test_csp_allows_every_external_asset_in_templates():
+	"""Adding a CDN script/stylesheet to a template without updating security.py breaks it in browsers."""
+	import pathlib
+	import re
+
+	templates = pathlib.Path(__file__).parent.parent / 'SIMS_Portal' / 'templates'
+	needed = {'script-src': set(), 'style-src': set()}
+	for path in templates.rglob('*.html'):
+		html = path.read_text()
+		needed['script-src'] |= set(re.findall(r'<script[^>]*\ssrc=["\'](https://[^/"\']+)', html))
+		needed['style-src'] |= set(re.findall(r'<link[^>]*rel=["\']stylesheet["\'][^>]*href=["\'](https://[^/"\']+)', html))
+		needed['style-src'] |= set(re.findall(r'<link[^>]*href=["\'](https://[^/"\']+)[^>]*rel=["\']stylesheet["\']', html))
+	assert needed['script-src'], 'expected to find CDN scripts'
+	for directive, hosts in needed.items():
+		missing = hosts - _csp_directive(directive)
+		assert not missing, f'{directive} is missing {sorted(missing)}; add them in SIMS_Portal/security.py'
+
+
+def test_layout_loads_a_single_bootstrap():
+	import pathlib
+	layout = (pathlib.Path(__file__).parent.parent / 'SIMS_Portal' / 'templates' / 'layout.html').read_text()
+	assert layout.count('bootstrap.bundle.min.js') == 1
+	assert 'bootstrap@5.3' in layout
+	for gone in ('bootstrap/4.0.0', 'popper.js/1.', '@popperjs/core', 'recaptcha', '@^'):
+		assert gone not in layout
+
+
+def test_no_bootstrap4_data_attributes_left():
+	import pathlib
+	import re
+	templates = pathlib.Path(__file__).parent.parent / 'SIMS_Portal' / 'templates'
+	offenders = []
+	for path in templates.rglob('*.html'):
+		if path.parent.name == 'admin':  # Flask-Admin's own templates
+			continue
+		for m in re.finditer(r'(?<![\w-])data-(toggle|target|dismiss|placement|parent|spy|offset)=', path.read_text()):
+			offenders.append(f'{path.name}: {m.group(0)}')
+	assert not offenders, offenders

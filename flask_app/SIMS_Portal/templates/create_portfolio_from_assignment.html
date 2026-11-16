@@ -32,7 +32,7 @@
 			<form action="" method="POST" enctype="multipart/form-data" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
 				{{ form.hidden_tag() }}
 					<div class="row">
-						<div class="form-group pb-4">
+						<div class="mb-3 pb-4">
 							{{ form.title.label(class="form-control-label pb-2 text-danger") }}
 							{% if form.title.errors %}
 								{{ form.title(class="form-control form-control-lg is-invalid") }}
@@ -47,7 +47,7 @@
 						</div>
 					</div>
 						<div class="row">
-								<div class="form-group pb-4">
+								<div class="mb-3 pb-4">
 									{{ form.description.label(class="form-control-label pb-2 text-danger") }}
 									
 									{% if form.description.errors %}
@@ -64,7 +64,7 @@
 						</div>
 					<div class='row'>
 						<div class="col">
-							<div class="form-group pb-4">
+							<div class="mb-3 pb-4">
 								{{ form.type.label(class="form-control-label pb-2 text-danger") }}
 								{% if form.type.errors %}
 									{{ form.type(class="form-control form-control-lg is-invalid") }}
@@ -79,7 +79,7 @@
 							</div>
 						</div>
 						<div class="col">
-							<div class="form-group pb-4">
+							<div class="mb-3 pb-4">
 								{{ form.format.label(class="form-control-label pb-2 text-danger") }}
 								{% if form.format.errors %}
 									{{ form.format(class="form-control form-control-lg is-invalid") }}
@@ -95,7 +95,7 @@
 						</div>
 					</div>
 					<div class='row'>
-						<div class="form-group pb-4">
+						<div class="mb-3 pb-4">
 							{{ form.image_file.label(class="form-control-label pb-2 text-secondary") }}
 							
 							{% if form.image_file.errors %}
@@ -112,7 +112,7 @@
 					</div>
 					
 					<div class='row'>
-						<div class="form-group pb-4">
+						<div class="mb-3 pb-4">
 							{{ form.file.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.file.errors %}
@@ -128,7 +128,7 @@
 						</div>
 					</div>
 					<div class='row'>
-						<div class="form-group pb-2">
+						<div class="mb-3 pb-2">
 							{{ form.external(class="form-check-input") }}
 							{{ form.external.label(class="form-check-label text-danger") }}
 						</div>

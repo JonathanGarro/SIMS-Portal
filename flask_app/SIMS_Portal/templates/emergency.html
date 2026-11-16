@@ -127,12 +127,12 @@
 						</li>
 						{% if emergency_info.Emergency.emergency_status == 'Active' %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<a href="#" class="text-secondary" data-toggle="modal" data-target="#confirm-closeout">Closeout Emergency</a>
+							<a href="#" class="text-secondary" data-bs-toggle="modal" data-bs-target="#confirm-closeout">Closeout Emergency</a>
 							<a href="https://learn-sims.org/portal-documentation/emergency-page-overview/" class='text-light' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 						</li>
 						{% endif %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<a href="#" class="text-danger" data-toggle="modal" data-target="#confirm-delete">Delete Emergency</a>
+							<a href="#" class="text-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete">Delete Emergency</a>
 						</li>
 					</ul>
 					<!-- Modal for Closeout -->
@@ -141,15 +141,13 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<h5 class="modal-title" id="closeoutModal">Closeout this Emergency</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								</div>
 								<div class="modal-body">
 									<p>Closing out an emergency in the portal means that SIMS has completed the response phase, all support has ended, and no further assignments will occur. <span class="fw-bold">The Portal will send all remote supporters a link to their post-assignment learning survey</span> when you click "Closeout".</p>
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 									<a href="/emergency/closeout/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Closeout</button></a>
 								</div>
 							</div>
@@ -161,15 +159,13 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<h5 class="modal-title" id="deleteModal">Delete the Emergency?</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								</div>
 								<div class="modal-body">
 									<span>Deleting an emergency marks it as "Removed". Records that link to it will remain, as will data associated with this emergency, but it will not appear in the portfolio. Only delete emergencies that we don't want to see in our operational history.</span>
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 									<a href="/emergency/delete/{{emergency_info.Emergency.id}}"><button type="button" class="btn btn-danger">Delete</button></a>
 								</div>
 							</div>
@@ -480,7 +476,7 @@
 							<h5 class="mb-3 text-danger emergency-title">Remote Coordinators</h5>
 							<div class="d-flex justify-content-end align-items-center">
 								<a href='/emergency/gantt/{{emergency_info.Emergency.id}}' class="me-1"><button class='btn btn-sm btn-outline-danger'>SIMS Co Gantt</button></a>
-								<button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#deployedMembers" aria-expanded="false" aria-controls="deployedMembers" id="deployedMemberListToggle">Field Deployments</button>
+								<button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#deployedMembers" aria-expanded="false" aria-controls="deployedMembers" id="deployedMemberListToggle">Field Deployments</button>
 							</div>
 						</div>
 						<table class="table" id="datatable-active-simscos">
@@ -718,7 +714,7 @@
 				<div>
 					<h3 class="text-dark emergency-title">Assignment Reviews</h3>
 				</div>
-				<div class="ml-auto">
+				<div class="ms-auto">
 					<a href="https://learn-sims.org/portal-documentation/knowledge-management-overview/" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 				</div>
 			</div>
@@ -809,7 +805,7 @@ function drawChart() {
 				<div>
 					<h3 class="text-dark emergency-title">Operational Reviews</h3>
 				</div>
-				<div class="ml-auto">
+				<div class="ms-auto">
 					<a href="https://learn-sims.org/portal-documentation/knowledge-management-overview/" class='text-dark' target="_blank"><span class="badge bg-light rounded-pill text-dark">?</span></a>
 				</div>
 			</div>
