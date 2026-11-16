@@ -2,15 +2,8 @@
 from flask import abort
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-from flask_admin.contrib.sqla.validators import Unique
-from flask_admin.form.validators import FieldListInputRequired
+from flask_admin.theme import Bootstrap4Theme
 from flask_login import current_user
-
-# Flask-Admin 1.6.1 declares these validators' field_flags as tuples, but WTForms 3
-# expects a dict, so every admin form with a unique column (e.g. Create User)
-# crashed. Remove this shim when Flask-Admin is upgraded to 2.x (#158).
-Unique.field_flags = {'unique': True}
-FieldListInputRequired.field_flags = {'required': True}
 
 
 def _is_portal_admin():
@@ -51,7 +44,8 @@ def init_admin(app, db):
 		Portfolio, Review, Story, User,
 	)
 
-	admin = Admin(app, name='SIMS Admin Portal', template_mode='bootstrap4', endpoint='admin', index_view=AdminHomeView())
+	# Flask-Admin 2.x only ships a Bootstrap 4 theme (it bundles its own copy, used on /admin pages only)
+	admin = Admin(app, name='SIMS Admin Portal', theme=Bootstrap4Theme(), endpoint='admin', index_view=AdminHomeView())
 	for model in (User, Assignment, Emergency, Portfolio, Story, Learning, Review, Alert, NationalSociety, Badge, Documentation):
-		admin.add_view(AdminView(model, db.session))
+		admin.add_view(AdminView(model, db))
 	return admin
