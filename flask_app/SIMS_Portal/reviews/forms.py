@@ -1,11 +1,7 @@
 from flask_wtf import FlaskForm
-from SIMS_Portal import db
-from flask_sqlalchemy import SQLAlchemy
-from wtforms import StringField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, SelectField, SelectMultipleField, HiddenField, FileField
+from wtforms import StringField, SubmitField, SelectField
 from wtforms.widgets import TextArea
-from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from SIMS_Portal.models import User, Emergency, Portfolio, Skill, Language, EmergencyType, NationalSociety, Badge, Assignment, Review
+from wtforms.validators import DataRequired
 
 class NewEmergencyReviewForm(FlaskForm):
 	category = SelectField('Category', choices=[' ','Success', 'Area for Improvement', 'General Observation'])

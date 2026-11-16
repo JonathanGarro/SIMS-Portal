@@ -1,12 +1,10 @@
-from flask import current_app
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, FileField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField, RadioField
+from wtforms import StringField, PasswordField, FileField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, SelectField, SelectMultipleField
 from wtforms_sqlalchemy.fields import QuerySelectField
-from flask_sqlalchemy import SQLAlchemy
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType, Portfolio, Skill, Language, Profile, Region
+from SIMS_Portal.models import User, NationalSociety, Skill, Language, Profile, Region
 
 class RegistrationForm(FlaskForm):
 	firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=40)])

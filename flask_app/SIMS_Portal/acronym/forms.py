@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField
-from flask_sqlalchemy import SQLAlchemy
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms_sqlalchemy.fields import QuerySelectField
-from SIMS_Portal.models import User, Acronym, NationalSociety
+from SIMS_Portal.models import NationalSociety
 
 class NewAcronymForm(FlaskForm):
     acronym_eng = StringField('Acronym (English)')

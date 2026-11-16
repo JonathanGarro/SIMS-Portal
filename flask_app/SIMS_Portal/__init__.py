@@ -103,14 +103,17 @@ def _register_blueprints(app):
 	from SIMS_Portal.alerts.routes import alerts
 	from SIMS_Portal.assignments.routes import assignments
 	from SIMS_Portal.availability.routes import availability
+	from SIMS_Portal.badges.routes import badges_bp
+	from SIMS_Portal.checklists.routes import checklists
 	from SIMS_Portal.emergencies.routes import emergencies
 	from SIMS_Portal.errors.handlers import errors
 	from SIMS_Portal.learnings.routes import learnings
 	from SIMS_Portal.main.routes import main
+	from SIMS_Portal.portal_admin.routes import portal_admin
 	from SIMS_Portal.portfolios.routes import portfolios
 	from SIMS_Portal.reviews.routes import reviews
 	from SIMS_Portal.stories.routes import stories
 	from SIMS_Portal.users.routes import users
 
-	for blueprint in (main, assignments, emergencies, portfolios, users, stories, learnings, reviews, alerts, errors, availability, acronym):
+	for blueprint in (main, portal_admin, badges_bp, checklists, assignments, emergencies, portfolios, users, stories, learnings, reviews, alerts, errors, availability, acronym):
 		app.register_blueprint(blueprint)

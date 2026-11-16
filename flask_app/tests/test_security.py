@@ -8,6 +8,7 @@ import pytest
 
 from SIMS_Portal import db
 from SIMS_Portal.main import routes as main_routes
+from SIMS_Portal.portal_admin import routes as portal_admin_routes
 from SIMS_Portal.models import Availability, Portfolio
 from tests.seed import MEMBER_ID
 
@@ -62,7 +63,7 @@ def test_manual_refresh_requires_login(client):
 
 def test_manual_refresh_forbidden_for_members(member_client, monkeypatch):
 	called = []
-	monkeypatch.setitem(main_routes.MANUAL_REFRESH_JOBS, 'update_member_locations', lambda: called.append(1))
+	monkeypatch.setitem(portal_admin_routes.MANUAL_REFRESH_JOBS, 'update_member_locations', lambda: called.append(1))
 	assert member_client.post('/manual_refresh/update_member_locations').status_code == 403
 	assert not called
 
@@ -74,7 +75,7 @@ def test_manual_refresh_rejects_unlisted_names(admin_client, func):
 
 def test_manual_refresh_runs_allowlisted_job(admin_client, monkeypatch):
 	called = []
-	monkeypatch.setitem(main_routes.MANUAL_REFRESH_JOBS, 'big_wig', lambda: called.append(1))
+	monkeypatch.setitem(portal_admin_routes.MANUAL_REFRESH_JOBS, 'big_wig', lambda: called.append(1))
 	response = admin_client.post('/manual_refresh/big_wig')
 	assert response.status_code == 302
 	assert called == [1]
@@ -82,14 +83,14 @@ def test_manual_refresh_runs_allowlisted_job(admin_client, monkeypatch):
 
 def test_manual_refresh_requires_csrf_token(admin_client, csrf_enabled, monkeypatch):
 	called = []
-	monkeypatch.setitem(main_routes.MANUAL_REFRESH_JOBS, 'big_wig', lambda: called.append(1))
+	monkeypatch.setitem(portal_admin_routes.MANUAL_REFRESH_JOBS, 'big_wig', lambda: called.append(1))
 	assert admin_client.post('/manual_refresh/big_wig').status_code == 400
 	assert not called
 
 
 def test_manual_refresh_landing_renders_csrf_forms(admin_client, csrf_enabled):
 	html = admin_client.get('/manual_refresh').get_data(as_text=True)
-	assert html.count('name=\'csrf_token\'') == len(main_routes.MANUAL_REFRESH_JOBS)
+	assert html.count('name=\'csrf_token\'') == len(portal_admin_routes.MANUAL_REFRESH_JOBS)
 	assert "href='/manual_refresh/" not in html
 
 

@@ -3,23 +3,22 @@ from markdown.extensions import Extension
 
 from flask import (
 	request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app
+	Blueprint
 )
 from flask_login import (
-	login_user, logout_user, current_user, login_required
+	current_user, login_required
 )
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func, text
+from sqlalchemy.sql import func
 
 from SIMS_Portal import db
-from SIMS_Portal.config import Config
 from SIMS_Portal.models import (
 	Story, Emergency, User, Assignment, Portfolio
 )
 from SIMS_Portal.stories.forms import (
 	NewStoryForm, UpdateStoryForm
 )
-from SIMS_Portal.stories.utils import save_header, check_sims_co
+from SIMS_Portal.stories.utils import save_header
+from SIMS_Portal.main.utils import check_sims_co
 
 stories = Blueprint('stories', __name__)
 

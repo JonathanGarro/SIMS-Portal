@@ -1,14 +1,12 @@
-from flask import url_for, current_app, jsonify
-import logging
+from flask import current_app
 import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_badge, user_skill, user_language, user_profile, Skill, Language, Profile, Portfolio, Documentation
+from SIMS_Portal.models import Emergency, NationalSociety, User, Assignment, user_skill, user_language, user_profile, Skill, Language, Profile, Portfolio, Documentation
 from SIMS_Portal import db
 from flask_login import current_user
 import boto3
-from sqlalchemy import func, String, distinct, desc, asc, select, text
-from sqlalchemy.orm import aliased
+from sqlalchemy import func, String, distinct, asc, select, text
 import requests
 
 def send_error_message(message):
@@ -34,7 +32,7 @@ def send_error_message(message):
 	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
-		result = client.chat_postMessage(
+		client.chat_postMessage(
 			channel = 'C046A8T9ZJB',
 			text = message
 		)
@@ -173,7 +171,6 @@ def fetch_slack_channels():
 	
 	token = current_app.config['SIMS_PORTAL_SLACK_BOT']
 	client = WebClient(token=token)
-	logger = logging.getLogger(__name__)
 	
 	conversations_store = {}
 	
@@ -485,7 +482,6 @@ def auto_badge_assigner_edward_tufte():
 			
 		users_eligible_for_edward_tufte = db.session.query(User.id, User.firstname, User.lastname, Portfolio.type, func.count().label('total')).join(Portfolio, Portfolio.creator_id == User.id).filter(Portfolio.product_status == 'Approved').filter(Portfolio.type == 'Infographic').group_by(User.id, Portfolio.type).having(func.count() >= 5).all()
 		
-		list_users_eligible_for_edward_tufte = []
 		for user in users_eligible_for_edward_tufte:
 			if user.id not in list_user_ids_with_edward_tufte:
 				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 31, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)

@@ -1,22 +1,15 @@
-import logging
-from datetime import datetime, date, timedelta
 
-import pandas as pd
 from flask import (
-	request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app, redirect
+	request, render_template, url_for, flash, Blueprint, current_app, redirect
 )
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
-	login_user, current_user, logout_user, login_required
+	current_user, login_required
 )
-from sqlalchemy import func, text
 
-from SIMS_Portal.assignments.utils import get_dates_current_and_next_week
-from SIMS_Portal.main.utils import check_sims_co, send_error_message
+from SIMS_Portal.main.utils import check_sims_co
 from SIMS_Portal.models import Assignment, User, Emergency, Portfolio, Log
 from SIMS_Portal.users.utils import send_slack_dm
-from SIMS_Portal import db, login_manager
+from SIMS_Portal import db
 from SIMS_Portal.assignments.forms import (
 	NewAssignmentForm, UpdateAssignmentForm
 )
@@ -108,14 +101,6 @@ def view_assignment(id):
 	assignment_portfolio = db.session.query(Portfolio).filter(Portfolio.assignment_id==id, Portfolio.product_status != 'Removed').all()
 	count_assignment_portfolio = len(assignment_portfolio)
 	
-	# get availability if reported and convert to list, else return empty list
-	if assignment_info.Assignment.availability:
-		assignment_availability = assignment_info.Assignment.availability
-		remove_brackets = assignment_availability.replace('[','').replace(']','').replace("'",'')
-		available_dates = remove_brackets.split(', ')
-	else:
-		available_dates = []
-		
 	return render_template('assignment_view.html', assignment_info=assignment_info, assignment_portfolio=assignment_portfolio, count_assignment_portfolio=count_assignment_portfolio, sims_co_check=sims_co_check)
 
 @assignments.route('/assignment/edit/<int:id>', methods=['GET', 'POST'])

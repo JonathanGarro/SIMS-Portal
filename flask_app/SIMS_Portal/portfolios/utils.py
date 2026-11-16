@@ -6,9 +6,8 @@ import boto3
 import dropbox
 from flask import current_app
 from SIMS_Portal import db
-from SIMS_Portal.models import Portfolio, User
+from SIMS_Portal.models import Portfolio
 from PIL import Image
-import logging
 
 
 def save_portfolio_to_dropbox(form_file, user_id, type):
@@ -56,7 +55,7 @@ def save_portfolio_to_dropbox(form_file, user_id, type):
 		oauth2_refresh_token = current_app.config['DROPBOX_REFRESH_TOKEN']
 	)
 	
-	uploaded = client.files_upload(open(local_file_path, "rb").read(), dropbox_path)
+	client.files_upload(open(local_file_path, "rb").read(), dropbox_path)
 	shared_link = client.sharing_create_shared_link(dropbox_path)
 	
 	share_link = shared_link.url
@@ -133,7 +132,6 @@ def get_full_portfolio(id):
 	None
 	"""
 	
-	user_info = db.session.query(User).filter(User.id == id).first()
 	all_collaborators_plus_creators = db.session.query(Portfolio.id, Portfolio.collaborator_ids, Portfolio.creator_id, Portfolio.product_status).filter(Portfolio.product_status != 'Removed').all()
 	
 	temp_list = []

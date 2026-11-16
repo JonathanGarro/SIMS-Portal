@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField
-from flask_sqlalchemy import SQLAlchemy
+from wtforms import SubmitField, BooleanField, IntegerField, DateTimeField, TextAreaField, SelectField
 from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from SIMS_Portal.models import User, Emergency, Assignment
+from SIMS_Portal.models import User, Emergency
 
 class NewAssignmentForm(FlaskForm):
 	user_id = QuerySelectField('SIMS Member', query_factory=lambda:User.query.filter_by(status='Active').order_by('firstname'), get_label='fullname', allow_blank=True)

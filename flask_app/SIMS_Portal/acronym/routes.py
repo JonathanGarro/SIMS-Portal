@@ -1,20 +1,17 @@
-import logging
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 from flask import (
-    request, render_template, url_for, flash, redirect,
-    jsonify, Blueprint, current_app, redirect, abort, session
+    request, render_template, url_for, flash, jsonify, Blueprint, redirect, abort
 )
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
-    login_user, current_user, logout_user, login_required
+    current_user, login_required
 )
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
 from SIMS_Portal.models import Acronym, User, Log, NationalSociety
-from SIMS_Portal.users.utils import send_slack_dm, new_acronym_alert
-from SIMS_Portal import db, login_manager
+from SIMS_Portal.users.utils import new_acronym_alert
+from SIMS_Portal import db
 from SIMS_Portal.acronym.forms import NewAcronymForm, EditAcronymForm
 
 acronym = Blueprint('acronym', __name__)
@@ -332,7 +329,7 @@ def approve_acronym(id):
         db.session.query(Acronym).filter(Acronym.id == id).update({'approved_by':current_user.id})
         db.session.commit()
         flash('Acronym has been approved and is now listed for all viewers.', 'success')
-        return redirect(url_for('main.admin_process_acronyms'))
+        return redirect(url_for('portal_admin.admin_process_acronyms'))
     else:
         list_admins = db.session.query(User, NationalSociety).join(NationalSociety, NationalSociety.ns_go_id == User.ns_id).filter(User.is_admin == True).all()
         return render_template('portal_admins.html', list_admins=list_admins)
@@ -380,9 +377,9 @@ def delete_acronym(id):
                 db.session.add(new_log)
                 db.session.commit()
                 
-                return redirect(url_for('main.admin_process_acronyms'))
+                return redirect(url_for('portal_admin.admin_process_acronyms'))
         
-        return redirect(url_for('main.admin_process_acronyms'))
+        return redirect(url_for('portal_admin.admin_process_acronyms'))
         
 @acronym.route('/acronym/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

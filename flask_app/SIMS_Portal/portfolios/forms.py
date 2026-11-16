@@ -1,15 +1,10 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
-from flask_sqlalchemy import SQLAlchemy
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField
+from flask_wtf.file import FileField
+from wtforms import StringField, SubmitField, BooleanField, TextAreaField, SelectField
 from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, URL
-from SIMS_Portal.models import User, Emergency, Portfolio
+from wtforms.validators import DataRequired, URL
+from SIMS_Portal.models import User, Emergency
 
-def validate_url_with_http_or_https(form, field):
-	url = field.data.lower()
-	if not url.startswith("http://") and not url.startswith("https://"):
-		raise ValidationError("URL must start with 'http://' or 'https://'")
 
 class PortfolioUploadForm(FlaskForm):
 	title = StringField('Product Title', validators=[DataRequired()])

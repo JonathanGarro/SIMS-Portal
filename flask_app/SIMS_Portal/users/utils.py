@@ -1,9 +1,8 @@
 import boto3
-from flask import url_for, current_app, flash, redirect, session
+from flask import url_for, current_app, session
 from PIL import Image
-from flask_mail import Message
 from SIMS_Portal import db, cache
-from SIMS_Portal.models import User, NationalSociety, user_language, Language, Assignment, user_profile, Profile, user_skill, Skill, Emergency, Log
+from SIMS_Portal.models import User, Log
 from slack_sdk import WebClient
 from datetime import datetime, timedelta
 import os
@@ -12,10 +11,8 @@ import tempfile
 import requests
 import http.client, urllib.parse
 import json
-import logging
 from io import BytesIO
-from sqlalchemy import select, func, Column, Integer, String, DateTime, outerjoin
-from sqlalchemy.orm import aliased
+from sqlalchemy import func
 
 
 def save_picture(form_picture):
@@ -114,7 +111,7 @@ def new_user_slack_alert(message):
 	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
-		result = client.chat_postMessage(
+		client.chat_postMessage(
 			channel = 'C046A8T9ZJB',
 			text = message
 		)
@@ -144,7 +141,7 @@ def new_surge_alert(message):
 	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
-		result = client.chat_postMessage(
+		client.chat_postMessage(
 			channel = 'CDUMNN3J8',
 			text = message
 		)
@@ -174,7 +171,7 @@ def test_surge_alert(message):
 	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
-		result = client.chat_postMessage(
+		client.chat_postMessage(
 			channel = 'C046A8T9ZJB',
 			text = message
 		)
@@ -204,7 +201,7 @@ def new_acronym_alert(message):
 	
 	client = WebClient(token = current_app.config['SIMS_PORTAL_SLACK_BOT'])
 	try:
-		result = client.chat_postMessage(
+		client.chat_postMessage(
 			channel = 'C046A8T9ZJB',
 			text = message
 		)
@@ -766,14 +763,14 @@ def process_inactive_members():
 		set_user_inactive(member.user_id)
 		message = f"Hi, {member.firstname}! Your account on the SIMS Portal has been automatically marked as Inactive because it has been more than six months since you last logged in. If you'd like to update it to be Active again, just <https://www.rcrcsims.org/login|login>."
 		try:
-			success = send_slack_dm(message, member.slack_id)
+			send_slack_dm(message, member.slack_id)
 		except Exception as e:
 			log_message = f"[ERROR] Failed to send Slack DM to user {member.user_id}: {e}."
 			new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
 			db.session.add(new_log)
 			db.session.commit()
 	
-	log_message = f"[INFO] process_inactive_members() function ran."
+	log_message = "[INFO] process_inactive_members() function ran."
 	new_log = Log(message=log_message, user_id=63) # save message as Clara Barton
 	db.session.add(new_log)
 	db.session.commit()

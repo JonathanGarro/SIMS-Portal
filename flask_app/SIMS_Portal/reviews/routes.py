@@ -1,15 +1,12 @@
 from flask import (
 	request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app
+	Blueprint, current_app
 )
 from flask_login import (
-	login_user, logout_user, current_user, login_required
+	current_user, login_required
 )
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
 
 from SIMS_Portal import db
-from SIMS_Portal.config import Config
 from SIMS_Portal.models import Review, Emergency, User
 from SIMS_Portal.reviews.forms import (
 	NewEmergencyReviewForm, ProcessEmergencyReviewForm
@@ -73,7 +70,7 @@ def process_op_review(id):
 		db.session.query(Review).filter(Review.id == id).update({'follow_up':follow_up, 'status':'Processed'})
 		db.session.commit()
 		flash('Review record successfully processed.', 'success')
-		return redirect(url_for('main.admin_process_reviews'))
+		return redirect(url_for('portal_admin.admin_process_reviews'))
 	else:
 		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
 		return render_template('errors/404.html', list_of_admins=list_of_admins), 404

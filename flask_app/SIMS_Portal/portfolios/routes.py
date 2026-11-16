@@ -2,19 +2,17 @@ import os
 
 from flask import (
 	request, render_template, url_for, flash, redirect,
-	jsonify, Blueprint, current_app, send_file, send_from_directory, abort
+	jsonify, Blueprint, current_app, send_from_directory, abort
 )
 from flask_login import (
-	login_user, logout_user, current_user, login_required
+	current_user, login_required
 )
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, desc
+from sqlalchemy import desc
 
 from SIMS_Portal import db
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Portfolio,
-	EmergencyType, Skill, Language, user_skill, user_language,
-	Badge, Alert, Documentation, Log
+	EmergencyType, Documentation, Log
 )
 from SIMS_Portal.portfolios.forms import PortfolioUploadForm, NewDocumentationForm
 from SIMS_Portal.users.utils import send_slack_dm
@@ -22,7 +20,6 @@ from SIMS_Portal.main.utils import send_error_message
 from SIMS_Portal.portfolios.utils import (
 	get_full_portfolio, save_portfolio_to_dropbox, save_cover_image
 )
-from func_timeout import func_timeout, FunctionTimedOut
 
 portfolios = Blueprint('portfolios', __name__)
 

@@ -1,11 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, DateTimeField, TextAreaField, SelectField, SelectMultipleField, HiddenField
-from flask_sqlalchemy import SQLAlchemy
+from wtforms import StringField, SubmitField, BooleanField, IntegerField, DateTimeField, TextAreaField, HiddenField
 from sqlalchemy import asc
-from flask_wtf.file import FileField, FileAllowed
 from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from SIMS_Portal.models import User, Emergency, NationalSociety, EmergencyType
+from wtforms.validators import DataRequired, Length
+from SIMS_Portal.models import NationalSociety, EmergencyType
 from wtforms.widgets import HiddenInput
 from datetime import datetime
 
