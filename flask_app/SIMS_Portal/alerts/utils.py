@@ -8,10 +8,23 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import requests
 import time
+from sqlalchemy import func, or_
 from sqlalchemy.exc import OperationalError
 from requests.exceptions import RequestException
 
 scheduler = APScheduler()
+
+def _summarize_failures(molnix_ids, limit=10):
+	"""
+	Short text listing the molnix_ids that failed during a surge alert run,
+	truncated so a bad run doesn't produce an enormous log line.
+	"""
+	if not molnix_ids:
+		return "none"
+	shown = ", ".join(str(molnix_id) for molnix_id in molnix_ids[:limit])
+	if len(molnix_ids) > limit:
+		shown += f" and {len(molnix_ids) - limit} more"
+	return shown
 
 def _is_transient_db_error(exc):
 	"""
@@ -266,6 +279,7 @@ def refresh_surge_alerts_latest():
 		
 	count_new_records = 0
 	count_updated_records = 0
+	failed_molnix_ids = []
 	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
 
 	try:
@@ -286,7 +300,7 @@ def refresh_surge_alerts_latest():
 		)
 		if not fetched_ok:
 			existing_alerts = []
-		existing_alert_ids = {alert.alert_id for alert in existing_alerts}
+		existing_alerts_by_id = {alert.alert_id: alert for alert in existing_alerts}
 	
 		safe_log(f"[INFO] Making API request to {url}.")
 	
@@ -464,7 +478,8 @@ def refresh_surge_alerts_latest():
 				
 			except Exception as e:
 				current_molnix_id = result.get("molnix_id", "Unknown")
-				safe_log(f"[ERROR] Error processing alert with molnix_id: {current_molnix_id}, error: {str(e)}")
+				failed_molnix_ids.append(current_molnix_id)
+				safe_log(f"[ERROR] Error processing alert with molnix_id: {current_molnix_id}, alert_id: {result.get('id', 'Unknown')}, error: {str(e)}")
 				continue
 	
 		for result in result_list:
@@ -487,7 +502,7 @@ def refresh_surge_alerts_latest():
 				if isinstance(role_tags, list):
 					result['role_tags'] = ', '.join(role_tags)
 		
-				existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
+				existing_alert = existing_alerts_by_id.get(result['alert_id'])
 		
 				if existing_alert:
 					if existing_alert.alert_status != result['alert_status']:
@@ -500,10 +515,11 @@ def refresh_surge_alerts_latest():
 							count_updated_records += 1
 							safe_log(f"[INFO] Updated alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
 						else:
+							failed_molnix_ids.append(current_molnix_id)
 							safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
 
 				else:
-					if result['alert_id'] not in existing_alert_ids:
+					if result['alert_id'] not in existing_alerts_by_id:
 						try:
 							individual_alert = Alert(
 								molnix_id=result['molnix_id'],
@@ -532,6 +548,7 @@ def refresh_surge_alerts_latest():
 								region_id=result['region_id']
 							)
 						except Exception as e:
+							failed_molnix_ids.append(current_molnix_id)
 							safe_log(f"[ERROR] Couldn't build alert object (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}): {e}")
 							continue
 
@@ -547,11 +564,13 @@ def refresh_surge_alerts_latest():
 							if individual_alert.im_filter:
 								send_im_alert_to_slack(individual_alert)
 						else:
+							failed_molnix_ids.append(current_molnix_id)
 							safe_log(f"[ERROR] Couldn't add alert (alert_id={result['alert_id']}, molnix_id: {current_molnix_id}) to the database.")
 							
 			except Exception as e:
 				current_molnix_id = result.get('molnix_id', 'Unknown')
-				safe_log(f"[ERROR] Error processing result with molnix_id: {current_molnix_id}, error: {str(e)}")
+				failed_molnix_ids.append(current_molnix_id)
+				safe_log(f"[ERROR] Error processing result with molnix_id: {current_molnix_id}, alert_id: {result.get('alert_id', 'Unknown')}, error: {str(e)}")
 	
 	except Exception as e:
 		try:
@@ -568,7 +587,11 @@ def refresh_surge_alerts_latest():
 		send_error_message(error_message)
 	finally:
 		try:
-			completion_message = f"[INFO] The Surge Alert cron job has finished. Added {count_new_records} new records and updated {count_updated_records} records."
+			completion_message = (
+				f"[INFO] The Surge Alert cron job has finished. Added {count_new_records} new records, "
+				f"updated {count_updated_records} records, {len(failed_molnix_ids)} failed "
+				f"(molnix_ids: {_summarize_failures(failed_molnix_ids)})."
+			)
 			safe_log(completion_message)
 		except Exception as final_e:
 			print(f"Failed to log completion message: {str(final_e)}")
@@ -576,8 +599,15 @@ def refresh_surge_alerts_latest():
 
 def refresh_open_alert_statuses():
 	"""
-	Re-check the status of every alert we still consider unresolved (anything
-	not already "Closed"), one at a time via the single-alert detail endpoint.
+	Re-check the status of every alert we still consider open (status "Open", or
+	no status at all), one at a time via the single-alert detail endpoint.
+	"Stood Down" and "Closed" alerts are final and aren't re-checked, which keeps
+	this to a handful of requests per run. An alert GO answers with 404 has been
+	deleted there; it is marked "Removed" so it stops being checked.
+
+	Alerts with no status are included as a safety net for any that
+	repair_missing_alert_statuses() couldn't match. Each one is fixed on its
+	first check and then drops out of this query once it is "Closed".
 
 	refresh_surge_alerts_latest() only ever looks at the newest ~50 alerts (the
 	list endpoint's default ordering is always newest-created-first, and its
@@ -602,7 +632,7 @@ def refresh_open_alert_statuses():
 	count_updated = 0
 
 	def _fetch_unresolved_alerts():
-		return db.session.query(Alert).filter(Alert.alert_status != 'Closed').all()
+		return db.session.query(Alert).filter(or_(Alert.alert_status.is_(None), Alert.alert_status == 'Open')).all()
 
 	fetched_ok, unresolved_alerts = with_db_retry(
 		_fetch_unresolved_alerts,
@@ -611,7 +641,7 @@ def refresh_open_alert_statuses():
 	if not fetched_ok:
 		return
 
-	safe_log(f"[INFO] refresh_open_alert_statuses checking {len(unresolved_alerts)} unresolved alerts.")
+	safe_log(f"[INFO] refresh_open_alert_statuses checking {len(unresolved_alerts)} open alerts.")
 
 	for alert in unresolved_alerts:
 		if not alert.alert_id:
@@ -619,8 +649,12 @@ def refresh_open_alert_statuses():
 
 		try:
 			response = requests.get(f"https://goadmin.ifrc.org/api/v2/surge_alert/{alert.alert_id}/", timeout=15)
-			response.raise_for_status()
-			data = response.json()
+			if response.status_code == 404:
+				# deleted in GO: mark it so it isn't re-checked on every run
+				data = {"molnix_status_display": "Removed"}
+			else:
+				response.raise_for_status()
+				data = response.json()
 		except RequestException as e:
 			safe_log(f"[WARNING] refresh_open_alert_statuses couldn't fetch alert_id {alert.alert_id}: {e}")
 			continue
@@ -651,6 +685,35 @@ def refresh_open_alert_statuses():
 
 	safe_log(f"[INFO] refresh_open_alert_statuses finished. Checked {count_checked} alerts, updated {count_updated}.")
 
+def repair_missing_alert_statuses():
+	"""
+	If any stored alerts have no status, run the paginated full refresh once to
+	fill them in.
+
+	Alerts saved while the app read GO's deprecated "status_display" field (always
+	None) were stored without a status, so the dashboard's "Open" filter can't
+	match them. The list endpoint returns 50 alerts per request, so a full refresh
+	repairs every one of them in a few dozen requests, where checking each alert
+	individually would take one request per alert. Once nothing is missing a
+	status this does nothing.
+
+	Returns:
+	int: how many alerts were missing a status before the repair (0 if none).
+	"""
+	def _count_missing():
+		return db.session.query(func.count(Alert.id)).filter(Alert.alert_status.is_(None)).scalar()
+
+	counted_ok, missing = with_db_retry(
+		_count_missing,
+		on_give_up=lambda e: safe_log(f"[ERROR] repair_missing_alert_statuses couldn't count alerts without a status: {e}")
+	)
+	if not counted_ok or not missing:
+		return 0
+
+	safe_log(f"[INFO] {missing} alerts have no status; running the full surge alert refresh to repair them.")
+	refresh_surge_alerts()
+	return missing
+
 def refresh_surge_alerts(pages_to_fetch=100):
 	"""
 	Refresh and update surge alerts from the GO Admin API, fetching a specified number of pages.
@@ -676,6 +739,7 @@ def refresh_surge_alerts(pages_to_fetch=100):
 	
 	count_new_records = 0
 	count_updated_records = 0
+	failed_molnix_ids = []
 
 	try:
 		safe_log("[INFO] The Surge Alert (full version) function has started.")
@@ -689,14 +753,7 @@ def refresh_surge_alerts(pages_to_fetch=100):
 		)
 		if not fetched_ok:
 			existing_alerts = []
-		existing_alert_ids = []
-		existing_statuses = []
-		for alert in existing_alerts:
-			existing_alert_ids.append(alert.alert_id)
-			alert_dict = {}
-			alert_dict['molnix_id'] = alert.alert_id
-			alert_dict['alert_status'] = alert.alert_status
-			existing_statuses.append(alert_dict)
+		existing_alerts_by_id = {alert.alert_id: alert for alert in existing_alerts}
 		
 		url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
 		result_list = []
@@ -704,7 +761,8 @@ def refresh_surge_alerts(pages_to_fetch=100):
 		current_page = 1
 		
 		while url and current_page <= pages_to_fetch:
-			response = requests.get(url)
+			response = requests.get(url, timeout=30)
+			response.raise_for_status()
 			data = response.json()
 			results = data.get("results", [])
 		
@@ -809,7 +867,7 @@ def refresh_surge_alerts(pages_to_fetch=100):
 			result['sectors'] = ', '.join(result['sectors'])
 			result['role_tags'] = ', '.join(result['role_tags'])
 
-			existing_alert = next((alert for alert in existing_alerts if alert.alert_id == result['alert_id']), None)
+			existing_alert = existing_alerts_by_id.get(result['alert_id'])
 
 			if existing_alert:
 				# check if alert_status has changed
@@ -822,11 +880,12 @@ def refresh_surge_alerts(pages_to_fetch=100):
 					if updated_ok:
 						count_updated_records += 1
 					else:
-						safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}.")
+						failed_molnix_ids.append(result['molnix_id'])
+						safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {result['molnix_id']}.")
 
 			else:
 				# this is a new alert; add it to the database
-				if result['alert_id'] not in existing_alert_ids:
+				if result['alert_id'] not in existing_alerts_by_id:
 					try:
 						individual_alert = Alert(
 							molnix_id = result['molnix_id'],
@@ -854,7 +913,8 @@ def refresh_surge_alerts(pages_to_fetch=100):
 							alert_id = result['alert_id']
 						)
 					except Exception as e:
-						safe_log(f"[WARNING] The refresh_surge_alerts (full version) function couldn't parse one of the alerts it found in the Surge Alert cron job as it tried to instantiate a new Alert object: {e}")
+						failed_molnix_ids.append(result['molnix_id'])
+						safe_log(f"[WARNING] The refresh_surge_alerts (full version) function couldn't build an Alert object (alert_id={result['alert_id']}, molnix_id: {result['molnix_id']}): {e}")
 						continue
 
 					def _add_alert():
@@ -865,10 +925,15 @@ def refresh_surge_alerts(pages_to_fetch=100):
 					if added_ok:
 						count_new_records += 1
 					else:
-						safe_log(f"[ERROR] The refresh_surge_alerts (full version) function couldn't add one of the alerts (alert_id={result['alert_id']}) to the database.")
+						failed_molnix_ids.append(result['molnix_id'])
+						safe_log(f"[ERROR] The refresh_surge_alerts (full version) function couldn't add one of the alerts (alert_id={result['alert_id']}, molnix_id: {result['molnix_id']}) to the database.")
 
 	except Exception as e:
 		safe_log(f"[ERROR] The Surge Alert (full version) cron job has failed: {e}.")
 		send_error_message(f"[ERROR] The Surge Alert (full version) cron job has failed: {e}.")
 
-	safe_log(f"[INFO] The Surge Alert (full version) cron job has finished and logged {count_new_records} new records.")
+	safe_log(
+		f"[INFO] The Surge Alert (full version) cron job has finished. Added {count_new_records} new records, "
+		f"updated {count_updated_records} records, {len(failed_molnix_ids)} failed "
+		f"(molnix_ids: {_summarize_failures(failed_molnix_ids)})."
+	)
