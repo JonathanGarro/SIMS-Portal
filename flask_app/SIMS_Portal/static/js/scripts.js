@@ -1,3 +1,15 @@
+// DataTables 2 defaults that match production's DataTables 1 tables: "Previous / Next"
+// pagination and the "Show _ entries" length label (#158 follow-up)
+if (window.DataTable) {
+	$.extend(true, DataTable.defaults, {
+		pagingType: 'simple_numbers',
+		language: {
+			lengthMenu: 'Show _MENU_ entries',
+			paginate: {previous: 'Previous', next: 'Next'},
+		},
+	});
+}
+
 // fade flash alerts after 5 seconds
 window.setTimeout(function() {
 	$("#alert").fadeTo(500, 0) 

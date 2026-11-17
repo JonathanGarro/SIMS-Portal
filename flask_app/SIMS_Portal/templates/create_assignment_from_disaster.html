@@ -35,7 +35,7 @@
 				<div class="row">
 					<h4 class="text-danger Montserrat pb-3">{{emergency_info.emergency_name}}</h4>
 						<div class="col-md-6">
-							<div class="mb-3 pb-4">
+							<div class="pb-4">
 								{{ form.user_id.label(class="form-control-label pb-2 text-danger") }}
 								{% if form.user_id.errors %}
 									{{ form.user_id(class="form-control form-control-lg is-invalid") }}
@@ -50,7 +50,7 @@
 							</div>
 						</div>
 					<div class="col">
-						<div class="mb-3 pb-4">
+						<div class="pb-4">
 							{{ form.role.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.role.errors %}
@@ -70,13 +70,13 @@
 				<div class="row" id="assignment-dates" style="display: none;">
 					<div class="row">
 						<div class="col-6">
-							<div class="mb-3 pb-4">
+							<div class="pb-4">
 								{{ form.start_date.label(class="form-control-label pb-2 text-secondary") }}
 								{{ form.start_date(class="form-control form-control-lg", type="date") }}
 							</div>
 						</div>
 						<div class="col-6">
-							<div class="mb-3 pb-4">
+							<div class="pb-4">
 								{{ form.end_date.label(class="form-control-label pb-2 text-secondary") }}
 								{{ form.end_date(class="form-control form-control-lg", type="date") }}
 							</div>
@@ -86,7 +86,7 @@
 				
 				<div class="row">
 					<div class="col">
-						<div class="mb-3 pb-4">
+						<div class="pb-4">
 							{{ form.assignment_details.label(class="form-control-label pb-2 text-secondary") }}
 							
 							{% if form.assignment_details.errors %}

@@ -36,7 +36,7 @@
       <div class="col pb-4">
         <form method="POST" action="" class="mx-auto p-4 bg-light text-light rounded-3 border border-3" novalidate>
           {{ form.hidden_tag() }}
-          <fieldset class="mb-3">
+          <fieldset class="">
             <div class="accordion mb-3" id="acronymForm">
               <div class="accordion-item">
                 <h2 class="accordion-header" id="english">
@@ -49,7 +49,7 @@
                 <div id="collapseEnglish" class="accordion-collapse collapse show" aria-labelledby="english" data-bs-parent="#acronymForm">
                   <div class="accordion-body">
                     <div class='row'>
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.acronym_eng.label(class="form-control-label pb-2 text-danger") }}
 
                                 {% if form.acronym_eng.errors %}
@@ -65,7 +65,7 @@
                       </div>
 
 
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.def_eng.label(class="form-control-label pb-2 text-danger") }}
 
                                     {% if form.def_eng.errors %}
@@ -83,7 +83,7 @@
                     </div>
                     <div class='row'>
                       <div class='col'>
-                        <div class="mb-3 pb-4">
+                        <div class="pb-4">
                           {{ form.expl_eng.label(class="form-control-label pb-2 text-danger") }}
                                     {% if form.expl_eng.errors %}
                           {{ form.expl_eng(class="form-control form-control-lg is-invalid") }}
@@ -112,7 +112,7 @@
                 <div id="collapseSpanish" class="accordion-collapse collapse" aria-labelledby="spanish" data-bs-parent="#acronymForm">
                   <div class="accordion-body">
                     <div class='row'>
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.acronym_esp.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.acronym_esp.errors %}
@@ -127,7 +127,7 @@
                                       {% endif %}
                       </div>
 
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.def_esp.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.def_esp.errors %}
@@ -144,7 +144,7 @@
                     </div>
                     <div class='row'>
                       <div class='col'>
-                        <div class="mb-3 pb-4">
+                        <div class="pb-4">
                           {{ form.expl_esp.label(class="form-control-label pb-2 text-danger") }}
                                       {% if form.expl_esp.errors %}
                           {{ form.expl_esp(class="form-control form-control-lg is-invalid") }}
@@ -174,7 +174,7 @@
                 <div id="collapseFrench" class="accordion-collapse collapse" aria-labelledby="french" data-bs-parent="#acronymForm">
                   <div class="accordion-body">
                     <div class='row'>
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.acronym_fra.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.acronym_fra.errors %}
@@ -188,7 +188,7 @@
                         {{ form.acronym_fra(class="form-control form-control-lg") }}
                                       {% endif %}
                       </div>
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.def_fra.label(class="form-control-label pb-2 text-danger") }}
 
                                       {% if form.def_fra.errors %}
@@ -204,7 +204,7 @@
                       </div>
                     </div>
                     <div class='row'>
-                      <div class="mb-3 pb-4">
+                      <div class="pb-4">
                         {{ form.expl_fra.label(class="form-control-label pb-2 text-danger") }}
                                       {% if form.expl_fra.errors %}
                         {{ form.expl_fra(class="form-control form-control-lg is-invalid") }}
@@ -223,7 +223,7 @@
               </div>
               <div class="row">
                 <div class="col">
-                  <div class="mb-3 pt-4">
+                  <div class="pt-4">
                     {{ form.scope.label(class="form-control-label pb-2 text-danger") }}
                   
                             {% if form.scope.errors %}
@@ -239,7 +239,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <div class="mb-3 pt-4">
+                  <div class="pt-4">
                     {{ form.associated_ns.label(class="form-control-label pb-2 text-secondary") }}
                   
                             {% if form.associated_ns.errors %}
@@ -255,7 +255,7 @@
                   </div>
                 </div>
               </div>
-              <div class="mb-3 pt-5">
+              <div class="pt-5">
                 {{ form.relevant_link.label(class="form-control-label pb-2 text-secondary") }}
 
                             {% if form.relevant_link.errors %}

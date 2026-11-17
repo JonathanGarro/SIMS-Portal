@@ -30,7 +30,7 @@ function getRandomImage() {
 	   {% endwith %}
 	</div>
 	<div class="row">
-		<div class="col me-4">
+		<div class="col">
 			<div id="randImage"></div>
 		</div>
 		<div class="col-md-4">
@@ -38,7 +38,7 @@ function getRandomImage() {
 			<form action="" method="POST" class="mx-auto p-4 bg-light border border-3 text-light rounded-3" novalidate>
 				{{ form.hidden_tag() }}
 			<h2 class="text-danger pb-4 Montserrat">Member Login</h2>
-			<div class="mb-3 pb-4">
+			<div class="pb-4">
 				{{ form.email.label(class="form-control-label pb-2 text-danger") }}
 				
 				{% if form.email.errors %}
@@ -52,7 +52,7 @@ function getRandomImage() {
 					{{ form.email(class="form-control form-control-lg") }}
 				{% endif %}
 			</div>
-			<div class="mb-3 pb-4">
+			<div class="pb-4">
 				{{ form.password.label(class="form-control-label pb-2 text-danger") }}
 				
 				{% if form.password.errors %}

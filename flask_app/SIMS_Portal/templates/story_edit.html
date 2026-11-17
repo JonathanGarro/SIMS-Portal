@@ -30,7 +30,7 @@
 				<div class="row">
 					<h4 class="text-danger pb-3 Montserrat">Edit Response Story for {{emergency_name[0]}}</h4>
 						<img src='/uploads/{{story.header_image}}' class='img-fluid mb-4'>
-							<div class="mb-3 pb-4">
+							<div class="pb-4">
 								{{ form.header_image.label(class="form-control-label pb-2 text-danger") }}
 								{% if form.header_image.errors %}
 									{{ form.header_image(class="form-control form-control-lg is-invalid") }}
@@ -45,7 +45,7 @@
 							</div>
 
 
-						<div class="mb-3 pb-4">
+						<div class="pb-4">
 							{{ form.header_caption.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.header_caption.errors %}
@@ -63,7 +63,7 @@
 				</div>
 				<div class="row">
 
-						<div class="mb-3 pb-4">
+						<div class="pb-4">
 							{{ form.entry.label(class="form-control-label pb-2 text-danger") }}
 							
 							{% if form.entry.errors %}
