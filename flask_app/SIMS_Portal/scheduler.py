@@ -33,11 +33,12 @@ def _acquire_scheduler_lock(path):
 
 
 def run_surge_alert_refresh():
-	from SIMS_Portal.alerts.utils import refresh_open_alert_statuses, refresh_surge_alerts_latest
+	from SIMS_Portal.alerts.utils import refresh_open_alert_statuses, refresh_surge_alerts_latest, repair_missing_alert_statuses
 	from SIMS_Portal.main.utils import heartbeats
 	from flask import current_app
 
 	refresh_surge_alerts_latest()
+	repair_missing_alert_statuses()
 	refresh_open_alert_statuses()
 	heartbeats('run_surge_alert_refresh', current_app.config['HEARTBEAT_URL_SURGE_ALERTS'])
 
