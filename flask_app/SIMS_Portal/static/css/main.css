@@ -271,7 +271,7 @@ p {
 }
 
 
-.dataTables_filter {
+.dataTables_filter, div.dt-search {
 	margin-bottom: 20px;
 }
 
@@ -595,28 +595,28 @@ p {
 	color: #ffffff
 }
 
-div.dataTables_wrapper div.dataTables_filter label {
+div.dataTables_wrapper div.dataTables_filter label, div.dt-container div.dt-search label {
 	font-weight: bold;
 	font-family: 'Montserrat';
 	white-space: nowrap;
 	text-align: left;
 }
 
-div.dataTables_wrapper div.dataTables_length label {
+div.dataTables_wrapper div.dataTables_length label, div.dt-container div.dt-length label {
 	font-weight: bold;
 	font-family: 'Montserrat';
 	text-align: left;
 	white-space: nowrap;
 }
 
-table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>th.sorting_asc, table.dataTable thead>tr>th.sorting_desc, table.dataTable thead>tr>th.sorting_asc_disabled, table.dataTable thead>tr>th.sorting_desc_disabled, table.dataTable thead>tr>td.sorting, table.dataTable thead>tr>td.sorting_asc, table.dataTable thead>tr>td.sorting_desc, table.dataTable thead>tr>td.sorting_asc_disabled, table.dataTable thead>tr>td.sorting_desc_disabled {
+table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>th.sorting_asc, table.dataTable thead>tr>th.sorting_desc, table.dataTable thead>tr>th.sorting_asc_disabled, table.dataTable thead>tr>th.sorting_desc_disabled, table.dataTable thead>tr>td.sorting, table.dataTable thead>tr>td.sorting_asc, table.dataTable thead>tr>td.sorting_desc, table.dataTable thead>tr>td.sorting_asc_disabled, table.dataTable thead>tr>td.sorting_desc_disabled, table.dataTable thead>tr>th.dt-orderable-asc, table.dataTable thead>tr>th.dt-orderable-desc {
 	cursor: pointer;
 	position: relative;
 	font-family: 'Montserrat';
 	padding-right: 26px;
 }
 
-div.dataTables_wrapper div.dataTables_info {
+div.dataTables_wrapper div.dataTables_info, div.dt-container div.dt-info {
 	padding-top: 0.85em;
 	font-family: 'Montserrat';
 	color: #6c757d
@@ -789,4 +789,71 @@ div.dt-container .dt-layout-table > div {
 .offcanvas .ns-dropdown-menu {
 	max-height: 50vh;
 	overflow-y: auto;
+}
+
+/* --- parity with production's Bootstrap 5.1 / DataTables 1 look (#158 follow-up) ---
+   Production loads Bootstrap 5.1 CSS and DataTables 1. Bootstrap 5.3 and DataTables 2
+   changed some defaults; these put the visible ones back. */
+
+/* 5.3's .link-danger is !important and Bootstrap red; production shows the site red */
+.link-danger:not(:hover):not(:focus) {
+	color: #df4759 !important;
+}
+
+/* 5.3 tables default to black text on a white cell background (5.1: body text color,
+   transparent), and their cell color rule outranks classes like .star-3 */
+.table {
+	--bs-table-color: var(--bs-body-color);
+	--bs-table-striped-color: var(--bs-body-color);
+	--bs-table-hover-color: var(--bs-body-color);
+	--bs-table-bg: transparent;
+}
+.table td.star, .table td.star-1 { color: #838080; }
+.table td.star-2 { color: #005b08; }
+.table td.star-3 { color: #d58d20; }
+.table td.star-4 { color: #991622; }
+
+/* DataTables 2's Bootstrap rows each get .mt-2; DataTables 1's had no top margin */
+div.dt-container > div.row {
+	margin-top: 0 !important;
+}
+/* Bootstrap 5.3 sets the pagination font size and a grey disabled background;
+   5.1 inherited the font size and kept disabled links white */
+.page-link {
+	font-size: inherit;
+}
+.page-item.disabled .page-link, .page-link.disabled {
+	background-color: #fff;
+	color: #6c757d;
+}
+
+/* DataTables 1 kept tables 6px from the controls (and overrode margin utilities) */
+table.dataTable {
+	margin-top: 6px !important;
+	margin-bottom: 6px !important;
+}
+/* DataTables 2 right-aligns number and date columns; production left-aligns them */
+table.dataTable th.dt-type-numeric, table.dataTable td.dt-type-numeric,
+table.dataTable th.dt-type-date, table.dataTable td.dt-type-date {
+	text-align: start;
+}
+table.dataTable th.dt-type-numeric div.dt-column-header, table.dataTable th.dt-type-date div.dt-column-header {
+	flex-direction: row;
+}
+table.dataTable thead>tr>th.dt-orderable-asc, table.dataTable thead>tr>th.dt-orderable-desc {
+	padding-right: 26px;
+}
+table.dataTable tr.dtrg-group th, table.dataTable tr.dtrg-group td {
+	background-color: #e0e0e0;
+}
+/* pagination: production's DataTables 1 links were 18px, site red, white when disabled */
+div.dt-container div.dt-paging .page-link {
+	font-size: 1.125rem;
+}
+div.dt-container div.dt-paging .page-item:not(.active):not(.disabled) .page-link {
+	color: #df4759;
+}
+div.dt-container div.dt-paging .page-item.disabled .page-link {
+	background-color: #fff;
+	color: #6c757d;
 }

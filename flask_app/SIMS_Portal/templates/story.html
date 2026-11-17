@@ -29,7 +29,7 @@
 		</div>
 		<div class='col-md-3 ps-5 pe-4'>
 			{% if current_user.is_admin == 1 %}
-			<a href="/story/edit/{{story_data.emergency_id}}" class="list-group-item list-group-item-secondary mb-2">Edit Story</a>
+			<div class="list-group mb-2"><a href="/story/edit/{{story_data.emergency_id}}" class="list-group-item list-group-item-secondary">Edit Story</a></div>
 			{% endif %}
 			<h3 class='Montserrat mb-3'>SIMS Support</h3>
 		  	<div class="row mb-4">
