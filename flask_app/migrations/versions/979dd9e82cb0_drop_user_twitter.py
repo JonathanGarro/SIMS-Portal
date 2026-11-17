@@ -1,7 +1,7 @@
 """Drop user.twitter (the Twitter/X profile field, removed from the UI in #136)
 
 Revision ID: 979dd9e82cb0
-Revises: c02b8677c08a
+Revises: 4f2b1c9e7a30
 Create Date: 2026-11-16 15:00:00.000000
 
 Irreversible for data: downgrade re-creates the column empty. Back up the
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '979dd9e82cb0'
-down_revision = 'c02b8677c08a'
+down_revision = '4f2b1c9e7a30'
 branch_labels = None
 depends_on = None
 
