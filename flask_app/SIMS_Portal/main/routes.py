@@ -102,25 +102,18 @@ def dashboard():
 		Assignment.assignment_status != 'Removed'
 	).scalar()
 
-	# filter open alerts to only show last 90 days
+	# every open surge alert from the last 90 days; the dashboard table can be
+	# narrowed to Information Management alerts with a toggle
 	ninety_days_ago = datetime.now() - timedelta(days=90)
-	count_active_IM_alerts = db.session.query(func.count()).filter(
-		Alert.im_filter == True,
+	open_alerts = db.session.query(Alert).filter(
 		Alert.alert_status == 'Open',
 		Alert.alert_record_created_at >= ninety_days_ago,
 		Alert.end_time.isnot(None)
-	).scalar()
+	).order_by(Alert.start.desc()).all()
+	count_open_alerts = len(open_alerts)
+	count_open_IM_alerts = sum(1 for alert in open_alerts if alert.im_filter)
 
-	list_active_IM_alerts = db.session.query(Alert).filter(
-		Alert.im_filter == True,
-		Alert.alert_status == 'Open',
-		Alert.alert_record_created_at >= ninety_days_ago,
-		Alert.end_time.isnot(None)
-	).all()
-
-	surge_alerts = db.session.query(Alert).filter(Alert.im_filter == True).all()
-
-	return render_template('dashboard.html', title='Dashboard', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,surge_alerts=surge_alerts, regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, count_active_IM_alerts=count_active_IM_alerts, list_active_IM_alerts=list_active_IM_alerts)
+	return render_template('dashboard.html', title='Dashboard', active_assignments=active_assignments, count_active_assignments=count_active_assignments, labels_for_assignment=labels_for_assignment, values_for_assignment=values_for_assignment, labels_for_product=labels_for_product, values_for_product=values_for_product, pending_user_check=pending_user_check, active_emergencies=active_emergencies, count_active_emergencies=count_active_emergencies,regional_im_leads=regional_im_leads, count_active_remote_supporters=count_active_remote_supporters, open_alerts=open_alerts, count_open_alerts=count_open_alerts, count_open_IM_alerts=count_open_IM_alerts)
 
 # role profile slugs used in URLs; each has a matching role_profile_<slug>.html
 # template and a Profile row whose `image` column is the capitalized slug
