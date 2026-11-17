@@ -69,9 +69,8 @@
 						<div class="col-4">
 							<div class="card bg-dark h-100 border-0 shadow-sm px-sm-3 px-lg-3">
 								<div class="card-body bg-dark d-flex flex-column align-items-center justify-content-center">
-									<h1 class="Montserrat text-white">{{ count_open_alerts }}</h1>
-									<h6 class="text-danger Montserrat">Open Alert{% if count_open_alerts != 1 %}s{% endif %}</h6>
-									<span class="small text-light">{{ count_open_IM_alerts }} Information Management</span>
+									<h1 class="Montserrat text-white">{{ count_open_IM_alerts }}</h1>
+									<h6 class="text-danger Montserrat">Open IM Alert{% if count_open_IM_alerts != 1 %}s{% endif %}</h6>
 								</div>
 							</div>
 						</div>
@@ -234,9 +233,10 @@
 
 			</div>
 			<div class="tab-pane fade" id="surge-alerts" role="tabpanel" aria-labelledby="surge-alerts-tab">
+				{# Information Management alerts by default; the switch adds the rest #}
 				<div class="form-check form-switch mb-2">
-					<input class="form-check-input" type="checkbox" role="switch" id="im-alerts-only">
-					<label class="form-check-label Montserrat" for="im-alerts-only">Only Information Management alerts ({{ count_open_IM_alerts }} of {{ count_open_alerts }})</label>
+					<input class="form-check-input" type="checkbox" role="switch" id="show-all-alerts">
+					<label class="form-check-label Montserrat" for="show-all-alerts">Show all open alerts ({{ count_open_alerts }})</label>
 				</div>
 				<div class='row mb-3'>
 					<table class='table table-striped table-hover w-100' id='alert-table'>

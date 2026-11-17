@@ -153,20 +153,24 @@ $(document).ready(function () {
 			'copy', 'csv'
 		],
 		order: [],
-		language: { emptyTable: 'No open surge alerts right now.', zeroRecords: 'No open Information Management alerts right now.' },
+		language: {
+			emptyTable: 'No open surge alerts right now.',
+			zeroRecords: 'No open Information Management alerts right now. Use "Show all open alerts" to see the others.',
+		},
 	});
 
-	// dashboard "Only Information Management alerts" switch: hide rows whose
-	// data-im is 0 while it's on (only applies to the alert table)
+	// dashboard alert table: Information Management alerts only (data-im="1")
+	// unless the "Show all open alerts" switch is on
 	DataTable.ext.search.push(function (settings, data, dataIndex) {
-		if (settings.nTable.id !== 'alert-table' || !$('#im-alerts-only').is(':checked')) {
+		if (settings.nTable.id !== 'alert-table' || $('#show-all-alerts').is(':checked')) {
 			return true;
 		}
 		return settings.aoData[dataIndex].nTr.getAttribute('data-im') === '1';
 	});
-	$('#im-alerts-only').on('change', function () {
+	$('#show-all-alerts').on('change', function () {
 		alertTable.draw();
 	});
+	alertTable.draw();
 });
 
 $(document).ready(function () {

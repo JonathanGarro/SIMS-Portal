@@ -102,8 +102,8 @@ def dashboard():
 		Assignment.assignment_status != 'Removed'
 	).scalar()
 
-	# every open surge alert from the last 90 days; the dashboard table can be
-	# narrowed to Information Management alerts with a toggle
+	# every open surge alert from the last 90 days; the dashboard counts and shows
+	# Information Management ones by default, with a switch to show them all
 	ninety_days_ago = datetime.now() - timedelta(days=90)
 	open_alerts = db.session.query(Alert).filter(
 		Alert.alert_status == 'Open',
