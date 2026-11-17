@@ -765,7 +765,14 @@ div.dt-container .dt-layout-table > div {
 	font-family: 'Montserrat';
 	font-size: 20px;
 	text-decoration: none;
-	color: white;
+}
+
+/* the brand link in the red top bar is white. Bootstrap 5.3's .navbar-brand and a
+   plain .portal-brand are single classes, which lose to the red a:link rule above,
+   so scope them to the bar (Bootstrap 5.1's .navbar-dark .navbar-brand used to win) */
+#navbar_top .navbar-brand,
+#navbar_top .portal-brand {
+	color: #fff;
 }
 
 /* the current page's link, in the logged-out top bar and the mobile menu */
