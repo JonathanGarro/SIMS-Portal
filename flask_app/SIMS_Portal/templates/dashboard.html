@@ -49,8 +49,9 @@
 		<div class='row'>
 			<div class="tab-content" id="dashboardContent">
 				<div class="tab-pane show fade active" id="active-ops" role="tabpanel" aria-labelledby="active-ops-tab">
-					<div class="row mb-3">
-						<div class="col-4">
+					{# the three counters sit side by side from md up and stack on phones #}
+					<div class="row gy-3 mb-3">
+						<div class="col-12 col-md-4">
 							<div class="card bg-dark h-100 border-0 shadow-sm px-sm-3 px-lg-3">
 								<div class="card-body bg-dark d-flex flex-column align-items-center justify-content-center">
 									<h1 class="Montserrat text-white">{{ count_active_emergencies }}</h1>
@@ -58,7 +59,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-4">
+						<div class="col-12 col-md-4">
 							<div class="card bg-dark h-100 border-0 shadow-sm px-sm-3 px-lg-3">
 								<div class="card-body bg-dark d-flex flex-column align-items-center justify-content-center">
 									<h1 class="Montserrat text-white">{{ count_active_remote_supporters }}</h1>
@@ -66,7 +67,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-4">
+						<div class="col-12 col-md-4">
 							<div class="card bg-dark h-100 border-0 shadow-sm px-sm-3 px-lg-3">
 								<div class="card-body bg-dark d-flex flex-column align-items-center justify-content-center">
 									<h1 class="Montserrat text-white">{{ count_open_IM_alerts }}</h1>
