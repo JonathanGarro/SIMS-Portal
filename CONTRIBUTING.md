@@ -138,6 +138,8 @@ Schema changes go through Alembic (Flask-Migrate). After changing `models.py`:
 
 The migration history starts at a baseline (`c02b8677c08a`) that creates the full schema. The older revisions in `migrations/archive/` are for reference only, because they could not build a database from scratch (#175).
 
+A database restored from an older production dump may still be at revision `1f05ced78d0d` (October 2023, before the checklist tables). `flask db upgrade` can't run from there. First run `flask reconcile-production-schema` (add `--dry-run` to preview). It creates the missing tables, applies the small type fixes, and stamps the database at the baseline. After that, `flask db upgrade` works as usual.
+
 ## Managing Docker
 
 - When you make changes and want to view them, you'll need to stop the Docker container and rebuild it. 

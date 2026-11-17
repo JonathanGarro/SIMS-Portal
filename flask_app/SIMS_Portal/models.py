@@ -64,9 +64,12 @@ class Log(db.Model):
 	__tablename__ = 'log'
 
 	id = db.Column(db.Integer, primary_key=True)
-	message = db.Column(db.String(500))
+	message = db.Column(db.Text)
 	user_id = db.Column(db.Integer)
 	timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+	# filled in by the before_insert_update_log_type database trigger from the
+	# message's leading [TAG] (see migration 4f2b1c9e7a30); the app doesn't set it
+	log_type = db.Column(db.String(50))
 
 	def __repr__(self):
 		return f"Log({self.timestamp}: {self.message}"
@@ -460,7 +463,7 @@ class Region(db.Model):
 	__tablename__ = 'region'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String)
+	name = db.Column(db.String, nullable=False)
 
 class RegionalFocalPoint(db.Model):
 	__tablename__ = 'regional_focal_point'
