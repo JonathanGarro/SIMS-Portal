@@ -145,15 +145,27 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-	$('#alert-table').DataTable({
+	var alertTable = $('#alert-table').DataTable({
 		// DataTables 2 equivalent of the legacy dom: 'frtipB' (search, table, info,
 		// paging, then the export buttons below; no page-length menu)
 		layout: { topStart: null, topEnd: 'search', bottomStart: 'info', bottomEnd: 'paging', bottom2Start: 'buttons' },
 		buttons: [
 			'copy', 'csv'
 		],
-		
-		
+		order: [],
+		language: { emptyTable: 'No open surge alerts right now.', zeroRecords: 'No open Information Management alerts right now.' },
+	});
+
+	// dashboard "Only Information Management alerts" switch: hide rows whose
+	// data-im is 0 while it's on (only applies to the alert table)
+	DataTable.ext.search.push(function (settings, data, dataIndex) {
+		if (settings.nTable.id !== 'alert-table' || !$('#im-alerts-only').is(':checked')) {
+			return true;
+		}
+		return settings.aoData[dataIndex].nTr.getAttribute('data-im') === '1';
+	});
+	$('#im-alerts-only').on('change', function () {
+		alertTable.draw();
 	});
 });
 
