@@ -294,9 +294,11 @@ p {
 	overflow-y: auto;
 }
 
+/* the National Societies toggle takes its menu's size, like the links beside it:
+   14px in the desktop second bar, 16px in the mobile menu */
 .dropdown-toggle {
-	font-family: 'Montserrat'; 
-	font-size: 14px;
+	font-family: 'Montserrat';
+	font-size: inherit;
 }
 
 .emergency-status-label {
