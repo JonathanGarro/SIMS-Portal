@@ -216,3 +216,14 @@ def test_inline_styles_do_not_increase():
 		f'{count} inline style attributes (limit {MAX_INLINE_STYLES}); move the new ones into static/css/main.css')
 	if count < MAX_INLINE_STYLES:
 		pytest.fail(f'Only {count} inline styles now: lower MAX_INLINE_STYLES in this file to {count}')
+
+
+def test_static_assets_are_served_from_the_assets_folder(client):
+	# SIMS_Portal/static/assets is a symlink to flask_app/assets/; it's the only way the
+	# images get into the production image. A 2025 commit deleted it, which local dev
+	# hid (docker-compose mounted the folder) but would have broken every image in prod.
+	link = TEMPLATES_DIR.parent / 'static' / 'assets'
+	assert link.is_symlink() and link.resolve() == (TEMPLATES_DIR.parent.parent / 'assets').resolve()
+	response = client.get('/static/assets/img/pump-brakes.gif')
+	assert response.status_code == 200 and response.mimetype == 'image/gif'
+	response.close()
