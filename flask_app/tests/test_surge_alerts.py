@@ -240,3 +240,75 @@ def test_repaired_alerts_appear_on_the_dashboard(fake_go, slack_notices, admin_c
 	alert_utils.refresh_surge_alerts_latest()
 
 	assert 'Panama Earthquake' in admin_client.get('/dashboard').get_data(as_text=True)
+
+
+# --- the IM Slack notice ----------------------------------------------------------
+
+@pytest.fixture
+def posted(monkeypatch):
+	"""Capture IM notices and error messages instead of posting them to Slack."""
+	sent = {'notices': [], 'errors': []}
+	monkeypatch.setattr(alert_utils, 'new_surge_alert', sent['notices'].append)
+	monkeypatch.setattr(alert_utils, 'send_error_message', sent['errors'].append)
+	monkeypatch.setattr(alert_utils, 'get_slack_username', lambda slack_id: 'U123')
+	return sent
+
+
+def _im_alert(**overrides):
+	fields = dict(
+		alert_id=24209, molnix_id=99, role_profile='Humanitarian Information Analysis Officer', scope='Global',
+		rotation='1st', language_required='English', modality='In Person', country_name='Afghanistan',
+		start=datetime(2026, 11, 27), end_time=datetime(2027, 1, 27), region_id=3,
+		event=None, disaster_go_id=None, ifrc_severity_level_display=None,
+	)
+	fields.update(overrides)
+	return Alert(**fields)
+
+
+def test_im_notice_is_sent_for_alerts_not_yet_linked_to_an_emergency(posted):
+	# production: 7 IM notices since March 2025 were never sent, including 24209 on
+	# 2026-11-23, because GO hadn't linked the alert to an emergency yet and the
+	# severity lookup raised KeyError(None); the failure was only logged to the DB
+	alert_utils.send_im_alert_to_slack(_im_alert())
+
+	assert posted['errors'] == []
+	(message,) = posted['notices']
+	assert 'released for Afghanistan (not yet linked to an emergency in GO)' in message
+	assert 'Humanitarian Information Analysis Officer' in message and 'rrms.ifrc.org/positions/show/99' in message
+	assert 'None' not in message
+
+
+def test_im_notice_for_a_linked_emergency_names_it_with_its_severity(posted):
+	alert_utils.send_im_alert_to_slack(_im_alert(event='Panama Earthquake - 2026', disaster_go_id=8110, ifrc_severity_level_display='Yellow'))
+
+	(message,) = posted['notices']
+	assert 'released for the <https://go.ifrc.org/emergencies/8110|Panama Earthquake - 2026>, which is a :large_yellow_circle: yellow emergency' in message
+	assert 'Standard role profile for this position' in message
+
+
+def test_im_notice_leaves_out_missing_details_instead_of_printing_none(posted):
+	alert_utils.send_im_alert_to_slack(_im_alert(role_profile='Some Other IM Role', event='Panama Earthquake - 2026',
+	                                             disaster_go_id=8110, ifrc_severity_level_display=None))
+
+	(message,) = posted['notices']
+	# no severity: the emergency is named without a "which is ... emergency" clause
+	assert '|Panama Earthquake - 2026>. ' in message and 'which is' not in message
+	assert '• None' not in message and 'Standard role profile' not in message
+
+
+def test_im_notice_without_a_scope_uses_the_global_wording(posted):
+	alert_utils.send_im_alert_to_slack(_im_alert(scope=None))
+
+	(message,) = posted['notices']
+	assert 'New Global Information Management Surge Alert Released!' in message
+
+
+def test_im_notice_failures_are_reported_not_just_logged(posted, monkeypatch):
+	def broken(message):
+		raise RuntimeError('slack is down')
+	monkeypatch.setattr(alert_utils, 'new_surge_alert', broken)
+
+	alert_utils.send_im_alert_to_slack(_im_alert())
+
+	(error,) = posted['errors']
+	assert 'alert_id 24209' in error and 'slack is down' in error

@@ -235,6 +235,22 @@ def calculate_months_difference(start_date, end_date):
 	
 	return months_difference
 
+def _emergency_clause(alert_info, colors_to_emoji):
+	"""
+	What the IM alert message says the alert was released for: the linked GO
+	emergency and its severity color, or just the country while GO hasn't linked
+	the alert to an emergency yet (the surge desk often posts alerts first).
+	"""
+	if alert_info.event and alert_info.disaster_go_id:
+		emergency = f"the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>"
+	elif alert_info.event:
+		emergency = f"the {alert_info.event}"
+	else:
+		return f"{alert_info.country_name or 'an emergency'} (not yet linked to an emergency in GO)"
+	severity = colors_to_emoji.get(alert_info.ifrc_severity_level_display)
+	return f"{emergency}, which is {severity} emergency" if severity else emergency
+
+
 def send_im_alert_to_slack(alert_info):
 	"""
 	Send an Information Management (IM) alert message to Slack.
@@ -296,9 +312,11 @@ def send_im_alert_to_slack(alert_info):
 		
 		position_description = standard_profiles.get(alert_info.role_profile, None)
 		if position_description is not None:
-			position_description_link = f"<{position_description}|Standard role profile for this position>"
+			position_description_line = f" \n\n • <{position_description}|Standard role profile for this position>"
 		else:
-			position_description_link = None
+			position_description_line = ""
+
+		emergency_clause = _emergency_clause(alert_info, colors_to_emoji)
 		
 		alert_length = calculate_months_difference(alert_info.start, alert_info.end_time)
 		
@@ -319,25 +337,27 @@ def send_im_alert_to_slack(alert_info):
 			timeframe_message = "Start and/or end date information missing in API. Please contact the regional focal point for information on the timeframe."
 		
 		# construct message
-		if alert_info.scope == 'Global':
+		if alert_info.scope != 'Regional':
 			if alert_info.role_profile == 'SIMS Remote Coordinator':
 				message = (
-					f"\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *SIMS Remote Coordinator* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {timeframe_message} \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n • *Note*: SIMS Remote Coordinator positions are remote \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org"
+					f"\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *SIMS Remote Coordinator* has been released for {emergency_clause}. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {timeframe_message}{position_description_line} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n • *Note*: SIMS Remote Coordinator positions are remote \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org"
 				)
 			else:
 				message = (
-					f"\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {timeframe_message} \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org"
+					f"\n:rotating_light: *New Global Information Management Surge Alert Released!* :rotating_light:\n\n A surge alert for a *{alert_info.role_profile}* has been released for {emergency_clause}. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {timeframe_message}{position_description_line} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact surge@ifrc.org"
 				)
 		
-		if alert_info.scope == 'Regional':
+		else:
 			message = (
-				f"\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for the <https://go.ifrc.org/emergencies/{alert_info.disaster_go_id}|{alert_info.event}>, which is {colors_to_emoji[alert_info.ifrc_severity_level_display]} emergency. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {timeframe_message} \n\n • {position_description_link} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact {regional_surge_email}"
+				f"\n *New Regional Information Management Surge Alert Released!* \n\n A regional surge alert for a *{alert_info.role_profile}* has been released for {emergency_clause}. This alert is not being triaged globally, and this message is for situational awareness only. \n\n • *Role*: 1 x {alert_info.role_profile} \n\n • *Rotation*: {alert_info.rotation} \n\n • *Language requirements*: {alert_info.language_required} \n\n • *Modality*: {alert_info.modality} \n\n • *Requested timeframe*: {timeframe_message}{position_description_line} \n\n • *Regional Focal Point*: <@{regional_focal_point}> \n\n Please follow <https://rrms.ifrc.org/positions/show/{alert_info.molnix_id}|this link> to view the alert in the IFRC Rapid Response Management System (RRMS) and apply. If you have any questions or issues, please contact {regional_surge_email}"
 			)
 		
 		new_surge_alert(message)
 		
 	except Exception as e:
-		safe_log(f"[WARNING] send_im_alert_to_slack() failed: {e}", user_id=63) # send message as Clara Barton
+		error = f"[WARNING] send_im_alert_to_slack() failed for alert_id {getattr(alert_info, 'alert_id', '?')}: {e!r}"
+		safe_log(error, user_id=63) # send message as Clara Barton
+		send_error_message(error)
 
 def refresh_surge_alerts_latest():
 	"""
