@@ -1,0 +1,209 @@
+# Deploying the SIMS Portal to AWS
+
+Everything runs from a terminal. The flow: build an image from a clean copy of `main`, push it under the commit's ID, register a new task definition revision that uses it, run any database migrations, then point the ECS service at the new revision.
+
+| What | Where |
+|---|---|
+| Region | `us-east-2` |
+| Image registry (ECR) | repository `simsportal`, tagged by commit (e.g. `simsportal:4298ea58`) |
+| Service (ECS, Fargate, x86) | cluster `simsportal`, service `SIMSPortal`, container `flask` |
+| Database (RDS, Postgres 14) | `simsportaldb` |
+| Logs (CloudWatch) | log group `/ecs/simsportal` |
+
+> [!NOTE] What's no longer needed
+> - **No manual edits before deploying.** Debug mode follows `FLASK_DEBUG`, which production doesn't set. The Dockerfile always runs gunicorn. docker-compose is for local dev only.
+> - **No Manual Refresh after deploying.** The maps read from the database (#173).
+> - **No console clicking.** ECR's "View Push Commands" and ECS's "Force new deployment" are steps 2 and 6 below.
+> - **`:latest` isn't used.** Production runs a commit tag, so each deploy is traceable, and rolling back means pointing at an earlier revision.
+
+## Before you start
+
+- Docker Desktop is running.
+- You're on an up-to-date `main` with CI green: `git checkout main && git pull`.
+- You're signed in to AWS: `aws login --profile sims`. If it asks to overwrite another profile, you forgot `--profile sims`.
+
+Every command below runs from the repo root, in one terminal session. Set these first:
+
+```bash
+export AWS_PROFILE=sims AWS_REGION=us-east-2
+CLUSTER=simsportal SERVICE=SIMSPortal CONTAINER=flask REPO=simsportal
+ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+REGISTRY=$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
+SHA=$(git rev-parse --short HEAD)
+CURRENT_TD=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE --query 'services[0].taskDefinition' --output text)
+NETWORK=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE --query 'services[0].networkConfiguration' --output json)
+echo "Deploying $SHA; production is on ${CURRENT_TD##*/}"
+```
+
+## 1. Build the image
+
+Build from a clean export of the commit, not your working folder, so local files (logs, `.claude/`, uploads) can't end up in production.
+
+```bash
+BUILD=$(mktemp -d)
+git archive HEAD flask_app | tar -x -C "$BUILD"
+docker build --platform linux/amd64 -t $REPO:$SHA "$BUILD/flask_app"
+rm -rf "$BUILD"
+
+# sanity check: should print 152 or so (the site's images arrive through the static/assets symlink)
+docker run --rm --platform linux/amd64 --entrypoint sh $REPO:$SHA -c 'ls /app/SIMS_Portal/static/assets/img | wc -l'
+```
+
+> [!WARNING] `--platform linux/amd64` is required
+> Production runs on x86. A Mac builds ARM images by default, and an ARM image won't start on the service.
+
+## 2. Push it
+
+```bash
+aws ecr get-login-password | docker login --username AWS --password-stdin $REGISTRY
+docker tag $REPO:$SHA $REGISTRY/$REPO:$SHA
+docker push $REGISTRY/$REPO:$SHA
+```
+
+This doesn't affect the running site, which uses whatever image its current task definition names.
+
+## 3. Back up the database (when there are migrations)
+
+Check whether this deploy includes migrations:
+
+```bash
+DEPLOYED_SHA=$(aws ecs describe-task-definition --task-definition $CURRENT_TD \
+  --query "taskDefinition.containerDefinitions[?name=='$CONTAINER'].image" --output text | cut -d: -f2)
+git diff --stat $DEPLOYED_SHA HEAD -- flask_app/migrations/versions
+```
+
+If anything is listed, take a snapshot first. It takes about 5–15 minutes:
+
+```bash
+SNAPSHOT=simsportaldb-pre-deploy-$(date +%F-%H%M)
+aws rds create-db-snapshot --db-instance-identifier simsportaldb --db-snapshot-identifier $SNAPSHOT
+aws rds wait db-snapshot-available --db-snapshot-identifier $SNAPSHOT && echo "snapshot $SNAPSHOT ready"
+```
+
+## 4. Register a new task definition revision
+
+This copies the current revision and swaps in the new image. Production's settings (database URL, tokens) are in the task definition, so the temporary files are created readable only by you and deleted afterwards.
+
+```bash
+TMP=$(umask 077; mktemp -d)
+aws ecs describe-task-definition --task-definition $CURRENT_TD --include TAGS --output json > $TMP/current.json
+python3 - $TMP/current.json "$REGISTRY/$REPO:$SHA" "$CONTAINER" > $TMP/new.json <<'EOF'
+import json, sys
+src = json.load(open(sys.argv[1]))
+td = src['taskDefinition']
+for k in ('taskDefinitionArn', 'revision', 'status', 'requiresAttributes', 'compatibilities',
+          'registeredAt', 'registeredBy', 'deregisteredAt'):
+    td.pop(k, None)
+if src.get('tags'):
+    td['tags'] = src['tags']
+container = next(c for c in td['containerDefinitions'] if c['name'] == sys.argv[3])
+container['image'] = sys.argv[2]
+
+# To add or change a setting, uncomment and edit:
+# env = {e['name']: e['value'] for e in container.get('environment', [])}
+# env['SETTING_NAME'] = 'value'
+# container['environment'] = [{'name': k, 'value': v} for k, v in env.items()]
+
+print(json.dumps(td))
+EOF
+NEW_TD=$(aws ecs register-task-definition --cli-input-json file://$TMP/new.json \
+  --query 'taskDefinition.taskDefinitionArn' --output text)
+rm -rf $TMP
+echo "registered ${NEW_TD##*/}"
+```
+
+Registering only creates a revision. The site stays on the current one until step 6.
+
+## 5. Run migrations (when there are any)
+
+Migrations run as one-off tasks: a container from the **new** revision starts with production's settings, runs one `flask` command, and exits. Define this helper once per session:
+
+```bash
+flask_task() {
+  local cmd task
+  cmd=$(python3 -c 'import json, sys; print(json.dumps(["flask"] + sys.argv[1:]))' "$@")
+  task=$(aws ecs run-task --cluster $CLUSTER --task-definition $NEW_TD --launch-type FARGATE \
+    --network-configuration "$NETWORK" \
+    --overrides "{\"containerOverrides\":[{\"name\":\"$CONTAINER\",\"command\":$cmd}]}" \
+    --query 'tasks[0].taskArn' --output text)
+  echo "== flask $*  (task ${task##*/})"
+  aws ecs wait tasks-stopped --cluster $CLUSTER --tasks $task
+  aws logs get-log-events --log-group-name /ecs/simsportal --log-stream-name ecs/$CONTAINER/${task##*/} \
+    --start-from-head --query 'events[].message' --output text | tr '\t' '\n'
+  echo "== exit code: $(aws ecs describe-tasks --cluster $CLUSTER --tasks $task --query 'tasks[0].containers[0].exitCode' --output text)"
+}
+```
+
+Then:
+
+```bash
+flask_task db current      # where the database is now
+flask_task db upgrade      # apply the new migrations
+flask_task db current      # confirm it's at the new head
+```
+
+> [!WARNING] Order matters when a migration removes something
+> - **Adds only** (new table, or a new column with a default): run the migration first, then deploy. The old code ignores the addition.
+> - **Removes or renames** something the old code uses: deploy code that no longer uses it first, then migrate.
+> - **Both** (the new code needs an addition and the old code needs what's removed): run `db upgrade` and step 6 back to back. Expect a minute or two of errors in between, so pick a quiet hour.
+>
+> Read the new files in `migrations/versions/` before deciding.
+
+> [!NOTE] Avoid the top of the hour
+> One-off tasks boot the full app, scheduler included. The scheduled jobs run on the hour (Eastern), so don't start a task at :59. A task that takes under a minute won't overlap a job.
+
+## 6. Deploy
+
+```bash
+aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition $NEW_TD --force-new-deployment \
+  --query 'service.deployments[0].[taskDefinition,rolloutState]' --output text
+aws ecs wait services-stable --cluster $CLUSTER --services $SERVICE && echo "stable"
+```
+
+It takes about 3 minutes: ECS starts the new task, the load balancer health-checks it, then the old task drains.
+
+## 7. Smoke test
+
+```bash
+for p in /health / /login /about /static/assets/img/pump-brakes.gif /data/response_history.json; do
+  printf "%-40s " $p; curl -s -o /dev/null -w "%{http_code}\n" https://rcrcsims.org$p
+done
+
+# errors in the new task's logs
+TASK=$(aws ecs list-tasks --cluster $CLUSTER --service-name $SERVICE --query 'taskArns[0]' --output text)
+aws logs filter-log-events --log-group-name /ecs/simsportal --log-stream-names ecs/$CONTAINER/${TASK##*/} \
+  --filter-pattern '?ERROR ?Traceback ?Exception' --query 'events[].message' --output text
+```
+
+Then log in and click around. All the URLs should return 200, and the log check should print nothing.
+
+## Rolling back
+
+- **Code:** point the service back at the previous revision:
+  ```bash
+  aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition $CURRENT_TD --force-new-deployment
+  ```
+  If you've lost `$CURRENT_TD`, list revisions with `aws ecs list-task-definitions --family-prefix simsportal --sort DESC`.
+- **Database:** if the migrations removed something the old code needs, either run `flask_task db downgrade <revision>` (the migration's file says whether its downgrade restores data), or restore the snapshot to a new instance and switch `SQLALCHEMY_DATABASE_URI` to it.
+
+## Production settings
+
+These live in the task definition's environment. Change them with the snippet in step 4.
+
+| Setting | Value | Notes |
+|---|---|---|
+| `FLASK_DEBUG` | **must not be set** | When set, debug mode turns on and the scheduler stays off. |
+| `SQLALCHEMY_DATABASE_URI`, `SECRET_KEY`, Slack/Dropbox/GitHub/Maps/reCAPTCHA keys | set | |
+| `PROXY_FIX_HOPS` | `1` | The load balancer is one proxy. Without it, every visitor looks like the load balancer, and they all share the per-IP login rate limits. |
+| `HEARTBEAT_URL_SURGE_ALERTS`, `HEARTBEAT_URL_BADGES` | Better Stack heartbeat URLs | Pinged after the scheduled jobs. If unset, no pings are sent and Better Stack reports the jobs as down. |
+| `PASSWORD_UPGRADE_DEADLINE` | optional, `YYYY-MM-DD` | Until this date, members with pre-policy passwords can choose "Remind me later". |
+| `RATELIMIT_STORAGE_URI` | optional, `redis://…` | Shares rate-limit counts across gunicorn workers. The default in-memory store is per worker. |
+| `ROOT_URL` | optional | Base URL for links in Slack messages. Defaults to `https://rcrcsims.org`. |
+
+## Troubleshooting
+
+- **`apt` errors (404) during the build:** the Debian release in the Dockerfile's `FROM` has reached end of life. Move to the next one (that's what #195 did).
+- **The site loads with broken images:** `SIMS_Portal/static/assets` must be a symlink to `../../assets/`. The test `test_static_assets_are_served_from_the_assets_folder` guards this.
+- **`Can't locate revision …` from `db upgrade`:** the database's migration version isn't in this code's history. Check `flask_task db current`, and don't force it.
+- **`aws: Your session has expired`:** run `aws login --profile sims`.
+- **The new task keeps restarting:** read its logs (step 7). A common cause is a setting the new code needs that's missing from the task definition.
