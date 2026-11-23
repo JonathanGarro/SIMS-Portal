@@ -312,3 +312,78 @@ def test_im_notice_failures_are_reported_not_just_logged(posted, monkeypatch):
 
 	(error,) = posted['errors']
 	assert 'alert_id 24209' in error and 'slack is down' in error
+
+
+# --- the per-alert re-check fills in details too ----------------------------------
+
+def _go_detail(alert_id, molnix_id, status='Open', sector='Information Management', event=None, **extra):
+	record = _api_alert(alert_id, molnix_id, status, sector=sector, **extra)
+	record['event'] = event
+	record['molnix_tags'].append({'name': 'ASIAP', 'description': 'Asia Pacific Region', 'groups': ['REGION'], 'tag_type': 'regular'})
+	return record
+
+
+def test_recheck_fills_in_an_emergency_linked_after_the_alert_left_the_latest_50(fake_go, slack_notices):
+	# an open alert GO links to an emergency weeks later, after it has scrolled out of
+	# the latest refresh's ~50: only the per-alert re-check still looks at it
+	responses, _ = fake_go
+	db.session.add(Alert(alert_id=900, molnix_id=90, alert_status='Open', im_filter=True, event=None,
+	                     ifrc_severity_level_display=None, end_time=datetime(2026, 12, 10)))
+	db.session.commit()
+	responses[_detail_url(900)] = FakeResponse(_go_detail(900, 90, event={
+		'id': 8200, 'name': 'Afghanistan Drought - 2026', 'ifrc_severity_level_display': 'Orange',
+		'dtype': {'id': 20, 'name': 'Drought'}}))
+
+	alert_utils.refresh_open_alert_statuses()
+
+	alert = db.session.query(Alert).filter_by(alert_id=900).one()
+	assert (alert.event, alert.disaster_go_id, alert.ifrc_severity_level_display) == ('Afghanistan Drought - 2026', 8200, 'Orange')
+	assert alert.disaster_type_name == 'Drought' and alert.region_id == 3
+	assert slack_notices == []  # it was already IM, so it was already announced
+
+
+def test_recheck_announces_an_open_alert_that_only_now_became_im(fake_go, slack_notices):
+	responses, _ = fake_go
+	db.session.add(_early_copy(901, 91, status='Open'))
+	db.session.commit()
+	responses[_detail_url(901)] = FakeResponse(_go_detail(901, 91))
+
+	alert_utils.refresh_open_alert_statuses()
+	alert_utils.refresh_open_alert_statuses()
+
+	assert db.session.query(Alert).filter_by(alert_id=901).one().im_filter is True
+	assert slack_notices == [901]  # once
+
+
+def test_recheck_marks_deleted_alerts_removed_without_touching_their_details(fake_go, slack_notices):
+	_, _ = fake_go  # no response registered: GO answers 404
+	db.session.add(Alert(alert_id=902, molnix_id=92, alert_status='Open', im_filter=True,
+	                     sectors='Information Management', event='Panama Earthquake'))
+	db.session.commit()
+
+	alert_utils.refresh_open_alert_statuses()
+
+	alert = db.session.query(Alert).filter_by(alert_id=902).one()
+	assert alert.alert_status == 'Removed'
+	assert (alert.im_filter, alert.sectors, alert.event) == (True, 'Information Management', 'Panama Earthquake')
+
+
+def test_full_refresh_records_regions_and_skips_malformed_records(fake_go, slack_notices):
+	responses, _ = fake_go
+	broken = _api_alert(904, 94, 'Open')
+	broken['molnix_tags'] = [None]
+	responses[LATEST_URL] = FakeResponse({'results': [_go_detail(903, 93), broken, _api_alert(905, 95, 'Closed')], 'next': None})
+
+	alert_utils.refresh_surge_alerts()
+
+	alerts = {a.alert_id: a for a in db.session.query(Alert).filter(Alert.alert_id.in_([903, 904, 905]))}
+	assert alerts[903].region_id == 3  # the full refresh used to drop the region
+	assert 904 not in alerts and alerts[905].alert_status == 'Closed'  # one bad record no longer aborts the run
+
+
+def test_parse_go_alert_handles_alerts_with_no_emergency_or_tags():
+	parsed = alert_utils.parse_go_alert({'id': 1, 'molnix_id': 2, 'molnix_status_display': 'Open', 'event': None,
+	                                     'country': {'iso3': 'AFG', 'name': 'Afghanistan'}, 'molnix_tags': []})
+	assert parsed['alert_status'] == 'Open' and parsed['country_name'] == 'Afghanistan'
+	assert parsed['event'] is None and parsed['ifrc_severity_level_display'] is None
+	assert parsed['sectors'] == '' and parsed['im_filter'] is False and parsed['region_id'] is None

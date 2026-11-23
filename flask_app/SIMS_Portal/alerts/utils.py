@@ -111,6 +111,92 @@ def _sync_existing_alert(alert, result, notify_new_im=False):
 	return updated_ok, changes
 
 
+# GO's region tag descriptions -> the region IDs used across the portal
+REGION_IDS = {
+	"Africa Region": 1,
+	"Americas Region": 2,
+	"Asia Pacific Region": 3,
+	"Europe Region": 4,
+	"Middle East & North Africa Region": 5,
+}
+
+
+def parse_go_alert(result):
+	"""
+	Turn one GO surge alert record into the field values stored on Alert. GO's list
+	and detail endpoints return the same shape, so the refreshes and the per-alert
+	re-check all parse with this. Raises on a malformed record; callers skip it.
+
+	Values are as GO sends them (dates are ISO strings); sectors and role tags are
+	joined into comma-separated strings, as stored.
+	"""
+	molnix_id = result.get("molnix_id", None)
+	molnix_tags = result.get("molnix_tags", None)
+	if molnix_tags is None:
+		molnix_tags = []
+		safe_log(f"[WARNING] molnix_tags is None for molnix_id: {molnix_id}")
+
+	sectors, roles = [], []
+	region_name = role_profile = modality = scope = language_required = rotation = None
+	for tag in molnix_tags:
+		groups = tag.get("groups", None)
+		if groups is None:
+			groups = []
+			safe_log(f"[WARNING] groups is None for tag: {tag.get('description', 'Unknown')} in molnix_id: {molnix_id}")
+		if "REGION" in groups:
+			region_name = tag.get("description", None)
+		if "SECTOR" in groups and tag.get("description"):
+			sectors.append(tag["description"])
+		if "ROLES" in groups and tag.get("description"):
+			role_profile = tag["description"]
+			roles.append(role_profile)
+		if "Modality" in groups:
+			modality = tag.get("name", None)
+		if "ALERT TYPE" in groups and tag.get("name"):
+			scope = tag["name"].title()
+		if language_required is None and tag.get("tag_type") == "language":
+			language_required = tag.get("description", None)
+		if rotation is None and "rotation" in groups:
+			rotation = tag.get("name", None)
+
+	country = result.get("country", None)
+	if country is None:
+		country = {}
+		safe_log(f"[WARNING] country is None for molnix_id: {molnix_id}")
+	# no linked emergency yet is normal: the surge desk often posts alerts first
+	event = result.get("event", None) or {}
+	dtype = event.get("dtype", None) or {}
+
+	return {
+		"alert_id": result.get("id", None),
+		"molnix_id": molnix_id,
+		"alert_record_created_at": result.get("created_at", None),
+		"event": event.get("name", None),
+		"role_profile": role_profile,
+		"rotation": rotation,
+		"modality": modality,
+		"language_required": language_required,
+		"molnix_status": result.get("molnix_status", None),
+		# GO's own "status_display" field is deprecated and always None;
+		# "molnix_status_display" ("Open"/"Stood Down"/"Closed") is populated
+		"alert_status": result.get("molnix_status_display", None),
+		"opens": result.get("opens", None),
+		"start": result.get("start", None),
+		"end_time": result.get("end", None),
+		"sectors": ", ".join(sectors),
+		"role_tags": ", ".join(roles),
+		"scope": scope,
+		"im_filter": "Information Management" in sectors,
+		"iso3": country.get("iso3", None),
+		"country_name": country.get("name", None),
+		"disaster_type_id": dtype.get("id", None),
+		"disaster_type_name": dtype.get("name", None),
+		"disaster_go_id": event.get("id", None),
+		"ifrc_severity_level_display": event.get("ifrc_severity_level_display", None),
+		"region_id": REGION_IDS.get(region_name, None),
+	}
+
+
 def _is_transient_db_error(exc):
 	"""
 	True for connection-level failures (dropped SSL connections, network blips)
@@ -445,142 +531,7 @@ def refresh_surge_alerts_latest():
 				current_molnix_id = result.get("molnix_id", "Unknown")
 				
 				safe_log(f"[INFO] Processing alert with molnix_id: {current_molnix_id} (index: {index})")
-				
-				molnix_tags = result.get("molnix_tags", [])
-				if molnix_tags is None:
-					molnix_tags = []
-					safe_log(f"[WARNING] molnix_tags is None for molnix_id: {current_molnix_id}")
-		
-				sectors = []
-				roles = []
-		
-				alert_id = result.get("id", None)
-				molnix_id = result.get("molnix_id", None)
-				alert_record_created_at = result.get("created_at", None)
-				molnix_status = result.get("molnix_status", None)
-				# the API's own "status_display" field has been deprecated and always
-				# returns None now; "molnix_status_display" ("Open"/"Stood Down"/"Closed")
-				# is the field that's actually populated.
-				alert_status = result.get("molnix_status_display", None)
-				opens = result.get("opens", None)
-				start = result.get("start", None)
-				end = result.get("end", None)
-		
-				modality = None
-				im_filter = False
-		
-				region_id = None
-				sector = None
-				role_profile = None
-				scope = None
-		
-				for tag in molnix_tags:
-					groups = tag.get("groups", [])
-					if groups is None:
-						groups = []
-						tag_description = tag.get("description", "Unknown")
-						safe_log(f"[WARNING] groups is None for tag: {tag_description} in molnix_id: {current_molnix_id}")
-		
-					if "REGION" in groups:
-						region_id = tag.get("description", None)
-		
-					if "SECTOR" in groups:
-						sector = tag.get("description", None)
-						if sector:
-							sectors.append(sector)
-		
-					if "ROLES" in groups:
-						role_profile = tag.get("description", None)
-						if role_profile:
-							roles.append(role_profile)
-		
-					if "Modality" in groups:
-						modality = tag.get("name", None)
-		
-					if "ALERT TYPE" in groups:
-						scope_name = tag.get("name")
-						if scope_name:
-							scope = scope_name.title()
-		
-				im_filter = "Information Management" in sectors
-		
-				language_required = None
-				rotation = None
-				
-				# safely find language required
-				for tag in molnix_tags:
-					if tag.get("tag_type") == "language":
-						language_required = tag.get("description", None)
-						break
-						
-				# safely find rotation
-				for tag in molnix_tags:
-					tag_groups = tag.get("groups", [])
-					if tag_groups and "rotation" in tag_groups:
-						rotation = tag.get("name", None)
-						break
-		
-				country = result.get("country", {})
-				if country is None:
-					country = {}
-					safe_log(f"[WARNING] country is None for molnix_id: {current_molnix_id}")
-					
-				iso3 = country.get("iso3", None)
-				country_name = country.get("name", None)
-		
-				region_ids_dict = {
-					"Europe Region": 4,
-					"Asia Pacific Region": 3,
-					"Americas Region": 2,
-					"Africa Region": 1,
-					"Middle East & North Africa Region": 5
-				}
-		
-				event = result.get("event", {})
-				if event is None:
-					event = {}
-					safe_log(f"[WARNING] event is None for molnix_id: {current_molnix_id}")
-					
-				dtype = event.get("dtype", {})
-				if dtype is None:
-					dtype = {}
-					safe_log(f"[WARNING] dtype is None for molnix_id: {current_molnix_id}")
-					
-				disaster_type_id = dtype.get("id", None)
-				disaster_type_name = dtype.get("name", None)
-				ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
-				event_name = event.get("name", None)
-				disaster_go_id = event.get("id", None)
-		
-				result_dict = {
-					"molnix_id": molnix_id,
-					"alert_record_created_at": alert_record_created_at,
-					"event": event_name,
-					"role_profile": role_profile,
-					"rotation": rotation,
-					"modality": modality,
-					"language_required": language_required,
-					"molnix_status": molnix_status,
-					"alert_status": alert_status,
-					"opens": opens,
-					"start": start,
-					"end_time": end,
-					"sectors": sectors,
-					"role_tags": roles,
-					"scope": scope,
-					"im_filter": im_filter,
-					"iso3": iso3,
-					"country_name": country_name,
-					"disaster_type_id": disaster_type_id,
-					"disaster_type_name": disaster_type_name,
-					"disaster_go_id": disaster_go_id,
-					"ifrc_severity_level_display": ifrc_severity_level_display,
-					"alert_id": alert_id,
-					"region_id": region_ids_dict.get(region_id, None),
-				}
-		
-				result_list.append(result_dict)
-				
+				result_list.append(parse_go_alert(result))
 			except Exception as e:
 				current_molnix_id = result.get("molnix_id", "Unknown")
 				failed_molnix_ids.append(current_molnix_id)
@@ -590,23 +541,6 @@ def refresh_surge_alerts_latest():
 		for result in result_list:
 			try:
 				current_molnix_id = result.get('molnix_id', 'Unknown')
-				
-				# handle potential None values in lists
-				sectors = result.get('sectors', [])
-				if sectors is None:
-					sectors = []
-				
-				role_tags = result.get('role_tags', [])
-				if role_tags is None:
-					role_tags = []
-				
-				# join sectors and role_tags if they are lists
-				if isinstance(sectors, list):
-					result['sectors'] = ', '.join(sectors)
-				
-				if isinstance(role_tags, list):
-					result['role_tags'] = ', '.join(role_tags)
-		
 				existing_alert = existing_alerts_by_id.get(result['alert_id'])
 		
 				if existing_alert:
@@ -726,7 +660,10 @@ def refresh_open_alert_statuses():
 
 	Side Effects:
 	- Logs information and errors to the database.
-	- Updates alert_status (and molnix_status) on existing alert records.
+	- Updates every detail GO can change on existing alert records (status, end
+	  date, linked emergency and severity, sectors and IM flag, ...), so an alert
+	  GO fills in after it has scrolled out of the latest refresh's ~50 still
+	  gets the details. An open alert that only now becomes IM gets its Slack notice.
 	"""
 	count_checked = 0
 	count_updated = 0
@@ -763,23 +700,23 @@ def refresh_open_alert_statuses():
 			continue
 
 		count_checked += 1
-		new_status = data.get("molnix_status_display", None)
-		new_molnix_status = data.get("molnix_status", None)
 		old_status = alert.alert_status
+		if data.get("molnix_status_display") == "Removed":
+			result = {"alert_status": "Removed"}
+		else:
+			try:
+				result = parse_go_alert(data)
+			except Exception as e:
+				safe_log(f"[WARNING] refresh_open_alert_statuses couldn't parse alert_id {alert.alert_id}: {e}")
+				result = {"alert_status": data.get("molnix_status_display"), "molnix_status": data.get("molnix_status")}
 
-		if new_status and new_status != old_status:
-			def _update_status():
-				alert.alert_status = new_status
-				if new_molnix_status is not None:
-					alert.molnix_status = new_molnix_status
-				db.session.commit()
-
-			updated_ok, _ = with_db_retry(_update_status)
-			if updated_ok:
-				count_updated += 1
-				safe_log(f"[INFO] refresh_open_alert_statuses updated alert_id {alert.alert_id}: {old_status} -> {new_status}.")
-			else:
-				safe_log(f"[ERROR] refresh_open_alert_statuses failed to save the updated status for alert_id {alert.alert_id}.")
+		updated_ok, changes = _sync_existing_alert(alert, result, notify_new_im=True)
+		if not updated_ok:
+			safe_log(f"[ERROR] refresh_open_alert_statuses failed to save the updated details for alert_id {alert.alert_id}.")
+		elif changes:
+			count_updated += 1
+			status_note = f" ({old_status} -> {alert.alert_status})" if 'alert_status' in changes else ''
+			safe_log(f"[INFO] refresh_open_alert_statuses updated alert_id {alert.alert_id}{status_note}: {', '.join(sorted(changes))}.")
 
 		time.sleep(0.2)  # be polite to the external API when checking many alerts individually
 
@@ -867,106 +804,17 @@ def refresh_surge_alerts(pages_to_fetch=100):
 			results = data.get("results", [])
 		
 			for result in results:
-				molnix_tags = result.get("molnix_tags", []) or []
-
-				sectors = []
-				roles = []
-				
-				alert_id = result.get("id", None)
-				molnix_id = result.get("molnix_id", None)
-				alert_record_created_at = result.get("created_at", None)
-				molnix_status = result.get("molnix_status", None)
-				# the API's own "status_display" field has been deprecated and always
-				# returns None now; "molnix_status_display" ("Open"/"Stood Down"/"Closed")
-				# is the field that's actually populated.
-				alert_status = result.get("molnix_status_display", None)
-				opens = result.get("opens", None)
-				start = result.get("start", None)
-				end = result.get("end", None)
-			
-				modality = None
-				im_filter = False
-				
-				# predefine these in case they don't appear in molnix tags
-				sector = None
-				role_profile = None 
-				modality = None
-				scope = None
-				
-				for tag in molnix_tags:
-					groups = tag.get("groups", []) or []
-
-					if "SECTOR" in groups:
-						sector = tag.get("description", None)
-						sectors.append(sector)
-
-					if "ROLES" in groups:
-						role_profile = tag.get("description", None)
-						roles.append(role_profile)
-
-					if "Modality" in groups:
-						modality = tag.get("name", None)
-
-					if "ALERT TYPE" in groups:
-						scope_name = tag.get("name")
-						if scope_name:
-							scope = scope_name.title()
-
-				im_filter = "Information Management" in sectors
-
-				language_required = next((tag.get("description", None) for tag in molnix_tags if tag.get("tag_type") == "language"), None)
-				rotation = next((group.get("name", None) for group in molnix_tags if "rotation" in (group.get("groups") or [])), None)
-
-				country = result.get("country", {}) or {}
-				iso3 = country.get("iso3", None)
-				country_name = country.get("name", None)
-
-				event = result.get("event", {}) or {}
-				dtype = event.get("dtype", {}) or {}
-				disaster_type_id = dtype.get("id", None)
-				disaster_type_name = dtype.get("name", None)
-				ifrc_severity_level_display = event.get("ifrc_severity_level_display", None)
-				event_name = event.get("name", None)
-				disaster_go_id = event.get("id", None)
-			
-				result_dict = {
-					"molnix_id": molnix_id,
-					"alert_record_created_at": alert_record_created_at,
-					"event": event_name,
-					"role_profile": role_profile,
-					"rotation": rotation,
-					"modality": modality,
-					"language_required": language_required,
-					"molnix_status": molnix_status,
-					"alert_status": alert_status,
-					"opens": opens,
-					"start": start,
-					"end_time": end,
-					"sectors": sectors,
-					"role_tags": roles,
-					"scope": scope,
-					"im_filter": im_filter,
-					"iso3": iso3,
-					"country_name": country_name,
-					"disaster_type_id": disaster_type_id,
-					"disaster_type_name": disaster_type_name,
-					"disaster_go_id": disaster_go_id,
-					"ifrc_severity_level_display": ifrc_severity_level_display,
-					"alert_id": alert_id
-				}
-			
-				result_list.append(result_dict)
+				try:
+					result_list.append(parse_go_alert(result))
+				except Exception as e:
+					failed_molnix_ids.append(result.get('molnix_id', 'Unknown'))
+					safe_log(f"[WARNING] The refresh_surge_alerts (full version) function couldn't parse alert_id {result.get('id', 'Unknown')}: {e}")
 			
 			# flip page for pagination
 			url = data.get("next")
 			current_page += 1
 		
 		for result in result_list:
-
-			# these fields can have multiple values, so strip curly brackets and save as comma-separated strings
-			result['sectors'] = ', '.join(result['sectors'])
-			result['role_tags'] = ', '.join(result['role_tags'])
-
 			existing_alert = existing_alerts_by_id.get(result['alert_id'])
 
 			if existing_alert:
@@ -1006,7 +854,8 @@ def refresh_surge_alerts(pages_to_fetch=100):
 							disaster_type_name = result['disaster_type_name'],
 							disaster_go_id = result['disaster_go_id'],
 							ifrc_severity_level_display = result['ifrc_severity_level_display'],
-							alert_id = result['alert_id']
+							alert_id = result['alert_id'],
+							region_id = result['region_id']
 						)
 					except Exception as e:
 						failed_molnix_ids.append(result['molnix_id'])
