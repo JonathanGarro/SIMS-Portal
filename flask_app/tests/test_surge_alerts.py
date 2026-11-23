@@ -6,6 +6,8 @@ Surge alert jobs (SIMS_Portal/alerts/utils.py), with the GO API faked.
 - refresh_surge_alerts_latest() updates existing alerts by alert_id, adds new ones,
   keeps going past a bad record, and logs a summary that names the failures
 """
+from datetime import datetime
+
 import pytest
 
 from SIMS_Portal import db
@@ -129,3 +131,112 @@ def test_missing_status_repair_does_nothing_when_every_alert_has_one(fake_go):
 
 	assert alert_utils.repair_missing_alert_statuses() == 0
 	assert requested == []
+
+
+# --- details GO fills in after an alert is first published ------------------------
+
+LATEST_URL = 'https://goadmin.ifrc.org/api/v2/surge_alert/'
+
+
+@pytest.fixture
+def slack_notices(monkeypatch):
+	sent = []
+	monkeypatch.setattr(alert_utils, 'send_im_alert_to_slack', lambda alert: sent.append(alert.alert_id))
+	return sent
+
+
+def _early_copy(alert_id, molnix_id, status=None):
+	"""An alert as first saved: before GO added its end date and sector tags."""
+	return Alert(alert_id=alert_id, molnix_id=molnix_id, alert_status=status, im_filter=False, end_time=None, sectors='')
+
+
+def test_latest_refresh_fills_in_details_added_after_the_alert_was_first_saved(fake_go, slack_notices):
+	# production, 2026-11-23: alert 24209 (an IM analyst role) was saved an hour after
+	# it opened, before GO had its end date or IM sector tag; only its status was ever
+	# refreshed, so it stayed off the dashboard and never counted as an IM alert
+	responses, _ = fake_go
+	db.session.add(_early_copy(800, 80))
+	db.session.commit()
+	responses[LATEST_URL] = FakeResponse({'results': [_api_alert(800, 80, 'Open', sector='Information Management')]})
+
+	alert_utils.refresh_surge_alerts_latest()
+
+	alert = db.session.query(Alert).filter_by(alert_id=800).one()
+	assert alert.alert_status == 'Open'
+	assert alert.im_filter is True and alert.sectors == 'Information Management'
+	assert alert.end_time == datetime(2026, 12, 10) and alert.start == datetime(2026, 11, 10)
+	assert alert.country_name == 'Panama' and alert.event == 'Panama Earthquake'
+	# it missed the IM notice when it was first saved, so it gets one now
+	assert slack_notices == [800]
+
+
+def test_unchanged_alerts_are_not_rewritten_or_renotified(fake_go, slack_notices):
+	responses, _ = fake_go
+	db.session.add(_early_copy(801, 81))
+	db.session.commit()
+	# real GO sends molnix_status as a number; the column stores text
+	responses[LATEST_URL] = FakeResponse({'results': [_api_alert(801, 81, 'Open', sector='Information Management', molnix_status=0)]})
+
+	alert_utils.refresh_surge_alerts_latest()
+	alert_utils.refresh_surge_alerts_latest()
+
+	assert slack_notices == [801]  # once, not on every run
+	summary = db.session.query(Log).filter(Log.message.like('%Surge Alert cron job has finished%')).order_by(Log.id.desc()).first()
+	# GO's ISO dates and numeric molnix_status compare equal to the stored values
+	assert 'updated 0 records' in summary.message
+
+
+def test_no_im_notice_for_alerts_that_are_no_longer_open(fake_go, slack_notices):
+	responses, _ = fake_go
+	db.session.add(_early_copy(802, 82, status='Open'))
+	db.session.commit()
+	responses[LATEST_URL] = FakeResponse({'results': [_api_alert(802, 82, 'Closed', sector='Information Management')]})
+
+	alert_utils.refresh_surge_alerts_latest()
+
+	alert = db.session.query(Alert).filter_by(alert_id=802).one()
+	assert alert.im_filter is True and alert.alert_status == 'Closed'
+	assert slack_notices == []
+
+
+def test_blank_fields_from_go_never_erase_stored_details(fake_go, slack_notices):
+	responses, _ = fake_go
+	db.session.add(Alert(alert_id=803, molnix_id=83, alert_status='Open', end_time=datetime(2026, 12, 10),
+	                     event='Panama Earthquake', im_filter=True))
+	db.session.commit()
+	incomplete = _api_alert(803, 83, 'Open', sector='Information Management', end=None)
+	incomplete['event'] = None
+	responses[LATEST_URL] = FakeResponse({'results': [incomplete]})
+
+	alert_utils.refresh_surge_alerts_latest()
+
+	alert = db.session.query(Alert).filter_by(alert_id=803).one()
+	assert alert.end_time == datetime(2026, 12, 10) and alert.event == 'Panama Earthquake'
+
+
+def test_full_refresh_fills_in_details_without_slack_notices(fake_go, slack_notices):
+	responses, _ = fake_go
+	db.session.add(_early_copy(804, 84))
+	db.session.commit()
+	responses[LATEST_URL] = FakeResponse({'results': [_api_alert(804, 84, 'Open', sector='Information Management')], 'next': None})
+
+	alert_utils.refresh_surge_alerts()
+
+	alert = db.session.query(Alert).filter_by(alert_id=804).one()
+	assert alert.alert_status == 'Open' and alert.im_filter is True and alert.end_time == datetime(2026, 12, 10)
+	assert slack_notices == []
+
+
+def test_repaired_alerts_appear_on_the_dashboard(fake_go, slack_notices, admin_client):
+	# end to end for the 2026-11-23 report: open in GO, but missing from the dashboard
+	responses, _ = fake_go
+	db.session.add(_early_copy(805, 85))
+	db.session.commit()
+	responses[LATEST_URL] = FakeResponse({'results': [_api_alert(805, 85, 'Open', sector='Information Management')]})
+	db.session.query(Alert).filter_by(alert_id=805).update({'alert_record_created_at': datetime.now()})
+	db.session.commit()
+	assert 'Panama Earthquake' not in admin_client.get('/dashboard').get_data(as_text=True)
+
+	alert_utils.refresh_surge_alerts_latest()
+
+	assert 'Panama Earthquake' in admin_client.get('/dashboard').get_data(as_text=True)
