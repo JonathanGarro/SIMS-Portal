@@ -26,6 +26,91 @@ def _summarize_failures(molnix_ids, limit=10):
 		shown += f" and {len(molnix_ids) - limit} more"
 	return shown
 
+# Alert fields GO can fill in or change after an alert is first published. GO posts
+# an alert and adds details such as its end date and sector tags later, so an alert
+# first saved early would keep those gaps forever if only its status were refreshed
+# (it'd never count as an IM alert, and the dashboard hides alerts with no end date).
+SYNCED_ALERT_FIELDS = (
+	'event', 'role_profile', 'rotation', 'modality', 'language_required',
+	'molnix_status', 'alert_status', 'opens', 'start', 'end_time', 'sectors',
+	'role_tags', 'scope', 'im_filter', 'iso3', 'country_name', 'disaster_type_id',
+	'disaster_type_name', 'disaster_go_id', 'ifrc_severity_level_display', 'region_id',
+)
+_DATETIME_ALERT_FIELDS = {'opens', 'start', 'end_time'}
+
+
+def _as_stored_datetime(value):
+	"""
+	GO sends ISO 8601 strings with a UTC offset ("2026-11-27T16:43:00Z"). The columns
+	are timestamp without time zone, and Postgres drops the offset when storing such
+	a string, so compare (and store) the same naive wall-clock value.
+	"""
+	if not isinstance(value, str) or not value:
+		return value
+	try:
+		return datetime.fromisoformat(value).replace(tzinfo=None)
+	except ValueError:
+		return value
+
+
+def _as_column_type(field, value):
+	"""
+	Coerce a GO value to its column's Python type, so it compares equal to what's
+	stored: GO sends molnix_status as a number (0), but the column is text ('0').
+	"""
+	python_type = Alert.__table__.c[field].type.python_type
+	if python_type in (str, int) and not isinstance(value, python_type):
+		try:
+			return python_type(value)
+		except (TypeError, ValueError):
+			return value
+	return value
+
+
+def _changed_alert_fields(alert, result):
+	"""
+	The fields of a stored alert that differ from a freshly parsed GO record, as
+	{field: new value}. A field GO sends as None never overwrites a stored value,
+	so a temporarily incomplete record can't erase details already captured.
+	"""
+	changes = {}
+	for field in SYNCED_ALERT_FIELDS:
+		if field not in result:
+			continue
+		new_value = result[field]
+		if field in _DATETIME_ALERT_FIELDS:
+			new_value = _as_stored_datetime(new_value)
+		if new_value is None:
+			continue
+		new_value = _as_column_type(field, new_value)
+		if getattr(alert, field) != new_value:
+			changes[field] = new_value
+	return changes
+
+
+def _sync_existing_alert(alert, result, notify_new_im=False):
+	"""
+	Bring a stored alert up to date with GO's current record. Returns (ok, changes):
+	ok is False only if saving failed. With notify_new_im, an open alert that has
+	only now become an Information Management alert gets the IM Slack notice it
+	missed when it was first saved.
+	"""
+	changes = _changed_alert_fields(alert, result)
+	if not changes:
+		return True, changes
+	was_im = bool(alert.im_filter)
+
+	def _update_alert():
+		for field, value in changes.items():
+			setattr(alert, field, value)
+		db.session.commit()
+
+	updated_ok, _ = with_db_retry(_update_alert)
+	if updated_ok and notify_new_im and not was_im and alert.im_filter and alert.alert_status == 'Open':
+		send_im_alert_to_slack(alert)
+	return updated_ok, changes
+
+
 def _is_transient_db_error(exc):
 	"""
 	True for connection-level failures (dropped SSL connections, network blips)
@@ -505,18 +590,13 @@ def refresh_surge_alerts_latest():
 				existing_alert = existing_alerts_by_id.get(result['alert_id'])
 		
 				if existing_alert:
-					if existing_alert.alert_status != result['alert_status']:
-						def _update_alert():
-							existing_alert.alert_status = result['alert_status']
-							db.session.commit()
-
-						updated_ok, _ = with_db_retry(_update_alert)
-						if updated_ok:
-							count_updated_records += 1
-							safe_log(f"[INFO] Updated alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
-						else:
-							failed_molnix_ids.append(current_molnix_id)
-							safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
+					updated_ok, changes = _sync_existing_alert(existing_alert, result, notify_new_im=True)
+					if not updated_ok:
+						failed_molnix_ids.append(current_molnix_id)
+						safe_log(f"[ERROR] Failed to update alert_id {result['alert_id']}, molnix_id: {current_molnix_id}.")
+					elif changes:
+						count_updated_records += 1
+						safe_log(f"[INFO] Updated alert_id {result['alert_id']}, molnix_id: {current_molnix_id}: {', '.join(sorted(changes))}.")
 
 				else:
 					if result['alert_id'] not in existing_alerts_by_id:
@@ -870,18 +950,14 @@ def refresh_surge_alerts(pages_to_fetch=100):
 			existing_alert = existing_alerts_by_id.get(result['alert_id'])
 
 			if existing_alert:
-				# check if alert_status has changed
-				if existing_alert.alert_status != result['alert_status']:
-					def _update_alert():
-						existing_alert.alert_status = result['alert_status']
-						db.session.commit()
-
-					updated_ok, _ = with_db_retry(_update_alert)
-					if updated_ok:
-						count_updated_records += 1
-					else:
-						failed_molnix_ids.append(result['molnix_id'])
-						safe_log(f"[ERROR] Failed to update alert_status for alert_id {result['alert_id']}, molnix_id: {result['molnix_id']}.")
+				# no Slack notices from the full refresh: it's a bulk repair, and it
+				# doesn't send them for the alerts it adds either
+				updated_ok, changes = _sync_existing_alert(existing_alert, result)
+				if not updated_ok:
+					failed_molnix_ids.append(result['molnix_id'])
+					safe_log(f"[ERROR] Failed to update alert_id {result['alert_id']}, molnix_id: {result['molnix_id']}.")
+				elif changes:
+					count_updated_records += 1
 
 			else:
 				# this is a new alert; add it to the database
