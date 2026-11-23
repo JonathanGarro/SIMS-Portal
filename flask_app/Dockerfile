@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bullseye
+FROM python:3.11-slim-bookworm
 WORKDIR /app
 # install system dependencies needed for compiling python packages
 # libjpeg-dev, zlib1g-dev, libtiff-dev, libfreetype6-dev, liblcms2-dev, libwebp-dev for pillow
