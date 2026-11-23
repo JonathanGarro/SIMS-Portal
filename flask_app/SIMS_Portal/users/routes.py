@@ -8,13 +8,16 @@ from flask_login import (
 )
 from sqlalchemy import or_, and_, text, func
 
-from SIMS_Portal import db, bcrypt, login_manager
+from SIMS_Portal import db, bcrypt, login_manager, limiter
 from SIMS_Portal.models import (
 	User, Assignment, Emergency, NationalSociety, Skill, Language, user_skill, Profile, user_profile, Log, user_language
 )
 from SIMS_Portal.users.forms import (
 	RegistrationForm, LoginForm, UpdateAccountForm,
-	RequestResetForm, ResetPasswordForm, UserLocationForm
+	RequestResetForm, ResetPasswordForm, UserLocationForm, ChangePasswordForm
+)
+from SIMS_Portal.password_policy import (
+	SKIP_SESSION_KEY, can_skip_upgrade, meets_policy, safe_next_url, upgrade_deadline
 )
 from SIMS_Portal.users.utils import (
 	save_picture, send_slack_dm,
@@ -27,6 +30,28 @@ from SIMS_Portal.users.utils import download_profile_photo, invite_user_to_githu
 from SIMS_Portal.main.utils import send_error_message
 
 users = Blueprint('users', __name__)
+
+
+# --- rate limits ----------------------------------------------------------------
+# Per client IP, plus per targeted account so a spread-out attack on one account is
+# still slowed. Login and change-password only count failed attempts (a failed
+# attempt re-renders the form with a 200; success redirects), so members who type
+# their password correctly are never limited.
+
+def _failed_form_submission(response):
+	return response.status_code == 200
+
+
+def _submitted_email():
+	return 'login-email:' + (request.form.get('email') or '').strip().lower()
+
+
+def _submitted_slack_id():
+	return 'reset-slack-id:' + (request.form.get('slack_id') or '').strip()
+
+
+def _current_user_key():
+	return f'user:{current_user.get_id()}'
 
 @users.route('/members')
 def members():
@@ -89,6 +114,7 @@ def members_all():
 	return render_template('members_all.html', members=members)
 
 @users.route('/register', methods=['GET', 'POST'])
+@limiter.limit('10 per hour', methods=['POST'])
 def register():
 	if current_user.is_authenticated:
 		return redirect(url_for('main.dashboard'))
@@ -123,7 +149,8 @@ def register():
 					ns_id=form.ns_id.data.ns_go_id, 
 					slack_id=form.slack_id.data, 
 					email=form.email.data, 
-					password=hashed_password)
+					password=hashed_password,
+					password_compliant=True)
 				db.session.add(user)
 				db.session.commit()
 				flash('Your account has been created.', 'success')
@@ -139,6 +166,8 @@ def register():
 		return render_template('register.html', title='Register for SIMS', form=form)
 	
 @users.route('/login', methods=['GET', 'POST'])
+@limiter.limit('10 per minute;50 per hour', methods=['POST'], deduct_when=_failed_form_submission)
+@limiter.limit('5 per minute;20 per hour', methods=['POST'], key_func=_submitted_email, deduct_when=_failed_form_submission)
 def login():
 	form = LoginForm()
 	if current_user.is_authenticated:
@@ -158,14 +187,21 @@ def login():
 				db.session.commit()
 				flash('Your account has been converted back to active!', 'success')
 			
+			# the plaintext is only available here, so this is where an older account
+			# whose password already meets the length policy gets marked as such
+			if not user.password_compliant and meets_policy(form.password.data):
+				user.password_compliant = True
+
 			login_user(user, remember=form.remember.data)
-			next_page = request.args.get('next')
+			next_page = safe_next_url(request.args.get('next'))
 			
 			log_message = f"[INFO] User {current_user.id} logged in."
 			new_log = Log(message=log_message, user_id=current_user.id)
 			db.session.add(new_log)
 			db.session.commit()
-			
+
+			if not user.password_compliant:
+				return redirect(url_for('users.change_password', next=next_page))
 			return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
 		else:
 			flash('Login failed. Please check email and password', 'danger')
@@ -560,6 +596,8 @@ def confirm_user_location(user_id):
 	return redirect(url_for('users.profile'))
 
 @users.route('/reset_password', methods=['GET', 'POST'])
+@limiter.limit('5 per minute;20 per hour', methods=['POST'])
+@limiter.limit('3 per hour', methods=['POST'], key_func=_submitted_slack_id)
 def reset_request():
 	form = RequestResetForm()
 	valid_slack_ids = db.session.query(User).all()
@@ -607,6 +645,7 @@ def reset_token(token):
 		try:
 			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 			user.password = hashed_password
+			user.password_compliant = True
 			db.session.commit()
 			
 			flash('Your password has been reset. Please login with your new password.', 'success')
@@ -623,6 +662,42 @@ def reset_token(token):
 
 	return render_template('reset_token.html', title='Reset Password', form=form)
 
+
+@users.route('/change_password', methods=['GET', 'POST'])
+@login_required
+@limiter.limit('5 per minute;20 per hour', methods=['POST'], key_func=_current_user_key, deduct_when=_failed_form_submission)
+def change_password():
+	form = ChangePasswordForm()
+	next_page = safe_next_url(request.args.get('next'))
+	if form.validate_on_submit():
+		if not bcrypt.check_password_hash(current_user.password, form.current_password.data):
+			form.current_password.errors.append('Your current password is incorrect.')
+		elif bcrypt.check_password_hash(current_user.password, form.password.data):
+			form.password.errors.append('Your new password must be different from your current one.')
+		else:
+			current_user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+			current_user.password_compliant = True
+			db.session.add(Log(message=f"[INFO] User {current_user.id} changed their password.", user_id=current_user.id))
+			db.session.commit()
+			session.pop(SKIP_SESSION_KEY, None)
+			flash('Your password has been updated.', 'success')
+			return redirect(next_page or url_for('main.dashboard'))
+	return render_template(
+		'change_password.html', title='Change Password', form=form,
+		upgrade_required=not current_user.password_compliant,
+		can_skip=not current_user.password_compliant and can_skip_upgrade(),
+		deadline=upgrade_deadline(), next_page=next_page,
+	)
+
+@users.route('/change_password/skip', methods=['POST'])
+@login_required
+def skip_password_upgrade():
+	next_page = safe_next_url(request.args.get('next'))
+	if not can_skip_upgrade():
+		flash('The deadline to update your password has passed. Please choose a new password to continue.', 'warning')
+		return redirect(url_for('users.change_password', next=next_page))
+	session[SKIP_SESSION_KEY] = True
+	return redirect(next_page or url_for('main.dashboard'))
 
 @users.route('/user/approve/<int:id>', methods=['POST'])
 @login_required

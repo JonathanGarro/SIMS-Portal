@@ -63,7 +63,7 @@ socket.socket.connect = _guarded_connect
 socket.socket.connect_ex = _guarded_connect_ex
 
 
-from SIMS_Portal import create_app, db  # noqa: E402  (must come after the env setup above)
+from SIMS_Portal import create_app, db, limiter  # noqa: E402  (must come after the env setup above)
 from SIMS_Portal.config import Config  # noqa: E402
 
 from tests.seed import seed_database, ADMIN_ID, MEMBER_ID  # noqa: E402
@@ -142,6 +142,13 @@ def _rollback_db(app):
 			db.session = original_session
 			transaction.rollback()
 			connection.close()
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limits(app):
+	"""Every test-client request comes from 127.0.0.1; don't let limits carry between tests."""
+	limiter.reset()
+	yield
 
 
 @pytest.fixture

@@ -119,6 +119,7 @@
 							<div class='col'>
 								<div class="pb-4">
 									{{ form.password.label(class="form-control-label pb-2 text-danger") }}
+									<div class="form-text mt-0 mb-2">At least 16 characters. A few random words (a passphrase) are strong and easy to remember.</div>
 									{% if form.password.errors %}
 										{{ form.password(class="form-control form-control-lg is-invalid") }}
 											<div class="invalid-feedback">

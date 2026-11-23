@@ -5,6 +5,21 @@ from wtforms import StringField, PasswordField, FileField, SubmitField, BooleanF
 from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from SIMS_Portal.models import User, NationalSociety, Skill, Language, Profile, Region
+from SIMS_Portal.password_policy import MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH
+
+PASSWORD_LENGTH_MESSAGE = f'Password must be between {MIN_PASSWORD_LENGTH} and {MAX_PASSWORD_LENGTH} characters long.'
+
+
+def new_password_fields(label='Password'):
+	"""A (password, confirm_password) pair enforcing the password length policy."""
+	password = PasswordField(label, validators=[
+		DataRequired(), Length(min=MIN_PASSWORD_LENGTH, max=MAX_PASSWORD_LENGTH, message=PASSWORD_LENGTH_MESSAGE)
+	])
+	confirm_password = PasswordField(f'Confirm {label}', validators=[
+		DataRequired(), EqualTo('password', message='Passwords must match.')
+	])
+	return password, confirm_password
+
 
 class RegistrationForm(FlaskForm):
 	firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=40)])
@@ -12,8 +27,7 @@ class RegistrationForm(FlaskForm):
 	email = StringField('Email', validators=[DataRequired(), Email()])
 	ns_id = QuerySelectField('National Society Country', query_factory=lambda:NationalSociety.query.all(), get_label='country_name', allow_blank=True)
 	slack_id = StringField('SIMS Slack ID', validators=[DataRequired()])
-	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=24)])
-	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6, max=24), EqualTo('password')])
+	password, confirm_password = new_password_fields()
 	submit = SubmitField('Register')
 	
 	def validate_email(self, email):
@@ -23,7 +37,9 @@ class RegistrationForm(FlaskForm):
 			
 class LoginForm(FlaskForm):
 	email = StringField('Email', validators=[DataRequired(), Email()])
-	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=24)])
+	# no length rule here: older accounts still have shorter passwords, and must be
+	# able to log in so they can be asked to change them (see password_policy.py)
+	password = PasswordField('Password', validators=[DataRequired()])
 	remember = BooleanField('Remember Me')
 	submit = SubmitField('Login')
 
@@ -72,9 +88,13 @@ class RequestResetForm(FlaskForm):
 	submit = SubmitField('Request Password Reset')
 
 class ResetPasswordForm(FlaskForm):
-	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=24)])
-	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6, max=24), EqualTo('password')])
+	password, confirm_password = new_password_fields()
 	submit = SubmitField('Reset Password')
+
+class ChangePasswordForm(FlaskForm):
+	current_password = PasswordField('Current Password', validators=[DataRequired()])
+	password, confirm_password = new_password_fields('New Password')
+	submit = SubmitField('Change Password')
 
 class UserLocationForm(FlaskForm):
 	location = StringField('Enter City and Country', validators=[DataRequired()])

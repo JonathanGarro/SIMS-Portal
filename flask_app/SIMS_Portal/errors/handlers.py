@@ -17,6 +17,11 @@ def error_403(error):
 def error_413(error):
 	return render_template('errors/413.html'), 413
 
+@errors.app_errorhandler(429)
+def error_429(error):
+	# raised by Flask-Limiter (see the limits in users/routes.py)
+	return render_template('errors/429.html'), 429
+
 @errors.app_errorhandler(500)
 def error_500(error):
 	return render_template('errors/500.html'), 500
