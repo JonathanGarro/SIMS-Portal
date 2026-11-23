@@ -38,12 +38,12 @@ def seed_database():
 
 	admin = User(
 		id=ADMIN_ID, firstname='Ada', lastname='Admin', email='admin@example.org', password=password,
-		status='Active', is_admin=True, ns_id=NS_GO_ID, job_title='Admin', bio='Admin bio',
+		status='Active', is_admin=True, ns_id=NS_GO_ID, job_title='Admin', bio='Admin bio', password_compliant=True,
 		coordinates='[0, 0]', time_zone='America/New_York', place_label='Testville',
 	)
 	member = User(
 		id=MEMBER_ID, firstname='Max', lastname='Member', email='member@example.org', password=password,
-		status='Active', is_admin=False, ns_id=NS_GO_ID, job_title='Analyst', bio='Member bio',
+		status='Active', is_admin=False, ns_id=NS_GO_ID, job_title='Analyst', bio='Member bio', password_compliant=True,
 		coordinates='[0, 0]', time_zone='America/New_York', place_label='Testville',
 	)
 	member.skills.append(skill)

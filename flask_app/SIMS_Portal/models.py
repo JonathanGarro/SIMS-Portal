@@ -204,6 +204,10 @@ class User(db.Model, UserMixin):
 	time_zone = db.Column(db.String(120))
 	place_label = db.Column(db.String(120))
 	private_profile = db.Column(db.Boolean, default=False)
+	# True once the member's password is known to meet the current length policy
+	# (set on registration, reset, change, or logging in with a long-enough one).
+	# Existing accounts start False and are sent to change it; see password_policy.py.
+	password_compliant = db.Column(db.Boolean, nullable=False, default=False, server_default=db.false())
 
 	ns_id = db.Column(db.Integer, db.ForeignKey('nationalsociety.ns_go_id'))
 

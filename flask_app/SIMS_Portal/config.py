@@ -71,3 +71,15 @@ class Config:
 	RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
 	RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 	GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
+	# Rate limits (Flask-Limiter). The default in-memory store is per gunicorn worker,
+	# so with -w 3 a limit is effectively up to 3x looser; point this at Redis
+	# (redis://host:6379) to share counts across workers and hosts.
+	RATELIMIT_STORAGE_URI = os.environ.get('RATELIMIT_STORAGE_URI', 'memory://')
+	# Number of reverse proxies (nginx, AWS load balancer) in front of gunicorn whose
+	# X-Forwarded-For header should be trusted. 0 = none. If the app is behind a proxy
+	# and this stays 0, every request looks like it comes from the proxy's IP and the
+	# per-IP rate limits are shared by all users.
+	PROXY_FIX_HOPS = int(os.environ.get('PROXY_FIX_HOPS', '0'))
+	# Last day (YYYY-MM-DD) members with a pre-16-character password may click
+	# "Remind me later" on the change-password page. Unset or past = they must change it.
+	PASSWORD_UPGRADE_DEADLINE = os.environ.get('PASSWORD_UPGRADE_DEADLINE')

@@ -6,7 +6,7 @@
 			<div class="card border-0 p-4 bg-light ">
 				<h3 class="text-danger mb-4 Montserrat">Password Reset</h3>
 					<h5 class="text-secondary Montserrat">Reset Your Password</h5>
-					<p class=' mb-4'>Choose a long and unique password. Don't recycle passwords between sites!</p>
+					<p class=' mb-4'>Choose a long and unique password of at least 16 characters. Don't recycle passwords between sites!</p>
 					<h5 class="text-secondary Montserrat">Humble Suggestion</h5>
 					<p>May we take this opportunity to recommend a <a href='https://www.nytimes.com/wirecutter/reviews/best-password-managers/'>password manager</a> if you aren't already using one?</p>
 			</div>
@@ -17,6 +17,7 @@
 				<div class="row">
 						<div class="pb-4">
 							{{ form.password.label(class="form-control-label pb-2 text-danger") }}
+									<div class="form-text mt-0 mb-2">At least 16 characters. A few random words (a passphrase) are strong and easy to remember.</div>
 							
 							{% if form.password.errors %}
 								{{ form.password(class="form-control form-control-lg is-invalid") }}

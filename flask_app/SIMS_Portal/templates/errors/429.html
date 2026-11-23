@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<div class='row my-5'>
+		<div class='col col-md-3'>
+			<img src='/static/assets/img/pump-brakes.gif' class='img-fluid'>
+		</div>
+		<div class='col ps-5'>
+			<h2 class='text-danger Montserrat mb-2'>Slow down!</h2>
+			<p><span class='fw-bold'>Error 429:</span> There have been too many attempts in a short time. To protect members' accounts, please wait a few minutes and try again.</p>
+			<p>If you've forgotten your password, you can <a href="{{ url_for('users.reset_request') }}" class="link-danger">reset it through Slack</a> once the wait is over. If you keep seeing this message, please contact a site administrator.</p>
+		</div>
+	</div>
+</div>
+{% endblock content %}

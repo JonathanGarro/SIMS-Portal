@@ -18,11 +18,14 @@ from flask import Flask  # noqa: E402
 from flask_babel import Babel  # noqa: E402
 from flask_bcrypt import Bcrypt  # noqa: E402
 from flask_caching import Cache  # noqa: E402
+from flask_limiter import Limiter  # noqa: E402
+from flask_limiter.util import get_remote_address  # noqa: E402
 from flask_login import LoginManager  # noqa: E402
 from flask_migrate import Migrate  # noqa: E402
 from flask_sqlalchemy import SQLAlchemy  # noqa: E402
 from flask_wtf.csrf import CSRFProtect  # noqa: E402
 from markupsafe import Markup  # noqa: E402
+from werkzeug.middleware.proxy_fix import ProxyFix  # noqa: E402
 
 from SIMS_Portal.config import Config  # noqa: E402
 
@@ -35,6 +38,9 @@ login_manager.login_message_category = 'danger'
 cache = Cache()
 csrf = CSRFProtect()
 babel = Babel()
+# Per-route limits only (login, registration, password reset/change); see users/routes.py.
+# Keyed on the client IP, so behind a reverse proxy set PROXY_FIX_HOPS (see config.py).
+limiter = Limiter(key_func=get_remote_address)
 
 from SIMS_Portal import models  # noqa: E402,F401  (registers the models with SQLAlchemy)
 
@@ -43,6 +49,14 @@ def create_app(config_class=Config):
 	app = Flask(__name__)
 	app.config.from_object(config_class)
 
+	# Trust X-Forwarded-For/-Proto from this many proxies in front of the app, so
+	# request.remote_addr (and the rate limiter's per-IP key) is the real client
+	# rather than the proxy. Only set it when such a proxy exists: with none, a
+	# client could forge the header and dodge per-IP limits.
+	if app.config['PROXY_FIX_HOPS']:
+		hops = app.config['PROXY_FIX_HOPS']
+		app.wsgi_app = ProxyFix(app.wsgi_app, x_for=hops, x_proto=hops)
+
 	db.init_app(app)
 	migrate.init_app(app, db)
 	bcrypt.init_app(app)
@@ -50,16 +64,19 @@ def create_app(config_class=Config):
 	cache.init_app(app)
 	csrf.init_app(app)
 	babel.init_app(app)
+	limiter.init_app(app)
 
 	_init_templating(app)
 	_init_logging(app)
 
 	from SIMS_Portal.admin import init_admin
 	from SIMS_Portal.cli import init_cli
+	from SIMS_Portal.password_policy import init_password_policy
 	from SIMS_Portal.scheduler import init_scheduler
 	from SIMS_Portal.security import init_security_headers
 
 	init_security_headers(app)
+	init_password_policy(app)
 	_register_blueprints(app)
 	init_admin(app, db)
 	init_cli(app)
