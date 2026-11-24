@@ -75,3 +75,23 @@ def test_single_migration_head():
 	code, out = _flask_db(TEST_DATABASE_URL, 'heads')
 	heads = [line for line in out.splitlines() if '(head)' in line]
 	assert code == 0 and len(heads) == 1, out[-3000:]
+
+
+def test_duplicate_skill_and_language_rows_are_removed(migrations_db_url):
+	code, out = _flask_db(migrations_db_url, 'upgrade', 'b7d3e1a95c42')
+	assert code == 0, out[-3000:]
+	engine = create_engine(migrations_db_url)
+	with engine.begin() as conn:
+		conn.execute(text("INSERT INTO \"user\" (id, firstname, lastname, email, password, image_file, password_compliant) "
+		                  "VALUES (1, 'A', 'B', 'a@example.org', 'x', 'default.png', true)"))
+		conn.execute(text("INSERT INTO skill (id, name) VALUES (1, 'QGIS'), (2, 'R')"))
+		conn.execute(text("INSERT INTO language (id, name) VALUES (1, 'English')"))
+		conn.execute(text("INSERT INTO user_skill (user_id, skill_id) VALUES (1, 1), (1, 1), (1, 1), (1, 2)"))
+		conn.execute(text("INSERT INTO user_language (user_id, language_id) VALUES (1, 1), (1, 1)"))
+	code, out = _flask_db(migrations_db_url, 'upgrade')
+	assert code == 0, out[-3000:]
+	with engine.connect() as conn:
+		skills = conn.execute(text('SELECT skill_id FROM user_skill ORDER BY skill_id')).scalars().all()
+		languages = conn.execute(text('SELECT language_id FROM user_language')).scalars().all()
+	engine.dispose()
+	assert skills == [1, 2] and languages == [1]

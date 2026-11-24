@@ -19,12 +19,14 @@ user_profile = db.Table('user_profile',
 
 user_skill = db.Table('user_skill',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-	db.Column('skill_id', db.Integer, db.ForeignKey('skill.id'))
+	db.Column('skill_id', db.Integer, db.ForeignKey('skill.id')),
+	db.UniqueConstraint('user_id', 'skill_id', name='uq_user_skill_user_skill_id'),
 )
 
 user_language = db.Table('user_language',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-	db.Column('language_id', db.Integer, db.ForeignKey('language.id'))
+	db.Column('language_id', db.Integer, db.ForeignKey('language.id')),
+	db.UniqueConstraint('user_id', 'language_id', name='uq_user_language_user_language_id'),
 )
 
 user_badge = db.Table('user_badge',
