@@ -8,7 +8,8 @@ Everything runs from a terminal. The flow: build an image from a clean copy of `
 | Image registry (ECR) | repository `simsportal`, tagged by commit (e.g. `simsportal:4298ea58`) |
 | Service (ECS, Fargate, x86) | cluster `simsportal`, service `SIMSPortal`, container `flask` |
 | Database (RDS, Postgres 14) | `simsportaldb` |
-| Logs (CloudWatch) | log group `/ecs/simsportal` |
+| App logs (CloudWatch) | log group `/ecs/simsportal` |
+| Request logs (S3) | load balancer `SIMSPortal` access logs, bucket `simsportal-alb-access-logs-<account ID>`, kept 1 year |
 
 > [!NOTE] What's no longer needed
 > - **No manual edits before deploying.** Debug mode follows `FLASK_DEBUG`, which production doesn't set. The Dockerfile always runs gunicorn. docker-compose is for local dev only.
@@ -199,6 +200,36 @@ These live in the task definition's environment. Change them with the snippet in
 | `PASSWORD_UPGRADE_DEADLINE` | optional, `YYYY-MM-DD` | Until this date, members with pre-policy passwords can choose "Remind me later". |
 | `RATELIMIT_STORAGE_URI` | optional, `redis://…` | Shares rate-limit counts across gunicorn workers. The default in-memory store is per worker. |
 | `ROOT_URL` | optional | Base URL for links in Slack messages. Defaults to `https://rcrcsims.org`. |
+
+## Logs
+
+There are two kinds of logs, and they answer different questions.
+
+- **App logs (CloudWatch, `/ecs/simsportal`):** what the app printed: errors and tracebacks, scheduler messages, heartbeat results. Kept indefinitely. **They don't list individual web requests**, because gunicorn's access log is off.
+- **Request logs (S3, load balancer access logs):** one line for every request that reaches rcrcsims.org, with the time, client IP, method and path, status code and response time. Turned on November 24, 2026, so there's nothing from before then. The load balancer writes a gzipped file every 5 minutes, and files are deleted after a year.
+
+The app's own activity log (the Log table, shown under Admin → Activity Logs) is a third place to look for job results.
+
+### Searching the request logs
+
+```bash
+B=$(aws elbv2 describe-load-balancer-attributes \
+  --load-balancer-arn $(aws elbv2 describe-load-balancers --names SIMSPortal --query 'LoadBalancers[0].LoadBalancerArn' --output text) \
+  --query "Attributes[?Key=='access_logs.s3.bucket'].Value" --output text)
+
+# files are under simsportal/AWSLogs/<account ID>/elasticloadbalancing/us-east-2/YYYY/MM/DD/
+aws s3 ls s3://$B/simsportal/AWSLogs/ --recursive | tail
+
+# download a day and search it, e.g. for requests to /scheduler
+LOGS=$(mktemp -d)
+aws s3 cp s3://$B/simsportal/AWSLogs/ $LOGS --recursive --exclude '*' --include '*/2026/11/24/*'
+find $LOGS -name '*.log.gz' -exec gunzip -c {} + | grep '/scheduler'
+rm -rf $LOGS
+```
+
+Each line is one request. Field 2 is the time, field 4 the client IP and port, field 9 the status code, and fields 13–15 the request line (`"GET https://rcrcsims.org:443/path HTTP/1.1"`). AWS documents the full format under "Access log entries" for Application Load Balancers. For searching months at a time, set up Athena on the bucket instead.
+
+These logs hold visitors' IP addresses. Keep downloaded copies out of the repo and delete them when you're done.
 
 ## Troubleshooting
 
