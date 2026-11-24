@@ -5,7 +5,81 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
-# 1.12.6 (Dupont Circle) - TO BE RELEASED
+# 1.13.1 (Farragut North) - 2026-11-24
+
+## Changes
+
+- **Manual Refresh Page Redesign**: The admin Manual Refresh page is now a pair of accordions, one for maintenance tasks and one for the automatic badge assigners. Click a task to see a short explanation of what it does and when it runs on its own, then use the button underneath to run it. Tasks that can send Slack messages to members are flagged in red.
+- **GO Outages Are Retried Before Alerting**: When GO's API is briefly unavailable, the surge alert job now waits and tries again (four tries over about two and a half minutes) before posting an error to Slack. A short GO outage no longer sets off an alert.
+- **More Honest Heartbeat**: The surge alert job only checks in with our uptime monitor when it actually managed to read from GO, so a long GO outage now shows up as a missed heartbeat as well as in Slack.
+
+## Fixes
+
+- **Old Salt Badge**: The Old Salt badge (three or more assignments as SIMS Remote Coordinator) was counting each assignment on its own, so nobody ever reached three. It now counts per member and ignores removed assignments.
+- **World Traveler Badge**: The World Traveler badge (emergencies in five or more countries) was working out each emergency's country incorrectly. It now uses the emergency's actual country and ignores removed assignments and emergencies.
+
+# 1.13.0 (Farragut North) - 2026-11-23
+
+This is a big one. Most of the work since the last release was a cleanup of the codebase ahead of new features, along with a long list of security, reliability and mobile fixes. Thanks to [kathirpsmy](https://github.com/kathirpsmy) for the checklist improvements and the database setup instructions.
+
+## New Features
+
+- **16-Character Passwords**: At the request of IT, Portal passwords now need to be at least 16 characters (up to 64). Members whose password is shorter will be asked to choose a new one the next time they log in, and are taken back to the page they were on afterwards. A passphrase of four or more random words is an easy way to get there.
+- **Change Password Page**: Members can now change their password directly from their profile by entering their current one, instead of going through the Slack reset.
+- **Login Protection**: Repeated failed login, password reset and password change attempts are now temporarily blocked, which protects accounts from password guessing.
+- **Emergency Checklist Improvements**: SIMS Remote Coordinators can mark checklist tasks and subtasks complete for their emergencies, and the Portal records who completed each one and when. Admins can create, edit, reorder and delete checklists and subtasks, and a new report tab shows task completion for each emergency.
+- **All Open Surge Alerts on the Dashboard**: The dashboard's alerts tab still opens on open Information Management alerts, but a new "Show all open alerts" switch adds every other open surge alert from the last 90 days. IM alerts are marked with a badge.
+- **Automated Tests**: The Portal now has an automated test suite (over 1,000 tests) that runs on every pull request on GitHub, which makes it much safer to change things.
+
+## Changes
+
+- **Surge Alerts Stay Up to Date**: The surge desk often posts an alert in GO first and fills in details like the emergency, end date and sectors later. The Portal now picks up those later details on every sync instead of keeping whatever was there when the alert was first seen, and it re-checks every open alert individually so alerts that have closed are marked closed.
+- **Maps Always Current**: The member globe on the home page and the response history map on the About page now read directly from the database, so they're always up to date and no longer need a manual refresh after each deployment.
+- **One Menu on Phones and Tablets**: Smaller screens now get a single menu button that opens all of the navigation, instead of two separate menus. Pages no longer scroll sideways on a phone, and the dashboard's counters stack neatly on small screens.
+- **Removed the Twitter Field**: The unused Twitter/X field has been removed from profiles and from the database.
+- **Removed Anonymous Acronym Submissions**: Visitors who aren't logged in are now asked to log in before submitting an acronym ([131](https://github.com/JonathanGarro/SIMS-Portal/issues/131)).
+- **Page Titles**: Browser tabs now show the name of the page you're on, including the emergency name on emergency pages ([140](https://github.com/JonathanGarro/SIMS-Portal/issues/140)).
+- **Front-End Library Upgrades**: Bootstrap, jQuery, DataTables, FullCalendar, d3 and the icon set have all been brought up to date, and each page now only loads the libraries it uses. The look of the site is unchanged.
+- **Back-End Upgrades**: Python, Flask, SQLAlchemy, Flask-Admin and the rest of the dependencies have been upgraded to close known security issues, and about 35 unused packages and 12 MB of unused data files have been removed.
+- **Code Cleanup**: Dead code, unused templates and duplicated functions have been removed, the main routes file has been split up, and the database migration history has been rebuilt so new environments can be set up cleanly.
+- **Simpler Deployments**: Production settings are now picked up automatically, so nothing has to be edited by hand before deploying. A new deploy guide ([DEPLOYING.md](DEPLOYING.md)) covers deploying from the command line.
+
+## Security Fixes
+
+An audit of the codebase turned up a number of security problems, all of which are fixed in this release. If you run your own copy of the Portal, I'd encourage you to update.
+
+- **Unprotected Background Job Controls**: The library that runs the Portal's scheduled jobs had its built-in web controls switched on with no login required. In principle anyone could have listed, paused or added background jobs on the server. These controls are now switched off entirely, since nothing in the Portal used them.
+- **Admin Home Page Open to Everyone**: The front page of the admin back end (`/admin`) could be opened by anyone, even without logging in. The individual admin screens behind it were already restricted to admins; now the front page is too.
+- **Actions Triggered by Simply Visiting a Link**: 29 actions, including deleting emergencies, members, products, stories and assignments, approving accounts and products, and closing out emergencies, ran as soon as their address was visited. That meant a logged-in user could be tricked into one by clicking a link in an email or Slack message, or even by loading an image on another website. All of these now require a button press with a security token that other sites can't forge, and login cookies are now set so browsers won't send them along with requests from other sites.
+- **Badges Credited to the Wrong Person**: When a SIMS Remote Coordinator awarded a badge, the Portal took the awarding person's identity from the page address, so a badge (and its Slack announcement) could be credited to anyone. It now always uses the person who is actually logged in.
+- **Deleting Other Members' Products**: A mix-up in the permission check for deleting portfolio products compared the member's ID with the product's ID instead of the product's owner, so a member could delete a product that happened to share their ID number. It now checks who uploaded the product.
+- **Overwriting Other Members' Availability**: An old, unlinked page let any member overwrite the availability recorded on any assignment. It has been removed.
+- **Portfolio and Profile Privacy**: Products start out visible to members only, and become public only once a SIMS Coordinator approves them for external viewing. However, anyone, logged in or not, could view and download personal, pending and even removed products by guessing their address, and visitors who weren't logged in could see a member's full portfolio on their profile. Both now follow the rules described on the upload page. Profiles marked private were also still visible to the public; visitors who aren't logged in are now asked to log in, and search engines are told not to index them.
+- **Acronym Search Could Reveal Hidden Information**: The acronym search accepted any field name in its address, including hidden ones like the email address of the person who submitted an acronym. By running many searches, someone could have worked those addresses out a character at a time. Searches are now limited to the six fields the search form offers. Acronyms that haven't been approved yet are also no longer visible to the public.
+- **Unsafe Handling of Page Addresses**: A few pages built database queries by pasting in text straight from the page address, and the admin Manual Refresh page ran whatever function name appeared in its address. Every database query now passes values safely, Manual Refresh only runs tasks from a fixed list, and the risky code these relied on has been removed from the Portal entirely.
+- **Location Confirmation**: Simply visiting the location confirmation page saved a blank location to the logged-in member's profile, which also stopped the member map from loading. It now requires login and a button press, and only saves a location the member has just chosen.
+- **File Downloads**: Portfolio downloads now only ever serve files from the uploads folder, regardless of what file name is stored for a product.
+- **Login Page Redirects**: After logging in, the Portal only sends members on to pages within the Portal, so a link to the login page can't be used to bounce someone to an outside site.
+- **Password Guessing and Short Passwords**: As described above, passwords now need at least 16 characters, and repeated failed attempts at logging in, resetting a password or changing a password are temporarily blocked.
+- **Out-of-Date Libraries With Known Vulnerabilities**: Many of the libraries the Portal depends on had published security issues. They have all been upgraded, and password reset links now use a supported signing method with a built-in expiry.
+- **Browser Security Header**: A typo in one of the Portal's security headers meant browsers ignored part of the rules about what other sites the Portal may embed. It's now correct.
+- **Monitoring Links Removed From the Code**: The private links the scheduled jobs use to check in with our uptime monitor were written into the public source code. They're now kept in the server's settings instead.
+
+## Fixes
+
+- **Missing IM Slack Notices**: Notices for new Information Management alerts that GO hadn't yet linked to an emergency were failing silently, so members never heard about several of them. They're now sent, and any future failure is reported to the admins in Slack.
+- **Blank Surge Alert Statuses**: GO retired the field the Portal used to read alert statuses, which left most alerts with no status and the dashboard's alert table empty. The Portal now reads the right field and repaired the existing alerts automatically.
+- **Surge Alert Job Failures**: A brief database connection hiccup could make the whole surge alert sync fail. It now recovers and carries on.
+- **Background Jobs Ran Three Times**: Each scheduled job (surge alerts, badges and inactive member reminders) was running once per server process, three times in all. They now run once.
+- **Profile Editing Errors**: Saving a profile with a validation problem caused an error page, and admins editing someone else's profile were wrongly told the email address was already taken ([129](https://github.com/JonathanGarro/SIMS-Portal/issues/129)). The National Society dropdown now shows the member's current selection when editing ([14](https://github.com/JonathanGarro/SIMS-Portal/issues/14)).
+- **Badge Percentages Over 100%**: Badge statistics now only count active members, so a badge can no longer show as held by more than 100% of members ([143](https://github.com/JonathanGarro/SIMS-Portal/issues/143)).
+- **Date Sorting in Tables**: Date columns on the emergency page, dashboard and portfolio now sort by date instead of alphabetically ([142](https://github.com/JonathanGarro/SIMS-Portal/issues/142)).
+- **Mobile Menu Opening Empty**: The menu on phones sometimes opened to an empty panel ([133](https://github.com/JonathanGarro/SIMS-Portal/issues/133)).
+- **GitHub Task Sync**: Syncing one emergency's GitHub tasks could overwrite or delete tasks belonging to another emergency with the same issue number.
+- **Acronym Review Queue**: The admin acronym queue now shows every acronym awaiting approval, and unapproved acronyms are no longer visible to the public.
+- **Pages That Errored**: An automated check of every page on the site turned up a number of pages that crashed in particular situations. All of them have been fixed.
+
+# 1.12.6 (Dupont Circle) - 2025-03-27
 
 ## Fixes
 
