@@ -583,7 +583,7 @@ def invite_user_to_github(username):
 	}
 	
 	url = f'{github_base_url}/orgs/{org_name}/memberships/{username}'
-	response = requests.put(url, headers=headers)
+	response = requests.put(url, headers=headers, timeout=15)
 	if response.status_code == 200:
 		log_message = f"[INFO] GitHub user {username} was invited to join the SIMS GitHub organization."
 		new_log = Log(message=log_message, user_id=63) # save message as Clara Barton

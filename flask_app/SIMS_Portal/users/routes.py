@@ -386,17 +386,18 @@ def update_profile():
 		# noindex tag (profile_member.html)
 		current_user.private_profile = form.private_profile.data
 		
-		# Check for GitHub username update before setting current_user.github
-		if form.github.data != current_user.github:
-			current_user.github = form.github.data
-			invite_user_to_github(form.github.data)
-		else:
-			current_user.github = form.github.data
+		# invite to the SIMS GitHub organisation only when a username is newly set or
+		# changed (a blank field used to differ from a stored None, so every save of a
+		# profile without one sent GitHub an invite for an empty username)
+		new_github = (form.github.data or '').strip() or None
+		if new_github and new_github != current_user.github:
+			invite_user_to_github(new_github)
+		current_user.github = new_github
 
 		# look for new skills added in the edit page
 		for skill_name in form.skills.data:
 			skill = Skill.query.filter(Skill.name == skill_name).first()
-			if skill:
+			if skill and skill not in current_user.skills:
 				current_user.skills.append(skill)
 		
 		# remove skills that are not in the updated list
@@ -407,7 +408,7 @@ def update_profile():
 		# look for new languages added in the edit page
 		for language_name in form.languages.data:
 			language = Language.query.filter(Language.name == language_name).first()
-			if language:
+			if language and language not in current_user.languages:
 				current_user.languages.append(language)
 		
 		# remove languages that are not in the updated list
@@ -487,11 +488,17 @@ def update_specified_profile(id):
 			this_user.github = form.github.data
 			this_user.linked_in = form.linked_in.data
 			this_user.slack_id = form.slack_id.data
-			for skill in form.skills.data:
-				this_user.skills.append(Skill.query.filter(Skill.name==skill).one())
+			# additive: the admin form adds skills and languages without removing any;
+			# skip ones the member already has so they aren't stored twice
+			for skill_name in form.skills.data:
+				skill = Skill.query.filter(Skill.name == skill_name).first()
+				if skill and skill not in this_user.skills:
+					this_user.skills.append(skill)
 			# this_user.roles = form.roles.data
-			for language in form.languages.data:
-				this_user.languages.append(Language.query.filter(Language.name==language).one())
+			for language_name in form.languages.data:
+				language = Language.query.filter(Language.name == language_name).first()
+				if language and language not in this_user.languages:
+					this_user.languages.append(language)
 			db.session.commit()
 			flash("This user's account has been updated!", "success")
 			return redirect(url_for('users.view_profile', id=id))
