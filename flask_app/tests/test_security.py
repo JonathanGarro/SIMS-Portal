@@ -81,6 +81,21 @@ def test_manual_refresh_runs_allowlisted_job(admin_client, monkeypatch):
 	assert called == [1]
 
 
+def test_manual_refresh_page_describes_every_job_and_nothing_else(admin_client):
+	tasks = portal_admin_routes.MANUAL_REFRESH_BADGE_TASKS + portal_admin_routes.MANUAL_REFRESH_MAINTENANCE_TASKS
+	assert sorted(name for name, *_ in tasks) == sorted(portal_admin_routes.MANUAL_REFRESH_JOBS)
+	page = admin_client.get('/manual_refresh').get_data(as_text=True)
+	for name, title, description, _ in tasks:
+		assert f"/manual_refresh/{name}\"" in page
+		assert f'Run {title}' in page
+
+
+def test_manual_refresh_confirms_with_the_task_title(admin_client, monkeypatch):
+	monkeypatch.setitem(portal_admin_routes.MANUAL_REFRESH_JOBS, 'big_wig', lambda: None)
+	response = admin_client.post('/manual_refresh/big_wig', follow_redirects=True)
+	assert 'Big Wig ran successfully.' in response.get_data(as_text=True)
+
+
 def test_manual_refresh_requires_csrf_token(admin_client, csrf_enabled, monkeypatch):
 	called = []
 	monkeypatch.setitem(portal_admin_routes.MANUAL_REFRESH_JOBS, 'big_wig', lambda: called.append(1))
