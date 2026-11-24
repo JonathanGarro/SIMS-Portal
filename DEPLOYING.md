@@ -9,7 +9,7 @@ Everything runs from a terminal. The flow: build an image from a clean copy of `
 | Service (ECS, Fargate, x86) | cluster `simsportal`, service `SIMSPortal`, container `flask` |
 | Database (RDS, Postgres 14) | `simsportaldb` |
 | App logs (CloudWatch) | log group `/ecs/simsportal` |
-| Request logs (S3) | load balancer `SIMSPortal` access logs, bucket `simsportal-alb-access-logs-<account ID>`, kept 1 year |
+| Request logs (S3) | bucket `simsportal-alb-access-logs-<account ID>`, kept 1 year: CloudFront logs under `cloudfront/`, load balancer logs under `simsportal/` |
 
 > [!NOTE] What's no longer needed
 > - **No manual edits before deploying.** Debug mode follows `FLASK_DEBUG`, which production doesn't set. The Dockerfile always runs gunicorn. docker-compose is for local dev only.
@@ -203,31 +203,50 @@ These live in the task definition's environment. Change them with the snippet in
 
 ## Logs
 
-There are two kinds of logs, and they answer different questions.
+Requests reach the app through two layers: visitors connect to **CloudFront** (distribution `E380WF4XO8LWJ7`, which serves rcrcsims.org and www.rcrcsims.org), CloudFront passes them to the **load balancer**, and the load balancer passes them to the app. Each layer has its own logs.
 
 - **App logs (CloudWatch, `/ecs/simsportal`):** what the app printed: errors and tracebacks, scheduler messages, heartbeat results. Kept indefinitely. **They don't list individual web requests**, because gunicorn's access log is off.
-- **Request logs (S3, load balancer access logs):** one line for every request that reaches rcrcsims.org, with the time, client IP, method and path, status code and response time. Turned on November 24, 2026, so there's nothing from before then. The load balancer writes a gzipped file every 5 minutes, and files are deleted after a year.
+- **CloudFront logs (S3, `cloudfront/`):** one line per visitor request, with the **visitor's real IP address**, time, method, path, query string, status code, user agent and referrer. Start here when you need to know who made a request.
+- **Load balancer logs (S3, `simsportal/`):** one line per request that reached the load balancer, with status codes and timings for the app itself. The client IP here is a **CloudFront server, not the visitor**, because every request arrives through CloudFront.
+
+Both request logs were turned on November 24, 2026, so there's nothing from before then. They share one private bucket, and a lifecycle rule deletes files after a year. CloudFront delivers files every few minutes; the load balancer every 5 minutes.
 
 The app's own activity log (the Log table, shown under Admin → Activity Logs) is a third place to look for job results.
 
 ### Searching the request logs
+
+Both logs are in one bucket. Look it up from the load balancer:
 
 ```bash
 B=$(aws elbv2 describe-load-balancer-attributes \
   --load-balancer-arn $(aws elbv2 describe-load-balancers --names SIMSPortal --query 'LoadBalancers[0].LoadBalancerArn' --output text) \
   --query "Attributes[?Key=='access_logs.s3.bucket'].Value" --output text)
 
-# files are under simsportal/AWSLogs/<account ID>/elasticloadbalancing/us-east-2/YYYY/MM/DD/
-aws s3 ls s3://$B/simsportal/AWSLogs/ --recursive | tail
+**CloudFront logs** are files named `cloudfront/E380WF4XO8LWJ7.YYYY-MM-DD-HH.<id>.gz` (the hour is UTC). Lines are tab-separated, after two `#` header lines that name the fields:
 
+```bash
 # download a day and search it, e.g. for requests to /scheduler
+LOGS=$(mktemp -d)
+aws s3 cp s3://$B/cloudfront/ $LOGS --recursive --exclude '*' --include '*.2026-11-24-*'
+find $LOGS -name '*.gz' -exec gunzip -c {} + | grep -v '^#' \
+  | awk -F'\t' '$8 ~ /^\/scheduler/ {print $1, $2, $5, $6, $8, $9, $11}'   # date time ip method path status user-agent
+rm -rf $LOGS
+```
+
+Field 1 is the date, 2 the time (UTC), 5 the visitor's IP, 6 the method, 8 the path, 9 the status code, 10 the referrer, 11 the user agent and 12 the query string. The delivery deliberately leaves out the `cs(Cookie)` field, so session cookies are never written to the logs. Keep it that way if you change the fields.
+
+**Load balancer logs** are under `simsportal/AWSLogs/<account ID>/elasticloadbalancing/us-east-2/YYYY/MM/DD/`:
+
+```bash
 LOGS=$(mktemp -d)
 aws s3 cp s3://$B/simsportal/AWSLogs/ $LOGS --recursive --exclude '*' --include '*/2026/11/24/*'
 find $LOGS -name '*.log.gz' -exec gunzip -c {} + | grep '/scheduler'
 rm -rf $LOGS
 ```
 
-Each line is one request. Field 2 is the time, field 4 the client IP and port, field 9 the status code, and fields 13–15 the request line (`"GET https://rcrcsims.org:443/path HTTP/1.1"`). AWS documents the full format under "Access log entries" for Application Load Balancers. For searching months at a time, set up Athena on the bucket instead.
+Each line is one request, space-separated. Field 2 is the time, field 4 the client (CloudFront) IP and port, field 9 the status code, and fields 13–15 the request line. CloudFront connects over plain HTTP, so it reads `"GET http://rcrcsims.org:80/path HTTP/1.1"`. AWS documents the full format under "Access log entries" for Application Load Balancers.
+
+For searching months at a time, set up Athena on the bucket instead of downloading files.
 
 These logs hold visitors' IP addresses. Keep downloaded copies out of the repo and delete them when you're done.
 
