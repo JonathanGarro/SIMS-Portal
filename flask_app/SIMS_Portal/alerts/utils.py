@@ -268,6 +268,40 @@ def safe_log(message, user_id=0, max_retries=3, retry_delay=2):
 	ok, _ = with_db_retry(_write, on_give_up=_give_up, max_retries=max_retries, retry_delay=retry_delay)
 	return ok
 
+# Seconds to wait between attempts when GO is temporarily unavailable (5xx, 429,
+# timeouts, dropped connections): four tries over about two and a half minutes,
+# enough to ride out a short GO outage or restart without posting an error.
+GO_RETRY_DELAYS = (15, 45, 90)
+
+
+def _is_retryable_status(status_code):
+	return status_code == 429 or status_code >= 500
+
+
+def get_from_go(url, timeout=30, retry_delays=GO_RETRY_DELAYS):
+	"""
+	GET a GO API URL, retrying while GO is temporarily unavailable.
+
+	Connection errors, timeouts, 429 and 5xx responses are retried after each delay
+	in `retry_delays`. Any other response (200, 404, ...) is returned as is for the
+	caller to handle. Once the retries run out, the last error is raised.
+	"""
+	attempts = len(retry_delays) + 1
+	for attempt in range(1, attempts + 1):
+		try:
+			response = requests.get(url, timeout=timeout)
+			if _is_retryable_status(response.status_code):
+				response.raise_for_status()
+			return response
+		except RequestException as e:
+			if attempt == attempts:
+				safe_log(f"[ERROR] GO API request to {url} failed after {attempts} attempts: {e}")
+				raise
+			delay = retry_delays[attempt - 1]
+			safe_log(f"[WARNING] GO API request to {url} failed (attempt {attempt}/{attempts}): {e}. Retrying in {delay}s.")
+			time.sleep(delay)
+
+
 def get_slack_username(user_id):
 	"""
 	Retrieve the Slack username for a given user ID.
@@ -457,7 +491,8 @@ def refresh_surge_alerts_latest():
 	None
 	
 	Returns:
-	None
+	bool: True if GO's alert list was fetched and processed, False if the job
+	failed (the error has already been posted to Slack).
 	
 	Side Effects:
 	- Logs information and errors to the database.
@@ -471,6 +506,7 @@ def refresh_surge_alerts_latest():
 	count_new_records = 0
 	count_updated_records = 0
 	failed_molnix_ids = []
+	succeeded = True
 	url = "https://goadmin.ifrc.org/api/v2/surge_alert/"
 
 	try:
@@ -495,22 +531,8 @@ def refresh_surge_alerts_latest():
 	
 		safe_log(f"[INFO] Making API request to {url}.")
 	
-		# retry logic for API requests
-		max_api_retries = 3
-		api_retry_delay = 2
-		
-		for api_attempt in range(max_api_retries):
-			try:
-				response = requests.get(url, timeout=30)
-				response.raise_for_status()
-				break
-			except RequestException as e:
-				if api_attempt < max_api_retries - 1:
-					safe_log(f"[WARNING] API request failed, retrying ({api_attempt + 1}/{max_api_retries}): {str(e)}")
-					time.sleep(api_retry_delay)
-				else:
-					safe_log(f"[ERROR] API request failed after {max_api_retries} attempts: {str(e)}")
-					raise
+		response = get_from_go(url)
+		response.raise_for_status()
 		
 		safe_log("[INFO] API request successful, processing response.")
 	
@@ -607,6 +629,7 @@ def refresh_surge_alerts_latest():
 				safe_log(f"[ERROR] Error processing result with molnix_id: {current_molnix_id}, alert_id: {result.get('alert_id', 'Unknown')}, error: {str(e)}")
 	
 	except Exception as e:
+		succeeded = False
 		try:
 			db.session.rollback()
 		except:
@@ -630,6 +653,13 @@ def refresh_surge_alerts_latest():
 		except Exception as final_e:
 			print(f"Failed to log completion message: {str(final_e)}")
 			send_error_message(f"Failed to log completion of Surge Alert cron job: {str(final_e)}")
+	return succeeded
+
+# The re-check makes one request per open alert, so it waits less between tries,
+# and gives up on the run once GO has failed for several alerts in a row.
+RECHECK_RETRY_DELAYS = (5, 15)
+RECHECK_MAX_CONSECUTIVE_FAILURES = 3
+
 
 def refresh_open_alert_statuses():
 	"""
@@ -658,6 +688,11 @@ def refresh_open_alert_statuses():
 	Returns:
 	None
 
+	Returns:
+	bool: False if GO couldn't be reached (the alert list couldn't be read, or
+	GO kept failing for several alerts in a row), True otherwise. One alert
+	that GO keeps failing on is skipped and doesn't count as a failed run.
+
 	Side Effects:
 	- Logs information and errors to the database.
 	- Updates every detail GO can change on existing alert records (status, end
@@ -667,6 +702,7 @@ def refresh_open_alert_statuses():
 	"""
 	count_checked = 0
 	count_updated = 0
+	consecutive_failures = 0
 
 	def _fetch_unresolved_alerts():
 		return db.session.query(Alert).filter(or_(Alert.alert_status.is_(None), Alert.alert_status == 'Open')).all()
@@ -676,7 +712,7 @@ def refresh_open_alert_statuses():
 		on_give_up=lambda e: safe_log(f"[ERROR] refresh_open_alert_statuses couldn't fetch unresolved alerts: {e}")
 	)
 	if not fetched_ok:
-		return
+		return False
 
 	safe_log(f"[INFO] refresh_open_alert_statuses checking {len(unresolved_alerts)} open alerts.")
 
@@ -685,7 +721,7 @@ def refresh_open_alert_statuses():
 			continue
 
 		try:
-			response = requests.get(f"https://goadmin.ifrc.org/api/v2/surge_alert/{alert.alert_id}/", timeout=15)
+			response = get_from_go(f"https://goadmin.ifrc.org/api/v2/surge_alert/{alert.alert_id}/", timeout=15, retry_delays=RECHECK_RETRY_DELAYS)
 			if response.status_code == 404:
 				# deleted in GO: mark it so it isn't re-checked on every run
 				data = {"molnix_status_display": "Removed"}
@@ -694,11 +730,16 @@ def refresh_open_alert_statuses():
 				data = response.json()
 		except RequestException as e:
 			safe_log(f"[WARNING] refresh_open_alert_statuses couldn't fetch alert_id {alert.alert_id}: {e}")
+			consecutive_failures += 1
+			if consecutive_failures >= RECHECK_MAX_CONSECUTIVE_FAILURES:
+				safe_log(f"[ERROR] refresh_open_alert_statuses stopped: GO failed for {consecutive_failures} alerts in a row. Checked {count_checked} alerts, updated {count_updated}.")
+				return False
 			continue
 		except ValueError as e:
 			safe_log(f"[WARNING] refresh_open_alert_statuses got an unparseable response for alert_id {alert.alert_id}: {e}")
 			continue
 
+		consecutive_failures = 0
 		count_checked += 1
 		old_status = alert.alert_status
 		if data.get("molnix_status_display") == "Removed":
@@ -721,6 +762,7 @@ def refresh_open_alert_statuses():
 		time.sleep(0.2)  # be polite to the external API when checking many alerts individually
 
 	safe_log(f"[INFO] refresh_open_alert_statuses finished. Checked {count_checked} alerts, updated {count_updated}.")
+	return True
 
 def repair_missing_alert_statuses():
 	"""
@@ -798,7 +840,7 @@ def refresh_surge_alerts(pages_to_fetch=100):
 		current_page = 1
 		
 		while url and current_page <= pages_to_fetch:
-			response = requests.get(url, timeout=30)
+			response = get_from_go(url)
 			response.raise_for_status()
 			data = response.json()
 			results = data.get("results", [])
