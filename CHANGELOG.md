@@ -5,6 +5,13 @@
 - Patch (0.0.X) releases are minor bug fixes and code enhancements. 
 - Minor (0.X.0) and major (X.0.0) releases introduce new features and follow the Washington DC Metro system's station names on the Red Line, starting at Shady Grove.
 
+# 1.13.2 (Farragut North) - 2026-11-24
+
+## Fixes
+
+- **Saving Your Profile No Longer Duplicates Skills or Languages**: Saving the profile edit page added every selected skill and language again, even ones you already had. The same was true when an admin edited a member's profile. Now only new ones are added, and the database refuses duplicates.
+- **No More Blank GitHub Invitations**: Saving a profile without a GitHub username sent the SIMS GitHub organization an invitation for an empty username, which failed and logged an error every time. Invitations now go out only when you add or change your GitHub username.
+
 # 1.13.1 (Farragut North) - 2026-11-24
 
 ## Changes
