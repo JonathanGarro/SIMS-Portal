@@ -492,47 +492,62 @@ def auto_badge_assigner_edward_tufte():
 
 def auto_badge_assigner_world_traveler():
 	"""
-	Checks for users that have assignments tagged to emergencies in five distinct countries and assigns the World Traveler badge if they don't already have it.
+	Assigns the World Traveler badge to users with assignments to emergencies in five or
+	more different countries, if they don't already have it. An emergency's country is
+	the National Society whose GO ID is its emergency_location_id. Removed assignments
+	and removed emergencies don't count.
 	"""
 	try:
 		current_app.logger.info('World Traveler Auto-Assign Ran')
-		existing_world_traveler_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 5"))
-		
-		list_user_ids_with_world_traveler = []
-		for user in existing_world_traveler_badges:
-			list_user_ids_with_world_traveler.append(user.user_id)
-	
-		users_eligible_for_world_traveler = db.session.query(User.id, User.firstname, User.lastname, func.count(func.distinct(NationalSociety.country_name)).label('count_countries')).join(Assignment, Assignment.user_id == User.id).join(Emergency, Emergency.id == Assignment.emergency_id).join(NationalSociety, NationalSociety.id == Emergency.id).group_by(User.id, User.firstname, User.lastname).having(func.count(func.distinct(NationalSociety.country_name)) > 4).all()
-	
-		for user in users_eligible_for_world_traveler:
-			if user.id not in list_user_ids_with_world_traveler:
-				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 5, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(text(new_badge))
-		db.session.commit()
+		eligible_user_ids = db.session.query(Assignment.user_id).join(
+			Emergency, Emergency.id == Assignment.emergency_id
+		).join(
+			NationalSociety, NationalSociety.ns_go_id == Emergency.emergency_location_id
+		).filter(
+			Assignment.assignment_status != 'Removed',
+			Emergency.emergency_status != 'Removed',
+		).group_by(Assignment.user_id).having(func.count(func.distinct(NationalSociety.country_name)) >= 5).all()
+		_award_badge(WORLD_TRAVELER_BADGE_ID, [row.user_id for row in eligible_user_ids])
 	except Exception as e:
+		db.session.rollback()
 		current_app.logger.error('World Traveler Auto-Assign Failed: {}'.format(e))
-		
+
+
+OLD_SALT_BADGE_ID = 25
+WORLD_TRAVELER_BADGE_ID = 5
+
+
+def _award_badge(badge_id, user_ids):
+	"""Give badge `badge_id` to each of `user_ids` that doesn't already have it. Returns who got it."""
+	already_have = {row.user_id for row in db.session.execute(
+		text("SELECT user_id FROM public.user_badge WHERE badge_id = :badge_id"), {'badge_id': badge_id}
+	)}
+	awarded = [user_id for user_id in dict.fromkeys(user_ids) if user_id is not None and user_id not in already_have]
+	for user_id in awarded:
+		db.session.execute(
+			text("INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES (:user_id, :badge_id, 0, 'Badge automatically assigned by SIMS Portal bot.')"),
+			{'user_id': user_id, 'badge_id': badge_id},
+		)
+	db.session.commit()
+	return awarded
+
+
 def auto_badge_assigner_old_salt():
 	"""
-	Checks for users that have 3 assignments with SIMS Remote Coordinator as the role and assigns the Old Salt badge if they don't already have it.
+	Assigns the Old Salt badge to users who have served as SIMS Remote Coordinator on
+	three or more assignments (removed assignments don't count), if they don't already have it.
 	"""
 	try:
 		current_app.logger.info('Old Salt Auto-Assign Ran')
-		existing_old_salt_badges = db.session.execute(text("SELECT user_id, badge_id FROM public.user_badge WHERE badge_id = 25"))
-		
-		list_user_ids_with_old_salt = []
-		for user in existing_old_salt_badges:
-			list_user_ids_with_old_salt.append(user.user_id)
-		
-		users_eligible_for_old_salt = db.session.query(Assignment.id, User.id, User.firstname, User.lastname, func.count().label('count')).join(User, User.id == Assignment.user_id).filter(Assignment.role == 'SIMS Remote Coordinator').group_by(Assignment.id, User.id, User.firstname, User.lastname).having(func.count() > 2).all()
-		
-		for user in users_eligible_for_old_salt:
-			if user.id not in list_user_ids_with_old_salt:
-				new_badge = "INSERT INTO user_badge (user_id, badge_id, assigner_id, assigner_justify) VALUES ({}, 25, 0, 'Badge automatically assigned by SIMS Portal bot.')".format(user.id)
-				db.session.execute(text(new_badge))
-		db.session.commit()
+		eligible_user_ids = db.session.query(Assignment.user_id).filter(
+			Assignment.role == 'SIMS Remote Coordinator',
+			Assignment.assignment_status != 'Removed',
+		).group_by(Assignment.user_id).having(func.count(Assignment.id) >= 3).all()
+		_award_badge(OLD_SALT_BADGE_ID, [row.user_id for row in eligible_user_ids])
 	except Exception as e:
+		db.session.rollback()
 		current_app.logger.error('Old Salt Auto-Assign Failed: {}'.format(e))
+
 
 def auto_badge_assigner_eratosthenes():
 	"""
