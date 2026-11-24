@@ -37,10 +37,15 @@ def run_surge_alert_refresh():
 	from SIMS_Portal.main.utils import heartbeats
 	from flask import current_app
 
-	refresh_surge_alerts_latest()
+	latest_ok = refresh_surge_alerts_latest()
 	repair_missing_alert_statuses()
-	refresh_open_alert_statuses()
-	heartbeats('run_surge_alert_refresh', current_app.config['HEARTBEAT_URL_SURGE_ALERTS'])
+	recheck_ok = refresh_open_alert_statuses()
+	# only report healthy if GO was actually read, so a long GO outage shows up in
+	# Better Stack as a missed heartbeat rather than a green check
+	if latest_ok and recheck_ok:
+		heartbeats('run_surge_alert_refresh', current_app.config['HEARTBEAT_URL_SURGE_ALERTS'])
+	else:
+		current_app.logger.warning('Surge alert refresh could not reach GO; skipping its heartbeat.')
 
 
 def run_auto_badge_assigners():

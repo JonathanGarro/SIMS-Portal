@@ -5,6 +5,8 @@ Surge alert jobs (SIMS_Portal/alerts/utils.py), with the GO API faked.
   the app read GO's deprecated status_display field) and skips closed ones
 - refresh_surge_alerts_latest() updates existing alerts by alert_id, adds new ones,
   keeps going past a bad record, and logs a summary that names the failures
+- GO outages are retried before anyone is alerted, and the job's heartbeat is
+  only sent when GO was actually read
 """
 from datetime import datetime
 
@@ -34,7 +36,12 @@ def fake_go(monkeypatch):
 
 	def fake_get(url, timeout=None):
 		requested.append(url)
-		return responses.get(url, FakeResponse({}, status=404))
+		response = responses.get(url, FakeResponse({}, status=404))
+		if isinstance(response, list):  # a sequence of answers, one per request
+			response = response.pop(0) if len(response) > 1 else response[0]
+		if isinstance(response, Exception):
+			raise response
+		return response
 
 	monkeypatch.setattr(alert_utils.requests, 'get', fake_get)
 	monkeypatch.setattr(alert_utils.time, 'sleep', lambda seconds: None)
@@ -387,3 +394,104 @@ def test_parse_go_alert_handles_alerts_with_no_emergency_or_tags():
 	assert parsed['alert_status'] == 'Open' and parsed['country_name'] == 'Afghanistan'
 	assert parsed['event'] is None and parsed['ifrc_severity_level_display'] is None
 	assert parsed['sectors'] == '' and parsed['im_filter'] is False and parsed['region_id'] is None
+
+
+# --- GO outages ---------------------------------------------------------------------
+
+@pytest.fixture
+def go_outage(fake_go, monkeypatch):
+	"""fake_go, plus a record of Slack error messages and of every retry wait."""
+	responses, requested = fake_go
+	errors, sleeps = [], []
+	monkeypatch.setattr(alert_utils, 'send_error_message', errors.append)
+	monkeypatch.setattr(alert_utils.time, 'sleep', sleeps.append)
+	return responses, requested, errors, sleeps
+
+
+def test_go_requests_are_retried_until_go_recovers(go_outage):
+	responses, requested, _, sleeps = go_outage
+	responses[LATEST_URL] = [FakeResponse({}, status=503), alert_utils.requests.exceptions.Timeout('slow'),
+	                         FakeResponse({'results': []})]
+
+	assert alert_utils.get_from_go(LATEST_URL).status_code == 200
+	assert len(requested) == 3
+	assert sleeps == list(alert_utils.GO_RETRY_DELAYS[:2])
+
+
+def test_go_requests_are_not_retried_for_answers_that_wont_change(go_outage):
+	_, requested, _, sleeps = go_outage  # nothing registered: GO answers 404
+	assert alert_utils.get_from_go(_detail_url(1)).status_code == 404
+	assert len(requested) == 1 and sleeps == []
+
+
+def test_go_requests_give_up_after_the_last_retry(go_outage):
+	responses, requested, _, _ = go_outage
+	responses[LATEST_URL] = [FakeResponse({}, status=503)]
+	with pytest.raises(alert_utils.RequestException):
+		alert_utils.get_from_go(LATEST_URL)
+	assert len(requested) == len(alert_utils.GO_RETRY_DELAYS) + 1
+
+
+def test_a_brief_go_outage_does_not_post_an_error(go_outage):
+	responses, _, errors, _ = go_outage
+	responses[LATEST_URL] = [FakeResponse({}, status=503), FakeResponse({'results': [_api_alert(950, 95, 'Open')]})]
+
+	assert alert_utils.refresh_surge_alerts_latest() is True
+	assert errors == []
+	assert db.session.query(Alert).filter_by(alert_id=950).one().alert_status == 'Open'
+
+
+def test_a_go_outage_that_outlasts_the_retries_posts_one_error(go_outage):
+	responses, _, errors, _ = go_outage
+	responses[LATEST_URL] = [FakeResponse({}, status=503)]
+
+	assert alert_utils.refresh_surge_alerts_latest() is False
+	assert len(errors) == 1 and 'Surge Alert cron job has failed' in errors[0]
+
+
+def test_recheck_stops_and_reports_failure_when_go_is_down(go_outage):
+	responses, requested, _, _ = go_outage
+	for alert_id in range(960, 965):
+		db.session.add(Alert(alert_id=alert_id, molnix_id=alert_id, alert_status='Open'))
+		responses[_detail_url(alert_id)] = [FakeResponse({}, status=502)]
+	db.session.commit()
+
+	assert alert_utils.refresh_open_alert_statuses() is False
+	attempts_per_alert = len(alert_utils.RECHECK_RETRY_DELAYS) + 1
+	assert len(requested) == alert_utils.RECHECK_MAX_CONSECUTIVE_FAILURES * attempts_per_alert
+
+
+def test_recheck_skips_one_alert_go_keeps_failing_on(go_outage):
+	responses, _, _, _ = go_outage
+	db.session.add(Alert(alert_id=970, molnix_id=970, alert_status='Open'))
+	db.session.add(Alert(alert_id=971, molnix_id=971, alert_status='Open'))
+	db.session.commit()
+	responses[_detail_url(970)] = [FakeResponse({}, status=500)]
+	responses[_detail_url(971)] = FakeResponse(_go_detail(971, 971, status='Closed'))
+
+	assert alert_utils.refresh_open_alert_statuses() is True
+	assert db.session.query(Alert).filter_by(alert_id=971).one().alert_status == 'Closed'
+
+
+@pytest.fixture
+def heartbeat_calls(monkeypatch):
+	from SIMS_Portal.main import utils as main_utils
+	calls = []
+	monkeypatch.setattr(main_utils, 'heartbeats', lambda name, url: calls.append(name))
+	monkeypatch.setattr(alert_utils, 'repair_missing_alert_statuses', lambda: 0)
+	return calls
+
+
+@pytest.mark.parametrize('latest_ok,recheck_ok,pinged', [
+	(True, True, True),
+	(False, True, False),
+	(True, False, False),
+])
+def test_surge_heartbeat_is_only_sent_when_go_was_read(monkeypatch, heartbeat_calls, latest_ok, recheck_ok, pinged):
+	from SIMS_Portal.scheduler import run_surge_alert_refresh
+	monkeypatch.setattr(alert_utils, 'refresh_surge_alerts_latest', lambda: latest_ok)
+	monkeypatch.setattr(alert_utils, 'refresh_open_alert_statuses', lambda: recheck_ok)
+
+	run_surge_alert_refresh()
+
+	assert heartbeat_calls == (['run_surge_alert_refresh'] if pinged else [])
