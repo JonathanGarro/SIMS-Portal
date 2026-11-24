@@ -25,30 +25,38 @@
 		</div>
 		<div class="col g-5">
 			<div>
-			<h2 class="text-dark Montserrat mb-3">Manual Refresh</h3>
+			<h2 class="text-dark Montserrat mb-3">Manual Refresh</h2>
 				<div class='col'>
-					<p class='sims-blue'>The SIMS Portal runs several different tasks at set intervals. These include database processing, badge assignments, surge alert syncing, and more. Most of these run a few times per day, but you can use this page to override that schedule and force these tasks to run. Note that some tasks take a while to run. <span class='fw-bold text-danger'>If you click on a task to run and the page does not immediately reload with a confirmation message, do not navigate away until the browser stops loading.</span></p>
+					<p class='sims-blue'>The SIMS Portal runs several different tasks at set intervals. These include database processing, badge assignments, surge alert syncing, and more. Most of these run a few times per day, but you can use this page to override that schedule and force these tasks to run. Click a task to see what it does before running it. Note that some tasks take a while to run. <span class='fw-bold text-danger'>If you click on a task to run and the page does not immediately reload with a confirmation message, do not navigate away until the browser stops loading.</span></p>
 				</div>
-			<div class='row my-5'>
-				<h5 class='Montserrat sims-blue'>Automatic Badge Assigners</h5>
-				<div class='d-flex flex-wrap'>
-					{% for badge in sorted_badge_refresh_list %}
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func=badge) }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>{{badge}}</button></form></div>
+			{% for group_id, group_title, tasks in task_groups %}
+			<div class='my-5'>
+				<h5 class='Montserrat sims-blue mb-3'>{{ group_title }}</h5>
+				<div class='accordion' id='accordion-{{ group_id }}'>
+					{% for name, title, description, messages_members in tasks %}
+					<div class='accordion-item'>
+						<h2 class='accordion-header' id='heading-{{ name }}'>
+							<button class='accordion-button collapsed bg-light text-dark fw-bold' type='button' data-bs-toggle='collapse' data-bs-target='#collapse-{{ name }}' aria-expanded='false' aria-controls='collapse-{{ name }}'>
+								{{ title }}
+							</button>
+						</h2>
+						<div id='collapse-{{ name }}' class='accordion-collapse collapse' aria-labelledby='heading-{{ name }}' data-bs-parent='#accordion-{{ group_id }}'>
+							<div class='accordion-body'>
+								<p>{{ description }}</p>
+								{% if messages_members %}
+								<p class='text-danger fw-bold'>Running this can send Slack messages to members.</p>
+								{% endif %}
+								<form method='POST' action="{{ url_for('portal_admin.manual_refresh', func=name) }}">
+									<input type='hidden' name='csrf_token' value='{{ csrf_token() }}'>
+									<button type='submit' class='btn btn-danger'>Run {{ title }}</button>
+								</form>
+							</div>
+						</div>
+					</div>
 					{% endfor %}
 				</div>
 			</div>
-			<div class='row'>
-				<h5 class='Montserrat sims-blue'>Maintenance Tasks</h5>
-				<div class='d-flex flex-wrap'>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_surge_alerts_latest') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Refresh Surge Alerts</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_surge_alerts') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Full Surge Alert Status Backfill</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_open_alert_statuses') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Re-check Open Surge Alert Statuses</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='request_availability_updates') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Request Availability Updates</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='bulk_slack_photo_update') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Update Missing Avatars</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='alert_inactive_members') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Alert Inactive Members</button></form></div>
-					<div class='me-1 mb-1'><form method='POST' action="{{ url_for('portal_admin.manual_refresh', func='refresh_all_active_githubs') }}"><input type='hidden' name='csrf_token' value='{{ csrf_token() }}'><button type='submit' class='btn btn-danger'>Refresh GitHub Issues for Active Emergencies</button></form></div>
-				</div>
-			</div>
+			{% endfor %}
 			</div>
 		</div>
 	</div>

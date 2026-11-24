@@ -318,13 +318,63 @@ MANUAL_REFRESH_JOBS = {
 }
 
 
+_BADGE_RERUN_NOTE = "Members who already have the badge are skipped, so it's safe to run at any time."
+_DAILY_BADGE_NOTE = 'Runs automatically every day at 5 PM Eastern.'
+
+# What the manual refresh page shows for each job: (job name, title, description,
+# whether running it sends Slack messages to members). Every name must be in
+# MANUAL_REFRESH_JOBS, which is what the run route accepts.
+MANUAL_REFRESH_BADGE_TASKS = [
+	('autobiographer', 'Autobiographer', f'Awards the Autobiographer badge to members whose profile bio is over 500 characters. {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('big_wig', 'Big Wig', f'Awards the Big Wig badge to members with five or more remote support assignments (removed assignments don\'t count). {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('edward_tufte', 'Edward Tufte', f'Awards the Edward Tufte badge to members with five or more approved infographics in the portfolio. {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('jack_of_all_trades', 'Jack of All Trades', f'Awards the Jack of All Trades badge to members with six or more profiles on their account. {_BADGE_RERUN_NOTE} This one isn\'t on the daily schedule, so it only runs from here.', False),
+	('maiden_voyage', 'Maiden Voyage', f'Awards the Maiden Voyage badge to members with at least one remote support assignment (removed assignments don\'t count). {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('old_salt', 'Old Salt', f'Awards the Old Salt badge to members who have served as SIMS Remote Coordinator on three or more assignments. {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('polyglot', 'Polyglot', f'Awards the Polyglot badge to members with two or more languages on their profile. {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('self_promoter', 'Self Promoter', f'Awards the Self Promoter badge to members with at least one skill on their profile. {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+	('world_traveler', 'World Traveler', f'Awards the World Traveler badge to members with assignments to emergencies in five or more different countries. {_BADGE_RERUN_NOTE} {_DAILY_BADGE_NOTE}', False),
+]
+
+MANUAL_REFRESH_MAINTENANCE_TASKS = [
+	('refresh_surge_alerts_latest', 'Refresh Surge Alerts',
+	 'Fetches the 50 newest surge alerts from GO, adds any new ones and updates the details of ones already in the Portal. '
+	 'New Information Management alerts are announced in Slack. Runs automatically every three hours from 1 AM to 4 PM Eastern; '
+	 'run it here to pick up a new alert right away.', True),
+	('refresh_open_alert_statuses', 'Re-check Open Surge Alerts',
+	 'Looks up every alert the Portal still lists as open, one at a time, and updates its status and details from GO. This catches '
+	 'alerts that closed, or were linked to an emergency, after they dropped out of the newest 50. An open alert that has only now '
+	 'become an Information Management alert is announced in Slack. Runs automatically with the surge alert refresh.', True),
+	('refresh_surge_alerts', 'Full Surge Alert Backfill',
+	 'Goes through GO\'s entire surge alert history (a few thousand alerts) and updates every detail of every alert in the Portal, '
+	 'adding any that are missing. It doesn\'t send any Slack notices. It takes a minute or two and is usually only needed to repair data.', False),
+	('request_availability_updates', 'Request Availability Updates',
+	 'Posts a request in the Slack channel of every active emergency asking members to update their availability for that response.', True),
+	('alert_inactive_members', 'Alert Inactive Members',
+	 'Sends a Slack direct message to every member who hasn\'t logged in for six months, asking them to log in if they want to stay '
+	 'listed as Active. Runs automatically every Thursday at 9 AM Eastern, and running it again sends the same messages again.', True),
+	('bulk_slack_photo_update', 'Update Missing Avatars',
+	 'For every member still using the default avatar, copies their Slack profile photo onto their Portal profile.', False),
+	('refresh_all_active_githubs', 'Refresh GitHub Issues for Active Emergencies',
+	 'Pulls the latest issues from the GitHub repository of every active emergency so their task lists are up to date.', False),
+]
+
+MANUAL_REFRESH_TITLES = {name: title for name, title, _, _ in MANUAL_REFRESH_BADGE_TASKS + MANUAL_REFRESH_MAINTENANCE_TASKS}
+
+
 @portal_admin.route('/manual_refresh')
 @login_required
 def manual_refresh_landing():
 	if current_user.is_admin != 1:
 		list_of_admins = db.session.query(User).filter(User.is_admin == True).all()
 		return render_template('errors/403.html', list_of_admins=list_of_admins), 403
-	return render_template('admin_manual_refresh.html', sorted_badge_refresh_list=sorted(MANUAL_REFRESH_BADGE_JOBS))
+	return render_template(
+		'admin_manual_refresh.html',
+		task_groups=[
+			('maintenance', 'Maintenance Tasks', MANUAL_REFRESH_MAINTENANCE_TASKS),
+			('badges', 'Automatic Badge Assigners', MANUAL_REFRESH_BADGE_TASKS),
+		],
+	)
 
 
 # POST-only (with the app-wide CSRF token) so a link or embedded image on another
@@ -340,5 +390,5 @@ def manual_refresh(func):
 		abort(404)
 	job()
 	current_app.logger.info('User-{} ran the {} function manually.'.format(current_user.id, func))
-	flash('{} function ran successfully.'.format(func), 'success')
+	flash('{} ran successfully.'.format(MANUAL_REFRESH_TITLES.get(func, func)), 'success')
 	return redirect(url_for('portal_admin.manual_refresh_landing'))
